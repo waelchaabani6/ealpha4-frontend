@@ -1,0 +1,182 @@
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiPickersToolbar-root {
+    display: none;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiPickersCalendarHeader-switchViewButton {
+    display: none;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiPickersCalendarHeader-root {
+    flex-direction: row-reverse;
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiPickersArrowSwitcher-spacer {
+    width: 2px;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiButtonBase-root.MuiIconButton-root.MuiIconButton-edgeStart.MuiIconButton-sizeSmall.MuiPickersArrowSwitcher-button {
+    margin-right: 12px;
+    border: 1px solid grey;
+    border-radius: 5px;
+    height: 25px;
+    width: 25px;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiButtonBase-root.MuiIconButton-root.MuiIconButton-edgeEnd.MuiIconButton-sizeSmall.MuiPickersArrowSwitcher-button {
+    border: 1px solid grey;
+    border-radius: 5px;
+    margin-right: 2px;
+    height: 25px;
+    width: 25px;
+}
+
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiCalendarPicker-root {    
+    width: 272px;
+    margin: unset;
+}
+
+/* .MuiPickerStaticWrapper-root.CustomCalendar .css-epd502 {
+    /* margin: unset; 
+}*/
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiPickersArrowSwitcher-root {
+    padding-left: 17px;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiPickerStaticWrapper-content {
+    width: 272px;
+    min-width: unset;
+    /* height: 405px; */
+    height:max-content;
+    /* border: 1px solid grey; */
+    border-radius: 5px;
+    padding-bottom: 15px;
+}
+
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiPickersFadeTransitionGroup-root.MuiCalendarPicker-viewTransitionContainer {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiPickersFadeTransitionGroup-root.MuiCalendarPicker-viewTransitionContainer>div {
+    border: 1px solid #21A22B;
+    /* border-radius: 4px; */
+    height:220px;
+    overflow: hidden;
+    border-radius: 6px;
+}
+
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiDialogActions-root.MuiDialogActions-spacing {
+    justify-content: flex-start;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiPickersCalendarHeader-label {
+    margin-right: -1px;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiButtonBase-root.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium {
+
+    position: relative;
+    left: 204px;
+    /* bottom: 393px; */
+    bottom: 280px;
+    font-size: 12px;
+    color: #646464;
+    background-color: #F5F7F7;
+    height: 25px;
+    width: 45px;
+    min-width: unset;
+    
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiPickersCalendarHeader-labelContainer {
+    max-height: unset;
+    width:100%;
+    position: relative;
+    cursor: unset;
+    pointer-events: none;
+    padding-left: 5px;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiPickersFadeTransitionGroup-root {
+    font-size: 12px;
+    text-align: center;
+    color: orange;
+}
+
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiDayPicker-header {
+    background-color: #F6F6F6;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiButtonBase-root.MuiPickersDay-root.Mui-selected.MuiPickersDay-dayWithMargin.MuiPickersDay-today {
+    background-color: unset;
+    color: black;
+    font-weight: bold;
+}
+
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiButtonBase-root.MuiPickersDay-root.MuiPickersDay-dayWithMargin {
+    height: 32px;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiButtonBase-root.MuiPickersDay-root.MuiPickersDay-dayWithMargin.MuiPickersDay-today:not(.Mui-selected) {
+    border: unset;
+}
+
+
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiButtonBase-root.MuiPickersDay-root.Mui-selected.MuiPickersDay-dayWithMargin {
+    background-color: unset;
+    color: black;
+    font-weight: bold;
+}
+
+/* weekdays */
+.MuiPickerStaticWrapper-root.CustomCalendar span[aria-label="Sunday"] {
+    color: #21A22B;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar span[aria-label="Monday"] {
+    color: #21A22B;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar span[aria-label="Tuesday"] {
+    color: #21A22B;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar span[aria-label="Wednesday"] {
+    color: #21A22B;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar span[aria-label="Thursday"] {
+    color: #21A22B;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar span[aria-label="Sunday"] {
+    color: #21A22B;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar span[aria-label="Friday"] {
+    color: #21A22B;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar span[aria-label="Saturday"] {
+    color: #21A22B;
+}
+
+.MuiPickerStaticWrapper-root.CustomCalendar .MuiPickersDay-dayOutsideMonth{
+    color:#cccccc;
+}
+
+/* Add Event Button */
+.custome-cal-button {
+    position: absolute;
+    left: 152px;
+    bottom: 51px;
+}

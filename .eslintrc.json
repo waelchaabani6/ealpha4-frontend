@@ -1,0 +1,111 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "jest": true
+    },
+    "extends": [
+        "airbnb"
+    ],
+    "overrides": [
+        {
+            "files": [
+                "*.ts",
+                "*.tsx",
+                "*.jsx"
+            ],
+            "extends": [
+                "plugin:@typescript-eslint/recommended"
+            ],
+            "parser": "@typescript-eslint/parser",
+            "plugins": [
+                "@typescript-eslint"
+            ],
+            "rules": {
+                "react/prop-types": 0,
+                "@typescript-eslint/no-explicit-any": 0,
+                "@typescript-eslint/no-empty-function": 0,
+                "@typescript-eslint/triple-slash-reference": 0
+            }
+        }
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module",
+        "project": "./tsconfig.json",
+        "ecmaFeatures": {
+            "experimentalObjectRestSpread": true,
+            "generators": true
+        }
+    },
+    "plugins": [
+        "react"
+    ],
+    "rules": {
+        "no-console": 2,
+        "react/react-in-jsx-scope": 0,
+        "func-names": 0,
+        "class-methods-use-this": 1,
+        "no-restricted-syntax": 1,
+        "no-use-before-define": 0,
+        "no-param-reassign": 1,
+        "no-useless-escape": 1,
+        "new-cap": 0,
+        "import/no-unresolved": "off",
+        "import/extensions": "off",
+        "function-paren-newline": 0,
+        "jsx-a11y/no-noninteractive-tabindex": 0,
+        "no-nested-ternary": 0,
+        "react/jsx-props-no-spreading": "off",
+        "prefer-spread": 1,
+        "space-before-function-paren": 0,
+        "comma-dangle": [
+            2,
+            "never"
+        ],
+        "quotes": [
+            "error",
+            "single",
+            {
+                "allowTemplateLiterals": true
+            }
+        ],
+        "object-curly-newline": [
+            "error",
+            {
+                "consistent": true
+            }
+        ],
+        "react/prop-types": 1,
+        "react/forbid-prop-types": 1,
+        "react/style-prop-object": 1,
+        "react/jsx-boolean-value": [
+            1,
+            "always"
+        ],
+        "react/no-multi-comp": 0,
+        "react/jsx-no-bind": 1,
+        "react/jsx-space-before-closing": 0,
+        "react/prefer-stateless-function": 0,
+        "react/jsx-closing-bracket-location": 1,
+        "jsx-a11y/no-static-element-interactions": 1,
+        "jsx-a11y/href-no-hash": 0,
+        "react/destructuring-assignment": 0,
+        "react/jsx-filename-extension": "off",
+        "react/jsx-wrap-multilines": 0,
+        "@typescript-eslint/member-delimiter-style": 1,
+        "react/jsx-uses-react": 0,
+        "@typescript-eslint/consistent-type-definitions": 0,
+        "@typescript-eslint/triple-slash-reference": 0,
+        "jsx-a11y/click-events-have-key-events": 0,
+        "react/require-default-props": 0,
+        "jsx-a11y/no-noninteractive-element-interactions": 0,
+        "react/function-component-definition": 0,
+        "import/prefer-default-export": 1,
+        "react/jsx-no-useless-fragment": 0,
+        "react/no-array-index-key": 0,
+        "max-len": 0,
+        "camelcase": 0
+    }
+}

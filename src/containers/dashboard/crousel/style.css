@@ -1,0 +1,30 @@
+.react-multiple-carousel__arrow {
+  border-radius: 50% !important;
+  background-color: white !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+}
+
+.react-multiple-carousel__arrow--right {
+  right: calc(0% + 1px) !important;
+}
+
+.react-multiple-carousel__arrow--left {
+  left: calc(0% + 1px) !important;
+}
+
+.react-multiple-carousel__arrow--right:hover,
+.react-multiple-carousel__arrow--left:hover {
+  /* background-color: #D2D2D2 !important; */
+  scale: 110%;
+}
+
+.react-multiple-carousel__arrow::before {
+  font-size: 12px !important;
+  color: #3aa22b !important;
+  font-weight: bolder !important;
+}
+
+.react-multiple-carousel__arrow--right::before {
+  content: "\e825";
+}

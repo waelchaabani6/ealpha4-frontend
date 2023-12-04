@@ -1,0 +1,105 @@
+/* @media(min-width:468px){ */
+.sm-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: auto;
+}
+
+.sm-container .card-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  column-gap: 2.550rem;
+  row-gap: 0.140rem;
+  margin-top: 10px;
+  align-items: flex-start;
+}
+
+.sm-container .card-container .cards {
+  display: flex;
+  background-color: #fff;
+  width: 204.91px;
+  justify-content: center;
+  flex-direction: column;
+  height: 165.4px;
+  margin-block: 10px;
+  align-items: center;
+  border-left: 5px solid #51A12C;
+  padding-top: 6px;
+  text-align: center;
+  background: #FFFFFF;
+  box-shadow: 0px 0px 15.7089px rgba(0, 0, 0, 0.16);
+  border-radius: 0px 15.7089px 15.7089px 0px;
+  cursor: pointer;
+}
+
+.sm-container .card-container .cards img {
+  /* height: 62px; */
+  width: 60px;
+  padding-block: 12px;
+  left: 71px;
+  top: 40.057861328125px;
+  border-radius: 0px;
+  justify-content: space-between;
+
+}
+
+.sm-container .card-container .cards span {
+  font-size: 16px;
+  padding-top: 10px;
+}
+
+.sm-container .card-container .cards imge {
+  width: 100px;
+}
+
+
+.p-cards {
+  margin: -1px;
+  /* position: absolute; */
+  display: flex;
+  flex-direction: column;
+
+  justify-content: end;
+  width: 231.17px;
+  /* height: 336.82px; */
+  background: #FFFFFF;
+  border: 1px solid #E5E5E5;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.160784);
+  border-radius: 10px;
+}
+
+/* .p-cards .p-cards-upper{
+  height: 251px;
+background: #FFFFFF;
+border: 1px solid #E5E5E5;
+border-radius: 10px;
+
+} */
+
+.p-cards .p-cards-lower {
+  /* position: absolute; */
+
+  border: 1px solid #E5E5E5;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.160784);
+  border-radius: 10px;
+  width: 229px;
+  /* height: 85.82px; */
+  background: #F7F7F7;
+  border-radius: 10px;
+  text-align: center;
+  /* margin-top: 18px */
+}
+
+.p-cards .p-cards-lower .h1 {
+  font-family: 'Poppins';
+  /* align-items: center; */
+  font-style: normal;
+  /* text-align: center; */
+
+}
+
+.p-cards .p-cards-lower .name {
+  margin-top: 18px
+}

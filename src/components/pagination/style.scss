@@ -1,0 +1,26 @@
+.ant-pagination-options-quick-jumper {
+  input {
+    width: 30px;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    margin: 0;
+    -webkit-margin-start: 8px;
+    margin-inline-start: 8px;
+    -webkit-margin-end: 8px;
+    margin-inline-end: 8px;
+    text-align: center;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &:focus-visible {
+      outline-offset: 0px;
+      outline: none;
+    }
+  }
+
+}
