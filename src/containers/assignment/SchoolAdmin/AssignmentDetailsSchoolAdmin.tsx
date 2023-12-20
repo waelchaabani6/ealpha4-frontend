@@ -357,7 +357,7 @@ function AssignmentDetails() {
 
   const { isFetching: studentListPending, refetch: fetchRecords } = useGet({
     baseURL,
-    url: `assignments-service/assignment/assigned-students/${assignedMainId}/list/`,
+    url: `assignments-service/assignment/assigned-students/${assignedMainId}/list/?limit=1000`,
     onSuccess: (res: any) => {
       const accData = res?.data?.response?.results;
       const studentData = (accData.map((ele: any) => ({ label: `${ele.first_name} ${ele.last_name}`, value: `${ele.first_name} ${ele.last_name}`, id: ele.id })));

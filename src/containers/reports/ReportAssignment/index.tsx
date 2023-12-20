@@ -84,8 +84,13 @@ export default function Index() {
     TABLE_LABELS?.TEACHER,
     TABLE_LABELS?.PROGRAM,
     TABLE_LABELS?.ASSIGNMET_NAME,
-    TABLE_LABELS?.START_DATE,
-    TABLE_LABELS?.END_DATE
+    TABLE_LABELS?.AVG_CLASS,
+    TABLE_LABELS?.CLASS_PER,
+    TABLE_LABELS?.AVG_COHORT,
+    TABLE_LABELS?.COHORT_PER,
+    TABLE_LABELS?.PERFORMANCE_EXPECTATION
+    // TABLE_LABELS?.START_DATE,
+    // TABLE_LABELS?.END_DATE
   ];
 
   const ADMIN_TOOLBAR_MENU = [
@@ -330,7 +335,31 @@ export default function Index() {
               classId: i.class_id
             }
           );
-          csvbody.push([i.class_name, i.teacher_name, i.program, i.assignment_name, i.start_date, i.end_date]);
+          const avgClassScore = `${
+            i.class_total_score ? i.class_total_score : ''
+          }/ ${i.class_total_max_score ? i.class_total_max_score : ''} `;
+          const avgClassPercen = i.score_in_percent
+            ? i.score_in_percent.toFixed(2)
+            : '';
+          const avgCohortScore = `${i.cohort_score ? i.cohort_score : ''}/ ${
+            i.cohort_total_score ? i.cohort_total_score : ''
+          } `;
+          const avgCohortPercen = i.cohort_score_in_percent
+            ? i.cohort_score_in_percent.toFixed(2)
+            : '';
+          csvbody.push([
+            i.class_name,
+            i.teacher_name,
+            i.program,
+            i.assignment_name,
+            avgClassScore,
+            avgClassPercen,
+            avgCohortScore,
+            avgCohortPercen,
+            i.performance_expectation
+            // i.start_date,
+            // i.end_date,
+          ]);
           return true;
         });
         const modifiedRows = body.map((row: any) => {
@@ -631,13 +660,27 @@ export default function Index() {
                               }
                             }
                             onClick={() => {
-                              const { Program, AssessmentName, Class, StartDate, EndDate } = row;
+                              const {
+                                Program,
+                                AssessmentName,
+                                Class,
+                                AvgClassScore,
+                                AvgClassPercentage,
+                                AvgCohortScore,
+                                AvgCohortPercentage,
+                                PerformanceExpectation
+                              } = row;
                               const stateData = {
                                 program: Program,
                                 assignment: AssessmentName,
                                 class: Class,
-                                startData: StartDate,
-                                endDate: EndDate
+                                AvgClassScore,
+                                AvgClassPercentage,
+                                AvgCohortScore,
+                                AvgCohortPercentage,
+                                PerformanceExpectation
+                                // startData: StartDate,
+                                // endDate: EndDate
                               };
                               navigate(`${link}/${row.Assignment_ID}/${row.CourseTableId}/${row.classId}`, { state: { stateData, page } });
                             }}

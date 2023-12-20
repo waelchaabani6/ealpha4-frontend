@@ -150,7 +150,7 @@ export default function Index() {
         const buttonRender = (item?.assessment_status === 'Yet to start') ? 'Start' : (item?.assessment_status === 'Completed') ? 'Completed' : (item?.assessment_status === 'In Progress') ? 'In Progress' : 'Incomplete';
         const temp = {
           ...item,
-          action: <Button disabled={item?.assessment_status === 'Completed'} onClick={() => handleButtonClick(item)}>{buttonRender}</Button>
+          action: <Button disabled={item?.assessment_status === 'Completed' || new Date(item?.submission_date) < new Date(new Date().setHours(0, 0, 0, 0))} onClick={() => handleButtonClick(item)}>{buttonRender}</Button>
         };
         return temp;
       });

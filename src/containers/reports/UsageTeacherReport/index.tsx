@@ -59,6 +59,7 @@ export default function Index() {
 
   const csvSubHeaders = [
     TABLE_LABELS?.CLASS,
+    TABLE_LABELS?.TEACHER,
     TABLE_LABELS?.STUDENT_IN_CLASS,
     TABLE_LABELS?.PROGRAM,
     TABLE_LABELS?.ACTIVE_STUDENT,
@@ -226,13 +227,24 @@ export default function Index() {
     TotalTeacher: ''
   })), [data]) || [];
   const CSVDataFunction = () => {
-    const csvdata: any = [];
-    // eslint-disable-next-line array-callback-return
-    tableData.map((i: any) => {
-      csvdata.push([i?.Class, i?.StudentInClass, i?.Program, i?.ActiveStudents, i?.AvgActiveStudent]);
-      setCsvData(csvdata);
-    });
+    const csvdata = tableData.map((i: any) => [
+      i?.Class,
+      i?.Teacher?.props?.children?.props?.children || '',
+      i?.StudentInClass,
+      i?.Program,
+      i?.ActiveStudents,
+      i?.AvgActiveStudent
+    ]);
+
+    setCsvData(csvdata);
   };
+  //   const csvdata: any = [];
+  //   // eslint-disable-next-line array-callback-return
+  //   tableData.map((i: any) => {
+  //     csvdata.push([i?.Class, i?.StudentInClass, i?.Program, i?.ActiveStudents, i?.AvgActiveStudent]);
+  //     setCsvData(csvdata);
+  //   });
+  // };
 
   const chartData1 = (NoOfDaysArr || []).map((i: any) => ({
     name: i?.class_name,

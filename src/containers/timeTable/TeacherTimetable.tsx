@@ -67,7 +67,7 @@ export default function Index() {
       if (resp.length) {
         resp.forEach((dateData: any) => {
           if (dateData.time_blocks && dateData.time_blocks.length !== 0) {
-            dateData.time_blocks = dateData.time_blocks.map((ele: { is_holiday: any, subject_name: string }) => ({ ...ele, is_holiday: dateData.is_holiday, reason: dateData.is_holiday ? dateData?.reason : ele?.subject_name, mainEventId: dateData.id }));
+            dateData.time_blocks = dateData.time_blocks.map((ele: { is_holiday: any; subject_name: string }) => ({ ...ele, is_holiday: dateData.is_holiday, reason: dateData.is_holiday ? dateData?.reason : ele?.subject_name, mainEventId: dateData.id }));
             eventData = [...eventData, ...dateData.time_blocks];
           }
         });

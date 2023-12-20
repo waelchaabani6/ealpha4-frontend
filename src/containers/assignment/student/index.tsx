@@ -424,7 +424,7 @@ export default function Index() {
         </Link>,
         teacher_name: ele.state === 'Submitted' ? <p className="">{ele.teacher_name}</p> : ele.teacher_name,
         Lessons: ele.state === 'Submitted' ? <p className="">{ele.lesson_name.length <= 25 ? ele.lesson_name : `${ele.lesson_name.substring(0, 25)}...`}</p> : ele.lesson_name.length <= 25 ? ele.lesson_name : <p title={ele.lesson_name}>{`${ele.lesson_name.substring(0, 25)}...`}</p>,
-        start_date: ele.state === 'Submitted' ? <p className="">{ele.start_date}</p> : ele.start_date,
+        // start_date: ele.state === 'Submitted' ? <p className="">{ele.start_date}</p> : ele.start_date,
         // end_date: ele.state === 'Submitted' ? <p className="">{ele.end_date}</p> : <span>{ele.end_date}</span>,
         score: ele.state === 'Submitted' ? <p className="">{ele.score}</p> : <div className="text-center relative left-[-10px]">{ele.score ? ele.score : 'N/A'}</div>,
         State: ele.state === 'Submitted' ? <p className="">{ele.state}</p> : ele.state,

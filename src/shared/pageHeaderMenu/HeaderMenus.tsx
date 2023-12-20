@@ -26,7 +26,8 @@ export function HeaderMenus(props: HeaderMenus): JSX.Element {
                   if (handleToolbarAction) {
                     handleToolbarAction(item?.title);
                   }
-                }}>
+                }}
+                >
                   {' '}
                   {item?.title}
                   {' '}

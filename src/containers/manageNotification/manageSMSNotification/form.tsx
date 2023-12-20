@@ -326,7 +326,8 @@ export default function Form(): JSX.Element {
                       <FormControl
                         fullWidth={true}
                         variant="standard"
-                        error={!!error}>
+                        error={!!error}
+                      >
                         <Typography
                           className={`capitalize w-full flex-1 pb-3.5 ${error?.[index] ? 'text-red-600' : ''}`}
                           variant="caption"

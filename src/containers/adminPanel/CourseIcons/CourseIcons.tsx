@@ -180,7 +180,7 @@ const CourseIcons = () => {
                 <input
                   accept="image/*"
                   type="file"
-                  hidden
+                  hidden={true}
                   onChange={(val) => setCourseFile(val?.target?.files?.[0])}
                 />
               </Button>
@@ -213,12 +213,13 @@ const CourseIcons = () => {
                 variant="contained"
                 component="label"
                 type="button"
-                sx={{ width: '100%' }}>
+                sx={{ width: '100%' }}
+              >
                 Upload Icon
                 <input
                   accept="image/*"
                   type="file"
-                  hidden
+                  hidden={true}
                   onChange={(val) => setGradeFile(val?.target?.files?.[0])}
                 />
               </Button>
@@ -247,12 +248,13 @@ const CourseIcons = () => {
                 variant="contained"
                 component="label"
                 type="button"
-                sx={{ width: '100%' }}>
+                sx={{ width: '100%' }}
+              >
                 Upload Icon
                 <input
                   accept="image/*"
                   type="file"
-                  hidden
+                  hidden={true}
                   onChange={(val) => setComponentFile(val?.target?.files?.[0])}
                 />
               </Button>

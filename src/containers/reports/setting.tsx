@@ -191,7 +191,8 @@ const Setting = (props: Props) => {
                 '.MuiTable-root.MuiTable-stickyHeader': {
                   minWidth: 'unset'
                 }
-              }}>
+              }}
+              >
                 <TableContainer className="relative" sx={{ maxHeight: '100%' }}>
                   <Table stickyHeader={true} aria-label="sticky table">
                     <TableHead>

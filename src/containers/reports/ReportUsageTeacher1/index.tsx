@@ -68,6 +68,7 @@ export default function Index() {
     TABLE_LABELS?.CLASSES_TAUGHT,
     TABLE_LABELS?.TEACHER,
     TABLE_LABELS?.PROGRAM,
+    TABLE_LABELS?.ACTIVE_DAYS,
     TABLE_LABELS?.CONTENT_OPENED,
     TABLE_LABELS?.CONTENT_COMPLETED,
     TABLE_LABELS?.TOTAL_TIME
@@ -286,13 +287,26 @@ export default function Index() {
   })), [data]) || [];
 
   const CSVDataFunction = () => {
-    const csvdata: any = [];
-    // eslint-disable-next-line array-callback-return
-    tableData.map((i: any) => {
-      csvdata.push([i?.Class, i?.ClassesTaught, i?.Teacher, i?.Program, i?.ContentOpened, i?.ContentCompleted, i?.TotalTime]);
-      setCsvData(csvdata);
-    });
+    const csvdata = tableData.map((i: any) => [
+      i?.Class,
+      i?.ClassesTaught,
+      i?.Teacher?.props?.children?.props?.children?.props?.children?.teacher_name || i?.Teacher || '',
+      i?.Program,
+      i?.ActiveDays,
+      i?.ContentOpened,
+      i?.ContentCompleted,
+      i?.TotalTime
+    ]);
+
+    setCsvData(csvdata);
   };
+  //   const csvdata: any = [];
+  //   // eslint-disable-next-line array-callback-return
+  //   tableData.map((i: any) => {
+  //     csvdata.push([i?.Class, i?.ClassesTaught, i?.Teacher, i?.Program, i?.ContentOpened, i?.ContentCompleted, i?.TotalTime]);
+  //     setCsvData(csvdata);
+  //   });
+  // };
   const reset = () => {
     setFromDate('');
     setToDate('');

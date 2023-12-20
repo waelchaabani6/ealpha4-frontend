@@ -2,7 +2,7 @@ import CustomizedDialogs from '@component/dialog/CustomDialog';
 import Button from '@component/button/button';
 import { useState, useEffect } from 'react';
 
-type DelteConfirmationPopupType = { ConfirmDelete: boolean, setConfirmDelete: any; onClickYes: () => void}
+type DelteConfirmationPopupType = { ConfirmDelete: boolean; setConfirmDelete: any; onClickYes: () => void}
 
 function DelteConfirmationPopup({ ConfirmDelete, setConfirmDelete, onClickYes } : DelteConfirmationPopupType) {
   const [isDisable, setDisable] = useState(false);

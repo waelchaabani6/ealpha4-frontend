@@ -130,7 +130,8 @@ export default function AssignStudent(props: any) {
                       }}
                       checked={checked}
                       size="small"
-                      onChange={() => onClassSelect(item.value)} />
+                      onChange={() => onClassSelect(item.value)}
+                    />
                   )}
                   label={
                     <span

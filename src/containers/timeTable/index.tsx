@@ -322,7 +322,7 @@ export default function Index() {
               value={selectedBranch}
               dataArray={BranchArray}
               onChangeHandler={(val) => {
-                const obj: any = BranchArray.filter((ele: { label: any; }) => ele.label === val)[0];
+                const obj: any = BranchArray.filter((ele: { label: any }) => ele.label === val)[0];
                 setBranchId(obj.id);
                 setselectedBranch(val);
               }}
@@ -333,7 +333,7 @@ export default function Index() {
               value={selectedClass}
               dataArray={ClassesArray}
               onChangeHandler={(val) => {
-                const obj: any = ClassesArray.filter((ele: { label: any; }) => ele.label === val)[0];
+                const obj: any = ClassesArray.filter((ele: { label: any }) => ele.label === val)[0];
                 setClassId(obj.id);
                 setSelectedClass(val);
               }}
