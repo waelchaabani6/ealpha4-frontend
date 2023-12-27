@@ -23,9 +23,11 @@ export const api = (baseURL: string) => {
       if (statusCode === 401 || statusCode === 403) {
         try {
           const res = await getRefreshToken();
-          const tokenObj = res?.data?.response?.data;
-          const token = `${tokenObj?.TokenType} ${tokenObj?.AccessToken}`;
-          localStorage.setItem('token', token);
+          // const tokenObj = res?.data?.response?.data;
+          const tokenObj = res?.data;
+          // const token = `${tokenObj?.TokenType} ${tokenObj?.access}`;
+          const token = `${tokenObj?.access}`;
+          localStorage.setItem('token', `Bearer ${token}`);
           error.config.headers.Authorization = token;
           return axios(error.config);
         } catch (err: any) {
@@ -62,7 +64,7 @@ function getRefreshToken() {
       'Content-Type': 'application/json'
     },
     data: {
-      refresh_token: localStorage.getItem('RefreshToken')
+      refresh: localStorage.getItem('RefreshToken')
     }
   };
   return axios.request(config);
