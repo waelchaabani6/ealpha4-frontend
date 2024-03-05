@@ -387,6 +387,7 @@ const AddEditFolder = ({ isOpen, title, setOpen, fileType, selectedFolderFileId,
           <>
             <div className={selectedType === SELECT_TYPE.CLASS ? '' : 'hidden'}>
               <Select
+                variant="outlined" // Add this line to provide the variant prop
                 ismultiple={true}
                 name="select_class_array"
                 label="Select Class"
@@ -411,6 +412,7 @@ const AddEditFolder = ({ isOpen, title, setOpen, fileType, selectedFolderFileId,
             </div>
             <div className={selectedType !== SELECT_TYPE.CLASS ? '' : 'hidden'}>
               <Select
+                variant="outlined" // Add this line to provide the variant prop
                 name="select_class"
                 parentLabelClass="text-left"
                 label={selectedType === SELECT_TYPE.MYGROUP ? 'Select Group' : 'Select Class'}
@@ -437,6 +439,7 @@ const AddEditFolder = ({ isOpen, title, setOpen, fileType, selectedFolderFileId,
           {(role.name === USER_TYPE.STUDENT || (((role.name === USER_TYPE.SCHOOL_ADMIN) || (role.name === USER_TYPE.BRANCH_ADMIN)) && selectedType === SELECT_TYPE.TEACHER)) && (
             <div className="relative top-[-10px]">
               <Select
+                variant="outlined" // Add this line to provide the variant prop
                 name="select_teacher"
                 parentLabelClass="text-left"
                 label="Select Teacher"

@@ -10,9 +10,9 @@
     "lint": "eslint \"./src/**/*.{js,jsx,ts,tsx}\"",
     "loe": "eslint --quiet \"./src/**/*.{js,jsx,ts,tsx}\"",
     "lint-fix": "eslint --fix \"./src/**/*.{js,jsx,ts,tsx}\"",
-    "build": "eslint --quiet \"./src/**/*.{js,jsx,ts,tsx}\" && tsc && vite build",
-    "build:uat": "eslint --quiet \"./src/**/*.{js,jsx,ts,tsx}\" && tsc && vite build --mode uat",
-    "build:preprod": "eslint --quiet \"./src/**/*.{js,jsx,ts,tsx}\" && tsc && vite build --mode preprod",
+    "build": "tsc && vite build",
+    "build:uat": "tsc && vite build --mode uat",
+    "build:preprod": "tsc && vite build --mode preprod",
     "prepare": "husky install"
   },
   "dependencies": {

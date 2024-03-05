@@ -147,6 +147,7 @@ export default function AddNewClass(props: Props) {
             <div>
               <p>Branch Name</p>
               <Select
+                variant="outlined" // Add this line to provide the variant prop
                 disabledAll={true}
                 disabled={!!props?.editData}
                 value={branchId || ''}
