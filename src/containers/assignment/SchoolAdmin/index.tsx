@@ -344,7 +344,7 @@ export default function Index() {
 
   useEffect(() => {
     refetchAssignmentList();
-  }, [selectedState, page, fromDate, toDate, orderBy, order, searchVal]);
+  }, [selectedState, page, fromDate, toDate, orderBy, order, searchVal, rowsPerPage]);
 
   const reset = () => {
     setToDate('');
@@ -366,6 +366,10 @@ export default function Index() {
   const handleAdminDelete = () => {
     setAdminDeleteDialog(false);
     mutateDelete(payloadData);
+  };
+
+  const handlePerPage = (e: any) => {
+    setRowsPerPage(e);
   };
 
   return (
@@ -402,6 +406,12 @@ export default function Index() {
               noFontSize={true}
             />
           </div>
+          <Dropdown
+              title="Result Of Pages"
+              value={rowsPerPage}
+              dataArray={RESULTS_PER_PAGE}
+              onChangeHandler={handlePerPage}
+          />
           <div>
             <DatePicker
               disablePast={false}
