@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "obelearn-frontend.name" -}}
+{{- define "ealpha4-frontend.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "obelearn-frontend.fullname" -}}
+{{- define "ealpha4-frontend.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "obelearn-frontend.chart" -}}
+{{- define "ealpha4-frontend.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "obelearn-frontend.labels" -}}
-helm.sh/chart: {{ include "obelearn-frontend.chart" . }}
-{{ include "obelearn-frontend.selectorLabels" . }}
+{{- define "ealpha4-frontend.labels" -}}
+helm.sh/chart: {{ include "ealpha4-frontend.chart" . }}
+{{ include "ealpha4-frontend.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "obelearn-frontend.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "obelearn-frontend.name" . }}
+{{- define "ealpha4-frontend.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "ealpha4-frontend.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "obelearn-frontend.serviceAccountName" -}}
+{{- define "ealpha4-frontend.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "obelearn-frontend.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "ealpha4-frontend.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}

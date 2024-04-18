@@ -7,8 +7,8 @@ pipeline {
     }
   }
     environment {
-        APP="obelearn-frontend"
-        ECR="europe-west1-docker.pkg.dev/obelearn"
+        APP="ealpha4-frontend"
+        ECR="europe-west1-docker.pkg.dev/ealpha4/docker"
         VERSION="1.0.0-snapshot"
     }
     stages {
@@ -33,14 +33,14 @@ pipeline {
         }
         stage('deploy') {
         steps {
-            withKubeConfig([credentialsId:"k8s"]){
-                container(name: 'gke') {
+            withKubeConfig([credentialsId:"gke"]){
+                container(name: 'k8s') {
                 sh '''
                     helm upgrade --install ${APP} \
                     -n ${namespace} \
                     devops/helm/${APP} \
                     --set image.tag=${timestamp}-${VERSION},image.repository=${ECR}/${APP} \
-                    -f devops/helm/${APP}/${helmvalues}
+                    -f devops/helm/${APP}/${helmvalues} \
                     --timeout 5m --wait \
                     --atomic
                 '''

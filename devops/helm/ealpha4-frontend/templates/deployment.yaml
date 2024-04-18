@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "obelearn-frontend.fullname" . }}
+  name: {{ include "ealpha4-frontend.fullname" . }}
   labels:
-    {{- include "obelearn-frontend.labels" . | nindent 4 }}
+    {{- include "ealpha4-frontend.labels" . | nindent 4 }}
     {{- with .Values.podlabels }}
       {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -13,7 +13,7 @@ spec:
 {{- end }}
   selector:
     matchLabels:
-      {{- include "obelearn-frontend.selectorLabels" . | nindent 6 }}
+      {{- include "ealpha4-frontend.selectorLabels" . | nindent 6 }}
 {{- with .Values.strategy }}
   strategy:
     {{- toYaml . | nindent 4 }}
@@ -25,7 +25,7 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        {{- include "obelearn-frontend.selectorLabels" . | nindent 8 }}
+        {{- include "ealpha4-frontend.selectorLabels" . | nindent 8 }}
         {{- with .Values.podlabels }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -35,7 +35,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "obelearn-frontend.serviceAccountName" . }}
+      serviceAccountName: {{ include "ealpha4-frontend.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:

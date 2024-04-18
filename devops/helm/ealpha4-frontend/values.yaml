@@ -1,7 +1,7 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
-  repository: 204673261402.dkr.ecr.eu-west-1.amazonaws.com/obelearn-frontend
+  repository: 204673261402.dkr.ecr.eu-west-1.amazonaws.com/ealpha4-frontend
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
@@ -65,4 +65,4 @@ affinity:
         - key: app.kubernetes.io/name
           operator: In
           values:
-          - obelearn-frontend
+          - ealpha4-frontend

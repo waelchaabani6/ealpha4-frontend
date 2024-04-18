@@ -4,12 +4,12 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: {{ .Release.Name }}-hpa
   labels:
-    {{- include "obelearn-frontend.labels" . | nindent 4 }}
+    {{- include "ealpha4-frontend.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "obelearn-frontend.fullname" . }}
+    name: {{ include "ealpha4-frontend.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

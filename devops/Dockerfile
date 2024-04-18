@@ -26,9 +26,9 @@ FROM nginx
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy .env file
-COPY .env.staging .
+# COPY .env.staging .
 
-EXPOSE 3000
+# EXPOSE 3000
 
 # Copying our nginx.conf
 COPY devops/nginx.conf /etc/nginx/conf.d/default.conf
