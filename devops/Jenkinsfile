@@ -22,7 +22,7 @@ pipeline {
         stage('build') {
             steps {
               script{
-                withVault(configuration: [timeout: 60], vaultSecrets: [[path: 'obelearn/${APP}/${namespace}', secretValues: [[vaultKey: 'envfile']]]]) {
+                withVault(configuration: [timeout: 60], vaultSecrets: [[path: 'ealpha/${APP}/${namespace}', secretValues: [[vaultKey: 'envfile']]]]) {
                     writeFile file: '.env', text: env.envfile
                 }
                 sh '''
