@@ -17,6 +17,8 @@ export default function CreateQuestions() {
     removeOnUnmount: false
   });
 
+  const userRole = useSelector((state: any) => state?.user?.role);
+
   const { isLoading: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/create-question-for-assessment/${LID}/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}`,
@@ -76,18 +78,16 @@ export default function CreateQuestions() {
             )
             : (
               <>
-                <div className="notify_question">
-                  <span className="text-red-500">Note:</span>
-                  {' '}
-                  Please Select the below question types for creating offline Assessments:-
-                  <ul>
-                    <li>Multiple Choice</li>
-                    <li>True/False</li>
-                    <li>Rubric-based</li>
-                    <li>Numeric </li>
-                  </ul>
-                </div>
-                <div id="learnosity-author" />
+                {/* <div id="learnosity-author" /> */}
+                {userRole?.name === 'Teacher' && (
+                <iframe
+                  src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/create-assessments`}
+                  title="External Content"
+                  width="100%"
+                  height="100%"
+                  style={{ height: '100vh' }}
+                />
+                )}
               </>
             )
         }

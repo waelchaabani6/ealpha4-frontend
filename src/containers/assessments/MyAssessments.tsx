@@ -271,7 +271,7 @@ export default function MyAssessments() {
             />
             <div className="pt-4 md:pt-8 h-full flex items-center">
               <Link to={`/${schoolName}/assessments/create-new-assessment`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
-                Create Assessment
+                Create Assessments
               </Link>
               <Link to={`/${schoolName}/assessments/assigned`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
                 Assigned Assessments
