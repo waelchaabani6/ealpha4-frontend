@@ -196,18 +196,35 @@ export default function AssignAssessment() {
       toast('error', 'Please select any Class/Student/Groups from checkbox');
       return false;
     }
-    let payload: any = {
-      category_name: currentCategory,
-      is_printed: !!searchParams.get('type'),
-      start_date: moment(values?.start_date).format('YYYY-MM-DD'),
-      submission_date: moment(values?.end_date).format('YYYY-MM-DD'),
-      duration: Number(values?.duration) * 60,
-      assessment_id: aid,
-      school_id: schoolData?.id || branchData?.school_data?.id,
-      comments: values?.comments,
-      created_by: userData?.user_profile_id,
-      updated_by: userData?.user_profile_id
-    };
+    let payload: any;
+    // eslint-disable-next-line eqeqeq
+    if (aid == undefined || aid?.length > 5) {
+      payload = {
+        category_name: currentCategory,
+        is_printed: !!searchParams.get('type'),
+        start_date: moment(values?.start_date).format('YYYY-MM-DD'),
+        submission_date: moment(values?.end_date).format('YYYY-MM-DD'),
+        duration: Number(values?.duration) * 60,
+        obeasses_id: '',
+        school_id: schoolData?.id || branchData?.school_data?.id,
+        comments: values?.comments,
+        created_by: userData?.user_profile_id,
+        updated_by: userData?.user_profile_id
+      };
+    } else {
+      payload = {
+        category_name: currentCategory,
+        is_printed: !!searchParams.get('type'),
+        start_date: moment(values?.start_date).format('YYYY-MM-DD'),
+        submission_date: moment(values?.end_date).format('YYYY-MM-DD'),
+        duration: Number(values?.duration) * 60,
+        assessment_id: aid,
+        school_id: schoolData?.id || branchData?.school_data?.id,
+        comments: values?.comments,
+        created_by: userData?.user_profile_id,
+        updated_by: userData?.user_profile_id
+      };
+    }
     if (currentCategory === CATEGORY_LIST[0].value) {
       const filteredClasses = boxData.filter((i: any) => selectedData.includes(i?.value))?.map((ele: any) => ({ id: ele.value, class_name: ele.label }));
 
