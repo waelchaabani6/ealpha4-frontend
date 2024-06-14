@@ -118,7 +118,12 @@ export default function Index() {
   };
 
   const handleButtonClick = (data: any) => {
-    navigate(`perform-assessment/${data?.assessment_id}`, { state: { page, path: `/${schoolName}/assessments` } });
+    const duration = data?.duration;
+    const obeasses_id = data?.obeasses_id;
+
+    navigate(`perform-assessment/${data?.assessment_id}`, {
+      state: { page, obeasses_id, duration, path: `/${schoolName}/assessments` }
+    });
   };
 
   const reset = () => {

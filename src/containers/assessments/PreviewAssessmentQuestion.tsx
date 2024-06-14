@@ -53,6 +53,37 @@ export default function PreviewMyAssessmentQuestions() {
     return (<Loader />);
   }
 
+  useEffect(() => {
+    setConfig();
+  }, []);
+
+  const setConfig = () => {
+    const user = userData;
+    const config = {
+      apiKey: `${import.meta.env.VITE_APP_SDK}`,
+      user: `${user?.first_name} ${user?.last_name}`,
+      user_ting: userData?.user_ting,
+      role: user?.role?.name
+    };
+    fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(config)
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+      })
+      .catch((e) => {
+      });
+  };
+
   return (
     <RouteLayout
       navBack={true}

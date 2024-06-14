@@ -6,11 +6,12 @@ import useScript from '@utility/Hooks/UseScript';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function DisplayAssessment() {
   const location = useLocation();
   const userData = useSelector((state: any) => state?.user);
-  const { aid, schooName } = useParams();
+  const { aid, obeasses_id, duration, schooName } = useParams();
   const [apiRes, setApiRes] = useState<any>({});
   const [pageData, setpageData] = useState<any>({});
   const [error, setError] = useState<any>('');
@@ -71,7 +72,9 @@ export default function DisplayAssessment() {
     const config = {
       apiKey: `${import.meta.env.VITE_APP_SDK}`,
       user: `${user?.first_name} ${user?.last_name}`,
-      role: user?.role?.name
+      user_ting: userData?.user_ting,
+      role: user?.role?.name,
+      duration
     };
     fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
       method: 'POST',
@@ -95,6 +98,25 @@ export default function DisplayAssessment() {
       });
   };
 
+  useEffect(() => {
+    const handleMessage = (event: { data: { type: any; payload: any } }) => {
+      const { type, payload } = event.data;
+      if (type === 'SUCCESS') {
+        sync();
+        toast.success(payload);
+      } else {
+        toast.error(payload);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+
   if (LearnosityObjLoad) {
     return (<Loader />);
   }
@@ -108,8 +130,8 @@ export default function DisplayAssessment() {
       </div>
       <div className="mt-5 w-full overflow-auto rounded-md h-max border bg-white p-4">
         <div style={{ width: '100%', height: '100vh' }}>
-          {userRole?.name === 'Teacher' && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${aid}`} title="External Content" width="100%" height="90%" />}
-          {userRole?.name === 'Student' && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${aid}`} title="External Content" width="100%" height="90%" />}
+          {userRole?.name === 'Teacher' && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${obeasses_id}`} title="External Content" width="100%" height="90%" />}
+          {userRole?.name === 'Student' && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${obeasses_id}`} title="External Content" width="100%" height="90%" />}
         </div>
       </div>
     </RouteLayout>
