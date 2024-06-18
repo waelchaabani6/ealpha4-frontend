@@ -5,6 +5,7 @@ import { useGet } from '@shared/api/useApi';
 import { useSelector } from 'react-redux';
 import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
+import { toast } from 'react-toastify';
 import RouteLayout from '../layout/routeLayout';
 
 export default function CreateQuestions() {
@@ -53,6 +54,25 @@ export default function CreateQuestions() {
     url: `assessments-service/fetch-created-assessment-from-learnosity/?user_id=${userData?.userId}&domain_name=${window?.location?.hostname}&assessment_name=${pageData?.data?.assessment_name || ''}`,
     enabled: false
   });
+
+  useEffect(() => {
+    const handleMessage = (event: { data: { type: any; payload: any } }) => {
+      const { type, payload } = event.data;
+      if (type === 'SUCCESS') {
+        sync();
+        toast.success(payload);
+      } else {
+        toast.error(payload);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
 
   useEffect(() => {
     if (status === 'ready' && LID && userData?.user_ting) {
