@@ -54,7 +54,8 @@ export default function AssignAssessment() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const navState = location?.state?.navState;
+  // eslint-disable-next-line no-unsafe-optional-chaining
+  const { obassess, navState } = location?.state;
   const [currentCategory, setCurrentCategory] = useState(CATEGORY_LIST[0]?.value);
   const [boxData, setBoxData] = useState<any>([]);
   const [selectedData, setSelectedData] = useState<any>([]);
@@ -197,15 +198,16 @@ export default function AssignAssessment() {
       return false;
     }
     let payload: any;
-    // eslint-disable-next-line eqeqeq
-    if (aid == undefined || aid?.length > 5) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    if (obassess) {
       payload = {
         category_name: currentCategory,
         is_printed: !!searchParams.get('type'),
         start_date: moment(values?.start_date).format('YYYY-MM-DD'),
         submission_date: moment(values?.end_date).format('YYYY-MM-DD'),
         duration: Number(values?.duration) * 60,
-        obeasses_id: '',
+        obeasses_id: aid,
         school_id: schoolData?.id || branchData?.school_data?.id,
         comments: values?.comments,
         created_by: userData?.user_profile_id,

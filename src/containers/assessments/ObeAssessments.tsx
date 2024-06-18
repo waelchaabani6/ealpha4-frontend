@@ -30,7 +30,7 @@ export default function ObeAssessments() {
     const navState = {
       assignType: type === 'printed' ? 'print-assessment' : ''
     };
-    navigate(`/${schoolNameInURL}/assessments/assign/${data?.id}?name=${data?.name}${type === 'printed' ? '&type=print-assessment' : ''}`, { state: { navState, page, path: `/${schoolName}/assessments` } });
+    navigate(`/${schoolNameInURL}/assessments/assign/${data?.id}?name=${data?.name}${type === 'printed' ? '&type=print-assessment' : ''}`, { state: { obassess: true, navState, page, path: `/${schoolName}/assessments` } });
   };
 
   const TableColumns = [

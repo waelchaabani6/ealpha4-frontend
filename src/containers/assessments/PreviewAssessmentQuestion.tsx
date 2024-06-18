@@ -8,13 +8,14 @@ import PageTitle from '@shared/pageTitle';
 import RouteLayout from '../layout/routeLayout';
 
 export default function PreviewMyAssessmentQuestions() {
+  const location = useLocation();
+  const { obeasses_id } = location?.state || {};
   const navigate = useNavigate();
   const userData = useSelector((state: any) => state?.user);
   const { LID, schoolName } = useParams();
   const [itemsData, setitemsData] = useState<any>([]);
   const [pageData, setPageData] = useState<any>({});
   const [error, setError] = useState<any>('');
-  const location = useLocation();
   const status = useScript(`https://items.learnosity.com/?v2021.2.LTS/`, {
     removeOnUnmount: false
   });
@@ -92,8 +93,8 @@ export default function PreviewMyAssessmentQuestions() {
         <PageTitle title={`${pageData?.data?.assessment_name || ''}`} />
       </div>
       <div className="mt-5 w-full overflow-auto rounded-md h-max border bg-white p-4">
-        {/* {
-          itemsData && itemsData?.map((item: any, index: number) => (
+        {
+          !obeasses_id && itemsData && itemsData?.map((item: any, index: number) => (
             <div key={index}>
               <span className="learnosity-item" data-reference={item} />
               <hr className="assign-heading-hr" />
@@ -101,19 +102,19 @@ export default function PreviewMyAssessmentQuestions() {
           ))
         }
         {
-          itemsData && itemsData?.length ? <div id="learnosity_inline" /> : (
-              <div className="mt-5 h-max w-full rounded-md border bg-white p-4">
-                {
+          !obeasses_id && itemsData && itemsData?.length ? <div id="learnosity_inline" /> : (
+            <div className="mt-5 h-max w-full rounded-md border bg-white p-4">
+              {
                   error
-                      ? <h2>{`${error}`}</h2>
-                      : 'Loading...'
+                    ? <h2>{`${error}`}</h2>
+                    : 'Loading...'
                 }
-              </div>
+            </div>
           )
-        } */}
+        }
         <div style={{ width: '100%', height: '100vh' }}>
-          {userRole?.name === 'Teacher' && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${LID}`} title="External Content" width="100%" height="90%" />}
-          {userRole?.name === 'Student' && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${LID}`} title="External Content" width="100%" height="90%" />}
+          {(obeasses_id && userRole?.name === 'Teacher') && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${LID}`} title="External Content" width="100%" height="90%" />}
+          {(obeasses_id && userRole?.name === 'Student') && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${LID}`} title="External Content" width="100%" height="90%" />}
         </div>
 
       </div>

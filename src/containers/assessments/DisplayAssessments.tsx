@@ -10,8 +10,9 @@ import { toast } from 'react-toastify';
 
 export default function DisplayAssessment() {
   const location = useLocation();
+  const { obeasses_id } = location?.state || {};
   const userData = useSelector((state: any) => state?.user);
-  const { aid, obeasses_id, duration, schooName } = useParams();
+  const { aid, duration, schooName } = useParams();
   const [apiRes, setApiRes] = useState<any>({});
   const [pageData, setpageData] = useState<any>({});
   const [error, setError] = useState<any>('');
@@ -129,9 +130,32 @@ export default function DisplayAssessment() {
         <PageTitle title={`${pageData?.data?.assessment_name || 'Assessment'}`} />
       </div>
       <div className="mt-5 w-full overflow-auto rounded-md h-max border bg-white p-4">
+        {
+          !obeasses_id ? (
+            pageData?.data?.assessment_items?.length ? (
+              <div id="learnosity_assess" />
+            ) : (
+              error ? <h2>{error}</h2> : 'Loading...'
+            )
+          ) : null
+        }
         <div style={{ width: '100%', height: '100vh' }}>
-          {userRole?.name === 'Teacher' && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${obeasses_id}`} title="External Content" width="100%" height="90%" />}
-          {userRole?.name === 'Student' && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${obeasses_id}`} title="External Content" width="100%" height="90%" />}
+          {(obeasses_id && userRole?.name === 'Teacher') && (
+          <iframe
+            src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${obeasses_id}`}
+            title="External Content"
+            width="100%"
+            height="90%"
+          />
+          )}
+          {(obeasses_id && userRole?.name === 'Student') && (
+          <iframe
+            src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${obeasses_id}`}
+            title="External Content"
+            width="100%"
+            height="90%"
+          />
+          )}
         </div>
       </div>
     </RouteLayout>
