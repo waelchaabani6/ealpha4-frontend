@@ -210,8 +210,8 @@ export default function AssignAssessment() {
         obeasses_id: aid,
         school_id: schoolData?.id || branchData?.school_data?.id,
         comments: values?.comments,
-        created_by: userData?.user_profile_id,
-        updated_by: userData?.user_profile_id
+        created_by: userData.userId,
+        updated_by: userData.userId
       };
     } else {
       payload = {
@@ -223,8 +223,8 @@ export default function AssignAssessment() {
         assessment_id: aid,
         school_id: schoolData?.id || branchData?.school_data?.id,
         comments: values?.comments,
-        created_by: userData?.user_profile_id,
-        updated_by: userData?.user_profile_id
+        created_by: userData.userId,
+        updated_by: userData.userId
       };
     }
     if (currentCategory === CATEGORY_LIST[0].value) {

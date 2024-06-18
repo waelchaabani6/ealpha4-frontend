@@ -9,7 +9,7 @@ import RouteLayout from '../layout/routeLayout';
 
 export default function PreviewMyAssessmentQuestions() {
   const location = useLocation();
-  const { obeasses_id } = location?.state || {};
+  // const { obeasses_id } = location?.state || {};
   const navigate = useNavigate();
   const userData = useSelector((state: any) => state?.user);
   const { LID, schoolName } = useParams();
@@ -94,14 +94,14 @@ export default function PreviewMyAssessmentQuestions() {
       </div>
       <div className="mt-5 w-full overflow-auto rounded-md h-max border bg-white p-4">
         {
-          !obeasses_id && itemsData && itemsData?.map((item: any, index: number) => (
-            <div key={index}>
-              <span className="learnosity-item" data-reference={item} />
-              <hr className="assign-heading-hr" />
-            </div>
-          ))
+            (!location.state?.obeasses_id && itemsData) && itemsData?.map((item: any, index: number) => (
+              <div key={index}>
+                <span className="learnosity-item" data-reference={item} />
+                <hr className="assign-heading-hr" />
+              </div>
+            ))
         }
-        {
+        {/* {
           !obeasses_id && itemsData && itemsData?.length ? <div id="learnosity_inline" /> : (
             <div className="mt-5 h-max w-full rounded-md border bg-white p-4">
               {
@@ -111,10 +111,10 @@ export default function PreviewMyAssessmentQuestions() {
                 }
             </div>
           )
-        }
+        } */}
         <div style={{ width: '100%', height: '100vh' }}>
-          {(obeasses_id && userRole?.name === 'Teacher') && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${LID}`} title="External Content" width="100%" height="90%" />}
-          {(obeasses_id && userRole?.name === 'Student') && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${LID}`} title="External Content" width="100%" height="90%" />}
+          {(!!location.state?.obeasses_id && userRole?.name === 'Teacher') && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${location.state?.obeasses_id}`} title="External Content" width="100%" height="90%" />}
+          {(!!location.state?.obeasses_id && userRole?.name === 'Student') && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${location.state?.obeasses_id}`} title="External Content" width="100%" height="90%" />}
         </div>
 
       </div>

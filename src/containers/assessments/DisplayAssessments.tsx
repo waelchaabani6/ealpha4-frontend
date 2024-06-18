@@ -10,9 +10,9 @@ import { toast } from 'react-toastify';
 
 export default function DisplayAssessment() {
   const location = useLocation();
-  const { obeasses_id } = location?.state || {};
+  const { obeasses_id, duration } = location?.state || {};
   const userData = useSelector((state: any) => state?.user);
-  const { aid, duration, schooName } = useParams();
+  const { aid, schooName } = useParams();
   const [apiRes, setApiRes] = useState<any>({});
   const [pageData, setpageData] = useState<any>({});
   const [error, setError] = useState<any>('');

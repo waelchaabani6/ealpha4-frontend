@@ -138,8 +138,8 @@ export default function AssignedAssessments() {
       grade_name: getGrade?.label,
       school_id: schoolData?.id || branchData?.school_data?.id || '',
       branch_id: branchData?.id || null,
-      created_by: user?.user_profile_id,
-      updated_by: user?.user_profile_id,
+      created_by: user.userId,
+      updated_by: user?.userId,
       obeasses_id
     };
     mutateAssesment(payload);
