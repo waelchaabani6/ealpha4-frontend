@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from 'react';
 import { CSVLink } from 'react-csv';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
+import { useSelector } from 'react-redux';
 import CustomPagination from '../../components/pagination/CustomPagination';
 import { RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '../../constants/constants';
 import Wrapper from '../../shared/wrapper/Wrapper';
@@ -25,6 +26,7 @@ export default function StudentCompletedAssessmentList() {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { aid } = useParams();
+  const { user } = useSelector((state: any) => state);
 
   const headers = [
     TABLE_LABELS?.STUDENT_NAME,
@@ -92,9 +94,47 @@ export default function StudentCompletedAssessmentList() {
 
   const actionHandler = (data: any, handlername: string) => { };
 
-  const redirect = (data: any) => {
-    navigate(data);
+  const redirect = (url: any, user_ting: string, item: any) => {
+    const obeasses_id = item?.obeasses_id;
+    navigate(
+      url,
+      {
+        state: {
+          obeasses_id
+        }
+      }
+    );
+    setConfig(user_ting, obeasses_id);
   };
+
+  const setConfig = (user_ting: string, obeasses_id: string) => {
+    const config = {
+      apiKey: `${import.meta.env.VITE_APP_SDK}`,
+      user: `${user?.first_name} ${user?.last_name}`,
+      role: user?.role?.name,
+      user_ting,
+      obeasses_id
+    };
+    fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(config)
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+
+      })
+      .catch((e) => {
+      });
+  };
+
   // ----------------------------------------API-------------------------
   // Get Assessment List
   const ordering = orderBy ? order === 'asc' ? orderBy : `-${orderBy}` : '';
@@ -118,7 +158,7 @@ export default function StudentCompletedAssessmentList() {
         const link2 = `/${schoolNameInURL}/assessments/assigned/completed_assessments/completed_assessment_student_list/student_report/${aid}?user=${item?.user_ting}`;
         const temp = {
           ...item,
-          student_name: <span role="main" onClick={() => redirect(link2)} className="text-accent underline cursor-pointer text-xs font-medium">{item.student_name}</span>
+          student_name: <span role="main" onClick={() => redirect(link2, item.user_ting, item)} className="text-accent underline cursor-pointer text-xs font-medium">{item.student_name}</span>
         };
         return temp;
       });

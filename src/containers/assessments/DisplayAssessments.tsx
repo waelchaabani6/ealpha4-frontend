@@ -27,7 +27,7 @@ export default function DisplayAssessment() {
 
   const { isLoading: loadSync, refetch: sync } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&obeasses_id=${pageData?.data?.assessment_ting}&assessment_id=${aid}`,
+    url: `assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&obeasses_id=${obeasses_id}&assessment_id=${aid}`,
     enabled: false
   });
 
@@ -72,7 +72,7 @@ export default function DisplayAssessment() {
     setIsLoading(true);
     const config = {
       apiKey: `${import.meta.env.VITE_APP_SDK}`,
-      user: `${user?.first_name} ${user?.last_name}`,
+      user: userData?.user_ting,
       user_ting: userData?.user_ting,
       role: user?.role?.name,
       duration

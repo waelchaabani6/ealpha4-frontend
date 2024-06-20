@@ -163,7 +163,7 @@ export default function CompletedAssessments() {
   };
 
   const handleButtonClick = (data: any) => {
-    navigate(`/${schoolName}/assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${data?.assessment_name}`, { state: { page, path: `/${schoolName}/assessments/completed-assessments` } });
+    navigate(`/${schoolName}/assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${data?.assessment_name}`, { state: { page, obeasses_id: data?.obeasses_id, path: `/${schoolName}/assessments/completed-assessments` } });
   };
   // ----------------------------------------API-------------------------
   // Get Assessment List
@@ -302,6 +302,7 @@ export default function CompletedAssessments() {
             />
           </div>
           <div className="flex gap-2 justify-center items-center h-[36px]">
+            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
             <span tabIndex={0} title="Clear dates" onClick={reset} role="button">
               <RestartAltIcon />
             </span>
