@@ -164,10 +164,12 @@ export default function AssignedAssessments() {
   };
 
   const actionHandler = (data: any, handlername: string) => {
+    const obeasses_id = data?.obeasses_id;
+
     if (handlername === 'delete') {
       deleteHandler(data);
     } else if (handlername === 'view') {
-      navigate(`/${schoolName}/assessments/preview_myassessment_question/${data?.assessment_id}`, { state: { page, path: `/${schoolName}/assessments/assigned` } });
+      navigate(`/${schoolName}/assessments/preview_myassessment_question/${data?.assessment_id}`, { state: { page, obeasses_id, path: `/${schoolName}/assessments/assigned` } });
     }
   };
 
@@ -328,6 +330,7 @@ export default function AssignedAssessments() {
             />
           </div>
           <div className="flex gap-2 justify-center items-center h-[36px]">
+            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
             <span tabIndex={0} title="Clear dates" onClick={reset} role="button">
               <RestartAltIcon />
             </span>

@@ -94,10 +94,12 @@ export default function MyAssessments() {
   };
 
   const actionHandler = (data: any, handlername: string) => {
+    const obeasses_id = data?.obeasses_id;
+
     if (handlername === 'delete') {
       deleteHandler(data);
     } else if (handlername === 'view') {
-      navigate(`/${schoolName}/assessments/preview_myassessment_question/${data?.id}`, { state: { page, path: `/${schoolName}/assessments/my-assessments` } });
+      navigate(`/${schoolName}/assessments/preview_myassessment_question/${data?.id}`, { state: { page, obeasses_id, path: `/${schoolName}/assessments/my-assessments` } });
     }
   };
 
@@ -271,7 +273,7 @@ export default function MyAssessments() {
             />
             <div className="pt-4 md:pt-8 h-full flex items-center">
               <Link to={`/${schoolName}/assessments/create-new-assessment`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
-                Create Assessment
+                Create Assessments
               </Link>
               <Link to={`/${schoolName}/assessments/assigned`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
                 Assigned Assessments

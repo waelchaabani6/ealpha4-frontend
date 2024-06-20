@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import { USER_TYPE } from '@constants/constants';
 import { useNavigate } from 'react-router-dom';
 import { sortData } from '@utility/utility';
+import axios from 'axios';
 import RouteLayout from '../layout/routeLayout';
 import schema from './schema';
 
@@ -91,22 +92,55 @@ export default function AssignedAssessments() {
     }
   });
 
+  // eslint-disable-next-line consistent-return
+  const getConfigAssessments = async (name: any, subject_id: any, grade_id: any) => {
+    const config = {
+      apiKey: `${import.meta.env.VITE_APP_SDK}`,
+      name,
+      subject_id,
+      grade_id,
+      user: `${user?.first_name} ${user?.last_name}`,
+      role: user?.role?.name
+    };
+
+    try {
+      const [response] = await Promise.all([axios.post(
+        `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config/assessments`,
+        JSON.stringify(config),
+        {
+          headers: {
+            Origin: '*',
+            'Content-Type': 'application/json'
+          }
+        }
+      )]);
+      if (response.status === 200) {
+        return response;
+      } /* empty */
+    } catch (error) { /* empty */ }
+  };
+
   // ----------END APIs-------------------------------------------------------------------------
   const CLASS_ARRAY = (role === TEACHER ? TeacherClassesArray : formatSchoolClasses) || [];
   CLASS_ARRAY.sort(sortData);
-  const onSubmit = (values: any) => {
-    const getCourse = courseArray.find((i: any) => Number(i?.value) === Number(values?.select_course));
+  const onSubmit = async (values: any) => {
+    // const getCourse = courseArray.find((i: any) => Number(i?.value) === Number(values?.select_course));
     const getGrade = CLASS_ARRAY.find((i: any) => Number(i?.value) === Number(values?.select_grade));
+
+    const res = await getConfigAssessments(values?.assignment_name, '', getGrade?.value);
+    const obeasses_id = res?.data?.data?.item?.id;
+
     const payload = {
       assessment_name: values?.assignment_name,
-      courses: getCourse?.value,
-      courses_name: getCourse?.label,
+      // courses: getCourse?.value,
+      // courses_name: getCourse?.label,
       grade: getGrade?.value,
       grade_name: getGrade?.label,
       school_id: schoolData?.id || branchData?.school_data?.id || '',
       branch_id: branchData?.id || null,
-      created_by: user?.user_profile_id,
-      updated_by: user?.user_profile_id
+      created_by: user.userId,
+      updated_by: user?.userId,
+      obeasses_id
     };
     mutateAssesment(payload);
   };
@@ -128,12 +162,12 @@ export default function AssignedAssessments() {
   return (
     <RouteLayout>
       <div className="h-max py-4">
-        <PageTitle title="Create Assessment" />
+        <PageTitle title="Create Assessments" />
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-5 w-full overflow-auto rounded-md h-max border border-accent bg-white">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-y-3 md:gap-x-6 p-4">
           <Input control={control} name="assignment_name" label="Assessment Name" />
-          <Select
+          {/* <Select
             displayEmpty={true}
             disablePlaceholderValue={true}
             control={control}
@@ -141,7 +175,7 @@ export default function AssignedAssessments() {
             label="Select Course"
             dataArray={courseArray}
             loading={loadCourses}
-          />
+          /> */}
           <Select
             displayEmpty={true}
             disablePlaceholderValue={true}

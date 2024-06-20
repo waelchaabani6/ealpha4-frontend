@@ -5,6 +5,7 @@ import { useGet } from '@shared/api/useApi';
 import { useSelector } from 'react-redux';
 import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
+import { toast } from 'react-toastify';
 import RouteLayout from '../layout/routeLayout';
 
 export default function CreateQuestions() {
@@ -16,6 +17,8 @@ export default function CreateQuestions() {
   const status = useScript(`https://authorapi.learnosity.com/?v2023.1.LTS`, {
     removeOnUnmount: false
   });
+
+  const userRole = useSelector((state: any) => state?.user?.role);
 
   const { isLoading: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
@@ -53,6 +56,25 @@ export default function CreateQuestions() {
   });
 
   useEffect(() => {
+    const handleMessage = (event: { data: { type: any; payload: any } }) => {
+      const { type, payload } = event.data;
+      if (type === 'SUCCESS') {
+        sync();
+        toast.success(payload);
+      } else {
+        toast.error(payload);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+
+  useEffect(() => {
     if (status === 'ready' && LID && userData?.user_ting) {
       fetchLearnosityObj();
     }
@@ -76,18 +98,16 @@ export default function CreateQuestions() {
             )
             : (
               <>
-                <div className="notify_question">
-                  <span className="text-red-500">Note:</span>
-                  {' '}
-                  Please Select the below question types for creating offline Assessments:-
-                  <ul>
-                    <li>Multiple Choice</li>
-                    <li>True/False</li>
-                    <li>Rubric-based</li>
-                    <li>Numeric </li>
-                  </ul>
-                </div>
-                <div id="learnosity-author" />
+                {/* <div id="learnosity-author" /> */}
+                {userRole?.name === 'Teacher' && (
+                <iframe
+                  src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/create-assessments`}
+                  title="External Content"
+                  width="100%"
+                  height="100%"
+                  style={{ height: '100vh' }}
+                />
+                )}
               </>
             )
         }

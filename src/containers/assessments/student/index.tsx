@@ -118,7 +118,12 @@ export default function Index() {
   };
 
   const handleButtonClick = (data: any) => {
-    navigate(`perform-assessment/${data?.assessment_id}`, { state: { page, path: `/${schoolName}/assessments` } });
+    const duration = data?.duration;
+    const obeasses_id = data?.obeasses_id;
+
+    navigate(`perform-assessment/${data?.assessment_id}`, {
+      state: { page, obeasses_id, duration, path: `/${schoolName}/assessments` }
+    });
   };
 
   const reset = () => {
@@ -247,6 +252,7 @@ export default function Index() {
             />
           </div>
           <div className="flex gap-2 justify-center items-center h-[36px]">
+            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
             <span tabIndex={0} title="Clear dates" onClick={reset} role="button">
               <RestartAltIcon />
             </span>

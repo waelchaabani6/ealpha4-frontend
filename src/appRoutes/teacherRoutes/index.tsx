@@ -23,6 +23,7 @@ const CompletedAssignbyname = React.lazy(() => import('@containers/assignment/Co
 // const CreateAssignment = React.lazy(() => import('@containers/assignment/assignmentForm/createAssignment'));
 const CreateAssignment = React.lazy(() => import('@containers/assignment/SchoolAdmin/createAssignment'));
 const Assessments = React.lazy(() => import('@containers/assessments'));
+const ObeAssessments = React.lazy(() => import('@containers/assessments/ObeAssessments'));
 const GradeBook = React.lazy(() => import('@containers/gradeBook'));
 const AssignAssessment = React.lazy(() => import('@containers/assessments/assignAssessment'));
 const MyAssessments = React.lazy(() => import('@containers/assessments/MyAssessments'));
@@ -82,6 +83,10 @@ export default createBrowserRouter([
               {
                 index: true,
                 element: <Assessments />
+              },
+              {
+                path: 'obe-assessments',
+                element: <ObeAssessments />
               },
               {
                 path: 'assign/:aid',
