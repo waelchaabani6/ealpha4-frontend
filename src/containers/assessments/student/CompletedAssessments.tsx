@@ -378,6 +378,7 @@ export default function CompletedAssessments() {
         setOpen={setAdminDeleteDialog}
         handleDelete={handleAdminDelete}
       />
+
     </RouteLayout>
   );
 }
