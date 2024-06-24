@@ -47,6 +47,13 @@ export default function ObeAssessments() {
       label: 'Online',
       mapper: 'online',
       align: 'center'
+    },
+    {
+      label: TABLE_LABELS?.ACTION,
+      align: 'flex-start',
+      bodyAlign: 'left',
+      component: COMPONENTS?.view,
+      showInHeader: false
     }
     /*    {
       label: 'Printed',
@@ -95,7 +102,10 @@ export default function ObeAssessments() {
     if (handlername === 'delete') {
       deleteHandler(data);
     } else if (handlername === 'view') {
-      navigate(`preview_question/${data?.id}`, { state: { page, path: `/${schoolName}/assessments` } });
+      navigate(
+        `/${schoolName}/assessments/preview_myassessment_question/${data?.id}`,
+        { state: { page, obeasses_id: data?.id, path: `/${schoolName}/assessments/assigned` } }
+      );
     }
   };
 
@@ -312,18 +322,7 @@ export default function ObeAssessments() {
                 Assign
               </Button>
             ),
-            assessment_name: item?.name ? (
-              <Link
-                state={{ page, path: `/${schoolName}/assessments/assigned` }}
-                to={link}
-              >
-                <span className="text-accent underline cursor-pointer text-xs font-medium">
-                  {item.name}
-                </span>
-              </Link>
-            ) : (
-              ''
-            )
+            assessment_name: item?.name || ''
           };
           return temp;
         });
