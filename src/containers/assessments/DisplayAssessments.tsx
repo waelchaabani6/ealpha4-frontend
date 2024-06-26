@@ -150,15 +150,8 @@ export default function DisplayAssessment() {
         <PageTitle title={`${pageData?.data?.assessment_name || 'Assessment'}`} />
       </div>
       <div className="mt-5 w-full overflow-auto rounded-md h-max border bg-white p-4">
-        {!obeasses_id ? (
-          pageData?.data?.assessment_items?.length ? (
-            <div id="learnosity_assess" />
-          ) : (
-            error ? <h2>{error}</h2> : 'Loading...'
-          )
-        ) : null}
         <div style={{ width: '100%', height: '100vh' }}>
-          {obeasses_id && userRole === 'Teacher' && (
+          {obeasses_id && userRole?.name === 'Teacher' && (
             <iframe
               src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${obeasses_id}`}
               title="External Content"
@@ -166,7 +159,7 @@ export default function DisplayAssessment() {
               height="90%"
             />
           )}
-          {obeasses_id && userRole === 'Student' && (
+          {obeasses_id && userRole?.name === 'Student' && (
             <iframe
               src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${obeasses_id}`}
               title="External Content"

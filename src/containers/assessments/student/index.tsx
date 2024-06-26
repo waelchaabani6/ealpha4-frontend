@@ -118,9 +118,12 @@ export default function Index() {
   };
 
   const handleButtonClick = (data: any) => {
-    const duration = data?.duration;
-    const obeasses_id = data?.obeasses_id;
+    const totalSeconds = data?.duration;
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const duration = minutes;
 
+    const obeasses_id = data?.obeasses_id;
     navigate(`perform-assessment/${data?.assessment_id}`, {
       state: { page, obeasses_id, duration, path: `/${schoolName}/assessments` }
     });
