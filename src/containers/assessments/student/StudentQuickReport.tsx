@@ -76,8 +76,8 @@ export default function StudentQuickReport() {
       navBack={true}
     >
       <HeaderMenus title={`${searchParams.get('assessment') || 'Test'}`} menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
-      {
-        !obeasses_id && pageData?.learnosity_obj?.request?.reports?.length && !error
+      { !obeasses_id && (
+        pageData?.learnosity_obj?.request?.reports?.length && !error
           ? (
             <>
               <div className="wrapperBorder mt-3" ref={componentRef}>
@@ -95,13 +95,13 @@ export default function StudentQuickReport() {
           ) : (
             <div className="mt-5 h-max w-full rounded-md border bg-white p-4">
               {
-                error
-                  ? <h2>{`${error}`}</h2>
-                  : 'Loading...'
-              }
+                      error
+                        ? <h2>{`${error}`}</h2>
+                        : 'Loading...'
+                    }
             </div>
           )
-      }
+      )}
       { obeasses_id
           && (
           <div style={{ width: '100%', height: '100vh' }}>

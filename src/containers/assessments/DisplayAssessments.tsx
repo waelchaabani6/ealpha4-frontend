@@ -1,21 +1,42 @@
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import RouteLayout from '@layout/routeLayout';
 import { useGet } from '@shared/api/useApi';
 import Loader from '@shared/loader';
 import PageTitle from '@shared/pageTitle';
 import useScript from '@utility/Hooks/UseScript';
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useLocation, useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
+
+interface UserData {
+  user_ting: string;
+  role?: { name: string };
+}
+
+interface ApiResponse {
+  data?: {
+    assessment_ting?: boolean;
+    response?: any;
+  };
+}
+
+interface PageData {
+  data?: {
+    assessment_name?: string;
+    assessment_items?: any[];
+    [key: string]: any;
+  };
+}
 
 export default function DisplayAssessment() {
   const location = useLocation();
-  const { obeasses_id, duration } = location?.state || {};
-  const userData = useSelector((state: any) => state?.user);
-  const { aid, schooName } = useParams();
-  const [apiRes, setApiRes] = useState<any>({});
-  const [pageData, setpageData] = useState<any>({});
-  const [error, setError] = useState<any>('');
+  const navigate = useNavigate();
+  const { obeasses_id, duration } = (location?.state || {}) as { obeasses_id?: string; duration?: string };
+  const userData = useSelector((state: any) => state?.user) as UserData;
+  const { aid } = useParams<{ aid: string }>();
+  const [apiRes, setApiRes] = useState<ApiResponse>({});
+  const [pageData, setPageData] = useState<PageData>({});
+  const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
   const user = useSelector((state: any) => state?.user);
@@ -31,13 +52,15 @@ export default function DisplayAssessment() {
     enabled: false
   });
 
-  const schoolNameInURL = `${window?.location?.origin}/${(decodeURIComponent(location.pathname.split('/')[1]))}/assessments`;
+  const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
+  const schoolNameInURL = `${window?.location?.origin}/${schoolName}/assessments`;
+
   const { isRefetching: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/assign_assessment/${aid}/?user_ting=${userData?.user_ting}&redirect_url=${schoolNameInURL}&domain_name=${window?.location?.hostname}`,
     onSuccess: (res: any) => {
       const resp = res?.data?.response;
-      setpageData(resp);
+      setPageData(resp);
       const callbacks = {
         errorListener(e: any) {
           setError(e.msg || '');
@@ -48,7 +71,7 @@ export default function DisplayAssessment() {
         setApiRes(res?.data?.response);
       });
     },
-    onError: () => { },
+    onError: () => {},
     enabled: false
   });
 
@@ -83,7 +106,6 @@ export default function DisplayAssessment() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(config)
-      // mode: 'no-cors' // Add this line
     })
       .then((response) => {
         if (!response.ok) {
@@ -91,20 +113,21 @@ export default function DisplayAssessment() {
         }
         return response.json();
       })
-      .then((data) => {
+      .then(() => {
         setIsLoading(false);
       })
-      .catch((e) => {
-        setIsLoading(false); // Ensure to handle loading state correctly in case of an error
+      .catch(() => {
+        setIsLoading(false);
       });
   };
 
   useEffect(() => {
-    const handleMessage = (event: { data: { type: any; payload: any } }) => {
+    const handleMessage = (event: MessageEvent) => {
       const { type, payload } = event.data;
       if (type === 'SUCCESS') {
         sync();
         toast.success(payload);
+        navigate(`/${schoolName}/assessments`);
       } else {
         toast.error(payload);
       }
@@ -112,49 +135,44 @@ export default function DisplayAssessment() {
 
     window.addEventListener('message', handleMessage);
 
-    // Cleanup the event listener on component unmount
     return () => {
       window.removeEventListener('message', handleMessage);
     };
   }, []);
 
   if (LearnosityObjLoad) {
-    return (<Loader />);
+    return <Loader />;
   }
 
   return (
-    <RouteLayout
-      navBack={true}
-    >
+    <RouteLayout navBack={true}>
       <div className="h-max py-4">
         <PageTitle title={`${pageData?.data?.assessment_name || 'Assessment'}`} />
       </div>
       <div className="mt-5 w-full overflow-auto rounded-md h-max border bg-white p-4">
-        {
-          !obeasses_id ? (
-            pageData?.data?.assessment_items?.length ? (
-              <div id="learnosity_assess" />
-            ) : (
-              error ? <h2>{error}</h2> : 'Loading...'
-            )
-          ) : null
-        }
+        {!obeasses_id ? (
+          pageData?.data?.assessment_items?.length ? (
+            <div id="learnosity_assess" />
+          ) : (
+            error ? <h2>{error}</h2> : 'Loading...'
+          )
+        ) : null}
         <div style={{ width: '100%', height: '100vh' }}>
-          {(obeasses_id && userRole?.name === 'Teacher') && (
-          <iframe
-            src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${obeasses_id}`}
-            title="External Content"
-            width="100%"
-            height="90%"
-          />
+          {obeasses_id && userRole === 'Teacher' && (
+            <iframe
+              src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${obeasses_id}`}
+              title="External Content"
+              width="100%"
+              height="90%"
+            />
           )}
-          {(obeasses_id && userRole?.name === 'Student') && (
-          <iframe
-            src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${obeasses_id}`}
-            title="External Content"
-            width="100%"
-            height="90%"
-          />
+          {obeasses_id && userRole === 'Student' && (
+            <iframe
+              src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${obeasses_id}`}
+              title="External Content"
+              width="100%"
+              height="90%"
+            />
           )}
         </div>
       </div>
