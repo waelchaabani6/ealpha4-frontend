@@ -95,7 +95,7 @@ export default function DisplayAssessment() {
     setIsLoading(true);
     const config = {
       apiKey: `${import.meta.env.VITE_APP_SDK}`,
-      user: userData?.user_ting,
+      user: `${user?.first_name} ${user?.last_name}`,
       user_ting: userData?.user_ting,
       role: user?.role?.name,
       duration
