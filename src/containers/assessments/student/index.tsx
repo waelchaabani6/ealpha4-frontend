@@ -129,6 +129,22 @@ export default function Index() {
     });
   };
 
+  function shouldDisableButton(startDateString: any) {
+    // Parse the given start date string (format: "YYYY-MM-DD")
+    const [year, month, day] = startDateString.split('-').map(Number);
+    const startDate = new Date(year, month - 1, day); // Month is 0-based in JS Date
+
+    // Get the current date (ignoring the time part)
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    // Compare the dates
+    const isFutureDate = startDate.getTime() > currentDate.getTime();
+
+    // Return whether the button should be disabled
+    return isFutureDate; // Disable if the start date is in the future
+  }
+
   const reset = () => {
     setToDate('');
     setFromDate('');
@@ -155,10 +171,27 @@ export default function Index() {
           item?.submission_date
         ]);
 
-        const buttonRender = (item?.assessment_status === 'Yet to start') ? 'Start' : (item?.assessment_status === 'Completed') ? 'Completed' : (item?.assessment_status === 'In Progress') ? 'In Progress' : 'Incomplete';
+        const buttonRender = item?.assessment_status === 'Yet to start'
+          ? shouldDisableButton(item?.start_date)
+            ? 'Not Yet to Start'
+            : 'Start'
+          : item?.assessment_status === 'Completed'
+            ? 'Completed'
+            : item?.assessment_status === 'In Progress'
+              ? 'In Progress'
+              : 'Incomplete';
         const temp = {
           ...item,
-          action: <Button disabled={item?.assessment_status === 'Completed' || new Date(item?.submission_date) < new Date(new Date().setHours(0, 0, 0, 0))} onClick={() => handleButtonClick(item)}>{buttonRender}</Button>
+          action: (
+            <Button
+              disabled={
+                      item?.assessment_status === 'Completed' || shouldDisableButton(item?.start_date)
+                  }
+              onClick={() => handleButtonClick(item)}
+            >
+              {buttonRender}
+            </Button>
+          )
         };
         return temp;
       });
