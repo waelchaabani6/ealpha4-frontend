@@ -16,6 +16,8 @@ export default function PreviewMyAssessmentQuestions() {
   const [itemsData, setitemsData] = useState<any>([]);
   const [pageData, setPageData] = useState<any>({});
   const [error, setError] = useState<any>('');
+  const [iframeUrl, setIframeUrl] = useState('');
+
   const status = useScript(`https://items.learnosity.com/?v2021.2.LTS/`, {
     removeOnUnmount: false
   });
@@ -85,6 +87,19 @@ export default function PreviewMyAssessmentQuestions() {
       });
   };
 
+  useEffect(() => {
+    // Function to generate a unique query parameter
+    const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
+
+    // URL of the iframe source
+    let baseUrl = '';
+
+    if (userRole?.name === 'Teacher') baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${location.state?.obeasses_id}`;
+    else if (userRole?.name === 'Student') baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${location.state?.obeasses_id}`;
+    // Set the iframe URL with the cache buster parameter
+    setIframeUrl(baseUrl + generateCacheBuster());
+  }, [location.state?.obeasses_id]);
+
   return (
     <RouteLayout
       navBack={true}
@@ -113,8 +128,8 @@ export default function PreviewMyAssessmentQuestions() {
           )
         } */}
         <div style={{ width: '100%', height: '100vh' }}>
-          {(!!location.state?.obeasses_id && userRole?.name === 'Teacher') && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${location.state?.obeasses_id}`} title="External Content" width="100%" height="90%" />}
-          {(!!location.state?.obeasses_id && userRole?.name === 'Student') && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${location.state?.obeasses_id}`} title="External Content" width="100%" height="90%" />}
+          {(!!location.state?.obeasses_id && userRole?.name === 'Teacher') && <iframe src={iframeUrl} title="External Content" width="100%" height="90%" />}
+          {(!!location.state?.obeasses_id && userRole?.name === 'Student') && <iframe src={iframeUrl} title="External Content" width="100%" height="90%" />}
         </div>
 
       </div>

@@ -38,6 +38,7 @@ export default function DisplayAssessment() {
   const [pageData, setPageData] = useState<PageData>({});
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [iframeUrl, setIframeUrl] = useState('');
 
   const user = useSelector((state: any) => state?.user);
   const userRole = useSelector((state: any) => state?.user?.role);
@@ -140,6 +141,19 @@ export default function DisplayAssessment() {
     };
   }, []);
 
+  useEffect(() => {
+    // Function to generate a unique query parameter
+    const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
+
+    // URL of the iframe source
+    let baseUrl = '';
+
+    if (userRole?.name === 'Teacher') baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${obeasses_id}`;
+    else if (userRole?.name === 'Student') baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${obeasses_id}`;
+    // Set the iframe URL with the cache buster parameter
+    setIframeUrl(baseUrl + generateCacheBuster());
+  }, [obeasses_id]);
+
   if (LearnosityObjLoad) {
     return <Loader />;
   }
@@ -153,7 +167,7 @@ export default function DisplayAssessment() {
         <div style={{ width: '100%', height: '100vh' }}>
           {obeasses_id && userRole?.name === 'Teacher' && (
             <iframe
-              src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${obeasses_id}`}
+              src={iframeUrl}
               title="External Content"
               width="100%"
               height="90%"
@@ -161,7 +175,7 @@ export default function DisplayAssessment() {
           )}
           {obeasses_id && userRole?.name === 'Student' && (
             <iframe
-              src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${obeasses_id}`}
+              src={iframeUrl}
               title="External Content"
               width="100%"
               height="90%"

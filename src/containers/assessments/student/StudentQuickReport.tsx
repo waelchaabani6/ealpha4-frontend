@@ -23,6 +23,8 @@ export default function StudentQuickReport() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageData, setpageData] = useState<any>({});
   const [error, setError] = useState<any>('');
+  const [iframeUrl, setIframeUrl] = useState('');
+
   const status = useScript(`https://reports.learnosity.com/?v2021.2.LTS`, {
     removeOnUnmount: false
   });
@@ -67,6 +69,17 @@ export default function StudentQuickReport() {
     }
   }, [status, aid, userData]);
 
+  useEffect(() => {
+    // Function to generate a unique query parameter
+    const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
+
+    // URL of the iframe source
+    const baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/student-reports/${obeasses_id}`;
+
+    // Set the iframe URL with the cache buster parameter
+    setIframeUrl(baseUrl + generateCacheBuster());
+  }, [obeasses_id]);
+
   if (LearnosityObjLoad) {
     return (<Loader />);
   }
@@ -105,7 +118,7 @@ export default function StudentQuickReport() {
       { obeasses_id
           && (
           <div style={{ width: '100%', height: '100vh' }}>
-            {userRole?.name === 'Student' && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/student-reports/${obeasses_id}`} title="External Content" width="100%" height="90%" />}
+            {userRole?.name === 'Student' && <iframe src={iframeUrl} title="External Content" width="100%" height="90%" />}
           </div>
           )}
     </RouteLayout>
