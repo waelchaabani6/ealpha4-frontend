@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useScript from '@utility/Hooks/UseScript';
 import { useGet } from '@shared/api/useApi';
 import { useSelector } from 'react-redux';
@@ -13,6 +13,9 @@ export default function CreateQuestions() {
   const { LID, schoolName } = useParams();
   const [pageData, setpageData] = useState<any>({});
   const [error, setError] = useState<any>('');
+
+  const [iframeUrl, setIframeUrl] = useState('');
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const status = useScript(`https://authorapi.learnosity.com/?v2023.1.LTS`, {
     removeOnUnmount: false
@@ -56,11 +59,22 @@ export default function CreateQuestions() {
   });
 
   useEffect(() => {
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      iframeRef.current.contentWindow.postMessage({ type: 'clearConfig' }, '*');
+    }
     const handleMessage = (event: { data: { type: any; payload: any } }) => {
       const { type, payload } = event.data;
       if (type === 'SUCCESS') {
         sync();
         toast.success(payload);
+        // Function to generate a unique query parameter
+        const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
+
+        // URL of the iframe source
+        const baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/create-assessments`;
+
+        // Set the iframe URL with the cache buster parameter
+        setIframeUrl(baseUrl + generateCacheBuster());
       } else {
         toast.error(payload);
       }
@@ -101,7 +115,8 @@ export default function CreateQuestions() {
                 {/* <div id="learnosity-author" /> */}
                 {userRole?.name === 'Teacher' && (
                 <iframe
-                  src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/create-assessments`}
+                  ref={iframeRef}
+                  src={iframeUrl || `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/create-assessments`}
                   title="External Content"
                   width="100%"
                   height="100%"
