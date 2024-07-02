@@ -89,38 +89,38 @@ export default function DisplayAssessment() {
   }, [status, aid, userData]);
 
   useEffect(() => {
+    const setConfig = () => {
+      setIsLoading(true);
+      const config = {
+        apiKey: `${import.meta.env.VITE_APP_SDK}`,
+        user: `${user?.first_name} ${user?.last_name}`,
+        user_ting: userData?.user_ting,
+        role: user?.role?.name,
+        duration
+      };
+      fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(config)
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(() => {
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setIsLoading(false);
+        });
+    };
+
     setConfig();
   }, []);
-
-  const setConfig = () => {
-    setIsLoading(true);
-    const config = {
-      apiKey: `${import.meta.env.VITE_APP_SDK}`,
-      user: `${user?.first_name} ${user?.last_name}`,
-      user_ting: userData?.user_ting,
-      role: user?.role?.name,
-      duration
-    };
-    fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(config)
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(() => {
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setIsLoading(false);
-      });
-  };
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {

@@ -96,6 +96,7 @@ export default function StudentCompletedAssessmentList() {
 
   const redirect = (url: any, user_ting: string, item: any) => {
     const obeasses_id = item?.obeasses_id;
+    setConfig(user_ting, obeasses_id);
     navigate(
       url,
       {
@@ -104,7 +105,6 @@ export default function StudentCompletedAssessmentList() {
         }
       }
     );
-    setConfig(user_ting, obeasses_id);
   };
 
   const setConfig = (user_ting: string, obeasses_id: string) => {
