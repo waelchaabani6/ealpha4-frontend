@@ -100,7 +100,7 @@ export const TABLE_LABELS = {
   START_DATE: 'Start Date',
   END_DATE: 'End Date',
   SUBMITTED_DATE: 'Submitted Date',
-  SCORE: 'Score %',
+  SCORE: 'Class average %',
   CLASS_SCORE: 'Class Score',
   COHORT_SCORE: 'Cohort Score',
   CLASS_PER: 'Class Percentage',
@@ -372,7 +372,7 @@ export const USERNAME_REGEX_MESSAGE = 'Only alphabets, dash, underscore, at the 
 export const ZIP_REGEX = /^[0-9]{5,6}$/;
 export const ZIP_REGEX_MESSAGE = 'Only numbers with minimum 5 and maximum 6 characters allowed ';
 
-export const NAME_REGEX = /^[aA-zZ0-9 _-\s]+$/;
+export const NAME_REGEX = /^[a-zA-Z0-9 _\-\s]+$/;
 export const NAME_REGEX_MESSAGE = 'Only alphabets, numbers, space and special characters like  _-  are allowed';
 
 export const ALPHABET_AND_SPACE = /^[aA-zZ \s]+$/;
