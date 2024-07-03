@@ -145,6 +145,26 @@ export default function Index() {
     return isFutureDate; // Disable if the start date is in the future
   }
 
+  function shouldDisableButtonExpired(submission_date: any) {
+    // Check if both dates are defined
+    if (!submission_date) {
+      // Disable the button if either date is missing
+      return false;
+    }
+
+    // Parse the given end date string (format: "YYYY-MM-DD")
+    const [endYear, endMonth, endDay] = submission_date.split('-').map(Number);
+    const endDate = new Date(endYear, endMonth - 1, endDay); // Month is 0-based in JS Date
+
+    // Get the current date (ignoring the time part)
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    // Compare the dates
+    // Return whether the button should be disabled
+    return endDate.getTime() < currentDate.getTime(); // Disable if the start date is in the past or the end date is in the past
+  }
+
   const reset = () => {
     setToDate('');
     setFromDate('');
@@ -170,22 +190,23 @@ export default function Index() {
           item?.start_date,
           item?.submission_date
         ]);
-
-        const buttonRender = item?.assessment_status === 'Yet to start'
-          ? shouldDisableButton(item?.start_date)
-            ? 'Not Yet to Start'
-            : 'Start'
-          : item?.assessment_status === 'Completed'
-            ? 'Completed'
-            : item?.assessment_status === 'In Progress'
-              ? 'In Progress'
-              : 'Incomplete';
+        const buttonRender = shouldDisableButtonExpired(item?.submission_date)
+          ? 'Expired'
+          : item?.assessment_status === 'Yet to start'
+            ? shouldDisableButton(item?.start_date)
+              ? 'Not Yet to Start'
+              : 'Start'
+            : item?.assessment_status === 'Completed'
+              ? 'Completed'
+              : item?.assessment_status === 'In Progress'
+                ? 'In Progress'
+                : 'Incomplete';
         const temp = {
           ...item,
           action: (
             <Button
               disabled={
-                      item?.assessment_status === 'Completed' || shouldDisableButton(item?.start_date)
+                      item?.assessment_status === 'Completed' || shouldDisableButton(item?.start_date) || shouldDisableButtonExpired(item?.submission_date)
                   }
               onClick={() => handleButtonClick(item)}
             >
