@@ -12,29 +12,14 @@ export default function SingleReportAssessment() {
   const userRole = useSelector((state: any) => state?.user?.role);
   const location = useLocation();
   const { obeasses_id } = location.state || {};
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [pageData, setpageData] = useState<any>({});
   const [error, setError] = useState<any>('');
+  const [iframeUrl, setIframeUrl] = useState('');
 
   const status = useScript(`https://reports.learnosity.com/?v2021.2.LTS`, {
     removeOnUnmount: false
   });
-
-  function colorCode(scoreAch: number, type: string) {
-    if (scoreAch <= 60) {
-      return { bg: '#FBD4C7', color: '#000000' }[type];
-    }
-    if (scoreAch > 60 && scoreAch <= 70) {
-      return { bg: '#FFF8C1', color: '#000000' }[type];
-    }
-    if (scoreAch > 70 && scoreAch <= 80) {
-      return { bg: '#BFCDFD', color: '#000000 ' }[type];
-    }
-    if (scoreAch > 80) {
-      return { bg: '#E5F8E2', color: '#000000' }[type];
-    }
-    return { bg: '#E5F8E2', color: '#000000' }[type];
-  }
 
   const { isLoading: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
@@ -63,24 +48,36 @@ export default function SingleReportAssessment() {
     if (status === 'ready' && aid && searchParams.get('user')) {
       fetchLearnosityObj();
     }
-  }, [status, aid, searchParams.get('user')]);
+  }, [status, aid, searchParams]);
+
+  useEffect(() => {
+    const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
+    const baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/teacher-reports/${obeasses_id}`;
+    setIframeUrl(baseUrl + generateCacheBuster());
+  }, [obeasses_id]);
+
+  const colorCode = (scoreAch: number, type: string) => {
+    if (scoreAch <= 60) return { bg: '#FBD4C7', color: '#000000' }[type];
+    if (scoreAch > 60 && scoreAch <= 70) return { bg: '#FFF8C1', color: '#000000' }[type];
+    if (scoreAch > 70 && scoreAch <= 80) return { bg: '#BFCDFD', color: '#000000 ' }[type];
+    if (scoreAch > 80) return { bg: '#E5F8E2', color: '#000000' }[type];
+    return { bg: '#E5F8E2', color: '#000000' }[type];
+  };
 
   const details = pageData?.data?.[0];
 
-  if (LearnosityObjLoad) {
-    return (<Loader />);
-  }
+  if (LearnosityObjLoad) return <Loader />;
+
   return (
     <RouteLayout>
       <div className="h-max py-4">
         <PageTitle title="Assessment Details" />
       </div>
-      { obeasses_id && (
-      <div style={{ width: '100%', height: '100vh' }}>
-        {userRole?.name === 'Teacher' && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/teacher-reports/${obeasses_id}`} title="External Content" width="100%" height="90%" />}
-      </div>
-      )}
-      {!obeasses_id && (
+      {obeasses_id ? (
+        <div style={{ width: '100%', height: '100vh' }}>
+          {userRole?.name === 'Teacher' && <iframe src={iframeUrl} title="External Content" width="100%" height="90%" />}
+        </div>
+      ) : (
         details && Object.keys(details).length ? (
           <div className="mt-5 h-max w-full rounded-md border bg-white p-4">
             <div className="flex flex-col bg-white">
@@ -140,7 +137,7 @@ export default function SingleReportAssessment() {
                       <span className="text-blue-100" style={{ color: colorCode(details?.percentage, 'color') }}>
                   &nbsp;
                         {`${details?.percentage || 0}% (${details?.score || 0}/${details?.max_score || 0})` || '-'}
-&nbsp;
+                              &nbsp;
                       </span>
                     </div>
                   </div>

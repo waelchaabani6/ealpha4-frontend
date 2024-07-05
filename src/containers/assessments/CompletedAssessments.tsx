@@ -67,7 +67,7 @@ export default function CompletedAssessments() {
     TABLE_LABELS?.CLASS_STUDENTS,
     TABLE_LABELS?.START_DATE,
     TABLE_LABELS?.END_DATE,
-    TABLE_LABELS?.SCORE
+    TABLE_LABELS?.ClassAverage
   ];
 
   const [csvData, setCsvData] = useState<[]>([]);
@@ -107,7 +107,7 @@ export default function CompletedAssessments() {
       format: 'DD-MM-YYYY'
     },
     {
-      label: TABLE_LABELS?.SCORE,
+      label: TABLE_LABELS?.ClassAverage,
       isSort: true,
       mapper: 'score'
     }

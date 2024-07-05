@@ -129,6 +129,7 @@ export default function DisplayAssessment() {
         sync();
         toast.success(payload);
         navigate(`/${schoolName}/assessments`);
+        window.location.reload();
       } else {
         toast.error(payload);
       }
