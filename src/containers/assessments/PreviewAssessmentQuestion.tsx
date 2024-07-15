@@ -1,5 +1,5 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useScript from '@utility/Hooks/UseScript';
 import { useSelector } from 'react-redux';
 import Loader from '@shared/loader';
@@ -21,7 +21,7 @@ export default function PreviewMyAssessmentQuestions() {
   const status = useScript(`https://items.learnosity.com/?v2021.2.LTS/`, {
     removeOnUnmount: false
   });
-
+  const ref = useRef<HTMLIFrameElement | null>(null);
   const userRole = useSelector((state: any) => state?.user?.role);
 
   const { isRefetching: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
@@ -60,6 +60,12 @@ export default function PreviewMyAssessmentQuestions() {
     setConfig();
   }, []);
 
+  useEffect(() => {
+    if (ref.current) {
+      setConfig();
+    }
+  }, [iframeUrl]);
+
   const setConfig = () => {
     const user = userData;
     const config = {
@@ -68,6 +74,11 @@ export default function PreviewMyAssessmentQuestions() {
       user_ting: userData?.user_ting,
       role: user?.role?.name
     };
+
+    if (ref.current && ref.current.contentWindow) {
+      ref.current.contentWindow.postMessage({ type: 'setConfig', config }, '*');
+    } else { /* empty */ }
+
     fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
       method: 'POST',
       headers: {
@@ -128,8 +139,8 @@ export default function PreviewMyAssessmentQuestions() {
           )
         } */}
         <div style={{ width: '100%', height: '100vh' }}>
-          {(!!location.state?.obeasses_id && userRole?.name === 'Teacher') && <iframe src={iframeUrl} title="External Content" width="100%" height="90%" />}
-          {(!!location.state?.obeasses_id && userRole?.name === 'Student') && <iframe src={iframeUrl} title="External Content" width="100%" height="90%" />}
+          {(!!location.state?.obeasses_id && userRole?.name === 'Teacher') && <iframe ref={ref} src={iframeUrl} title="External Content" width="100%" height="90%" />}
+          {(!!location.state?.obeasses_id && userRole?.name === 'Student') && <iframe ref={ref} src={iframeUrl} title="External Content" width="100%" height="90%" />}
         </div>
 
       </div>

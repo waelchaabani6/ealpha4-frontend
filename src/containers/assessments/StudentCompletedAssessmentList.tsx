@@ -101,7 +101,8 @@ export default function StudentCompletedAssessmentList() {
       url,
       {
         state: {
-          obeasses_id
+          obeasses_id,
+          user_ting
         }
       }
     );

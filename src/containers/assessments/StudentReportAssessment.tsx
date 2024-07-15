@@ -2,7 +2,7 @@ import { useGet } from '@shared/api/useApi';
 import Loader from '@shared/loader';
 import PageTitle from '@shared/pageTitle';
 import useScript from '@utility/Hooks/UseScript';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import RouteLayout from '../layout/routeLayout';
@@ -10,12 +10,15 @@ import RouteLayout from '../layout/routeLayout';
 export default function SingleReportAssessment() {
   const { aid } = useParams();
   const userRole = useSelector((state: any) => state?.user?.role);
+  const userData = useSelector((state: any) => state?.user);
+
   const location = useLocation();
-  const { obeasses_id } = location.state || {};
+  const { obeasses_id, user_ting } = location.state || {};
   const [searchParams] = useSearchParams();
   const [pageData, setpageData] = useState<any>({});
   const [error, setError] = useState<any>('');
   const [iframeUrl, setIframeUrl] = useState('');
+  const ref = useRef<HTMLIFrameElement | null>(null);
 
   const status = useScript(`https://reports.learnosity.com/?v2021.2.LTS`, {
     removeOnUnmount: false
@@ -43,6 +46,52 @@ export default function SingleReportAssessment() {
     },
     enabled: false
   });
+
+  const setConfig = () => {
+    const user = userData;
+    // console.log(user);
+    // setIsLoading(true);
+    const config = {
+      apiKey: `${import.meta.env.VITE_APP_SDK}`,
+      user: `${user?.first_name} ${user?.last_name}`,
+      user_ting,
+      role: user?.role?.name
+    };
+
+    if (ref.current && ref.current.contentWindow) {
+      ref.current.contentWindow.postMessage({ type: 'setConfig', config }, '*');
+    } else {
+      // console.error('iframe is null or contentWindow does not exist');
+    }
+
+    fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(config)
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // setIsLoading(false);
+        // console.log('Configuration set successfully', data);
+      })
+      .catch((e) => {
+        // setIsLoading(false); // Ensure to handle loading state correctly in case of an error
+        // console.error('Error setting configuration:', e);
+      });
+  };
+
+  useEffect(() => {
+    if (ref.current) {
+      setConfig();
+    }
+  }, [iframeUrl]);
 
   useEffect(() => {
     if (status === 'ready' && aid && searchParams.get('user')) {
@@ -75,7 +124,7 @@ export default function SingleReportAssessment() {
       </div>
       {obeasses_id ? (
         <div style={{ width: '100%', height: '100vh' }}>
-          {userRole?.name === 'Teacher' && <iframe src={iframeUrl} title="External Content" width="100%" height="90%" />}
+          {userRole?.name === 'Teacher' && <iframe ref={ref} src={iframeUrl} title="External Content" width="100%" height="90%" />}
         </div>
       ) : (
         details && Object.keys(details).length ? (

@@ -167,7 +167,8 @@ export default function CompletedAssessments() {
     setIsLoading(true);
     const config = {
       apiKey: `${import.meta.env.VITE_APP_SDK}`,
-      user: user_ting,
+      user: `${user?.first_name} ${user?.last_name}`,
+      user_ting,
       role: user?.role?.name
     };
     fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
