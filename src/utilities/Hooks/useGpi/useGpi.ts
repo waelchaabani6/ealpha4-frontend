@@ -56,6 +56,7 @@ export default function useGapi({
   // Create user profile with auth metadata.
   const createUserProfileObject = (currentUser?: any) => {
     const user =
+      // @ts-expect-error
       currentUser || window.gapi.auth2.getAuthInstance().currentUser.get();
     const basicProfile = user.getBasicProfile();
     const auth = user.getAuthResponse();
@@ -84,7 +85,9 @@ export default function useGapi({
     // Check if google script is ready.
     if (status === 'ready') {
       let listenerContext: any;
+      // @ts-expect-error
       window.gapi.load('client:auth2', () => {
+        // @ts-expect-error
         window.gapi.client
           .init({
             apiKey,
@@ -96,11 +99,13 @@ export default function useGapi({
             console.log('entered');
             // @ts-expect-error
             setClient(window.gapi.client);
+            // @ts-expect-error
             const auth = window.gapi.auth2.getAuthInstance();
             listenerContext = auth.isSignedIn.listen(updateSigninStatus);
             // Handle the initial sign-in state.
             updateSigninStatus(auth.isSignedIn.get());
           })
+          // @ts-expect-error
           .catch((err) => console.log(err));
       });
       return () => {
@@ -115,6 +120,7 @@ export default function useGapi({
   const signIn = async (options: any) => {
     console.log('signed in');
     try {
+      // @ts-expect-error
       const profileObject = await window.gapi.auth2
         .getAuthInstance()
         .signIn(options);
@@ -128,6 +134,7 @@ export default function useGapi({
   // Sign out function
   const signOut = async () => {
     try {
+      // @ts-expect-error
       await window.gapi.auth2.getAuthInstance().signOut();
       // @ts-expect-error
       window.gapi.auth2.disconnect();
