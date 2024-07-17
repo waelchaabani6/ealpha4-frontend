@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kaniko
+spec:
+  nodeSelector:
+    worker: jenkins
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    command:
+    - /busybox/cat
+    tty: true
+  - name: k8s
+    image: alpine/k8s:1.21.12
+    imagePullPolicy: Always
+    command:
+    - cat
+    tty: true

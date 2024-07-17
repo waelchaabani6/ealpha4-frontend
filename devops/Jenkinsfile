@@ -1,0 +1,65 @@
+pipeline {
+    agent {
+    kubernetes {
+      yamlFile 'devops/KubernetesPod.yaml'
+      defaultContainer 'kaniko'
+      retries 2
+    }
+  }
+    environment {
+        APP="ealpha4-frontend"
+        ECR="europe-west1-docker.pkg.dev/ealpha4/docker"
+        VERSION="1.0.0-snapshot"
+    }
+    stages {
+        stage("init"){
+            steps{
+                script{
+                    configs(BRANCH_NAME)
+                }
+            }
+        }
+        stage('build') {
+            steps {
+              script{
+                withVault(configuration: [timeout: 60], vaultSecrets: [[path: 'ealpha/${APP}/${namespace}', secretValues: [[vaultKey: 'envfile']]]]) {
+                    writeFile file: '.env', text: env.envfile
+                }
+                sh '''
+                /kaniko/executor --cache=true --compressed-caching=false --snapshotMode=redo  --cache-repo=${ECR}/${APP}/cache --dockerfile `pwd`/devops/Dockerfile --context `pwd`  --destination=${ECR}/${APP}:${timestamp}-${VERSION} --destination=${ECR}/${APP}:${VERSION}
+                '''
+              }
+            }
+        }
+        stage('deploy') {
+        steps {
+            withKubeConfig([credentialsId:"gke"]){
+                container(name: 'k8s') {
+                sh '''
+                    helm upgrade --install ${APP} \
+                    -n ${namespace} \
+                    devops/helm/${APP} \
+                    --set image.tag=${timestamp}-${VERSION},image.repository=${ECR}/${APP} \
+                    -f devops/helm/${APP}/${helmvalues} \
+                    --timeout 5m --wait \
+                    --atomic
+                '''
+                }
+            }
+        }
+      }
+    }
+}
+
+def configs(branch){
+    script{
+        def environments = [
+                "development": [
+                    "helmvalues":"values-development.yaml",
+                    "namespace":"development"],
+            ]
+        env.helmvalues=environments."${branch}"."helmvalues"
+        env.namespace=environments."${branch}"."namespace"
+        env.timestamp=sh(script: 'date "+%Y%m%d%H%M%S"',  returnStdout: true).trim()
+    }
+}

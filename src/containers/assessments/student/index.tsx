@@ -128,6 +128,42 @@ export default function Index() {
     });
   };
 
+  function shouldDisableButton(startDateString: any) {
+    // Parse the given start date string (format: "YYYY-MM-DD")
+    const [year, month, day] = startDateString.split('-').map(Number);
+    const startDate = new Date(year, month - 1, day); // Month is 0-based in JS Date
+
+    // Get the current date (ignoring the time part)
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    // Compare the dates
+    const isFutureDate = startDate.getTime() > currentDate.getTime();
+
+    // Return whether the button should be disabled
+    return isFutureDate; // Disable if the start date is in the future
+  }
+
+  function shouldDisableButtonExpired(submission_date: any) {
+    // Check if both dates are defined
+    if (!submission_date) {
+      // Disable the button if either date is missing
+      return false;
+    }
+
+    // Parse the given end date string (format: "YYYY-MM-DD")
+    const [endYear, endMonth, endDay] = submission_date.split('-').map(Number);
+    const endDate = new Date(endYear, endMonth - 1, endDay); // Month is 0-based in JS Date
+
+    // Get the current date (ignoring the time part)
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    // Compare the dates
+    // Return whether the button should be disabled
+    return endDate.getTime() < currentDate.getTime(); // Disable if the start date is in the past or the end date is in the past
+  }
+
   const reset = () => {
     setToDate('');
     setFromDate('');

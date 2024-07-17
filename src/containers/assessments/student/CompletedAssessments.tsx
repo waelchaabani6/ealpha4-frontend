@@ -117,6 +117,7 @@ export default function CompletedAssessments() {
   const [toDate, setToDate] = useState<any>('');
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const completedAssignRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const componentRef = useRef(null);
@@ -169,6 +170,38 @@ export default function CompletedAssessments() {
     setFromDate('');
   };
 
+  const setConfig = (user_ting: any) => {
+    setIsLoading(true);
+    const config = {
+      apiKey: `${import.meta.env.VITE_APP_SDK}`,
+      user: `${user?.first_name} ${user?.last_name}`,
+      user_ting,
+      role: user?.role?.name,
+    };
+    fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(config),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setIsLoading(false);
+      })
+      .catch((e) => {
+        setIsLoading(false); // Ensure to handle loading state correctly in case of an error
+      });
+  };
+
+  /*  const handleButtonClick = (data: any) => {
+    navigate(`/${schoolName}/assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${data?.assessment_name}`, { state: { page, obeasses_id: data?.obeasses_id, path: `/${schoolName}/assessments/completed-assessments` } });
+  }; */
   const handleButtonClick = (data: any) => {
     navigate(
       `/${schoolName}/assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${data?.assessment_name}`,

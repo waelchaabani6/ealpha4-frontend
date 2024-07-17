@@ -13,6 +13,7 @@
     "build": "tsc && vite build",
     "build:uat": "tsc && vite build --mode uat",
     "build:preprod": "tsc && vite build --mode preprod",
+    "build:staging": "vite build --mode staging",
     "prepare": "husky install"
   },
   "dependencies": {

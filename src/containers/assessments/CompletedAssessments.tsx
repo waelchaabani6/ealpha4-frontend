@@ -122,7 +122,7 @@ export default function CompletedAssessments() {
       format: 'DD-MM-YYYY',
     },
     {
-      label: TABLE_LABELS?.SCORE,
+      label: TABLE_LABELS?.ClassAverage,
       isSort: true,
       mapper: 'score',
     },

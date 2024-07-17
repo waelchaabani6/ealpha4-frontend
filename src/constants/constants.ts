@@ -53,7 +53,7 @@ export const TABLE_LABELS = {
   BRANCH_ID: 'Branch ID',
   QUESTIONS: 'QUESTIONS',
   CLASS_AVG: 'Class Average Points',
-  ClassAverage: 'class Average',
+  ClassAverage: 'class Average %',
   POINTS_SCORED: 'Points Scored',
   STANDARD: 'Standard',
   ASSSIGN_id: 'Assignment ID',
