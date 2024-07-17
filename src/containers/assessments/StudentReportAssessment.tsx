@@ -11,12 +11,26 @@ export default function SingleReportAssessment() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageData, setpageData] = useState<any>({});
   const [error, setError] = useState<any>('');
-  const [iframeUrl, setIframeUrl] = useState('');
-  const ref = useRef<HTMLIFrameElement | null>(null);
 
   const status = useScript(`https://reports.learnosity.com/?v2021.2.LTS`, {
     removeOnUnmount: false,
   });
+
+  function colorCode(scoreAch: number, type: string) {
+    if (scoreAch <= 60) {
+      return { bg: '#FBD4C7', color: '#000000' }[type];
+    }
+    if (scoreAch > 60 && scoreAch <= 70) {
+      return { bg: '#FFF8C1', color: '#000000' }[type];
+    }
+    if (scoreAch > 70 && scoreAch <= 80) {
+      return { bg: '#BFCDFD', color: '#000000 ' }[type];
+    }
+    if (scoreAch > 80) {
+      return { bg: '#E5F8E2', color: '#000000' }[type];
+    }
+    return { bg: '#E5F8E2', color: '#000000' }[type];
+  }
 
   const { isLoading: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
@@ -44,78 +58,17 @@ export default function SingleReportAssessment() {
     enabled: false,
   });
 
-  const setConfig = () => {
-    const user = userData;
-    // console.log(user);
-    // setIsLoading(true);
-    const config = {
-      apiKey: `${import.meta.env.VITE_APP_SDK}`,
-      user: `${user?.first_name} ${user?.last_name}`,
-      user_ting,
-      role: user?.role?.name,
-    };
-
-    if (ref.current && ref.current.contentWindow) {
-      ref.current.contentWindow.postMessage({ type: 'setConfig', config }, '*');
-    } else {
-      // console.error('iframe is null or contentWindow does not exist');
-    }
-
-    fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(config),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        // setIsLoading(false);
-        // console.log('Configuration set successfully', data);
-      })
-      .catch((e) => {
-        // setIsLoading(false); // Ensure to handle loading state correctly in case of an error
-        // console.error('Error setting configuration:', e);
-      });
-  };
-
-  useEffect(() => {
-    if (ref.current) {
-      setConfig();
-    }
-  }, [iframeUrl]);
-
   useEffect(() => {
     if (status === 'ready' && aid && searchParams.get('user')) {
       fetchLearnosityObj();
     }
-  }, [status, aid, searchParams]);
-
-  useEffect(() => {
-    const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
-    const baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/teacher-reports/${obeasses_id}`;
-    setIframeUrl(baseUrl + generateCacheBuster());
-  }, [obeasses_id]);
-
-  const colorCode = (scoreAch: number, type: string) => {
-    if (scoreAch <= 60) return { bg: '#FBD4C7', color: '#000000' }[type];
-    if (scoreAch > 60 && scoreAch <= 70)
-      return { bg: '#FFF8C1', color: '#000000' }[type];
-    if (scoreAch > 70 && scoreAch <= 80)
-      return { bg: '#BFCDFD', color: '#000000 ' }[type];
-    if (scoreAch > 80) return { bg: '#E5F8E2', color: '#000000' }[type];
-    return { bg: '#E5F8E2', color: '#000000' }[type];
-  };
+  }, [status, aid, searchParams.get('user')]);
 
   const details = pageData?.data?.[0];
 
-  if (LearnosityObjLoad) return <Loader />;
-
+  if (LearnosityObjLoad) {
+    return <Loader />;
+  }
   return (
     <RouteLayout>
       <div className="h-max py-4">
@@ -165,16 +118,18 @@ export default function SingleReportAssessment() {
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="flex flex-col grow md:flex-row">
-              <div className="grow md:border-r md:border-r-gray-300 md:ml-4">
-                <div className="mb-5">
-                  <div className="font-bold">Start Date</div>
-                  <div>{details?.start_date}</div>
-                </div>
-                <div>
-                  <div className="font-bold">End Date</div>
-                  <div>{details?.submission_date}</div>
+
+              <div className="flex flex-col grow md:flex-row">
+                <div className="grow md:border-r md:border-r-gray-300 md:ml-4">
+                  <div className="mb-5">
+                    <div className="font-bold"> Start Date </div>
+                    <div>{details?.start_date}</div>
+                  </div>
+
+                  <div>
+                    <div className="font-bold"> End Date </div>
+                    <div>{details?.submission_date}</div>
+                  </div>
                 </div>
 
                 <div className="grow box-content flex items-center h-full justify-center">
