@@ -16,8 +16,6 @@ const printButton = () => <PrintIcon />;
 
 export default function StudentQuickReport() {
   const userData = useSelector((state: any) => state?.user);
-  const userRole = useSelector((state: any) => state?.user?.role);
-
   const { aid, schoolName } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageData, setpageData] = useState<any>({});
@@ -76,7 +74,7 @@ export default function StudentQuickReport() {
       navBack={true}
     >
       <HeaderMenus title={`${searchParams.get('assessment') || 'Test'}`} menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
-      {/* {
+      {
         pageData?.learnosity_obj?.request?.reports?.length && !error
           ? (
             <>
@@ -101,10 +99,7 @@ export default function StudentQuickReport() {
               }
             </div>
           )
-      } */}
-      <div style={{ width: '100%', height: '100vh' }}>
-        {userRole?.name === 'Student' && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/student-reports/9c430fa3-82c6-43b1-b81d-588d868eb6f8`} title="External Content" width="100%" height="90%" />}
-      </div>
+      }
     </RouteLayout>
   );
 }

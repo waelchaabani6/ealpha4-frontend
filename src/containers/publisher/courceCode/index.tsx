@@ -5,7 +5,13 @@ import Dropdown from '@component/dropdown/Dropdown';
 import { CustomInput } from '@component/input';
 import DebounceInput from '@component/input/DebounceInput';
 import CustomPagination from '@component/pagination/CustomPagination';
-import { CODE_TYPE_ITEMS, COMPONENTS, RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '@constants/constants';
+import {
+  CODE_TYPE_ITEMS,
+  COMPONENTS,
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '@constants/constants';
 import routes from '@constants/routes';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ReactComponent as Delete } from '@images/longMenuIcons/Delete2.svg';
@@ -44,61 +50,61 @@ export default function Index() {
     {
       icon: <License />,
       label: 'Extend License',
-      value: 'extendLicense'
+      value: 'extendLicense',
     },
     {
       icon: <ISBN />,
       label: 'View ISBN Number',
-      value: 'viewISBNnumber'
+      value: 'viewISBNnumber',
     },
     {
       icon: <Delete />,
       label: 'Delete',
-      value: 'delete'
-    }
+      value: 'delete',
+    },
   ];
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.CODE_NAME,
-      mapper: 'code_name'
+      mapper: 'code_name',
     },
     {
       label: TABLE_LABELS?.CODE_TYPE,
-      mapper: 'code_type'
+      mapper: 'code_type',
     },
     {
       label: TABLE_LABELS?.COURSES,
-      mapper: 'courses_name'
+      mapper: 'courses_name',
     },
     {
       label: TABLE_LABELS?.LICENSE,
-      mapper: 'license_count'
+      mapper: 'license_count',
     },
     {
       label: TABLE_LABELS?.USED_LICENSE,
-      mapper: 'used_license_count'
+      mapper: 'used_license_count',
     },
     {
       label: TABLE_LABELS?.GENERATED_BY,
-      mapper: 'generated_by'
+      mapper: 'generated_by',
     },
     {
       label: TABLE_LABELS?.GENERATED_DATE,
-      mapper: 'generated_at'
+      mapper: 'generated_at',
     },
     {
       label: TABLE_LABELS?.EXPIRY_AT,
       isSort: true,
       mapper: 'end_date',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_LABELS?.STATUS,
-      mapper: 'license_status'
+      mapper: 'license_status',
     },
     {
       label: TABLE_LABELS?.ACTION,
@@ -106,13 +112,13 @@ export default function Index() {
       align: 'center',
       bodyAlign: 'right',
       component: COMPONENTS?.switch,
-      showInHeader: false
+      showInHeader: false,
     },
     {
       bodyAlign: 'left',
       component: COMPONENTS?.longmenu,
-      showInHeader: false
-    }
+      showInHeader: false,
+    },
   ];
 
   const [selectData, setSelectData] = useState('All');
@@ -146,16 +152,16 @@ export default function Index() {
     TABLE_LABELS?.GENERATED_BY,
     TABLE_LABELS?.GENERATED_DATE,
     TABLE_LABELS?.EXPIRY_AT,
-    TABLE_LABELS?.STATUS
+    TABLE_LABELS?.STATUS,
   ];
 
   const handelSendEmail = () => {
     const payload = {
-      list_type: 'course-code-list'
+      list_type: 'course-code-list',
     };
     setPlayloadData({
       apicall: 'sendEmail',
-      payload
+      payload,
     });
   };
 
@@ -178,12 +184,12 @@ export default function Index() {
   };
   const statusHandler = (e: any, data: any) => {
     const payload = {
-      status: (e.target.checked) ? 'Active' : 'Inactive'
+      status: e.target.checked ? 'Active' : 'Inactive',
     };
     setPlayloadData({
       apicall: 'courseStatus',
       payload,
-      id: data?.id
+      id: data?.id,
     });
   };
   const handleMoreOption = (id: any, rowData: any) => {
@@ -232,7 +238,7 @@ export default function Index() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
       tempDataReset();
-    }
+    },
   });
 
   // Status Update : Course
@@ -247,53 +253,56 @@ export default function Index() {
     onError: ({ response }: any) => {
       refetch();
       toast('error', response?.statusText || 'Error');
-    }
+    },
   });
 
   //  Delete School
-  const { isLoading: loadingDeleteCourse, mutate: mutateDeleteCourseCode } = useDelete({
-    baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/course-code/${popupData?.id}/delete/`,
-    onSuccess: (response: any) => {
-      tempDataReset();
-      refetch();
-      toast('success', 'Course deleted successfully');
-    },
-    onError: ({ response }: any) => {
-      toast('error', response?.statusText || 'Error');
-    }
-  });
+  const { isLoading: loadingDeleteCourse, mutate: mutateDeleteCourseCode } =
+    useDelete({
+      baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
+      url: `course-code-service/courses/course-code/${popupData?.id}/delete/`,
+      onSuccess: (response: any) => {
+        tempDataReset();
+        refetch();
+        toast('success', 'Course deleted successfully');
+      },
+      onError: ({ response }: any) => {
+        toast('error', response?.statusText || 'Error');
+      },
+    });
 
   // Extend License : course
-  const { isLoading: licenseSubmitLoader, mutate: mutateExtendLicense } = usePatch({
-    baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/course-code/${popupData?.id}/extend-license/`,
-    onSuccess: (response: any) => {
-      setdialogOpen(false);
-      refetch();
-      toast('success', 'Course License extended successfully');
-    },
-    onError: ({ response }: any) => {
-      toast('error', response?.statusText || 'Error');
-    }
-  });
+  const { isLoading: licenseSubmitLoader, mutate: mutateExtendLicense } =
+    usePatch({
+      baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
+      url: `course-code-service/courses/course-code/${popupData?.id}/extend-license/`,
+      onSuccess: (response: any) => {
+        setdialogOpen(false);
+        refetch();
+        toast('success', 'Course License extended successfully');
+      },
+      onError: ({ response }: any) => {
+        toast('error', response?.statusText || 'Error');
+      },
+    });
 
-  const { isLoading: licenseSubmitExpiryDateLoader, mutate: mutateExpiryDate } = usePatch({
-    baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/course-code/${popupData?.id}/extend-license/`,
-    onSuccess: (response: any) => {
-      setdialogOpen(false);
-      refetch();
-      toast('success', 'Course License extended successfully');
-    },
-    onError: ({ response }: any) => {
-      toast('error', response?.statusText || 'Error');
-    }
-  });
+  const { isLoading: licenseSubmitExpiryDateLoader, mutate: mutateExpiryDate } =
+    usePatch({
+      baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
+      url: `course-code-service/courses/course-code/${popupData?.id}/extend-license/`,
+      onSuccess: (response: any) => {
+        setdialogOpen(false);
+        refetch();
+        toast('success', 'Course License extended successfully');
+      },
+      onError: ({ response }: any) => {
+        toast('error', response?.statusText || 'Error');
+      },
+    });
 
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   // Get Course code Listing
-  const temps = (rowsPerPage === 'all') ? totalDataCount : rowsPerPage;
+  const temps = rowsPerPage === 'all' ? totalDataCount : rowsPerPage;
   const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
   const { isLoading, isRefetching, refetch } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
@@ -316,9 +325,13 @@ export default function Index() {
             item?.generated_by,
             moment(item?.created_at).format('DD-MM-YYYY'),
             item?.end_date,
-            item?.license_status
+            item?.license_status,
           ]);
-          const temp = { ...item, courses_name: names, generated_at: moment(item?.created_at).format('DD-MM-YYYY') };
+          const temp = {
+            ...item,
+            courses_name: names,
+            generated_at: moment(item?.created_at).format('DD-MM-YYYY'),
+          };
           return temp;
         });
         setTempCSVData(body);
@@ -331,7 +344,7 @@ export default function Index() {
     onError: ({ response }: any) => {
       allStateReset();
     },
-    enabled: false
+    enabled: false,
   });
 
   useEffect(() => {
@@ -348,18 +361,29 @@ export default function Index() {
     refetch();
   }, [rowsPerPage, page, selectData, orderBy, order, searchString]);
 
-  const { handleSubmit: handleOnSubmitExtendLicense, control: extendLicenseControl, reset: extendLicenseReset, setValue: setDatesExtendLicense } = useForm<any>({
+  const {
+    handleSubmit: handleOnSubmitExtendLicense,
+    control: extendLicenseControl,
+    reset: extendLicenseReset,
+    setValue: setDatesExtendLicense,
+  } = useForm<any>({
     resolver: yupResolver(extendLicenseSchema),
     defaultValues: {
-      flag: false
-    }
+      flag: false,
+    },
   });
 
-  const { handleSubmit: handleOnExpiryDate, control: expiryDateControl, watch, reset: expiryDateReset, setValue: setDatesExpiryDate } = useForm<any>({
+  const {
+    handleSubmit: handleOnExpiryDate,
+    control: expiryDateControl,
+    watch,
+    reset: expiryDateReset,
+    setValue: setDatesExpiryDate,
+  } = useForm<any>({
     resolver: yupResolver(extendExpiryDateSchema),
     defaultValues: {
-      flag: false
-    }
+      flag: false,
+    },
   });
 
   useEffect(() => {
@@ -381,7 +405,10 @@ export default function Index() {
       const date2: any = new Date(endDateTemp);
       const diffTime = Math.abs(date2 - date1);
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      setDatesExpiryDate('exten_add_edit_license', Number.isInteger(diffDays) ? diffDays : 0);
+      setDatesExpiryDate(
+        'exten_add_edit_license',
+        Number.isInteger(diffDays) ? diffDays : 0
+      );
       setActiveInDays(Number.isInteger(diffDays) ? diffDays : 0);
     }
   }, [startDateTemp, endDateTemp]);
@@ -390,7 +417,7 @@ export default function Index() {
     if (startDateTemp && endDateTemp && typeof endDateTemp === 'string') {
       setDatesExpiryDate('extend_end_date', startDateTemp);
     }
-    if (startDateTemp && (startDateTemp > endDateTemp)) {
+    if (startDateTemp && startDateTemp > endDateTemp) {
       setDatesExpiryDate('extend_end_date', startDateTemp);
     }
   }, [startDateTemp]);
@@ -400,7 +427,7 @@ export default function Index() {
       start_date: moment(popupData?.start_date).format('YYYY-MM-DD'),
       end_date: moment(popupData?.end_date).format('YYYY-MM-DD'),
       course_activation_in_days: popupData?.course_activation_in_days,
-      license_count: values?.add_edit_number_license
+      license_count: values?.add_edit_number_license,
     };
     mutateExtendLicense(payload);
   };
@@ -409,7 +436,7 @@ export default function Index() {
     const payload = {
       start_date: moment(values?.extend_start_date).format('YYYY-MM-DD'),
       end_date: moment(values?.extend_end_date).format('YYYY-MM-DD'),
-      course_activation_in_days: values?.exten_add_edit_license
+      course_activation_in_days: values?.exten_add_edit_license,
     };
     mutateExpiryDate(payload);
   };
@@ -417,12 +444,12 @@ export default function Index() {
   const ADMIN_TOOLBAR_MENU = [
     {
       title: TOOLBAR_LABELS.ADD,
-      icon: <AddIcon />
+      icon: <AddIcon />,
     },
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailLoaded) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailLoaded) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
@@ -434,20 +461,26 @@ export default function Index() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   return (
     <RouteLayout navBack={true}>
-      <HeaderMenus title="Course Code" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+      <HeaderMenus
+        title="Course Code"
+        menuArray={ADMIN_TOOLBAR_MENU}
+        handleToolbarAction={handleToolbarAction}
+      />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex flex-wrap md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <div>
@@ -492,37 +525,64 @@ export default function Index() {
             orderBy={orderBy}
             statusHandler={statusHandler}
             setPage={setPage}
-            isLoading={isLoading || loadingDeleteCourse || loadingStatus || isRefetching}
+            isLoading={
+              isLoading || loadingDeleteCourse || loadingStatus || isRefetching
+            }
           />
         </Wrapper>
       </div>
       <CustomizedDialogs
-        onclose={() => { extendLicenseReset(); expiryDateReset(); }}
+        onclose={() => {
+          extendLicenseReset();
+          expiryDateReset();
+        }}
         open={dialogOpen}
         setOpen={() => setdialogOpen(false)}
         title="Extend Course Code"
       >
         <div className="flex justify-between items-center pb-4">
           <PageTitle title="Academic year: 2022-2023" />
-          <p className="text-sm text-red-500 opacity-80">All (*) marked fields are mandatory</p>
+          <p className="text-sm text-red-500 opacity-80">
+            All (*) marked fields are mandatory
+          </p>
         </div>
         <div className="grid grid-cols-1 content-center gap-y-3 md:gap-x-6">
-          <CustomInput size="small" icon={true} required={true} name="current_expiration_date" value={moment(expirationDate).format('DD-MM-YYYY')} label="Current License Expiration Date" disabled={true} />
+          <CustomInput
+            size="small"
+            icon={true}
+            required={true}
+            name="current_expiration_date"
+            value={moment(expirationDate).format('DD-MM-YYYY')}
+            label="Current License Expiration Date"
+            disabled={true}
+          />
           {/* <Input required={true} control={control} name="password" type="password" label="Password" /> */}
         </div>
         <div className="py-4">
           <PageTitle title="Extend License" />
         </div>
 
-        <form className="h-full pb-6" autoComplete="off" onSubmit={handleOnSubmitExtendLicense(onLicenseExtendHandler)}>
+        <form
+          className="h-full pb-6"
+          autoComplete="off"
+          onSubmit={handleOnSubmitExtendLicense(onLicenseExtendHandler)}
+        >
           <div className="grid grid-cols-1 lg:grid-cols-2 content-center gap-y-3 md:gap-x-6">
-            <Input required={true} control={extendLicenseControl} name="current_number_license" label="Current Number of License" disabled={true} />
+            <Input
+              required={true}
+              control={extendLicenseControl}
+              name="current_number_license"
+              label="Current Number of License"
+              disabled={true}
+            />
             <div className="extend-course-extend-license">
-              <Input required={true} control={extendLicenseControl} name="add_edit_number_license" label="Add/Edit License" />
-              <Button
-                disabled={false}
-                loading={licenseSubmitLoader}
-              >
+              <Input
+                required={true}
+                control={extendLicenseControl}
+                name="add_edit_number_license"
+                label="Add/Edit License"
+              />
+              <Button disabled={false} loading={licenseSubmitLoader}>
                 Add
               </Button>
             </div>
@@ -532,13 +592,19 @@ export default function Index() {
         <div className="py-4">
           <PageTitle title="Extend Expiry Date" />
         </div>
-        <form className="h-full pb-6" autoComplete="off" onSubmit={handleOnExpiryDate(onExpireDateHandler)}>
+        <form
+          className="h-full pb-6"
+          autoComplete="off"
+          onSubmit={handleOnExpiryDate(onExpireDateHandler)}
+        >
           <div className="grid grid-cols-1 lg:grid-cols-3 content-center gap-y-3 md:gap-x-6">
             <DatePicker
               control={expiryDateControl}
               name="extend_start_date"
               label="Start Date"
-              disablePast={expirationDate ? new Date(expirationDate) : new Date()}
+              disablePast={
+                expirationDate ? new Date(expirationDate) : new Date()
+              }
             />
             <DatePicker
               control={expiryDateControl}
@@ -546,44 +612,50 @@ export default function Index() {
               label="End Date"
               disablePast={watch('extend_start_date')}
             />
-            <Input required={true} control={expiryDateControl} name="exten_add_edit_license" label="No. of days count" disabled={true} />
+            <Input
+              required={true}
+              control={expiryDateControl}
+              name="exten_add_edit_license"
+              label="No. of days count"
+              disabled={true}
+            />
           </div>
           <div className="py-8 float-right space-x-5">
-            <Button
-              disabled={false}
-              loading={licenseSubmitExpiryDateLoader}
-            >
+            <Button disabled={false} loading={licenseSubmitExpiryDateLoader}>
               Add
             </Button>
           </div>
         </form>
       </CustomizedDialogs>
-      <CustomizedDialogs title="ISBN Number" open={openViewISBN} setOpen={() => setOpenViewISBN(false)} maxwidth="sm" onclose={onclose}>
+      <CustomizedDialogs
+        title="ISBN Number"
+        open={openViewISBN}
+        setOpen={() => setOpenViewISBN(false)}
+        maxwidth="sm"
+        onclose={onclose}
+      >
         <div className="mt-5 mb-5 text-center">
-          {
-            openViewISBN
-              ? popupData?.courses?.map((item: any): JSX.Element => (
-                <div className="flex mt-5 mb-5 text-xs font-normal">
-                  <div className="w-full mr-5">
-                    <span className="flex mb-2">Course Name</span>
-                    <div className="flex bg-gray-200 rounded-md border border-linegray items-center px-6 py-3">
-                      {item.name}
+          {openViewISBN
+            ? popupData?.courses?.map(
+                (item: any): JSX.Element => (
+                  <div className="flex mt-5 mb-5 text-xs font-normal">
+                    <div className="w-full mr-5">
+                      <span className="flex mb-2">Course Name</span>
+                      <div className="flex bg-gray-200 rounded-md border border-linegray items-center px-6 py-3">
+                        {item.name}
+                      </div>
+                    </div>
+                    <div className="w-full">
+                      <span className="flex mb-2">ISBN Numbar</span>
+                      <div className="flex bg-gray-200 rounded-md border border-linegray items-center px-6 py-3">
+                        {item.isbn_number}
+                      </div>
                     </div>
                   </div>
-                  <div className="w-full">
-                    <span className="flex mb-2">ISBN Numbar</span>
-                    <div className="flex bg-gray-200 rounded-md border border-linegray items-center px-6 py-3">
-                      {item.isbn_number}
-                    </div>
-                  </div>
-                </div>
-              )) : ''
-          }
-          <Button
-            onClick={handleClosePopup}
-          >
-            Ok
-          </Button>
+                )
+              )
+            : ''}
+          <Button onClick={handleClosePopup}>Ok</Button>
         </div>
       </CustomizedDialogs>
       {/* Delete School */}

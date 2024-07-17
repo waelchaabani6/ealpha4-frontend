@@ -4,7 +4,11 @@ import DatePicker from '@component/datepicker';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
 import DebounceInput from '@component/input/DebounceInput';
 import CustomPagination from '@component/pagination/CustomPagination';
-import { RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '@constants/constants';
+import {
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '@constants/constants';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
 import RouteLayout from '@layout/routeLayout';
 import EmailIcon from '@mui/icons-material/Email';
@@ -19,11 +23,12 @@ import toast from '@shared/toast';
 import Wrapper from '@shared/wrapper/Wrapper';
 import { getNoOfPages } from '@utility/utility';
 import moment from 'moment';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CSVLink } from 'react-csv';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
+import Dropdown from '@component/dropdown/Dropdown';
 
 const printButton = () => <PrintIcon />;
 
@@ -36,30 +41,30 @@ export default function CompletedAssessments() {
   const CompletedTableColumns = [
     {
       label: 'First Name',
-      mapper: 'first_name'
+      mapper: 'first_name',
     },
     {
       label: 'Last Name',
-      mapper: 'last_name'
-    }
+      mapper: 'last_name',
+    },
   ];
 
   const PendingTableColumns = [
     {
       label: 'First Name',
-      mapper: 'first_name'
+      mapper: 'first_name',
     },
     {
       label: 'Last Name',
-      mapper: 'last_name'
-    }
+      mapper: 'last_name',
+    },
   ];
 
   const headers = [
     TABLE_LABELS?.ASSESSMENT_NAME,
     TABLE_LABELS?.TEACHERS,
     TABLE_LABELS?.START_DATE,
-    TABLE_LABELS?.END_DATE
+    TABLE_LABELS?.END_DATE,
   ];
 
   const [csvData, setCsvData] = useState<[]>([]);
@@ -69,34 +74,34 @@ export default function CompletedAssessments() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.ASSESSMENT_NAME,
       mapper: 'assessment_name',
-      isSort: true
+      isSort: true,
     },
     {
       label: TABLE_LABELS?.TEACHERS,
       mapper: 'teacher',
-      isSort: true
+      isSort: true,
     },
     {
       label: TABLE_LABELS?.START_DATE,
       isSort: true,
       mapper: 'start_date',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
       isSort: true,
       mapper: 'submission_date',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_LABELS?.ACTION,
-      mapper: 'action'
-    }
+      mapper: 'action',
+    },
   ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
@@ -141,13 +146,15 @@ export default function CompletedAssessments() {
     if (handlername === 'delete') {
       deleteHandler(data);
     } else if (handlername === 'view') {
-      window.location.replace(`preview_myassessment_question/${data?.assessment_id}`);
+      window.location.replace(
+        `preview_myassessment_question/${data?.assessment_id}`
+      );
     }
   };
 
   const deleteHandler = (row: any) => {
     setPlayloadData({
-      id: row?.assessment_id
+      id: row?.assessment_id,
     });
     setAdminDeleteDialog(true);
   };
@@ -163,37 +170,50 @@ export default function CompletedAssessments() {
   };
 
   const handleButtonClick = (data: any) => {
-    navigate(`/${schoolName}/assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${data?.assessment_name}`, { state: { page, path: `/${schoolName}/assessments/completed-assessments` } });
+    navigate(
+      `/${schoolName}/assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${data?.assessment_name}`,
+      {
+        state: {
+          page,
+          path: `/${schoolName}/assessments/completed-assessments`,
+        },
+      }
+    );
   };
   // ----------------------------------------API-------------------------
   // Get Assessment List
-  const ordering = orderBy ? order === 'asc' ? orderBy : `-${orderBy}` : '';
-  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/completed-assign-assessment-student-list/?student_id=${user?.user_profile_id}&limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&start_date=${fromDate ? moment(fromDate).format('YYYY-MM-DD') : ''}&submission_date=${toDate ? moment(toDate).format('YYYY-MM-DD') : ''}`,
-    onSuccess: (res: any) => {
-      const accData = res?.data?.response;
-      const respData = accData?.results;
-      setTotalDataCount(accData.count);
-      const body: any = [];
-      const newTableData = respData?.map((item: any) => {
-        body.push([
-          item?.assessment_name,
-          item?.teacher,
-          item?.start_date,
-          item?.submission_date
-        ]);
+  const ordering = orderBy ? (order === 'asc' ? orderBy : `-${orderBy}`) : '';
+  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
+    useGet({
+      baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+      url: `assessments-service/completed-assign-assessment-student-list/?student_id=${user?.user_profile_id}&limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&start_date=${fromDate ? moment(fromDate).format('YYYY-MM-DD') : ''}&submission_date=${toDate ? moment(toDate).format('YYYY-MM-DD') : ''}`,
+      onSuccess: (res: any) => {
+        const accData = res?.data?.response;
+        const respData = accData?.results;
+        setTotalDataCount(accData.count);
+        const body: any = [];
+        const newTableData = respData?.map((item: any) => {
+          body.push([
+            item?.assessment_name,
+            item?.teacher,
+            item?.start_date,
+            item?.submission_date,
+          ]);
 
-        const temp = {
-          ...item,
-          action: <Button onClick={() => handleButtonClick(item)}>Get report</Button>
-        };
-        return temp;
-      });
-      setCsvData(body);
-      setTableData(newTableData);
-    }
-  });
+          const temp = {
+            ...item,
+            action: (
+              <Button onClick={() => handleButtonClick(item)}>
+                Get report
+              </Button>
+            ),
+          };
+          return temp;
+        });
+        setCsvData(body);
+        setTableData(newTableData);
+      },
+    });
 
   // Delete Admin
   const { isLoading: loadingDelete, mutate: mutateDelete } = useDelete({
@@ -204,12 +224,19 @@ export default function CompletedAssessments() {
       fetchAssignedAssignments();
     },
     onError: ({ response }: any) => {
-      toast('error', response?.data?.message || response?.statusText || 'Error');
-    }
+      toast(
+        'error',
+        response?.data?.message || response?.statusText || 'Error'
+      );
+    },
   });
 
   // Toolbar Email
-  const { isLoading: emailLoaded, isRefetching: refetchEmail, refetch: fetchEmailApi } = useGet({
+  const {
+    isLoading: emailLoaded,
+    isRefetching: refetchEmail,
+    refetch: fetchEmailApi,
+  } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/assign-assessment-student-list/pdf-download/?student_id=${user?.user_profile_id}`,
     onSuccess: (response: any) => {
@@ -218,16 +245,16 @@ export default function CompletedAssessments() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
     },
-    enabled: false
+    enabled: false,
   });
 
   // ----------------------------------------END API---------------------
 
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailLoaded || refetchEmail) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailLoaded || refetchEmail) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
@@ -239,15 +266,17 @@ export default function CompletedAssessments() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   useEffect(() => {
@@ -266,9 +295,18 @@ export default function CompletedAssessments() {
     </div>;
   }
 
+  const handlePerPage = (e: any) => {
+    setPage(page);
+    setRowsPerPage(e);
+  };
+
   return (
     <RouteLayout>
-      <HeaderMenus title="Completed Assessments" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+      <HeaderMenus
+        title="Completed Assessments"
+        menuArray={ADMIN_TOOLBAR_MENU}
+        handleToolbarAction={handleToolbarAction}
+      />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <div className="pt-[30px]">
@@ -301,12 +339,27 @@ export default function CompletedAssessments() {
               disableOld={fromDate}
             />
           </div>
+          <Dropdown
+            title="Result Of Pages"
+            value={rowsPerPage}
+            dataArray={RESULTS_PER_PAGE}
+            onChangeHandler={handlePerPage}
+            sxClass={{ width: '206px', marginRight: '5px' }}
+          />
           <div className="flex gap-2 justify-center items-center h-[36px]">
-            <span tabIndex={0} title="Clear dates" onClick={reset} role="button">
+            <span
+              tabIndex={0}
+              title="Clear dates"
+              onClick={reset}
+              role="button"
+            >
               <RestartAltIcon />
             </span>
-            <Link to={`/${schoolName}/assessments`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
-              My Assessments
+            <Link
+              to={`/${schoolName}/assessments`}
+              className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent"
+            >
+              Assigned Assessments
             </Link>
           </div>
         </div>
@@ -342,7 +395,7 @@ export default function CompletedAssessments() {
         setOpen={() => {
           handleDialog();
         }}
-        title="Completed Assessment"
+        title="Completed Assessments"
       >
         <div ref={completedAssignRef}>
           <div className="flex gap-2 justify-between items-center mb-3">

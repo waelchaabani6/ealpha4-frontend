@@ -52,7 +52,7 @@ const Tabs = React.forwardRef((props: Props, ref: any) => {
         setCurrentIndex(index);
         props.paginateHandler(1);
       }}
-      className={`w-[175px] h-[52px]
+      className={`min-w-[100px] h-[52px] overflow-x-auto px-4
       ${currentTab.title === tab.title ? 'bg-accent text-white' : 'bg-[#FAFAFA] border border-[#CCCCCC] text-black'}
       rounded-tr-lg rounded-tl-lg text-sm grid place-items-center font-medium cursor-pointer`}
     >

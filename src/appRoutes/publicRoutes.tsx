@@ -8,6 +8,7 @@ const TermsOfUse = React.lazy(() => import('@containers/staticPages/termsOfUse')
 const ContactUs = React.lazy(() => import('@containers/staticPages/contactUs'));
 const GetApp = React.lazy(() => import('@containers/staticPages/getApp'));
 const AboutUs = React.lazy(() => import('@containers/staticPages/aboutUs'));
+const SystemRrequirements = React.lazy(() => import('@containers/staticPages/systemRequirements'));
 
 export default [
   {
@@ -41,5 +42,9 @@ export default [
   {
     path: '/about-us',
     element: <AboutUs />
+  },
+  {
+    path: '/system-requirements',
+    element: <SystemRrequirements />
   }
 ];

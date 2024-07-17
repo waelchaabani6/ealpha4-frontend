@@ -124,6 +124,7 @@ export default function DatePicker(props: DatePickerProps) {
             error={!!error}
             className="input-custome-daterange"
             sx={{
+              backgroundColor: 'white',
               borderRadius: '4px',
               '.Mui-disabled': {
                 backgroundColor: 'var(--sandgray)',

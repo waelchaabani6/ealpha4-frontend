@@ -16,7 +16,7 @@ export default function SchoolDataLoad() {
 
   const { data, isLoading, isSuccess, isError, error } = useGet({
     baseURL: schoolServiceUrl,
-    url: `schools-service/schools/${id || schoolId}/`
+    url: `schools-service/schools/${id || schoolId}/`,
   });
 
   useEffect(() => {
@@ -25,9 +25,12 @@ export default function SchoolDataLoad() {
     }
   }, [isSuccess]);
 
-  useEffect(() => () => {
-    dispatch(resetStoreSchool());
-  }, []);
+  useEffect(
+    () => () => {
+      dispatch(resetStoreSchool());
+    },
+    []
+  );
 
   const renderBeforeData = useMemo(() => {
     if (isError) {
@@ -37,16 +40,14 @@ export default function SchoolDataLoad() {
         </div>
       );
     }
-    return (<Loader />);
+    return <Loader />;
   }, [isLoading, isError]);
 
-  return (
-    isLoading || isError
-      ? (
-        <div className="h-full w-full grid place-items-center">
-          {renderBeforeData}
-        </div>
-      )
-      : <Outlet />
+  return isLoading || isError ? (
+    <div className="h-full w-full grid place-items-center">
+      {renderBeforeData}
+    </div>
+  ) : (
+    <Outlet />
   );
 }

@@ -18,7 +18,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
 } from '@mui/material';
 import { useGet } from '@shared/api/useApi';
 import Loader from '@shared/loader';
@@ -30,12 +30,17 @@ import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { CSVLink } from 'react-csv';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import {
   TABLE_LABELS,
   TOOLBAR_LABELS,
-  USER_TYPE
+  USER_TYPE,
 } from '../../../constants/constants';
 import Wrapper from '../../../shared/wrapper/Wrapper';
 import RouteLayout from '../../layout/routeLayout';
@@ -50,7 +55,7 @@ const printButton = () => <PrintIcon />;
 export default function Index() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { state: { stateData } } = useLocation();
+  const state = location.state || {};
   const { schoolData, branchData } = useSelector(selectSchoolData);
   const [searchParams] = useSearchParams();
   const userData = useSelector((state: any) => state?.user);
@@ -84,15 +89,20 @@ export default function Index() {
   const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || '';
   const BRANCH_ID = branchData?.school_data?.id || '';
 
-  const program = stateData?.program || '';
-  const assignmentName = stateData?.assignment || '';
-  const classname = stateData?.class || '';
-  const startData = stateData?.startData || '';
-  const endDate = stateData?.endDate || '';
   const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
+
+  const program = state?.program || '';
+  const assignmentName = state?.assignment || '';
+  const classname = state?.class || '';
+  const startData = state?.startData || '';
+  const endDate = state?.endDate || '';
   const [csvData, setCsvData] = useState<[]>([]);
 
-  const { isRefetching: emailSendLoading, refetch: sendEmail, isLoading: emailLoad } = useGet({
+  const {
+    isRefetching: emailSendLoading,
+    refetch: sendEmail,
+    isLoading: emailLoad,
+  } = useGet({
     baseURL: ReportURL,
     url: `reports-service/assignment_details_report/send_email/?user_id=${userId}&school_id=${SCHOOL_ID}`,
     onSuccess: () => {
@@ -102,7 +112,7 @@ export default function Index() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Unable to send email');
     },
-    enabled: false
+    enabled: false,
   }) as any;
 
   const handelSendEmail = () => {
@@ -115,13 +125,13 @@ export default function Index() {
     TABLE_LABELS.SUBMITTED_DATE,
     TABLE_LABELS?.SCORE,
     TABLE_LABELS?.PERCENTAGE,
-    TABLE_LABELS?.PERFORMANCE_EXPECTATION
+    TABLE_LABELS?.PERFORMANCE_EXPECTATION,
   ];
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: 'Export',
       icon: (
@@ -133,7 +143,7 @@ export default function Index() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: 'Print',
@@ -142,56 +152,56 @@ export default function Index() {
           trigger={printButton}
           content={() => componentRef.current}
         />
-      )
-    }
+      ),
+    },
   ];
 
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
       mapper: 'SR_NO',
-      align: 'center'
+      align: 'center',
     },
     {
       label: 'Student First Name',
       mapper: 'StudentFirstName',
-      isSort: true
+      isSort: true,
     },
     {
       label: 'Student Last Name',
       isSort: true,
-      mapper: 'StudentLastName'
+      mapper: 'StudentLastName',
     },
     {
       label: 'Date Submitted',
       isSort: true,
-      mapper: 'DateSubmitted'
+      mapper: 'DateSubmitted',
     },
     {
       label: 'Score',
       isSort: true,
-      mapper: 'Score'
+      mapper: 'Score',
     },
     {
       label: 'Percentage %',
       isSort: true,
-      mapper: 'Percentage'
+      mapper: 'Percentage',
     },
     {
       label: 'Time (HH:MM)',
       isSort: true,
-      mapper: 'Time'
+      mapper: 'Time',
     },
     {
       label: 'Checks',
       isSort: true,
-      mapper: 'Check'
+      mapper: 'Check',
     },
     {
       label: 'Performance Expectation',
       isSort: true,
-      mapper: 'PerformanceExpectation'
-    }
+      mapper: 'PerformanceExpectation',
+    },
   ];
 
   interface DataItem {
@@ -248,58 +258,87 @@ export default function Index() {
           const month = String(date.getMonth() + 1).padStart(2, '0');
           const year = date.getFullYear();
           const formattedDate = `${day}-${month}-${year}`;
-          body.push(
-            {
-              SR_NO: i.Sr_No,
-              StudentFirstName: i.first_name,
-              StudentLastName: i.last_name,
-              DateSubmitted: i.submitted_at ? formattedDate : '',
-              Score: `${i.score_value ? i.score_value : ''}/ ${i.total_score ? i.total_score : ''} `,
-              Percentage: i.score_in_percent ? Number(i.score_in_percent).toFixed(2) : '',
-              Time: i.time,
-              PerformanceExpectation: i.performance_expectation,
-              Check: i.checks,
-              AssignmentName: i.assignment_name,
-              StudentID: i.student_id,
-              ClassName: classname,
-              assignmentID: i.assignment_id
-            }
-          );
+          body.push({
+            SR_NO: i.Sr_No,
+            StudentFirstName: i.first_name,
+            StudentLastName: i.last_name,
+            DateSubmitted: i.submitted_at ? formattedDate : '',
+            Score: `${i.score_value ? i.score_value : ''}/ ${i.total_score ? i.total_score : ''} `,
+            Percentage: i.score_in_percent
+              ? Number(i.score_in_percent).toFixed(2)
+              : '',
+            Time: i.time,
+            PerformanceExpectation: i.performance_expectation,
+            Check: i.checks,
+            AssignmentName: i.assignment_name,
+            StudentID: i.student_id,
+            ClassName: classname,
+            assignmentID: i.assignment_id,
+          });
           studentbody.push({
             label: i.first_name,
             value: i.first_name,
-            id: i.student_id
+            id: i.student_id,
           });
           setStudentData(studentbody);
-          csvbody.push([i.assignment_name, i.first_name, i.last_name, i.submitted_at ? formattedDate : '', `${i.score_value ? i.score_value : ''}/ ${i.total_score ? i.total_score : ''} `, i.score_in_percent, i.performance_expectation]);
+          csvbody.push([
+            i.assignment_name,
+            i.first_name,
+            i.last_name,
+            i.submitted_at ? formattedDate : '',
+            `${i.score_value ? i.score_value : ''}/ ${i.total_score ? i.total_score : ''} `,
+            i.score_in_percent,
+            i.performance_expectation,
+          ]);
           return true;
         });
-        const modifiedRows = body.map((row: any) => {
-          if (row.PerformanceExpectation === 'Meets') {
-            return {
-              ...row,
-              PerformanceExpectation: <div className="bg-[#BECCFF] p-4">{row?.PerformanceExpectation}</div>
-            };
-          } if (row.PerformanceExpectation === 'Does Not Meet') {
-            return {
-              ...row,
-              PerformanceExpectation: <div className="bg-[#FCD4C6] p-4">{row?.PerformanceExpectation}</div>
-            };
-          }
-          if (row.PerformanceExpectation === 'Exceeds') {
-            return {
-              ...row,
-              PerformanceExpectation: <div className="bg-[#D9FFC8] p-4">{row?.PerformanceExpectation}</div>
-            };
-          }
-          if (row.PerformanceExpectation === 'Approaching') {
-            return {
-              ...row,
-              PerformanceExpectation: <div className="bg-[#FFF9BE] p-4">{row?.PerformanceExpectation}</div>
-            };
-          }
-          return row;
-        }).sort((a: { SR_NO: number }, b: { SR_NO: number }) => a.SR_NO - b.SR_NO);
+        const modifiedRows = body
+          .map((row: any) => {
+            if (row.PerformanceExpectation === 'Meets') {
+              return {
+                ...row,
+                PerformanceExpectation: (
+                  <div className="bg-[#BECCFF] p-4">
+                    {row?.PerformanceExpectation}
+                  </div>
+                ),
+              };
+            }
+            if (row.PerformanceExpectation === 'Does Not Meet') {
+              return {
+                ...row,
+                PerformanceExpectation: (
+                  <div className="bg-[#FCD4C6] p-4">
+                    {row?.PerformanceExpectation}
+                  </div>
+                ),
+              };
+            }
+            if (row.PerformanceExpectation === 'Exceeds') {
+              return {
+                ...row,
+                PerformanceExpectation: (
+                  <div className="bg-[#D9FFC8] p-4">
+                    {row?.PerformanceExpectation}
+                  </div>
+                ),
+              };
+            }
+            if (row.PerformanceExpectation === 'Approaching') {
+              return {
+                ...row,
+                PerformanceExpectation: (
+                  <div className="bg-[#FFF9BE] p-4">
+                    {row?.PerformanceExpectation}
+                  </div>
+                ),
+              };
+            }
+            return row;
+          })
+          .sort(
+            (a: { SR_NO: number }, b: { SR_NO: number }) => a.SR_NO - b.SR_NO
+          );
         setCsvData(csvbody);
         SetDetails(modifiedRows);
         setTotalRecords(records);
@@ -310,24 +349,41 @@ export default function Index() {
           if (row.performance_status === 'Meets') {
             return {
               ...row,
-              performance_status: <div className="bg-[#BECCFF] p-4">{row?.performance_status}</div>
+              performance_status: (
+                <div className="bg-[#BECCFF] p-4">
+                  {row?.performance_status}
+                </div>
+              ),
             };
-          } if (row.performance_status === 'Does Not Meet') {
+          }
+          if (row.performance_status === 'Does Not Meet') {
             return {
               ...row,
-              performance_status: <div className="bg-[#FCD4C6] p-4">{row?.performance_status}</div>
+              performance_status: (
+                <div className="bg-[#FCD4C6] p-4">
+                  {row?.performance_status}
+                </div>
+              ),
             };
           }
           if (row.performance_status === 'Exceeds') {
             return {
               ...row,
-              performance_status: <div className="bg-[#D9FFC8] p-4">{row?.performance_status}</div>
+              performance_status: (
+                <div className="bg-[#D9FFC8] p-4">
+                  {row?.performance_status}
+                </div>
+              ),
             };
           }
           if (row.performance_status === 'Approaching') {
             return {
               ...row,
-              performance_status: <div className="bg-[#FFF9BE] p-4">{row?.performance_status}</div>
+              performance_status: (
+                <div className="bg-[#FFF9BE] p-4">
+                  {row?.performance_status}
+                </div>
+              ),
             };
           }
           return row;
@@ -335,9 +391,8 @@ export default function Index() {
         setSecondTable(modifiedRows);
       }
     },
-    onError: ({ response }: any) => {
-    },
-    enabled: false
+    onError: ({ response }: any) => {},
+    enabled: false,
   });
 
   const handleOptionChange = (event: any) => {
@@ -361,10 +416,13 @@ export default function Index() {
     if (SCHOOL_ID) {
       AssignmentDetails();
     }
-  }, [percentage, SCHOOL_ID, graph, studentid, CourseID]);
+  }, [percentage, SCHOOL_ID, graph, studentid, CourseID, page]);
 
   return (
-    <RouteLayout state={location?.state ? { page: location?.state?.page } : {}} path={`/${schoolName}/reports`}>
+    <RouteLayout
+      state={location?.state ? { page: location?.state?.page } : {}}
+      path={`/${schoolName}/reports`}
+    >
       <HeaderMenus
         title={`Report -  ${view === 'default' ? 'Assignments Details' : 'Multiple Assignments Student Level'}`}
         menuArray={ADMIN_TOOLBAR_MENU}
@@ -420,10 +478,7 @@ export default function Index() {
                 disabled={true}
               />
             </div>
-            <IconButton
-              onClick={handleDialog}
-              sx={{ boxShadow: 'none' }}
-            >
+            <IconButton onClick={handleDialog} sx={{ boxShadow: 'none' }}>
               <SettingsIcon fontSize="small" />
             </IconButton>
           </div>
@@ -440,7 +495,6 @@ export default function Index() {
                 />
               </div>
               {userData && USER_ROLE === USER_TYPE.TEACHER && (
-
                 <div className="w-[150px]">
                   <CustomInput
                     label="Teacher Name"
@@ -468,13 +522,9 @@ export default function Index() {
                   // sxType={1}
                   defaultStyle={true}
                   disabled={true}
-                />
-                {' '}
+                />{' '}
               </div>
-              <IconButton
-                onClick={handleDialog}
-                sx={{ boxShadow: 'none' }}
-              >
+              <IconButton onClick={handleDialog} sx={{ boxShadow: 'none' }}>
                 <SettingsIcon fontSize="small" />
               </IconButton>
             </div>
@@ -493,17 +543,18 @@ export default function Index() {
                 <Table stickyHeader={true} aria-label="sticky table">
                   <TableHead>
                     <TableRow>
-                      {TableColumns?.map((item: any, index: number) => (item?.label ? (
-                        <TableCell
-                          key={`${item?.label}-${index}`}
-                          align={item?.align || 'left'}
-                          colSpan={item?.colspan || 1}
-                        >
-                          {item?.label}
-                        </TableCell>
-                      ) : (
-                        ''
-                      ))
+                      {TableColumns?.map((item: any, index: number) =>
+                        item?.label ? (
+                          <TableCell
+                            key={`${item?.label}-${index}`}
+                            align={item?.align || 'left'}
+                            colSpan={item?.colspan || 1}
+                          >
+                            {item?.label}
+                          </TableCell>
+                        ) : (
+                          ''
+                        )
                       )}
                     </TableRow>
                   </TableHead>
@@ -514,7 +565,16 @@ export default function Index() {
                           <TableRow
                             hover={true}
                             onClick={() => {
-                              const { StudentID, StudentFirstName, StudentLastName, AssignmentName, ClassName, Score, Percentage, DateSubmitted } = row;
+                              const {
+                                StudentID,
+                                StudentFirstName,
+                                StudentLastName,
+                                AssignmentName,
+                                ClassName,
+                                Score,
+                                Percentage,
+                                DateSubmitted,
+                              } = row;
                               const stateData2 = {
                                 studentID: StudentID,
                                 studentName: `${StudentFirstName} ${StudentLastName}`,
@@ -522,12 +582,18 @@ export default function Index() {
                                 className: ClassName,
                                 Score,
                                 percentage: Percentage,
-                                Submitteddate: DateSubmitted
+                                Submitteddate: DateSubmitted,
                               };
-                              navigate(`${link}/${row.StudentID}/${row.assignmentID}`, { state: { stateData2 } });
+                              navigate(
+                                `${link}/${row.StudentID}/${row.assignmentID}`,
+                                { state: { stateData2 } }
+                              );
                             }}
                             key={`${row?.id}-${index}`}
-                            sx={{ '& > *': { borderBottom: 'unset' }, cursor: 'pointer' }}
+                            sx={{
+                              '& > *': { borderBottom: 'unset' },
+                              cursor: 'pointer',
+                            }}
                           >
                             {TableColumns?.map((item: any, inn: number) => (
                               <TableCell
@@ -579,23 +645,30 @@ export default function Index() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {SecondTabledata && SecondTabledata?.map((row, index) => (
-                      <TableRow key={index}>
-                        <TableCell align="center">{row.performance_status}</TableCell>
-                        <TableCell align="center">
-                          {row?.names?.length > 2 ? `${row?.names?.slice(0, 2).join(', ')} ` : row?.names?.join(', ')}
-                          {row?.names?.length > 2 && (
-                            <p className="text-green-500 underline" onClick={() => { handleStudentModal(); setStudentArr(row.names); }}>
-                              +
-                              {row.names.length - 2}
-                              {' '}
-                              more
-                            </p>
-                          )}
-
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {SecondTabledata &&
+                      SecondTabledata?.map((row, index) => (
+                        <TableRow key={index}>
+                          <TableCell align="center">
+                            {row.performance_status}
+                          </TableCell>
+                          <TableCell align="center">
+                            {row?.names?.length > 2
+                              ? `${row?.names?.slice(0, 2).join(', ')} `
+                              : row?.names?.join(', ')}
+                            {row?.names?.length > 2 && (
+                              <p
+                                className="text-green-500 underline"
+                                onClick={() => {
+                                  handleStudentModal();
+                                  setStudentArr(row.names);
+                                }}
+                              >
+                                +{row.names.length - 2} more
+                              </p>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -626,8 +699,8 @@ export default function Index() {
                           sx={{
                             color: 'var(--sunlight)',
                             '&.Mui-checked': {
-                              color: 'var(--sunlight)'
-                            }
+                              color: 'var(--sunlight)',
+                            },
                           }}
                         />
                       }
@@ -640,8 +713,8 @@ export default function Index() {
                           sx={{
                             color: 'var(--sunlight)',
                             '&.Mui-checked': {
-                              color: 'var(--sunlight)'
-                            }
+                              color: 'var(--sunlight)',
+                            },
                           }}
                         />
                       }
@@ -652,13 +725,20 @@ export default function Index() {
               </div>
             </div>
             <div>
-              <StudentLeveBar tabledata={ScoreArray} PerData={perArray} Per={percentage} />
+              <StudentLeveBar
+                tabledata={ScoreArray}
+                PerData={perArray}
+                Per={percentage}
+              />
             </div>
           </div>
           <div className="wrapperBorder mt-5">
             <Wrapper>
               <div>
-                <StudentLeveAreaBar performance={performance} Per={percentage} />
+                <StudentLeveAreaBar
+                  performance={performance}
+                  Per={percentage}
+                />
               </div>
             </Wrapper>
           </div>
@@ -675,7 +755,9 @@ export default function Index() {
                     dataArray={student}
                     displayEmpty={true}
                     onChangeHandler={(val) => {
-                      const obj: any = student.filter((ele: { label: any }) => ele.label === val)[0];
+                      const obj: any = student.filter(
+                        (ele: { label: any }) => ele.label === val
+                      )[0];
                       setID(obj.id);
                       setSelectedStudent(val);
                     }}
@@ -683,15 +765,23 @@ export default function Index() {
                 </div>
               </div>
               <div className="overflow-x-auto">
-
                 <StudentLevelChart linedata={linearr} />
               </div>
             </Wrapper>
           </div>
         </div>
       )}
-      <Setting dialogOpen={dialogOpen} openModal={() => setDialogOpen(!dialogOpen)} closeModal={() => setDialogOpen(false)} />
-      <StudentModal open={openModal} openModal={() => setOpenModal(!openModal)} closeModal={() => setOpenModal(false)} student={studentArr} />
+      <Setting
+        dialogOpen={dialogOpen}
+        openModal={() => setDialogOpen(!dialogOpen)}
+        closeModal={() => setDialogOpen(false)}
+      />
+      <StudentModal
+        open={openModal}
+        openModal={() => setOpenModal(!openModal)}
+        closeModal={() => setOpenModal(false)}
+        student={studentArr}
+      />
     </RouteLayout>
   );
 }

@@ -21,7 +21,14 @@ import { getNoOfPages } from '@utility/utility';
 import RouteLayout from '@layout/routeLayout';
 import DebounceInput from '@component/input/DebounceInput';
 import Dropdown from '@component/dropdown/Dropdown';
-import { PASSWORD_REGEX, PASSWORD_REGEX_MESSAGE, PHONE_NUMBER_REGEX, RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '@constants/constants';
+import {
+  PASSWORD_REGEX,
+  PASSWORD_REGEX_MESSAGE,
+  PHONE_NUMBER_REGEX,
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '@constants/constants';
 import toast from '@shared/toast';
 import { usePatch, usePost } from '@shared/api/useApi';
 import Loader from '@shared/loader';
@@ -43,7 +50,7 @@ type FormInputTypes = {
   admin_user?: any;
   gender?: any;
   flag?: any;
-}
+};
 
 const printButton = () => <PrintIcon />;
 
@@ -54,16 +61,23 @@ export default function Index(props: any) {
     password: yup.string().matches(PASSWORD_REGEX, PASSWORD_REGEX_MESSAGE),
     first_name: yup.string().required('First name is required.'),
     last_name: yup.string().required('Last name is required.'),
-    email: yup.string().email('Invalid email address.').required('Email is required.'),
-    phone_number: yup.string().min(1, 'Phone number is required.').max(12, 'Phone number cannot be more than 12 ').matches(PHONE_NUMBER_REGEX, 'Invalid phone number.'),
+    email: yup
+      .string()
+      .email('Invalid email address.')
+      .required('Email is required.'),
+    phone_number: yup
+      .string()
+      .min(1, 'Phone number is required.')
+      .max(12, 'Phone number cannot be more than 12 ')
+      .matches(PHONE_NUMBER_REGEX, 'Invalid phone number.'),
     nationality: yup.string().required('Nationality is required.').nullable(),
     gender: yup.string().required('Gender is required.').nullable(),
     region: yup.string().when('flag', {
       is: false,
       then: yup.string().required('Region is required'),
-      otherwise: yup.string().optional()
+      otherwise: yup.string().optional(),
     }),
-    flag: yup.boolean()
+    flag: yup.boolean(),
   };
   if (editMode) {
     shape = {
@@ -71,8 +85,8 @@ export default function Index(props: any) {
       password: yup.string().when('password', {
         is: (val: any) => val?.length,
         then: yup.string().matches(PASSWORD_REGEX, PASSWORD_REGEX_MESSAGE),
-        otherwise: yup.string().optional()
-      })
+        otherwise: yup.string().optional(),
+      }),
     };
   }
 
@@ -93,7 +107,7 @@ export default function Index(props: any) {
     TABLE_LABELS?.FIRST_NAME,
     TABLE_LABELS?.LAST_NAME,
     TABLE_LABELS?.REGION,
-    TABLE_LABELS?.STATUS
+    TABLE_LABELS?.STATUS,
   ];
   const componentRef = useRef(null);
   const userServicesBaseURL = import.meta.env.VITE_APP_USER_SERVICE_URL;
@@ -102,48 +116,69 @@ export default function Index(props: any) {
   const ADMIN_TOOLBAR_MENU = [
     {
       title: TOOLBAR_LABELS.ADD,
-      icon: <AddIcon />
+      icon: <AddIcon />,
     },
     // {
     //   title: TOOLBAR_LABELS.IMPORT,
     //   icon: <DriveFolderUploadIcon />
     // },
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: <EmailIcon />
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
-      icon: <CSVLink filename="Admin Management List.csv" data={adminCsvData} headers={header} enclosingCharacter=""><Share /></CSVLink>
+      icon: (
+        <CSVLink
+          filename="Admin Management List.csv"
+          data={adminCsvData}
+          headers={header}
+          enclosingCharacter=""
+        >
+          <Share />
+        </CSVLink>
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   const tabList = [{ title: 'Global' }, { title: 'Region' }];
 
   const addSubAdminSchema = yup
     .object()
-    .shape(shape, [
-      ['password', 'password']
-    ]);
+    .shape(shape, [['password', 'password']]);
 
-  const { handleSubmit, control, setError, reset, clearErrors, setValue, watch } = useForm<FormInputTypes>({
+  const {
+    handleSubmit,
+    control,
+    setError,
+    reset,
+    clearErrors,
+    setValue,
+    watch,
+  } = useForm<FormInputTypes>({
     resolver: yupResolver(addSubAdminSchema),
     defaultValues: {
-      flag: false
-    }
+      flag: false,
+    },
   });
 
   const onSubmit = (values: any) => {
     const updatedDetails = { ...values };
     delete updatedDetails.user_name;
-    editMode ? (updatedDetails.password ? updatedDetails.password : delete updatedDetails.password) : null;
+    editMode
+      ? updatedDetails.password
+        ? updatedDetails.password
+        : delete updatedDetails.password
+      : null;
     editMode ? update(updatedDetails) : mutate(values);
   };
 
@@ -151,7 +186,11 @@ export default function Index(props: any) {
   const { isLoading, mutate } = usePost({
     baseURL: userServicesBaseURL,
     url: 'users-service/create-sub-admin/',
-    onSuccess: ({ data: { response: { data } } }: any) => {
+    onSuccess: ({
+      data: {
+        response: { data },
+      },
+    }: any) => {
       !buttonOpenForm ? setdialogOpen(false) : setdialogOpen(true);
       reset();
       toast('success', 'Successfully Created');
@@ -159,14 +198,18 @@ export default function Index(props: any) {
     onError: ({ response }: any) => {
       toast('error', 'Error');
       handleErrorResponse(response?.data?.errors);
-    }
+    },
   });
 
   /// update/////
   const { isLoading: updateLoading, mutate: update } = usePatch({
     baseURL: userServicesBaseURL,
     url: `${'users-service/edit-sub-admin-details/'}${subAdminTing}/`,
-    onSuccess: ({ data: { response: { data } } }: any) => {
+    onSuccess: ({
+      data: {
+        response: { data },
+      },
+    }: any) => {
       reset();
       setdialogOpen(false);
       setEditMode(false);
@@ -180,7 +223,7 @@ export default function Index(props: any) {
       Object.keys(errorObj).forEach((key1: any) => {
         setError(key1, { type: 'manual', message: errorObj[key1][0] });
       });
-    }
+    },
   });
   // setValue in editForm///
   const handleEditPopup = (val: any) => {
@@ -240,7 +283,7 @@ export default function Index(props: any) {
   const handelSendEmail = () => {
     const payload = {
       list_type: 'admin-list',
-      region: selectedRegion?.title?.toLowerCase()
+      region: selectedRegion?.title?.toLowerCase(),
     };
     mutateEmail(payload);
   };
@@ -283,7 +326,7 @@ export default function Index(props: any) {
     },
     onError: ({ response }: any) => {
       toast('error', response?.statusText || 'Error');
-    }
+    },
   });
 
   // Toolbar Email
@@ -295,7 +338,7 @@ export default function Index(props: any) {
     },
     onError: ({ response }: any) => {
       toast('error', response?.statusText || 'Error');
-    }
+    },
   });
   const onCheckHandler = (checked: boolean) => {
     clearErrors('region');
@@ -303,19 +346,21 @@ export default function Index(props: any) {
     !checked ? setValue('region', '') : setValue('region', 'global');
   };
   if (importLoaded || emailLoaded) {
-    return (<Loader />);
+    return <Loader />;
   }
 
   return (
     <>
       <RouteLayout navBack={true}>
-        <HeaderMenus title="Manage Admin" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+        <HeaderMenus
+          title="Manage Admin"
+          menuArray={ADMIN_TOOLBAR_MENU}
+          handleToolbarAction={handleToolbarAction}
+        />
         <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col mb-5">
           <div className="flex flex-wrap md:justify-start justify-center gap-2 lg:grow grow-0">
             <div className="pt-[30px]">
-              <DebounceInput
-                onChange={(val) => setSearchString(val)}
-              />
+              <DebounceInput onChange={(val) => setSearchString(val)} />
             </div>
             <Dropdown
               title="Result Of Pages"
@@ -356,26 +401,69 @@ export default function Index(props: any) {
           setOpen={() => setdialogOpen(false)}
           title={editMode ? 'Edit Admin' : 'Add Admin'}
         >
-
-          <form className="h-full pb-6" autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
+          <form
+            className="h-full pb-6"
+            autoComplete="off"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <div className="flex justify-between items-center pb-4">
               <PageTitle title="Login Information" />
-              <p className="text-sm text-red-500 opacity-80">All (*) marked fields are mandatory</p>
+              <p className="text-sm text-red-500 opacity-80">
+                All (*) marked fields are mandatory
+              </p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 content-center gap-y-3 md:gap-x-6">
-              <Input required={true} control={control} name="user_name" label="Username" disabled={!!editMode} />
-              <Input required={true} control={control} name="password" type="password" label="Password" autoComplete="new-password" />
+              <Input
+                required={true}
+                control={control}
+                name="user_name"
+                label="Username"
+                disabled={!!editMode}
+              />
+              <Input
+                required={true}
+                control={control}
+                name="password"
+                type="password"
+                label="Password"
+                autoComplete="new-password"
+              />
             </div>
             <div className="py-4">
               <PageTitle title="Basic Information" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 content-center gap-y-3 md:gap-x-6">
-              <Input required={true} control={control} name="first_name" label="First Name" />
-              <Input required={true} control={control} name="last_name" label="Last Name" />
-              <Input required={true} control={control} name="email" label="Email Id" />
-              <Input required={true} control={control} name="phone_number" label="Phone Number" />
-              <Input required={true} control={control} name="nationality" label="Nationality" />
+              <Input
+                required={true}
+                control={control}
+                name="first_name"
+                label="First Name"
+              />
+              <Input
+                required={true}
+                control={control}
+                name="last_name"
+                label="Last Name"
+              />
+              <Input
+                required={true}
+                control={control}
+                name="email"
+                label="Email Id"
+              />
+              <Input
+                required={true}
+                control={control}
+                name="phone_number"
+                label="Phone Number"
+              />
+              <Input
+                required={true}
+                control={control}
+                name="nationality"
+                label="Nationality"
+              />
               <RadioGroup
                 required={true}
                 control={control}
@@ -383,52 +471,54 @@ export default function Index(props: any) {
                 label="Gender"
                 dataArray={[
                   { label: 'Male', value: 'male' },
-                  { label: 'Female', value: 'female' }
+                  { label: 'Female', value: 'female' },
                 ]}
               />
-              {!watch('flag') ? <Select
-                required={true}
-                control={control}
-                name="region"
-                label="Region"
-                dataArray={[
-                  { label: 'KSA', value: 'KSA' },
-                  { label: 'Jordan', value: 'Jordan' },
-                  { label: 'Lebanon', value: 'Lebanon' },
-                  { label: 'Egypt', value: 'Egypt' },
-                  { label: 'Syria', value: 'Syria' },
-                  { label: 'Bahrain', value: 'Bahrain' },
-                  { label: 'UAE', value: 'UAE' },
-                  { label: 'Kuwait', value: 'Kuwait' },
-                  { label: 'Ecuador', value: 'Ecuador' },
-                  { label: 'Panama', value: 'Panama' },
-                  { label: 'Turkey', value: 'Turkey' },
-                  { label: 'Smart', value: 'Smart' },
-                  { label: 'Russia', value: 'Russia' },
-                  { label: 'Kazak', value: 'Kazak' },
-                  { label: 'Korea', value: 'Korea' },
-                  { label: 'Europe', value: 'Europe' },
-                  { label: 'Africa', value: 'Africa' },
-                  { label: 'Tunis', value: 'Tunis' },
-                  { label: 'Spain', value: 'Spain' },
-                  { label: 'Yamen', value: 'Yamen' },
-                  { label: 'Brazil', value: 'Brazil' },
-                  { label: 'USA', value: 'USA' },
-                  { label: 'Canada', value: 'Canada' },
-                  { label: 'China', value: 'China' },
-                  { label: 'France', value: 'France' },
-                  { label: 'Trail', value: 'Trail' },
-                  { label: 'FIN', value: 'FIN' }
-                ]}
-              /> : null}
+              {!watch('flag') ? (
+                <Select
+                  required={true}
+                  control={control}
+                  name="region"
+                  label="Region"
+                  dataArray={[
+                    { label: 'KSA', value: 'KSA' },
+                    { label: 'Jordan', value: 'Jordan' },
+                    { label: 'Lebanon', value: 'Lebanon' },
+                    { label: 'Egypt', value: 'Egypt' },
+                    { label: 'Syria', value: 'Syria' },
+                    { label: 'Bahrain', value: 'Bahrain' },
+                    { label: 'UAE', value: 'UAE' },
+                    { label: 'Kuwait', value: 'Kuwait' },
+                    { label: 'Ecuador', value: 'Ecuador' },
+                    { label: 'Panama', value: 'Panama' },
+                    { label: 'Turkey', value: 'Turkey' },
+                    { label: 'Smart', value: 'Smart' },
+                    { label: 'Russia', value: 'Russia' },
+                    { label: 'Kazak', value: 'Kazak' },
+                    { label: 'Korea', value: 'Korea' },
+                    { label: 'Europe', value: 'Europe' },
+                    { label: 'Africa', value: 'Africa' },
+                    { label: 'Tunis', value: 'Tunis' },
+                    { label: 'Spain', value: 'Spain' },
+                    { label: 'Yamen', value: 'Yamen' },
+                    { label: 'Brazil', value: 'Brazil' },
+                    { label: 'USA', value: 'USA' },
+                    { label: 'Canada', value: 'Canada' },
+                    { label: 'China', value: 'China' },
+                    { label: 'France', value: 'France' },
+                    { label: 'Trail', value: 'Trail' },
+                    { label: 'FIN', value: 'FIN' },
+                  ]}
+                />
+              ) : null}
               <div className="flex -ml-2.5 lg:items-end">
                 <FormControlLabel
-                  control={(
+                  control={
                     <Checkbox
                       checked={watch('flag')}
                       onChange={(_, checked) => onCheckHandler(checked)}
                     />
-                  )}
+                  }
                   label="Mark as Global"
                 />
               </div>
@@ -454,9 +544,7 @@ export default function Index(props: any) {
               </Button>
             </div>
           </form>
-
         </CustomizedDialogs>
-
       </RouteLayout>
     </>
   );

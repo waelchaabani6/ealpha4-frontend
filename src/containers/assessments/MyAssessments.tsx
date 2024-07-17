@@ -2,7 +2,7 @@ import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import Dropdown from '@component/dropdown/Dropdown';
 import { useNavigate, Link, useLocation, useParams } from 'react-router-dom';
 import CustomPagination from '@component/pagination/CustomPagination';
-import { COMPONENTS, TABLE_LABELS, ASSESSMENT_TYPE, USER_TYPE } from '@constants/constants';
+import {COMPONENTS, TABLE_LABELS, ASSESSMENT_TYPE, USER_TYPE, RESULTS_PER_PAGE} from '@constants/constants';
 import RouteLayout from '@layout/routeLayout';
 import { selectSchoolData } from '@shared/store/schoolSlice';
 import PageTitle from '@shared/pageTitle';
@@ -82,7 +82,7 @@ export default function MyAssessments() {
   const [playloadData, setPlayloadData] = useState<any | undefined>({});
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [page, setPage] = useState(1);
-  const [rowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
   const [order, setOrder] = useState<any>('desc');
   const [orderBy, setOrderBy] = useState<any>('created_at');
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
@@ -94,12 +94,10 @@ export default function MyAssessments() {
   };
 
   const actionHandler = (data: any, handlername: string) => {
-    const obeasses_id = data?.obeasses_id;
-
     if (handlername === 'delete') {
       deleteHandler(data);
     } else if (handlername === 'view') {
-      navigate(`/${schoolName}/assessments/preview_myassessment_question/${data?.id}`, { state: { page, obeasses_id, path: `/${schoolName}/assessments/my-assessments` } });
+      navigate(`/${schoolName}/assessments/preview_myassessment_question/${data?.id}`, { state: { page, path: `/${schoolName}/assessments/my-assessments` } });
     }
   };
 
@@ -224,6 +222,10 @@ export default function MyAssessments() {
   };
   CLASS_ARRAY.sort(compare);
 
+  const handlePerPage = (e: any) => {
+    setRowsPerPage(e);
+  };
+
   return (
     <RouteLayout navBack={true}>
       <div className="flex flex-col mb-4">
@@ -241,6 +243,7 @@ export default function MyAssessments() {
                 setPage(1);
               }}
               loading={loadCourses}
+              sxClass={{ width: '206px', marginRight: '5px' }}
             />
             <Dropdown
               title="Select Class"
@@ -251,6 +254,7 @@ export default function MyAssessments() {
                 setPage(1);
               }}
               loading={loadClassesForTeacher || loadClassesForSchool}
+              sxClass={{ width: '206px', marginRight: '5px' }}
             />
             <Dropdown
               title="Select Category"
@@ -261,6 +265,7 @@ export default function MyAssessments() {
                 setPage(1);
               }}
               loading={loadCategories}
+              sxClass={{ width: '206px', marginRight: '5px' }}
             />
             <Dropdown
               title="Assessment Type"
@@ -270,10 +275,18 @@ export default function MyAssessments() {
                 setassessmentType(d);
                 setPage(1);
               }}
+              sxClass={{ width: '206px', marginRight: '5px' }}
+            />
+            <Dropdown
+              title="Result Of Pages"
+              value={rowsPerPage}
+              dataArray={RESULTS_PER_PAGE}
+              onChangeHandler={handlePerPage}
+              sxClass={{ width: '206px', marginRight: '5px' }}
             />
             <div className="pt-4 md:pt-8 h-full flex items-center">
               <Link to={`/${schoolName}/assessments/create-new-assessment`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
-                Create Assessments
+                Create Assessment
               </Link>
               <Link to={`/${schoolName}/assessments/assigned`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
                 Assigned Assessments

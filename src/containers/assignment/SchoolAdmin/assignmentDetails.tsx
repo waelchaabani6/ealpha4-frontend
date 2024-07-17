@@ -208,7 +208,8 @@ export default function AssignmentDetails({ setSelectedCourseObj, selectedCourse
           name="select_components"
           disabled={!(watch('select_course') && watch('select_grade')) || componentLoading || componentRefetching}
           label="Select Component"
-          dataArray={ComponentArray}
+          // dataArray={ComponentArray}
+          dataArray={ComponentArray.filter(item => item.label !== 'Teacher_Resources')}
           required={true}
           onChange={(val: any) => {
             if (val.target.value) {

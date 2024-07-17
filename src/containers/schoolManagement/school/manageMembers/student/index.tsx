@@ -106,7 +106,7 @@ export default function Index(props: any) {
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
 
   //  Get Students List
-  const temps = (rowsPerPage === 'all') ? totalDataCount : rowsPerPage;
+  const temps = (rowsPerPage === 'All') ? totalDataCount : rowsPerPage;
   const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
   const body: any = [];
   const { isFetching: studentLoading, refetch: fetchStudent } = useGet({

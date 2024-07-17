@@ -1,3 +1,6 @@
+/* eslint-disable no-confusing-arrow */
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable comma-dangle */
 import { IconButton } from '@component/button/button';
 import DatePicker from '@component/datepicker';
 import { CustomInput } from '@component/input';
@@ -13,7 +16,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
 } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -73,7 +76,11 @@ export default function Index() {
   const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || '';
   const BRANCH_ID = branchData?.school_data?.id || '';
 
-  const { isRefetching: emailSendLoading, refetch: sendEmail, isLoading: emailLoad } = useGet({
+  const {
+    isRefetching: emailSendLoading,
+    refetch: sendEmail,
+    isLoading: emailLoad,
+  } = useGet({
     baseURL: import.meta.env.VITE_APP_REPORTS_SERVICE_URL,
     url: `reports-service/question_level_assignments/send_email/?user_id=${userId}&school_id=${schoolId}${StudentID ? `&student_id=${StudentID}` : ''}`,
     onSuccess: () => {
@@ -83,7 +90,7 @@ export default function Index() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Unable to send email');
     },
-    enabled: false
+    enabled: false,
   }) as any;
 
   const headers = [
@@ -92,13 +99,15 @@ export default function Index() {
     TABLE_LABELS?.STANDARD,
     TABLE_LABELS.PERFORMANCE_EXPECTATION,
     TABLE_LABELS?.CLASS_AVG,
-    TABLE_LABELS?.ClassAverage
+    TABLE_LABELS?.ClassAverage,
   ];
+
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon:
+    //     emailSendLoading || emailLoad ? <Loader size={20} /> : <EmailIcon />,
+    // },
     {
       title: 'Export',
       icon: (
@@ -110,7 +119,7 @@ export default function Index() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: 'Print',
@@ -119,46 +128,46 @@ export default function Index() {
           trigger={printButton}
           content={() => componentRef.current}
         />
-      )
-    }
+      ),
+    },
   ];
 
   const TableColumns: any = [
     {
       label: 'Question',
-      mapper: 'Question'
+      mapper: 'Question',
     },
     {
       label: 'Points Scored',
-      mapper: 'PointsScored'
+      mapper: 'PointsScored',
     },
     {
       label: 'Percentage %',
-      mapper: 'Percentage'
+      mapper: 'Percentage',
     },
     {
       label: 'Standard',
-      mapper: 'Standard'
+      mapper: 'Standard',
     },
     {
       label: 'Check',
-      mapper: 'Check'
+      mapper: 'Check',
     },
     {
       label: 'Performance Expectation',
       isSort: true,
-      mapper: 'PerformanceExpectation'
+      mapper: 'PerformanceExpectation',
     },
     {
       label: 'Class Average Points',
       isSort: true,
-      mapper: 'ClassAveragePoints'
+      mapper: 'ClassAveragePoints',
     },
     {
       label: 'Class Average %',
       isSort: true,
-      mapper: 'ClassAverage'
-    }
+      mapper: 'ClassAverage',
+    },
   ];
 
   const handleDialog = () => {
@@ -185,47 +194,70 @@ export default function Index() {
         const body: any = [];
         const csvbody: any = [];
         astData?.map((i: any, index: any) => {
-          body.push(
-            {
-              Question: i.page_number,
-              PointsScored: `${i.scores_val ? i.scores_val : ''}/ ${i.max_scores
-                ? i.max_scores
-                : ''} `,
-              Percentage: i.score_in_percent ? i.score_in_percent.toFixed(2) : '',
-              Standard: '',
-              Check: i.checks_count,
-              PerformanceExpectation: i.performance_expectation,
-              ClassAveragePoints: `${i.class_average_score ? i.class_average_score : ''}/ ${i.class_average_max_score ? i.class_average_max_score : ''} `,
-              ClassAverage: i.class_score_in_percent
-            }
-          );
-          csvbody.push([index + 1, `${i.scores_val ? i.scores_val : ''}/ ${i.max_scores
-            ? i.max_scores
-            : ''} `, i.score_in_percent, '', i.performance_expectation, `${i.class_average_score ? i.class_average_score : ''}/ ${i.class_average_max_score ? i.class_average_max_score : ''} `, i.class_score_in_percent]);
+          body.push({
+            Question: i.page_number,
+            PointsScored: `${i.scores_val ? i.scores_val : ''}/ ${
+              i.max_scores ? i.max_scores : ''
+            } `,
+            Percentage: i.score_in_percent ? i.score_in_percent.toFixed(2) : '',
+            Standard: '',
+            Check: i.checks_count,
+            PerformanceExpectation: i.performance_expectation,
+            ClassAveragePoints: `${i.class_average_score ? i.class_average_score : ''}/ ${i.class_average_max_score ? i.class_average_max_score : ''} `,
+            ClassAverage: i.class_score_in_percent,
+          });
+          csvbody.push([
+            index + 1,
+            `${i.scores_val ? i.scores_val : ''}/ ${
+              i.max_scores ? i.max_scores : ''
+            } `,
+            i.score_in_percent,
+            '',
+            i.performance_expectation,
+            `${i.class_average_score ? i.class_average_score : ''}/ ${i.class_average_max_score ? i.class_average_max_score : ''} `,
+            i.class_score_in_percent,
+          ]);
           return true;
         });
         const modifiedRows = body.map((row: any) => {
           if (row.PerformanceExpectation === 'Meets') {
             return {
               ...row,
-              PerformanceExpectation: <div className="bg-[#BECCFF] p-4">{row?.PerformanceExpectation}</div>
+              PerformanceExpectation: (
+                <div className="bg-[#BECCFF] p-4">
+                  {row?.PerformanceExpectation}
+                </div>
+              ),
             };
-          } if (row.PerformanceExpectation === 'Does Not Meet') {
+          }
+          if (row.PerformanceExpectation === 'Does Not Meet') {
             return {
               ...row,
-              PerformanceExpectation: <div className="bg-[#FCD4C6] p-4">{row?.PerformanceExpectation}</div>
+              PerformanceExpectation: (
+                <div className="bg-[#FCD4C6] p-4">
+                  {row?.PerformanceExpectation}
+                </div>
+              ),
             };
           }
           if (row.PerformanceExpectation === 'Exceeds') {
             return {
               ...row,
-              PerformanceExpectation: <div className="bg-[#D9FFC8] p-4">{row?.PerformanceExpectation}</div>
+              PerformanceExpectation: (
+                <div className="bg-[#D9FFC8] p-4">
+                  {row?.PerformanceExpectation}
+                </div>
+              ),
             };
           }
           if (row.PerformanceExpectation === 'Approaching') {
             return {
               ...row,
-              PerformanceExpectation: <div className="bg-[#FFF9BE] p-4">{row?.PerformanceExpectation}</div>
+              PerformanceExpectation: (
+                <div className="bg-[#FFF9BE] p-4">
+                  {row?.PerformanceExpectation}
+                </div>
+              ),
             };
           }
           return row;
@@ -238,10 +270,15 @@ export default function Index() {
         SetLineArr(LineData);
       }
     },
-    onError: ({ response }: any) => {
-    },
-    enabled: false
+    onError: ({ response }: any) => {},
+    enabled: false,
   });
+
+  useEffect(() => {
+    if (page) {
+      QuestionLevel();
+    }
+  }, [page]);
 
   const handleToolbarAction = async (title: string) => {
     if (title === TOOLBAR_LABELS.EMAIL) {
@@ -294,19 +331,17 @@ export default function Index() {
               disabled={true}
             />
           </div>
-          {
-            view && view !== 'default' && (
-              <div className="m-w-fit">
-                <CustomInput
-                  name="teacher"
-                  label="Teacher Name"
-                  size="small"
-                  value={`${userData?.first_name} ${userData?.last_name}`}
-                  disabled={true}
-                />
-              </div>
-            )
-          }
+          {view && view !== 'default' && (
+            <div className="m-w-fit">
+              <CustomInput
+                name="teacher"
+                label="Teacher Name"
+                size="small"
+                value={`${userData?.first_name} ${userData?.last_name}`}
+                disabled={true}
+              />
+            </div>
+          )}
           <div className="m-w-min">
             <CustomInput
               name="studentname"
@@ -343,10 +378,7 @@ export default function Index() {
               disabled={true}
             />
           </div>
-          <IconButton
-            onClick={handleDialog}
-            sx={{ boxShadow: 'none' }}
-          >
+          <IconButton onClick={handleDialog} sx={{ boxShadow: 'none' }}>
             <SettingsIcon fontSize="small" />
           </IconButton>
         </div>
@@ -362,12 +394,14 @@ export default function Index() {
               <div>
                 <FormGroup>
                   <FormControlLabel
-                    control={<Checkbox
-                      color="success"
-                      checked={checked}
-                      onChange={handleCheckBox}
-                      inputProps={{ 'aria-label': 'checkbox' }}
-                    />}
+                    control={
+                      <Checkbox
+                        color="success"
+                        checked={checked}
+                        onChange={handleCheckBox}
+                        inputProps={{ 'aria-label': 'checkbox' }}
+                      />
+                    }
                     label="Select to see Class Average Score and Class Average in %"
                   />
                 </FormGroup>
@@ -376,17 +410,18 @@ export default function Index() {
                 <Table stickyHeader={true} aria-label="sticky table">
                   <TableHead>
                     <TableRow>
-                      {TableColumn?.map((item: any, index: number) => (item?.label ? (
-                        <TableCell
-                          key={`${item?.label}-${index}`}
-                          align="center"
-                          colSpan={item?.colspan || 1}
-                        >
-                          {item?.label}
-                        </TableCell>
-                      ) : (
-                        ''
-                      ))
+                      {TableColumn?.map((item: any, index: number) =>
+                        item?.label ? (
+                          <TableCell
+                            key={`${item?.label}-${index}`}
+                            align="center"
+                            colSpan={item?.colspan || 1}
+                          >
+                            {item?.label}
+                          </TableCell>
+                        ) : (
+                          ''
+                        )
                       )}
                     </TableRow>
                   </TableHead>
@@ -394,14 +429,9 @@ export default function Index() {
                     {queData.length ? (
                       queData?.map(
                         (row: any, index: number): JSX.Element => (
-                          <TableRow
-                            sx={{ '& > *': { borderBottom: 'unset' } }}
-                          >
+                          <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                             {TableColumn?.map((item: any, inn: number) => (
-                              <TableCell
-                                key={`${row.id}`}
-                                align="center"
-                              >
+                              <TableCell key={`${row.id}`} align="center">
                                 {row[item?.mapper]}
                               </TableCell>
                             ))}
@@ -516,12 +546,14 @@ export default function Index() {
                 <div className="flex">
                   <FormGroup>
                     <FormControlLabel
-                      control={<Checkbox
-                        color="success"
-                        checked={checked}
-                        onChange={handleCheckBox}
-                        inputProps={{ 'aria-label': 'checkbox' }}
-                      />}
+                      control={
+                        <Checkbox
+                          color="success"
+                          checked={checked}
+                          onChange={handleCheckBox}
+                          inputProps={{ 'aria-label': 'checkbox' }}
+                        />
+                      }
                       label="Select to see Class Average Score and Class Average in %"
                     />
                   </FormGroup>
@@ -534,8 +566,11 @@ export default function Index() {
           </div>
         </>
       )}
-      <Setting dialogOpen={dialogOpen} openModal={() => setDialogOpen(!dialogOpen)} closeModal={() => setDialogOpen(false)} />
-
+      <Setting
+        dialogOpen={dialogOpen}
+        openModal={() => setDialogOpen(!dialogOpen)}
+        closeModal={() => setDialogOpen(false)}
+      />
     </RouteLayout>
   );
 }

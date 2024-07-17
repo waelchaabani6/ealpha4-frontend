@@ -20,6 +20,7 @@ import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import { selectSchoolData } from '@shared/store/schoolSlice';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import ToastMessage from '@containers/dashboard/ToastMessage';
 
 export default function BranchAdminDashboard() {
   const { branchData: { name, id } } = useSelector(selectSchoolData);
@@ -116,13 +117,14 @@ export default function BranchAdminDashboard() {
       img: <Notification />
     },
     {
-      text: 'Digital Library',
+      text: 'My Library',
       link: `/${name}/digital-library`,
       img: <ICPractice />
     }
   ];
   return (
     <RouteLayout navBack={false}>
+      <ToastMessage />
       <div className="sm-container">
         <HeaderMenus
           title="Branch Admin"

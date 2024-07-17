@@ -4,13 +4,10 @@ import PageTitle from '@shared/pageTitle';
 import useScript from '@utility/Hooks/UseScript';
 import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import RouteLayout from '../layout/routeLayout';
 
 export default function SingleReportAssessment() {
   const { aid } = useParams();
-  const userRole = useSelector((state: any) => state?.user?.role);
-
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageData, setpageData] = useState<any>({});
   const [error, setError] = useState<any>('');
@@ -74,10 +71,7 @@ export default function SingleReportAssessment() {
       <div className="h-max py-4">
         <PageTitle title="Assessment Details" />
       </div>
-      <div style={{ width: '100%', height: '100vh' }}>
-        {userRole?.name === 'Teacher' && <iframe src={`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/teacher-reports/9c430fa3-82c6-43b1-b81d-588d868eb6f8`} title="External Content" width="100%" height="90%" />}
-      </div>
-      {/* {
+      {
         details && Object.keys(details).length
           ? (
             <div className="mt-5 h-max w-full rounded-md border bg-white p-4">
@@ -175,7 +169,7 @@ export default function SingleReportAssessment() {
             </div>
           )
 
-      } */}
+      }
     </RouteLayout>
   );
 }
