@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import CustomCalendar from '@component/CustomeCalendar';
 import Button from '@component/button/button';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
@@ -46,6 +47,7 @@ export default function StudentDashboard() {
     userId,
     branch_name,
     school_name,
+    schoolId,
   } = useSelector(selectUser);
 
   const { isLoading: assessmentLoading, data: assessmentData } = useRAWGetApi({
@@ -86,13 +88,13 @@ export default function StudentDashboard() {
     refetch,
   } = useRAWGetApi({
     baseURL: roasterServiceBaseURL,
-    url: `roster-service/events/?user_id=${userId}&selected_date=${moment(eventListDate).format('yyyy-MM-DD')}`,
+    url: `roster-service/events/?user_id=${userId}&school_id=${schoolId}&selected_date=${moment(eventListDate).format('yyyy-MM-DD')}`,
     enabled: !!eventListDate,
     cacheTime: 0,
   });
   const { data: eventData, refetch: refreshEvents } = useRAWGetApi({
     baseURL: roasterServiceBaseURL,
-    url: `roster-service/events/?user_id=${userId}`,
+    url: `roster-service/events/?user_id=${userId}&school_id=${schoolId}`,
     cacheTime: 0,
   });
   function convertAndLogLocalTime(utcTimeStr: string) {

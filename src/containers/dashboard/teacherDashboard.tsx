@@ -48,6 +48,7 @@ export default function TeacherDashboard() {
     userId,
     branch_name,
     school_name,
+    schoolId,
   } = useSelector(selectUser);
   const schoolServiceBaseURL = import.meta.env.VITE_APP_SCHOOL_SERVICE_URL;
   const assignmentServiceBaseURL = import.meta.env
@@ -110,13 +111,13 @@ export default function TeacherDashboard() {
     refetch,
   } = useRAWGetApi({
     baseURL: roasterServiceBaseURL,
-    url: `roster-service/events/?user_id=${userId}&selected_date=${moment(eventListDate).format('yyyy-MM-DD')}`,
+    url: `roster-service/events/?user_id=${userId}&school_id=${schoolId}&selected_date=${moment(eventListDate).format('yyyy-MM-DD')}`,
     enabled: !!eventListDate,
     cacheTime: 0,
   });
   const { data: eventData, refetch: refreshEvents } = useRAWGetApi({
     baseURL: roasterServiceBaseURL,
-    url: `roster-service/events/?user_id=${userId}`,
+    url: `roster-service/events/?user_id=${userId}&school_id=${schoolId}`,
     cacheTime: 0,
   });
 
