@@ -1,115 +1,164 @@
-import Global from '@containers/adminPanel/components/Global';
-import Region from '@containers/adminPanel/components/Region';
-import React, {
-  Suspense,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useState,
-} from 'react';
-import Loader from '../loader';
+/* eslint-disable indent */
+import React, { Suspense, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import Loader from '@shared/loader';
 
 type tabType = {
   title: string;
-};
+  component?: React.ReactNode;
+}
+
+/**
+ * component type should be lazily loaded component
+ * <Tabs tabs={[{ title: 'One', component: <One name="TEST" /> }, { title: 'Two', component: <Two /> }]} />
+ */
+
 interface Props {
   tabs: tabType[];
   border?: boolean;
   transparent?: boolean;
-  searchString?: string;
-  currentPage: number;
-  rowsPerPage: number;
-  curTotalPages: number;
-  noOfpages: number;
-  setCurTotalPages: (e?: any) => void;
-  paginateHandler: (e?: any) => void;
-  setRowsPerPage?: any;
-  setPage?: any;
-  triggerExport?: boolean;
-  setTriggerExport?: any;
-  handleEditPopup: (e?: any) => void;
-  setAdminCsvData?: any;
-  editMode?: boolean;
-  setSelectedRegion?: any;
+  disableNext?: boolean | undefined;
+  enableTab?: number[] | undefined;
+  currentTab?: number | undefined;
+  attop?: boolean;
+  currentSelectedTab?: (selectedTab: string) => void;
 }
 
 const Tabs = React.forwardRef((props: Props, ref: any) => {
-  // const disableNext = true;
+  const uid = uuidv4();
   const [currentTab, setCurrentTab] = useState<tabType>(props.tabs[0]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [visitedTabs, setVisitedTabs] = useState<number[]>([0]);
 
   useEffect(() => {
-    props?.setSelectedRegion(props.tabs[0]);
-  }, []);
+    if (props?.enableTab) {
+      setVisitedTabs([...visitedTabs, ...props.enableTab]);
+    }
+  }, [props?.enableTab]);
 
-  const renderTabs = useMemo(
-    () =>
-      props.tabs.map((tab: tabType, index: number) => (
-        <div
-          key={tab.title}
-          role="presentation"
-          data-name={tab.title}
-          onClick={(ev) => {
-            if (props?.setRowsPerPage) {
-              props?.setRowsPerPage(10);
-              props?.setPage(1);
-            }
-            ev.stopPropagation();
-            setCurrentTab(tab);
-            props?.setSelectedRegion(tab);
-            setCurrentIndex(index);
-            props.paginateHandler(1);
-          }}
-          className={`min-w-[100px] h-[52px] overflow-x-auto px-4
-      ${currentTab.title === tab.title ? 'bg-accent text-white' : 'bg-[#FAFAFA] border border-[#CCCCCC] text-black'}
-      rounded-tr-lg rounded-tl-lg text-sm grid place-items-center font-medium cursor-pointer`}
-        >
-          {tab.title}
-        </div>
-      )),
-    [currentTab, currentIndex]
-  );
+  useEffect(() => {
+    if (props?.currentTab) {
+      setCurrentIndex(props.currentTab);
+      setVisitedTabs([props.currentTab]);
+      setCurrentTab(props.tabs[props.currentTab]);
+    }
+  }, [props?.currentTab]);
 
-  const tabProps = {
-    searchString: props.searchString,
-    setCurTotalPages: props.setCurTotalPages,
-    setPage: props.paginateHandler,
-    page: props.currentPage,
-    rowsPerPage: props.rowsPerPage,
-    curTotalPages: props.curTotalPages,
-    noOfpages: props.noOfpages,
-    triggerExport: props?.triggerExport,
-    setTriggerExport: props?.setTriggerExport,
-    handleEditPopup: props?.handleEditPopup,
-    setAdminCsvData: props?.setAdminCsvData,
-    editMode: props?.editMode,
-  };
+  useImperativeHandle(ref, () => ({
+    nextTab(tabArray?: number[]) {
+      if (currentIndex < props.tabs.length - 1) {
+        if (tabArray && tabArray.length > 0) {
+          setVisitedTabs(Array.from(new Set([...visitedTabs, currentIndex + 1, ...tabArray])));
+        }
+        setCurrentIndex(currentIndex + 1);
+        setCurrentTab(props.tabs[currentIndex + 1]);
+      }
+    },
+    prevTab() {
+      if (currentIndex > 0) {
+        setCurrentTab(props.tabs[currentIndex - 1]);
+      }
+    },
+    gotoTab(targetIndex: number) {
+      if (targetIndex > -1 && currentIndex !== targetIndex && targetIndex < props.tabs.length) {
+        setCurrentIndex(targetIndex);
+        setVisitedTabs([...visitedTabs, targetIndex]);
+        setCurrentTab(props.tabs[targetIndex]);
+      }
+    }
+  }));
 
+  useLayoutEffect(() => {
+    if (visitedTabs.length > 0 && !visitedTabs.includes(currentIndex)) {
+      setVisitedTabs([...visitedTabs, currentIndex]);
+    }
+    if (props?.attop) {
+      document.getElementById('app-top')?.scrollIntoView();
+    }
+  }, [currentIndex]);
+
+  const isDisable = useCallback((index: number) => (
+    index > 0 && !visitedTabs.includes(index) && props.disableNext
+  ), [visitedTabs]);
+
+  const renderTabs = props.tabs.map((tab: tabType, index: number) => (
+    <div
+      key={tab.title}
+      role="presentation"
+      data-name={tab.title}
+      onClick={(ev) => {
+        if (!isDisable(index)) {
+          ev.stopPropagation();
+          setCurrentTab(tab);
+          setCurrentIndex(index);
+          if (props.currentSelectedTab) {
+            props.currentSelectedTab(tab.title);
+          }
+        }
+      }}
+      className={`min-w-[100px] h-[52px] overflow-x-auto px-4 text-sm grid place-items-center font-medium cursor-pointer
+      ${!isDisable(index)
+          ? (
+            `${currentTab.title === tab.title
+              ? 'bg-[#3aa22b] text-white'
+              : 'bg-[#FAFAFA] border border-[#CCCCCC] text-black'}
+        rounded-tr-lg rounded-tl-lg `
+          )
+          : 'bg-gray-300 text-gray-500 border border-gray-200 rounded-tr-lg rounded-tl-lg cursor-not-allowed'}
+      `}
+    >
+      {tab.title}
+    </div>
+  ));
+
+  // const renderTabs = useMemo(() => props.tabs.map((tab: tabType, index: number) => (
+  //   <div
+  //     key={tab.title}
+  //     role="presentation"
+  //     data-name={tab.title}
+  //     onClick={(ev) => {
+  //       if (!isDisable(index)) {
+  //         ev.stopPropagation();
+  //         setCurrentTab(tab);
+  //         setCurrentIndex(index);
+  //       }
+  //     }}
+  //     className={`w-[175px] h-[52px] text-sm grid place-items-center font-medium cursor-pointer
+  // ${!isDisable(index)
+  //         ? (
+  //           `${currentTab.title === tab.title
+  //             ? 'bg-[#3aa22b] text-white'
+  //             : 'bg-[#FAFAFA] border border-[#CCCCCC] text-black'}
+  //   rounded-tr-lg rounded-tl-lg `
+  //         )
+  //         : 'bg-gray-300 text-gray-500 border border-gray-200 rounded-tr-lg rounded-tl-lg cursor-not-allowed'}
+  // `}
+  //   >
+  //     {tab.title}
+  //   </div>
+  // )), [currentTab, currentIndex, visitedTabs]);
   return (
-    <div className="w-full h-full flex flex-col">
-      <div className="flex">{renderTabs}</div>
+    <div id={uid} className="w-full h-full overflow-hidden flex flex-col">
+      <div className="flex">
+        {renderTabs}
+      </div>
       <div
         className={`
-        flex-1
-        ${props.transparent ? 'bg-transparent' : 'bg-white'}
-        ${props.border ? 'border border-accent rounded-md' : ''}
+        flex-1 overflow-auto
+        ${props.transparent ? 'bg-transparent' : 'bg-white'} 
+        ${props.border ? 'border border-accent rounded-md' : ''} 
         relative -top-1`}
       >
-        <div ref={ref}>
-          <Suspense
-            fallback={
-              <div className="h-[200px] grid place-items-center">
-                <Loader />
-              </div>
-            }
-          >
-            {currentTab.title === 'Global' && <Global {...tabProps} />}
-            {currentTab.title === 'Region' && <Region {...tabProps} />}
-          </Suspense>
-        </div>
+        <Suspense fallback={<div className="h-full grid place-items-center"><Loader /></div>}>
+          {currentTab.component}
+        </Suspense>
       </div>
     </div>
   );
 });
 
-export default Tabs;
+Tabs.defaultProps = {
+  attop: true
+};
+
+export default React.memo(Tabs);
