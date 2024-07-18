@@ -1,24 +1,26 @@
+/* eslint-disable operator-linebreak */
+/* eslint-disable comma-dangle */
 /* eslint-disable no-shadow */
 import { OBJECT } from './types';
 
 export const STATUS_ITEMS: Array<OBJECT> = [
   { label: 'All', value: 'All' },
   { label: 'Active', value: 'Active' },
-  { label: 'Inactive', value: 'Inactive' }
+  { label: 'Inactive', value: 'Inactive' },
 ];
 export const CODE_TYPE_ITEMS: Array<OBJECT> = [
   { label: 'All', value: 'All' },
   { label: 'Single', value: 'single' },
-  { label: 'Multiple', value: 'multiple' }
+  { label: 'Multiple', value: 'multiple' },
 ];
 export const ACADEMIC_YEAR_DATA: Array<OBJECT> = [
   { label: 'All', value: 'All' },
   { label: '2023-24', value: '2023-2024' },
   { label: '2022-23', value: '2022-2023' },
   { label: '2021-22', value: '2021-2022' },
-  { label: '2020-21', value: '2020-2021' }
+  { label: '2020-21', value: '2020-2021' },
 ];
-export const RESULTS_PER_PAGE: Array<string | number> = [10, 20, 30, 'all'];
+export const RESULTS_PER_PAGE: Array<string | number> = [10, 20, 30, 'All'];
 export const COMPONENTS = {
   switch: 'switch',
   longmenu: 'longmenu',
@@ -28,7 +30,7 @@ export const COMPONENTS = {
   view: 'view',
   edit: 'edit',
   download: 'download',
-  share: 'share'
+  share: 'share',
 };
 
 export const TABLE_DIGILIB = {
@@ -39,7 +41,7 @@ export const TABLE_DIGILIB = {
   FILE_SIZE: 'File Size',
   FILE_TYPE: 'File Type',
   SHARING: 'Sharing',
-  ACTION: 'Action'
+  ACTION: 'Action',
 };
 
 export const TABLE_LABELS = {
@@ -61,7 +63,7 @@ export const TABLE_LABELS = {
   COUNTRY_NAME: 'Country',
   CREATED_ON: 'Created On',
   EXPIRATION: 'Expiration',
-  EXPIRATION_DAYS_LEFT: 'Expiration Days Left',
+  EXPIRATION_DAYS_LEFT: 'Total number of days',
   STATUS: 'Status',
   ACTION: 'Action',
   BRANCH_NAME: 'Branch Name',
@@ -114,8 +116,8 @@ export const TABLE_LABELS = {
   CLASS: 'Class',
   TEACHER: 'Teacher',
   PROGRAM: 'Program',
-  AVG_CLASS: 'Average Class',
-  AVG_COHORT: 'Average Cohort',
+  AVG_CLASS: 'Class Average',
+  AVG_COHORT: 'Cohort Average',
   PERFORMANCE_EXPECTATION: 'Performance Expectation',
   PREVIEW: 'Preview',
   COMMENTS: 'Comments',
@@ -124,11 +126,11 @@ export const TABLE_LABELS = {
   TOTAL_CLASS: 'Total Classes',
   TOTAL_STUDENT: 'Total Students',
   TOTAL_TEACHER: 'Total Teachers',
-  TOTAL_TIME_STUDENT: 'Total Time Students (DD:HH:MM)',
-  AVG_TIME_STUDENT: 'Average Time Students (DD:HH:MM)',
-  TOTAL_TIME_TEACHER: 'Total Time Teachers (DD:HH:MM)',
-  AVG_TIME_TEACHER: 'Average Time Teachers (DD:HH:MM)',
-  TOTAL_TIME_TEACH_STD: 'Total Time Teachers and Students (DD:HH:MM)',
+  TOTAL_TIME_STUDENT: 'Total Time Students (HH:MM:SS)',
+  AVG_TIME_STUDENT: 'Average Time Students (HH:MM:SS)',
+  TOTAL_TIME_TEACHER: 'Total Time Teachers (HH:MM:SS)',
+  AVG_TIME_TEACHER: 'Average Time Teachers (HH:MM:SS)',
+  TOTAL_TIME_TEACH_STD: 'Total Time Teachers and Students (HH:MM:SS)',
   NO_OF_STUDENT: 'Number Of Students ',
   NO_OF_ACTIVE_STD: 'Number Of Active Students',
   NO_OF_NONACTIVE_STD: 'Number Of Non Active Students',
@@ -138,7 +140,7 @@ export const TABLE_LABELS = {
   ACTIVE_DAYS: 'Active Days',
   CONTENT_OPENED: 'No. of Content Opened',
   CONTENT_COMPLETED: 'No. of Content Completed',
-  TOTAL_TIME: 'Total Time in (DD:HH:MM)',
+  TOTAL_TIME: 'Total Time in (HH:MM:SS)',
   STUDENT_IN_CLASS: 'Students in class',
   ACTIVE_STUDENT: 'Active Students',
   AVG_ACTIVE_PER_STUDENT: 'Average active day per student',
@@ -157,7 +159,8 @@ export const TABLE_LABELS = {
   PAGE_TITLE: 'Page Title',
   PUBLISHED_ON: 'Published On',
   PUBLISHED_BY: 'Published By',
-  REMARK: 'Remark'
+  REMARK: 'Remark',
+  CLASSROOM_NAME: 'Name of Classroom',
 };
 
 // Manage Classes
@@ -177,7 +180,7 @@ export const TABLE_COURCES = {
   STATUS: 'Status',
   ACTION: 'Action',
   Course: 'Course',
-  ISBN: 'ISBN Number'
+  ISBN: 'ISBN Number',
 };
 
 export const SELECT_CATOGORY: Array<string> = ['Select', 'US KT-12', 'ELT'];
@@ -187,7 +190,7 @@ export const SELECT_SUBJECT: Array<string> = [
   'Maths',
   'Science',
   'English',
-  'History'
+  'History',
 ];
 
 export const SELECT_GRADE: Array<string | number> = [
@@ -197,7 +200,7 @@ export const SELECT_GRADE: Array<string | number> = [
   '1C',
   '2A',
   '2B',
-  '3A'
+  '3A',
 ];
 
 export const SELECT_REGION: Array<string> = [
@@ -206,7 +209,7 @@ export const SELECT_REGION: Array<string> = [
   'Australia',
   'UK',
   'USA',
-  'Germany'
+  'Germany',
 ];
 
 // ASSIGNED COURCE
@@ -221,7 +224,7 @@ export const TABLE_ASSIGNEDCOURCE = {
   ACCESS_TO: 'Access To',
   STATUS: 'Status',
   ACTION: 'Action',
-  SELECTALL: 'Select All'
+  SELECTALL: 'Select All',
 };
 
 export const SORTBY_REGION: Array<string> = ['Select', 'US KT-12', 'ELT'];
@@ -231,14 +234,14 @@ export const SORTBY_SCHOOL: Array<string> = ['Select', 'Oxford', 'Cambridge'];
 export const SORTBY_BRANCH: Array<string | number> = [
   'Select',
   'Branch 1',
-  'Branch 2'
+  'Branch 2',
 ];
 
 export const SORTBY_COURCE: Array<string> = [
   'Select',
   'Alpha-English',
   'Alpha-Maths',
-  'Alpha-Science'
+  'Alpha-Science',
 ];
 
 export const TABLE_MANAGE_UPLOADFORM = {
@@ -246,7 +249,7 @@ export const TABLE_MANAGE_UPLOADFORM = {
   COURSE_NAME: 'Course Name',
   UPLOADED_FROM: 'Uploaded From',
   STATUS: 'Status',
-  ACTION: 'Action'
+  ACTION: 'Action',
 };
 
 // MANAGE INTEGRATION & SUBSCRIPTIONS
@@ -255,7 +258,7 @@ export const SELECT: Array<string> = [
   'Email',
   'SMS',
   'Wizenoze',
-  'Turnitirin'
+  'Turnitirin',
 ];
 
 export const SELECT_SCHOOL: Array<string> = ['Select', 'Oxford', 'Cambridge'];
@@ -263,7 +266,7 @@ export const SELECT_SCHOOL: Array<string> = ['Select', 'Oxford', 'Cambridge'];
 export const SELECT_BRANCH: Array<string | number> = [
   'Select',
   'Branch 1',
-  'Branch 2'
+  'Branch 2',
 ];
 
 export const TABLE_SUBSCRIPTIONS = {
@@ -276,64 +279,65 @@ export const TABLE_SUBSCRIPTIONS = {
   Assigned_Date: 'Assigned Date',
   Assigned_By: 'Assigned By',
   STATUS: 'Status',
-  ACTION: 'Action'
+  ACTION: 'Action',
 };
 
 export const ROLES = [
   {
     label: 'Branch Admin',
-    value: 4
-  }, {
+    value: 4,
+  },
+  {
     label: 'School Admin',
-    value: 3
-  }
+    value: 3,
+  },
 ];
 
 export const GENDERS = [
   {
     label: 'Male',
-    value: 'Male'
+    value: 'Male',
   },
   {
     label: 'Female',
-    value: 'Female'
-  }
+    value: 'Female',
+  },
 ];
 export const RESULT = [
   {
     label: 'Pass',
-    value: 'pass'
+    value: 'pass',
   },
   {
     label: 'Fail',
-    value: 'fail'
-  }
+    value: 'fail',
+  },
 ];
 
 export const CODE_TYPE = [
   {
     label: 'Single Course',
-    value: 'single'
+    value: 'single',
   },
   {
     label: 'Multiple Course',
-    value: 'multiple'
-  }
+    value: 'multiple',
+  },
 ];
 
 export const ASSESSMENT_TYPE = [
   {
     label: 'All',
-    value: 'both'
+    value: 'both',
   },
   {
     label: 'Online',
-    value: 'online'
+    value: 'online',
   },
   {
     label: 'Printed',
-    value: 'printed'
-  }
+    value: 'printed',
+  },
 ];
 
 export const TOOLBAR_LABELS = {
@@ -346,19 +350,23 @@ export const TOOLBAR_LABELS = {
   ADD_ASSIGNMENT: 'Add Assignment',
   ATTACH: 'Attach',
   ADD_FOLDER: 'Add Folder',
-  UPLOAD_FILE: 'Upload File'
+  UPLOAD_FILE: 'Upload File',
 };
 
 export const DEFAULT_FILE_SIZE = 6e6;
 
 export const DEFAULT_IMAGE_SIZE = 2.5e6;
 
-export const URL_REGEX = /^(http:\/\/|https:\/\/|www\.)[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}(\:[0-9]+)?(\/.*)?$/;
+export const URL_REGEX =
+  /^(http:\/\/|https:\/\/|www\.)[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}(\:[0-9]+)?(\/.*)?$/;
 
-export const PHONE_NUMBER_REGEX = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+export const PHONE_NUMBER_REGEX =
+  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
-export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()-+])[0-9a-zA-Z!@#$%^&*()-+]{8,}$/;
-export const PASSWORD_REGEX_MESSAGE = 'Password should contain 1 Uppercase, 1 Lowercase, 1 special character and 1 Number and atleast 8 characters long.';
+export const PASSWORD_REGEX =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()-+])[0-9a-zA-Z!@#$%^&*()-+]{8,}$/;
+export const PASSWORD_REGEX_MESSAGE =
+  'Password should contain 1 Uppercase, 1 Lowercase, 1 special character and 1 Number and atleast 8 characters long.';
 
 export const ONLY_ALPHABETS_REGEX = /^[aA-zZ]+$/;
 export const ONLY_ALPHABETS_MESSAGE = 'Only alphabets are allowed';
@@ -367,19 +375,24 @@ export const ONLY_NUMBERS = /^[0-9]+$/;
 export const ONLY_NUMBERS_MESSAGE = 'Only positive whole numbers are allowed';
 
 export const USERNAME_REGEX = /^[a-z0-9_.@-]+$/i;
-export const USERNAME_REGEX_MESSAGE = 'Only alphabets, dash, underscore, at the rate of, numbers and fullstop is allowed.';
+export const USERNAME_REGEX_MESSAGE =
+  'Only alphabets, dash, underscore, at the rate of, numbers and fullstop is allowed.';
 
 export const ZIP_REGEX = /^[0-9]{5,6}$/;
-export const ZIP_REGEX_MESSAGE = 'Only numbers with minimum 5 and maximum 6 characters allowed ';
+export const ZIP_REGEX_MESSAGE =
+  'Only numbers with minimum 5 and maximum 6 characters allowed ';
 
-export const NAME_REGEX = /^[a-zA-Z0-9 _\-\s]+$/;
-export const NAME_REGEX_MESSAGE = 'Only alphabets, numbers, space and special characters like  _-  are allowed';
+export const NAME_REGEX = /^[aA-zZ0-9 _-\s]+$/;
+export const NAME_REGEX_MESSAGE =
+  'Only alphabets, numbers, space and special characters like  _-  are allowed';
 
 export const ALPHABET_AND_SPACE = /^[aA-zZ \s]+$/;
-export const ALPHABET_AND_SPACE_MESSAGE = 'Only alphabets and spaces are allowed';
+export const ALPHABET_AND_SPACE_MESSAGE =
+  'Only alphabets and spaces are allowed';
 
 export const FAX_REGEX = /^\+?[0-9]+$/;
-export const FAX_REGEX_MESSAGE = 'Please enter fax in following format : +123456789';
+export const FAX_REGEX_MESSAGE =
+  'Please enter fax in following format : +123456789';
 
 // eslint-disable-next-line no-shadow
 export enum USER_TYPE {
@@ -394,7 +407,7 @@ export enum USER_TYPE {
 export enum SUBJECT_BAR_COLORS {
   ENGLISH = '#8a2be2',
   SCIENCE = '#2d6f75',
-  MATHS = '#42677a'
+  MATHS = '#42677a',
 }
 export const SUPER_ADMIN_ROUTES = '@routes/superAdminRoutes';
 export const SUB_ADMIN_ROUTES = '@routes/subAdminRoutes';
@@ -411,7 +424,7 @@ export const USER_ROLE_LIST = [
   { value: 'school-admin', label: USER_TYPE.SCHOOL_ADMIN },
   { value: 'student', label: USER_TYPE.STUDENT },
   { value: 'super-admin', label: USER_TYPE.SUPER_ADMIN },
-  { value: 'teacher', label: USER_TYPE.TEACHER }
+  { value: 'teacher', label: USER_TYPE.TEACHER },
 ];
 export const WEEK_DAYS_LIST = [
   { value: 'monday', label: 'Monday' },
@@ -420,7 +433,7 @@ export const WEEK_DAYS_LIST = [
   { value: 'thursday', label: 'Thursday' },
   { value: 'friday', label: 'Friday' },
   { value: 'saturday', label: 'Saturday' },
-  { value: 'sunday', label: 'Sunday' }
+  { value: 'sunday', label: 'Sunday' },
 ];
 
 export const GRAPH_LABELS = {
@@ -440,30 +453,30 @@ export const GRAPH_LABELS = {
   AVG_ACTIVE_STUDENTS: 'Average Active Days per Student',
   TOTAL_TIME: 'Total Time',
   TIME_OPENED: 'Time Opened',
-  NOOFDAYS: 'Number of Days'
+  NOOFDAYS: 'Number of Days',
 };
 
 export const HEADERMENUS = {
-  BUTTON: 'button'
+  BUTTON: 'button',
 };
 export const STRINGS = {
   OPTION1: 'option1',
   OPTION2: 'option2',
   OPTION3: 'option3',
   OPTION4: 'option4',
-  OPTION5: 'option5'
+  OPTION5: 'option5',
 };
 
 export const SELECT_TYPE = {
   STUDENT: 'Student',
   MYGROUP: 'My Group',
   CLASS: 'Class',
-  TEACHER: 'Teacher'
+  TEACHER: 'Teacher',
 };
 
 export const ASSIGNMENT_MODE = {
   NAVIGATE: 'navigate',
-  DEFAULT: 'default'
+  DEFAULT: 'default',
 };
 
 export const CourseComponents = {
@@ -484,7 +497,7 @@ export const CourseComponents = {
   STUDENT_SIDEKICKS: 'Student Sidekicks',
   LITERARY_COMPANIONS: 'Literary Companions',
   TEACHER_GUIDE: 'Teacher Guide',
-  ANCILLARIES: 'Ancillaries'
+  ANCILLARIES: 'Ancillaries',
 };
 
 export const SHARED_FILES = 'Shared Files';
@@ -493,7 +506,7 @@ export const RECEIVED_FILES = 'Received Files';
 
 export const MULTIPLE_SELECT_OPTIONS = {
   DELETE: 'Delete',
-  DOWNLOAD: 'Download'
+  DOWNLOAD: 'Download',
 };
 
 export const FILE_TYPES = {
@@ -507,7 +520,7 @@ export const FILE_TYPES = {
   DOC: 'doc',
   WORD: 'word',
   IMAGE: 'image',
-  EXCEL: 'excel'
+  EXCEL: 'excel',
 };
 
 export const FOLDER_MODES = {
@@ -515,8 +528,11 @@ export const FOLDER_MODES = {
   EDIT: 'Edit',
   ADD_FOLDER: 'Add Folder',
   EDIT_FOLDER: 'Edit Folder',
-  EDIT_FILE: 'Edit File'
+  EDIT_FILE: 'Edit File',
 };
 
 export const MAX_TIME = 24;
 export const START_TIME = 6;
+
+// Discovery doc URL for APIs used by the quickstart
+export const DISCOVERY_DOC = 'https://classroom.googleapis.com/$discovery/rest';

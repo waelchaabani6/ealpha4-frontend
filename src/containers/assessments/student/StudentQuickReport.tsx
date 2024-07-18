@@ -16,9 +16,6 @@ const printButton = () => <PrintIcon />;
 
 export default function StudentQuickReport() {
   const userData = useSelector((state: any) => state?.user);
-  const userRole = useSelector((state: any) => state?.user?.role);
-  const location = useLocation();
-  const { obeasses_id } = location.state || {};
   const { aid, schoolName } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageData, setpageData] = useState<any>({});
@@ -26,21 +23,23 @@ export default function StudentQuickReport() {
   const [iframeUrl, setIframeUrl] = useState('');
 
   const status = useScript(`https://reports.learnosity.com/?v2021.2.LTS`, {
-    removeOnUnmount: false
+    removeOnUnmount: false,
   });
   const componentRef = useRef(null);
 
   const ADMIN_TOOLBAR_MENU = [
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
-  const handleToolbarAction = async (title: string) => { };
+  const handleToolbarAction = async (title: string) => {};
 
   const { isLoading: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
@@ -52,15 +51,18 @@ export default function StudentQuickReport() {
         const callbacks = {
           errorListener(e: any) {
             setError(e.msg || '');
-          }
+          },
         };
-        (window as any)?.LearnosityReports?.init(resp?.learnosity_obj, callbacks);
+        (window as any)?.LearnosityReports?.init(
+          resp?.learnosity_obj,
+          callbacks
+        );
       }, 1000);
     },
     onError: (resp: any) => {
       setError(resp?.response?.data?.message || '');
     },
-    enabled: false
+    enabled: false,
   });
 
   useEffect(() => {
@@ -81,46 +83,35 @@ export default function StudentQuickReport() {
   }, [obeasses_id]);
 
   if (LearnosityObjLoad) {
-    return (<Loader />);
+    return <Loader />;
   }
 
   return (
-    <RouteLayout
-      navBack={true}
-    >
-      <HeaderMenus title={`${searchParams.get('assessment') || 'Test'}`} menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
-      { !obeasses_id && (
-        pageData?.learnosity_obj?.request?.reports?.length && !error
-          ? (
-            <>
-              <div className="wrapperBorder mt-3" ref={componentRef}>
-                <div className="p-[13px]">
-                  <PageTitle title="Quick View Report" />
-                </div>
-                <Wrapper>
-                  <>
-                    <span className="learnosity-report" id="lastscore-list-item" />
-                    <span className="learnosity-report" id="response-analysis" />
-                  </>
-                </Wrapper>
-              </div>
-            </>
-          ) : (
-            <div className="mt-5 h-max w-full rounded-md border bg-white p-4">
-              {
-                      error
-                        ? <h2>{`${error}`}</h2>
-                        : 'Loading...'
-                    }
+    <RouteLayout navBack={true}>
+      <HeaderMenus
+        title={`${searchParams.get('assessment') || 'Test'}`}
+        menuArray={ADMIN_TOOLBAR_MENU}
+        handleToolbarAction={handleToolbarAction}
+      />
+      {pageData?.learnosity_obj?.request?.reports?.length && !error ? (
+        <>
+          <div className="wrapperBorder mt-3" ref={componentRef}>
+            <div className="p-[13px]">
+              <PageTitle title="Quick View Report" />
             </div>
-          )
-      )}
-      { obeasses_id
-          && (
-          <div style={{ width: '100%', height: '100vh' }}>
-            {userRole?.name === 'Student' && <iframe src={iframeUrl} title="External Content" width="100%" height="90%" />}
+            <Wrapper>
+              <>
+                <span className="learnosity-report" id="lastscore-list-item" />
+                <span className="learnosity-report" id="response-analysis" />
+              </>
+            </Wrapper>
           </div>
-          )}
+        </>
+      ) : (
+        <div className="mt-5 h-max w-full rounded-md border bg-white p-4">
+          {error ? <h2>{`${error}`}</h2> : 'Loading...'}
+        </div>
+      )}
     </RouteLayout>
   );
 }

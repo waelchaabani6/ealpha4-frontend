@@ -6,11 +6,21 @@ import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import { useEffect, useRef, useState } from 'react';
-import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
+import {
+  Link,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import DebounceInput from '@component/input/DebounceInput';
 import CustomPagination from '@component/pagination/CustomPagination';
-import { COMPONENTS, RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '@constants/constants';
+import {
+  COMPONENTS,
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '@constants/constants';
 import { ASSIGN_CLASSES } from '@constants/routes';
 import RouteLayout from '@layout/routeLayout';
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
@@ -40,44 +50,44 @@ export default function Index() {
       align: 'center',
       component: COMPONENTS?.checkbox,
       selector: 'id',
-      showInHeader: true
+      showInHeader: true,
     },
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.CLASS_NAME,
       isSort: true,
-      mapper: 'name'
+      mapper: 'name',
     },
     {
       label: TABLE_LABELS?.TEACHERS,
       isSort: true,
       mapper: 'teachers',
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.STUDENTS,
       isSort: true,
       mapper: 'students',
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.BRANCH_NAME,
       isSort: true,
-      mapper: 'branch_name'
+      mapper: 'branch_name',
     },
     {
       label: TABLE_LABELS?.CREATED_ON,
       isSort: true,
-      mapper: 'created_at'
+      mapper: 'created_at',
     },
     {
       label: TABLE_LABELS?.ACTION,
       align: 'center',
-      component: COMPONENTS?.delete
-    }
+      component: COMPONENTS?.delete,
+    },
   ];
 
   const [csvData, setCsvData] = useState<any>([]);
@@ -87,14 +97,28 @@ export default function Index() {
       nonModifiedTableData.forEach((param: any) => {
         const obj = bulkSelect.find((bid: any) => param?.id === bid);
         if (obj) {
-          newCsv.push([param.id, param.name, param.teachers, param.students, param.branch_name, param.created_at]);
+          newCsv.push([
+            param.id,
+            param.name,
+            param.teachers,
+            param.students,
+            param.branch_name,
+            param.created_at,
+          ]);
         }
       });
       setCsvData(newCsv);
     }
     if (bulkSelect.length === 0) {
       nonModifiedTableData.forEach((param: any) => {
-        newCsv.push([param.id, param.name, param.teachers, param.students, param.branch_name, param.created_at]);
+        newCsv.push([
+          param.id,
+          param.name,
+          param.teachers,
+          param.students,
+          param.branch_name,
+          param.created_at,
+        ]);
       });
       setCsvData(newCsv);
     }
@@ -107,27 +131,27 @@ export default function Index() {
     TABLE_LABELS?.TEACHERS,
     TABLE_LABELS?.STUDENTS,
     TABLE_LABELS?.BRANCH_NAME,
-    TABLE_LABELS?.CREATED_ON
+    TABLE_LABELS?.CREATED_ON,
   ];
 
   const SORT_BY: Array<any> = [
     {
       label: 'All',
-      value: 'All'
+      value: 'All',
     },
     {
       label: 'Classes',
-      value: 'name'
+      value: 'name',
     },
     {
       label: 'Created Date',
-      value: 'created_at'
-    }
+      value: 'created_at',
+    },
   ];
 
   const ALL = {
     label: 'Select',
-    value: 'All'
+    value: 'All',
   };
   const [dialogOpen, setdialogOpen] = useState<any>(isAdd || false);
   const [editClassData, setEditClass] = useState<any>(false);
@@ -144,7 +168,9 @@ export default function Index() {
   const [searchString, setSearchString] = useState('');
   const [classDeleteDialog, setClassDeleteDialog] = useState(false);
   const [branchArray, setBranchArray] = useState<any>([ALL]);
-  const [selectedBranch, setSelectedBranch] = useState(branchData?.name || ALL?.value);
+  const [selectedBranch, setSelectedBranch] = useState(
+    branchData?.name || ALL?.value
+  );
 
   const handleDialog = () => {
     if (isAdd) {
@@ -186,11 +212,11 @@ export default function Index() {
     const payload = {
       list_type: 'class-list',
       school_id: id || branchData?.school_data?.id,
-      branch_id: branchData?.id || undefined
+      branch_id: branchData?.id || undefined,
     };
     setPlayloadData({
       apicall: 'sendEmail',
-      payload
+      payload,
     });
   };
 
@@ -219,11 +245,11 @@ export default function Index() {
 
   const deleteHandler = (row: any) => {
     const payload = {
-      id: row?.school_class_ting
+      id: row?.school_class_ting,
     };
     setPlayloadData({
       apiCall: 'deleteClass',
-      payload
+      payload,
     });
     setClassDeleteDialog(true);
   };
@@ -260,7 +286,7 @@ export default function Index() {
         const body: any = [];
         const newTableData = respData?.map((i: any) => {
           body.push(i);
-          return ({
+          return {
             ...i,
             name: (
               <span
@@ -285,8 +311,8 @@ export default function Index() {
                 <span className="navigateLink">{i?.students}</span>
               </Link>
             ),
-            className: i?.name
-          });
+            className: i?.name,
+          };
         });
         setTableData(newTableData);
         setNonModifiedTableData(body);
@@ -299,7 +325,7 @@ export default function Index() {
       allStateReset();
     },
     refetchOnWindowFocus: true,
-    enabled: false
+    enabled: false,
   });
 
   // Import CSV
@@ -332,7 +358,7 @@ export default function Index() {
     onError: ({ response }: any) => {
       toast('error', response?.statusText || 'Error');
       tempDataReset();
-    }
+    },
   });
 
   // Delete Table Row
@@ -347,7 +373,7 @@ export default function Index() {
     },
     onError: ({ response }: any) => {
       toast('error', response?.statusText || 'Error');
-    }
+    },
   });
 
   // get Branches
@@ -358,21 +384,17 @@ export default function Index() {
       const respData = resp?.data?.response;
       const temp2: { label: any; value: any; id: any }[] = [];
       respData?.map((i: any) => {
-        temp2.push(
-          {
-            label: i?.name,
-            value: i?.name,
-            id: i?.id
-          }
-        );
+        temp2.push({
+          label: i?.name,
+          value: i?.name,
+          id: i?.id,
+        });
         return temp2;
       });
       setBranchArray([ALL, ...temp2]);
     },
-    onError: ({ response }: any) => {
-
-    },
-    enabled: false
+    onError: ({ response }: any) => {},
+    enabled: false,
   });
   // Toolbar Email
   const { isLoading: emailLoaded, mutate: mutateEmail } = usePost({
@@ -384,33 +406,45 @@ export default function Index() {
     onError: ({ response }: any) => {
       tempDataReset();
       toast('error', response?.data?.message || 'Error');
-    }
+    },
   });
 
   const ADMIN_TOOLBAR_MENU = [
     {
       title: TOOLBAR_LABELS.ADD,
-      icon: <AddIcon />
+      icon: <AddIcon />,
     },
     {
       title: TOOLBAR_LABELS.IMPORT,
-      icon: <DriveFolderUploadIcon />
+      icon: <DriveFolderUploadIcon />,
     },
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailLoaded) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailLoaded) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
-      icon: <CSVLink filename="Class List.csv" onClick={onCsvClick} data={csvData} headers={headers} enclosingCharacter=""><Share /></CSVLink>
+      icon: (
+        <CSVLink
+          filename="Class List.csv"
+          onClick={onCsvClick}
+          data={csvData}
+          headers={headers}
+          enclosingCharacter=""
+        >
+          <Share />
+        </CSVLink>
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   useEffect(() => {
@@ -430,7 +464,16 @@ export default function Index() {
         refetch();
       }
     }
-  }, [rowsPerPage, page, searchString, orderBy, order, selectedBranch, schoolData?.id, branchData?.id]);
+  }, [
+    rowsPerPage,
+    page,
+    searchString,
+    orderBy,
+    order,
+    selectedBranch,
+    schoolData?.id,
+    branchData?.id,
+  ]);
 
   useEffect(() => {
     if (schoolData?.id) {
@@ -446,17 +489,25 @@ export default function Index() {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars, camelcase
         const { name, school_class_ting, ...rest } = obj;
         const row = { ...rest, class_name: name.props.children };
-        newCsv.push([row.id, row.class_name, row.teachers, row.students, row.branch_name, row.created_at]);
+        newCsv.push([
+          row.id,
+          row.class_name,
+          row.teachers,
+          row.students,
+          row.branch_name,
+          row.created_at,
+        ]);
       }
     });
     setCsvData(newCsv);
     setBulkSelect(params);
   };
 
-  const noOfpages = rowsPerPage !== 'all' ? getNoOfPages(totalCount, rowsPerPage) : 1;
+  const noOfpages =
+    rowsPerPage !== 'all' ? getNoOfPages(totalCount, rowsPerPage) : 1;
 
   if (importLoaded) {
-    return (<Loader />);
+    return <Loader />;
   }
 
   return (
@@ -471,9 +522,7 @@ export default function Index() {
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex flex-wrap md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <div className="max-w-xs">
-            <DebounceInput
-              onChange={handleSearch}
-            />
+            <DebounceInput onChange={handleSearch} />
           </div>
           <Dropdown
             title="Sort by:"
@@ -481,17 +530,15 @@ export default function Index() {
             dataArray={SORT_BY}
             onChangeHandler={handleSortBy}
           />
-          {
-            (!userRole().isSchoolAdmin && !branchData?.id) ? (
-              <Dropdown
-                title="Select Branch"
-                value={selectedBranch}
-                dataArray={branchArray}
-                onChangeHandler={handleToolbarBranch}
-                loading={getBranchLoading}
-              />
-            ) : null
-          }
+          {!userRole().isSchoolAdmin && !branchData?.id ? (
+            <Dropdown
+              title="Select Branch"
+              value={selectedBranch}
+              dataArray={branchArray}
+              onChangeHandler={handleToolbarBranch}
+              loading={getBranchLoading}
+            />
+          ) : null}
 
           <Dropdown
             title="Result Of Pages"

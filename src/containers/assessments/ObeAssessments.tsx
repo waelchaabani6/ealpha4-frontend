@@ -2,7 +2,11 @@ import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import Button from '@component/button/button';
 import Dropdown from '@component/dropdown/Dropdown';
 import CustomPagination from '@component/pagination/CustomPagination';
-import { ASSESSMENT_TYPE, COMPONENTS, TABLE_LABELS } from '@constants/constants';
+import {
+  ASSESSMENT_TYPE,
+  COMPONENTS,
+  TABLE_LABELS,
+} from '@constants/constants';
 import RouteLayout from '@layout/routeLayout';
 import DeletePopup from '@shared/DeletePopup';
 import { useDelete, useGet } from '@shared/api/useApi';
@@ -21,40 +25,50 @@ export default function ObeAssessments() {
   const ALL: Array<any> = [
     {
       label: 'Select',
-      value: 'Select'
-    }
+      value: 'Select',
+    },
   ];
 
   const handleNavigate = (data: any, type: string) => {
     const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
     const navState = {
-      assignType: type === 'printed' ? 'print-assessment' : ''
+      assignType: type === 'printed' ? 'print-assessment' : '',
     };
-    navigate(`/${schoolNameInURL}/assessments/assign/${data?.id}?name=${data?.name}${type === 'printed' ? '&type=print-assessment' : ''}`, { state: { obassess: true, navState, page, path: `/${schoolName}/assessments` } });
+    navigate(
+      `/${schoolNameInURL}/assessments/assign/${data?.id}?name=${data?.name}${type === 'printed' ? '&type=print-assessment' : ''}`,
+      {
+        state: {
+          obassess: true,
+          navState,
+          page,
+          path: `/${schoolName}/assessments`,
+        },
+      }
+    );
   };
 
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.ASSESSMENT_NAME,
       mapper: 'assessment_name',
-      isSort: true
+      isSort: true,
     },
     {
       label: 'Online',
       mapper: 'online',
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.ACTION,
       align: 'flex-start',
       bodyAlign: 'left',
       component: COMPONENTS?.view,
-      showInHeader: false
-    }
+      showInHeader: false,
+    },
     /*    {
       label: 'Printed',
       mapper: 'printed',
@@ -80,7 +94,9 @@ export default function ObeAssessments() {
   const [currentCourse, setCurrentCourse] = useState(ALL[0].value);
   const [selectedGrade, setselectedGrade] = useState(ALL[0].value);
   const [selectedCategory, setselectedCategory] = useState(ALL[0].value);
-  const [assessmentType, setassessmentType] = useState(ASSESSMENT_TYPE[0]?.value);
+  const [assessmentType, setassessmentType] = useState(
+    ASSESSMENT_TYPE[0]?.value
+  );
   const [playloadData, setPlayloadData] = useState<any | undefined>({});
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -104,14 +120,20 @@ export default function ObeAssessments() {
     } else if (handlername === 'view') {
       navigate(
         `/${schoolName}/assessments/preview_myassessment_question/${data?.id}`,
-        { state: { page, obeasses_id: data?.id, path: `/${schoolName}/assessments/assigned` } }
+        {
+          state: {
+            page,
+            obeasses_id: data?.id,
+            path: `/${schoolName}/assessments/assigned`,
+          },
+        }
       );
     }
   };
 
   const deleteHandler = (row: any) => {
     setPlayloadData({
-      id: row?.id
+      id: row?.id,
     });
     setAdminDeleteDialog(true);
   };
@@ -132,13 +154,13 @@ export default function ObeAssessments() {
     },
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
-    }
+    },
   });
 
   // Get Courses
   const { isLoading: loadCourses, data: Courses } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/alpha-assessment/courses/`
+    url: `assessments-service/alpha-assessment/courses/`,
   });
 
   const OBESASS_API_KEY = import.meta.env.VITE_OBESASS_API_KEY;
@@ -152,20 +174,22 @@ export default function ObeAssessments() {
       headers: {
         'X-Authorization': OBESASS_API_KEY,
         User: user?.userId,
-        Role: usersRole?.name
-      }
+        Role: usersRole?.name,
+      },
     };
 
     fetch(`${obeassessUrl}subject/`, requestOptions)
       .then((response) => response.json())
-    // eslint-disable-next-line no-shadow
+      // eslint-disable-next-line no-shadow
       .then((Courses) => {
-        filteredCourses = Courses?.data?.map((ele: any) => ({ label: ele.name, value: ele.id })) || [];
+        filteredCourses =
+          Courses?.data?.map((ele: any) => ({
+            label: ele.name,
+            value: ele.id,
+          })) || [];
         setFillCourses(filteredCourses);
       })
-      .catch((error) => {
-
-      });
+      .catch((error) => {});
   };
 
   const getAllGrades = () => {
@@ -174,28 +198,27 @@ export default function ObeAssessments() {
       headers: {
         'X-Authorization': OBESASS_API_KEY,
         User: user?.userId,
-        Role: usersRole?.name
-      }
+        Role: usersRole?.name,
+      },
     };
     const getCourseName = fillCourses.filter(
       (x: any) => x.value === currentCourse
     );
     fetch(
-      `${obeassessUrl}grade/?subject=${
-        getCourseName[0]?.label || ''
-      }`,
+      `${obeassessUrl}grade/?subject=${getCourseName[0]?.label || ''}`,
       requestOptions
     )
       .then((response) => response.json())
       .then((result) => {
         // eslint-disable-next-line no-shadow
-        const filteredCourses = result?.data?.map((ele: any) => ({
-          label: ele.name,
-          value: ele.id
-        })) || [];
+        const filteredCourses =
+          result?.data?.map((ele: any) => ({
+            label: ele.name,
+            value: ele.id,
+          })) || [];
         setFillGrades(filteredCourses);
       })
-    // eslint-disable-next-line no-console
+      // eslint-disable-next-line no-console
       .catch((error) => console.log('error', error));
   };
 
@@ -289,8 +312,8 @@ export default function ObeAssessments() {
       headers: {
         'X-Authorization': OBESASS_API_KEY,
         User: user?.userId,
-        Role: usersRole?.name
-      }
+        Role: usersRole?.name,
+      },
     };
     const getCourseName = fillCourses.filter(
       (x: any) => x.value === currentCourse
@@ -313,7 +336,11 @@ export default function ObeAssessments() {
 
           const temp = {
             ...item,
-            online: <Button onClick={() => handleNavigate(item, 'online')}>Assign</Button>,
+            online: (
+              <Button onClick={() => handleNavigate(item, 'online')}>
+                Assign
+              </Button>
+            ),
             /*
             printed: (item?.is_paperscorer_type) ? <Button onClick={() => handleNavigate(item, 'printed')}>Assign</Button> : null,
 */
@@ -322,7 +349,7 @@ export default function ObeAssessments() {
                 Assign
               </Button>
             ),
-            assessment_name: item?.name || ''
+            assessment_name: item?.name || '',
           };
           return temp;
         });
@@ -330,7 +357,7 @@ export default function ObeAssessments() {
         setTotalDataCount(accData.count);
         setTableData(newTableData);
       })
-    // eslint-disable-next-line no-console
+      // eslint-disable-next-line no-console
       .catch((error) => console.log('error', error));
   };
 
@@ -338,7 +365,15 @@ export default function ObeAssessments() {
     if (selectedGrade !== ALL[0].value) {
       fetchAssignments();
     }
-  }, [rowsPerPage, page, orderBy, order, selectedGrade, assessmentType, selectedCategory]);
+  }, [
+    rowsPerPage,
+    page,
+    orderBy,
+    order,
+    selectedGrade,
+    assessmentType,
+    selectedCategory,
+  ]);
 
   useEffect(() => {
     getAllCourses();
@@ -392,30 +427,26 @@ export default function ObeAssessments() {
       </div>
       <div className="wrapperBorder">
         <Wrapper>
-          {
-                        selectedGrade !== ALL[0].value
-                          ? (
-                            <AdvanceTable
-                              maxHeight={580}
-                              tableData={tableData}
-                              headerRows={TableColumns}
-                              totalPages={noOfpages}
-                              paginateHandler={handlePagination}
-                              currentPage={page}
-                              rowsPerPage={rowsPerPage}
-                              orderBy={orderBy}
-                              setOrderBy={setOrderBy}
-                              order={order}
-                              setOrder={setOrder}
-                              actionHandler={actionHandler}
-                              isLoading={loadingDelete} // assignmentLoading || loadSync ||
-                              setPage={setPage}
-                            />
-                          )
-                          : (
-                            <p className="text-lg text-center italic">Please Select Grade</p>
-                          )
-                    }
+          {selectedGrade !== ALL[0].value ? (
+            <AdvanceTable
+              maxHeight={580}
+              tableData={tableData}
+              headerRows={TableColumns}
+              totalPages={noOfpages}
+              paginateHandler={handlePagination}
+              currentPage={page}
+              rowsPerPage={rowsPerPage}
+              orderBy={orderBy}
+              setOrderBy={setOrderBy}
+              order={order}
+              setOrder={setOrder}
+              actionHandler={actionHandler}
+              isLoading={loadingDelete} // assignmentLoading || loadSync ||
+              setPage={setPage}
+            />
+          ) : (
+            <p className="text-lg text-center italic">Please Select Grade</p>
+          )}
         </Wrapper>
       </div>
       {/* Delete Assignment */}

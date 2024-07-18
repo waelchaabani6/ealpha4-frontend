@@ -1,7 +1,12 @@
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import DebounceInput from '@component/input/DebounceInput';
 import CustomPagination from '@component/pagination/CustomPagination';
-import { COMPONENTS, RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '@constants/constants';
+import {
+  COMPONENTS,
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '@constants/constants';
 import routes from '@constants/routes';
 import { ReactComponent as Edit } from '@images/longMenuIcons/Edit.svg';
 import { ReactComponent as Delete } from '@images/longMenuIcons/Delete2.svg';
@@ -37,46 +42,46 @@ export default function Index() {
     {
       icon: <ISBN />,
       label: 'Preview',
-      value: 'previewPage'
+      value: 'previewPage',
     },
     {
       icon: <Edit />,
       label: 'Edit',
-      value: 'editPage'
+      value: 'editPage',
     },
     {
       icon: <Delete />,
       label: 'Delete',
-      value: 'delete'
-    }
+      value: 'delete',
+    },
   ];
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.PAGE_TITLE,
-      mapper: 'display_title'
+      mapper: 'display_title',
     },
     {
       label: TABLE_LABELS?.STATUS,
-      mapper: 'status'
+      mapper: 'status',
     },
     {
       label: TABLE_LABELS?.PUBLISHED_ON,
-      mapper: 'created_at'
+      mapper: 'created_at',
     },
     {
       label: TABLE_LABELS?.PUBLISHED_BY,
-      mapper: 'published_user'
+      mapper: 'published_user',
     },
     {
       label: TABLE_LABELS?.ACTION,
       mapper: 'menuOptions',
       align: 'center',
-      showInHeader: false
-    }
+      showInHeader: false,
+    },
   ];
 
   const [selectData, setSelectData] = useState('All');
@@ -98,7 +103,7 @@ export default function Index() {
     TABLE_LABELS?.PAGE_TITLE,
     TABLE_LABELS?.STATUS,
     TABLE_LABELS?.PUBLISHED_ON,
-    TABLE_LABELS?.PUBLISHED_BY
+    TABLE_LABELS?.PUBLISHED_BY,
   ];
 
   const handleToolbarAction = async (title: string) => {
@@ -115,12 +120,12 @@ export default function Index() {
   };
   const statusHandler = (e: any, data: any) => {
     const payload = {
-      status: (e.target.checked) ? 'Active' : 'Inactive'
+      status: e.target.checked ? 'Active' : 'Inactive',
     };
     setPlayloadData({
       apicall: 'courseStatus',
       payload,
-      id: data?.id
+      id: data?.id,
     });
   };
   const handleMoreOption = (id: any, rowData: any) => {
@@ -152,7 +157,7 @@ export default function Index() {
         case 2:
         case 3:
         case 4:
-          toast('error', 'Can\'t delete this page');
+          toast('error', "Can't delete this page");
           break;
         default:
           setPageDeleteDialog(true);
@@ -191,7 +196,7 @@ export default function Index() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
     },
-    enabled: false
+    enabled: false,
   });
 
   //  Delete School
@@ -205,12 +210,12 @@ export default function Index() {
     },
     onError: ({ response }: any) => {
       toast('error', response?.statusText || 'Error');
-    }
+    },
   });
 
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   // Get Course code Listing
-  const temps = (rowsPerPage === 'all') ? totalDataCount : rowsPerPage;
+  const temps = rowsPerPage === 'all' ? totalDataCount : rowsPerPage;
   const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
   const { isLoading, isRefetching, refetch } = useGet({
     baseURL,
@@ -227,17 +232,26 @@ export default function Index() {
             item?.display_title,
             item?.status,
             moment(item?.created_at).format('DD-MM-YYYY hh:mm A'),
-            item?.published_user
+            item?.published_user,
           ]);
-          const temp = { ...item,
+          const temp = {
+            ...item,
             created_at: moment(item?.created_at).format('DD-MM-YYYY hh:mm A'),
             menuOptions: (
               <LongMenu
-                dataArray={item.id < 5 ? moreMenuOptions.slice(0, 2) : moreMenuOptions}
-                rowData={{ ...item, created_at: moment(item?.created_at).format('DD-MM-YYYY hh:mm A') }}
+                dataArray={
+                  item.id < 5 ? moreMenuOptions.slice(0, 2) : moreMenuOptions
+                }
+                rowData={{
+                  ...item,
+                  created_at: moment(item?.created_at).format(
+                    'DD-MM-YYYY hh:mm A'
+                  ),
+                }}
                 handleChange={handleMoreOption}
               />
-            ) };
+            ),
+          };
           return temp;
         });
         setCsvData(body);
@@ -249,7 +263,7 @@ export default function Index() {
     onError: ({ response }: any) => {
       allStateReset();
     },
-    enabled: false
+    enabled: false,
   });
 
   useEffect(() => {
@@ -259,12 +273,12 @@ export default function Index() {
   const ADMIN_TOOLBAR_MENU = [
     {
       title: TOOLBAR_LABELS.ADD,
-      icon: <AddIcon />
+      icon: <AddIcon />,
     },
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailLoaded) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailLoaded) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
@@ -276,20 +290,26 @@ export default function Index() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   return (
     <RouteLayout navBack={true}>
-      <HeaderMenus title="Pages" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+      <HeaderMenus
+        title="Pages"
+        menuArray={ADMIN_TOOLBAR_MENU}
+        handleToolbarAction={handleToolbarAction}
+      />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex flex-wrap md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <div>

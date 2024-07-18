@@ -1,26 +1,38 @@
-import { commonRoutes } from '@routes/superAdminRoutes/schoolManagementRoutes';
-import React from 'react';
+import { commonRoutes } from "@routes/superAdminRoutes/schoolManagementRoutes";
+import React from "react";
 
-const ManageClasses = React.lazy(() => import('@containers/schoolManagement/components/panels/classes'));
-const StudentPromote = React.lazy(() => import('@containers/schoolManagement/components/promote/StudentPromote'));
-const AssignClasses = React.lazy(() => import('@containers/schoolManagement/components/assignClasses'));
-const ImportMember = React.lazy(() => import('@containers/schoolManagement/components/panels/members/importMember/ImportMember'));
+const ManageClasses = React.lazy(
+  () => import("@containers/schoolManagement/components/panels/classes"),
+);
+const StudentPromote = React.lazy(
+  () =>
+    import("@containers/schoolManagement/components/promote/StudentPromote"),
+);
+const AssignClasses = React.lazy(
+  () => import("@containers/schoolManagement/components/assignClasses"),
+);
+const ImportMember = React.lazy(
+  () =>
+    import(
+      "@containers/schoolManagement/components/panels/members/importMember/ImportMember"
+    ),
+);
 
 export default {
-  path: ':id',
+  path: ":id",
   children: [
     {
-      path: 'manage-members',
-      children: commonRoutes
+      path: "manage-members",
+      children: commonRoutes,
     },
-    { path: 'bulk-upload/:moduleName', element: <ImportMember /> },
+    { path: "bulk-upload/:moduleName", element: <ImportMember /> },
     {
-      path: 'manage-classes',
+      path: "manage-classes",
       children: [
         { index: true, element: <ManageClasses /> },
-        { path: 'assign-classes/:classID', element: <AssignClasses /> }
-      ]
+        { path: "assign-classes/:classID", element: <AssignClasses /> },
+      ],
     },
-    { path: 'promote-student', element: <StudentPromote /> }
-  ]
+    { path: "promote-student", element: <StudentPromote /> },
+  ],
 };

@@ -30,7 +30,6 @@ const Coupon = () => (
                 truncate uppercase transform rotate-180 text-white"
         style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
       >
-        dsdfsdf
       </p>
     </div>
   </div>

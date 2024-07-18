@@ -20,7 +20,11 @@ import { useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import CustomPagination from '../../../components/pagination/CustomPagination';
-import { RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '../../../constants/constants';
+import {
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '../../../constants/constants';
 import Wrapper from '../../../shared/wrapper/Wrapper';
 import RouteLayout from '../../layout/routeLayout';
 
@@ -35,7 +39,7 @@ export default function Index() {
     TABLE_LABELS?.TEACHER,
     TABLE_LABELS?.STATUS,
     TABLE_LABELS?.START_DATE,
-    TABLE_LABELS?.DUE_DATE
+    TABLE_LABELS?.DUE_DATE,
   ];
 
   const [exportData, setExportData] = useState<[]>([]);
@@ -44,42 +48,41 @@ export default function Index() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.ASSESSMENT_NAME,
       mapper: 'assessment_name',
-      isSort: true
+      isSort: true,
     },
     {
       label: TABLE_LABELS?.TEACHERS,
       isSort: true,
-      mapper: 'teacher'
+      mapper: 'teacher',
     },
     {
       label: TABLE_LABELS?.STATUS,
       isSort: true,
-      mapper: 'status'
+      mapper: 'status',
     },
     {
       label: TABLE_LABELS?.START_DATE,
       isSort: true,
       mapper: 'start_date',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
       mapper: 'submission_date',
-      format: 'DD-MM-YYYY'
-
-    }
+      format: 'DD-MM-YYYY',
+    },
   ];
 
   const statusArray = [
     { label: 'All', value: 'All' },
     { label: 'Ongoing', value: 'Ongoing' },
     { label: 'Submitted', value: 'Submitted' },
-    { label: 'Yet to Start', value: 'Yet to start' }
+    { label: 'Yet to Start', value: 'Yet to start' },
   ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
@@ -120,27 +123,36 @@ export default function Index() {
   };
 
   const handleButtonClick = (data: any) => {
-    window.location.replace(`assessments/perform-assessment/${data?.assessment_id}`);
+    window.location.replace(
+      `assessments/perform-assessment/${data?.assessment_id}`
+    );
   };
 
   // Toolbar Email
-  const { isLoading: emailLoaded, refetch: fetchEmailApi, isRefetching: refetchEmail } = useGet({
+  const {
+    isLoading: emailLoaded,
+    refetch: fetchEmailApi,
+    isRefetching: refetchEmail,
+  } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/assign-assessment-student-email/pdf-download/?student_id=${selectedChild}`,
     onSuccess: (response: any) => {
-      toast('success', 'Email sent successfully to you, please check your inbox');
+      toast(
+        'success',
+        'Email sent successfully to you, please check your inbox'
+      );
     },
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
     },
-    enabled: false
+    enabled: false,
   });
 
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailLoaded || refetchEmail) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailLoaded || refetchEmail) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
@@ -152,15 +164,17 @@ export default function Index() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   // ----------------------------------------API-------------------------
@@ -172,55 +186,54 @@ export default function Index() {
       const resp = res?.data?.response?.students;
       const body: any = [];
       resp?.map((i: any) => {
-        body.push(
-          {
-            label: `${i?.first_name} ${i?.last_name}`,
-            value: i?.id,
-            class: i?.class_name
-          }
-        );
+        body.push({
+          label: `${i?.first_name} ${i?.last_name}`,
+          value: i?.id,
+          class: i?.class_name,
+        });
         body.sort(sortData);
         return body;
       });
       setChildrenData([...body]);
     },
-    onError: () => { }
+    onError: () => {},
   });
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
-  const ordering = orderBy ? order === 'asc' ? orderBy : `-${orderBy}` : '';
-  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/student--assign-assessment-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}${searchString ? `&assessment_name=${searchString}` : ''}${selectedStatus !== 'All' ? `&status=${selectedStatus}` : ''}${selectedChild ? `&student_id=${selectedChild}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&submission_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}`,
-    onSuccess: (res: any) => {
-      const accData = res?.data?.response;
-      const respData = accData?.results;
-      setTotalDataCount(accData.count);
-      const body: any = [];
-      // const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
-      const newTableData = respData?.map((item: any) => {
-        body.push([
-          item?.id,
-          item?.assessment_name,
-          item?.teacher,
-          item?.status,
-          item?.start_date,
-          item?.submission_date
-        ]);
-        // const buttonRender = (item?.assessment_status === 'Yet to start') ? 'Start' : (item?.assessment_status === 'Completed') ? 'Completed' : 'Continue';
-        // const link = `/${schoolNameInURL}/assessments/assigned/assessment-report/${item?.assessment_id}?assessment=${item?.assessment_name}`;
-        const temp = {
-          ...item
-          // action: <Button disabled={item?.assessment_status === 'Completed'} onClick={() => handleButtonClick(item)}>{buttonRender}</Button>
-        };
-        return temp;
-      });
-      setTableData(newTableData);
-      setExportData(body);
-    },
-    enabled: false
-  });
+  const ordering = orderBy ? (order === 'asc' ? orderBy : `-${orderBy}`) : '';
+  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
+    useGet({
+      baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+      url: `assessments-service/student--assign-assessment-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}${searchString ? `&assessment_name=${searchString}` : ''}${selectedStatus !== 'All' ? `&status=${selectedStatus}` : ''}${selectedChild ? `&student_id=${selectedChild}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&submission_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}`,
+      onSuccess: (res: any) => {
+        const accData = res?.data?.response;
+        const respData = accData?.results;
+        setTotalDataCount(accData.count);
+        const body: any = [];
+        // const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
+        const newTableData = respData?.map((item: any) => {
+          body.push([
+            item?.id,
+            item?.assessment_name,
+            item?.teacher,
+            item?.status,
+            item?.start_date,
+            item?.submission_date,
+          ]);
+          // const buttonRender = (item?.assessment_status === 'Yet to start') ? 'Start' : (item?.assessment_status === 'Completed') ? 'Completed' : 'Continue';
+          // const link = `/${schoolNameInURL}/assessments/assigned/assessment-report/${item?.assessment_id}?assessment=${item?.assessment_name}`;
+          const temp = {
+            ...item,
+            // action: <Button disabled={item?.assessment_status === 'Completed'} onClick={() => handleButtonClick(item)}>{buttonRender}</Button>
+          };
+          return temp;
+        });
+        setTableData(newTableData);
+        setExportData(body);
+      },
+      enabled: false,
+    });
 
   // ----------------------------------------END API---------------------
 
@@ -245,11 +258,25 @@ export default function Index() {
     if (selectedChild) {
       fetchAssignedAssignments();
     }
-  }, [searchString, rowsPerPage, page, orderBy, order, selectedStatus, selectedChild, toDate, fromDate]);
+  }, [
+    searchString,
+    rowsPerPage,
+    page,
+    orderBy,
+    order,
+    selectedStatus,
+    selectedChild,
+    toDate,
+    fromDate,
+  ]);
 
   return (
     <RouteLayout>
-      <HeaderMenus title="Assigned Assessments" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+      <HeaderMenus
+        title="Assigned Assessments"
+        menuArray={ADMIN_TOOLBAR_MENU}
+        handleToolbarAction={handleToolbarAction}
+      />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <div className="pt-[30px]">
@@ -297,11 +324,19 @@ export default function Index() {
             />
           </div>
           <div className="flex gap-2 justify-center items-center h-[36px]">
-            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-            <span tabIndex={0} title="Clear dates" onClick={reset} role="button">
+            <span
+              tabIndex={0}
+              title="Clear dates"
+              onClick={reset}
+              role="button"
+            >
               <RestartAltIcon />
             </span>
-            <Divider orientation="vertical" flexItem={true} className="border-[#D2D2D2] pl-2" />
+            <Divider
+              orientation="vertical"
+              flexItem={true}
+              className="border-[#D2D2D2] pl-2"
+            />
             <Link to={`${location?.pathname}/completed-assessments`}>
               <div className="text-accent underline cursor-pointer text-base font-medium pl-2">
                 Completed Assessment
@@ -318,11 +353,21 @@ export default function Index() {
       <div className="flex mt-3">
         <div className="mr-12">
           <span className="text-sm font-semibold">Child Name: </span>
-          <span className="text-sm font-normal">{childrenData?.find((obj: any) => obj?.value === selectedChild)?.label}</span>
+          <span className="text-sm font-normal">
+            {
+              childrenData?.find((obj: any) => obj?.value === selectedChild)
+                ?.label
+            }
+          </span>
         </div>
         <div>
           <span className="text-sm font-semibold">Class: </span>
-          <span className="text-sm font-normal">{childrenData?.find((obj: any) => obj?.value === selectedChild)?.class}</span>
+          <span className="text-sm font-normal">
+            {
+              childrenData?.find((obj: any) => obj?.value === selectedChild)
+                ?.class
+            }
+          </span>
         </div>
       </div>
       {/* Table Section */}

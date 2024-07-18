@@ -1,71 +1,135 @@
+import React, { useMemo, useState } from 'react';
+import { Accordion, AccordionDetails, AccordionSummary, Button } from '@mui/material';
 import RouteLayout from '@layout/routeLayout';
-import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
-import { useMemo } from 'react';
+import VideoIcon from '@mui/icons-material/VideoLibrary';
 import StaticHeader from './staticHeader';
 import StaticFooter from './staticFooter';
 
 export default function HowToUse() {
   const data = [
     {
-      title: 'How to use Alpha Assessments Powered by Learnosity'
+      title: 'A Guide to eAlpha for Teachers',
+      video: [
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_1_Dashboard.mp4', name: 'Teacher Dashboard' },
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial-Creating_Groups.mp4', name: 'Creating Groups' },
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial-Creating_Assignments.mp4', name: 'Creating Assignments' },
+      ]
     },
     {
-      title: 'How to use Wizenoze resources on eAlpha'
+      title: 'A Guide to eAlpha for Students Using a Browser',
+      video: [
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_1-Browser_Login.mp4', name: 'Student Login' },
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_2-Browser_Dashboard.mp4', name: 'Student Dashboard' },
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_3-Completing_Assignments.mp4', name: 'Completing Assignments' }
+      ]
     },
     {
-      title: 'Use Zoom or Google Hangouts to deliver an eAlpha lesson'
+      title: 'A Guide to eAlpha for Students Using the App',
+      video: [
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_APP_Tutorial_1-Login.mp4', name: 'Student Login' },
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_APP_Tutorial_2-The_Dashboard.mp4', name: 'Student Dashboard' }
+      ]
+    },
+/*    {
+      title: 'A Guide to eAlpha for Parents – English Language ',
+      video: [
+          //{ url: 'http://ealphaclips.com/Videos/How%20to%20use%20Ealpha/1129.mp4', name: 'A Guide to eAlpha for Parents English Language' }
+      ]
+    },*/
+    {
+      title: 'A Guide to eAlpha for Parents – Standard Arabic Language (بالعربية الفصحى)',
+      video: [
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Arabic_Tutorial_1_Introduction_to_Dashboard.mp4', name: 'Arabic Tutorial 1-Introduction to the Student Dashboard' },
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Arabic_Tutorial_2_My_Courses.mp4', name: 'Arabic Tutorial 2-My Courses for Students' },
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Arabic_Tutorial_3_Assignments.mp4', name: 'Arabic Tutorial 3-Assignments for Students' }
+        // { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_1_Dashboard.mp4', name: 'Teacher Tutorial Dashboard' }
+      ],
+      label: 'eAlpha for Parents'
+    }
+    // Add other items here
+  ];
+
+  const content = [
+    {
+      title: 'Math',
+      video: [
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_2_My_Courses_Math.mp4', name: 'Teacher Tutorial My Courses Math' },
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_3_Math_Teacher_Resources.mp4', name: 'Teacher Tutorial Math Teacher Resources' },
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_4_Math_SB_PB_Ancillaries.mp4', name: 'Teacher Tutorial Math SB PB Ancillaries' }
+      ]
     },
     {
-      title: 'A Guide to eAlpha for Parents – English Language '
+      title: 'Science',
+      video: [
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_5_My_Courses_Science.mp4', name: 'Teacher Tutorial My Courses Science' },
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_6_Science_Teacher_Resources.mp4', name: 'Teacher Tutorial Science Teacher Resources' }
+      ]
     },
     {
-      title: 'A Guide to eAlpha for Parents – Standard Arabic Language (بالعربية الفصحى)'
+      title: 'ELA',
+      video: []
     },
     {
-      title: 'A Guide to eAlpha for Parents – Arabic Language (بالعربي)'
-    },
-    {
-      title: 'A Guide to eAlpha for Parents – Spanish Language (en español)'
-    },
-    {
-      title: 'Create and work on assignments'
-    },
-    {
-      title: 'Create and use connections'
-    },
-    {
-      title: 'Run Reports'
-    },
-    {
-      title: 'How to use eAlpha Offline'
-    },
-    {
-      title: 'Upload Examview test scores to eAlpha'
-    },
-    {
-      title: 'Use the School Panel'
+      title: 'ELT',
+      video: []
     }
   ];
-  const renderAccordian = useMemo(() => data.map((item: any) => (
-    <Accordion expanded={false}>
-      <AccordionSummary
-        sx={{
-          backgroundColor: 'var(--sandgray)',
-          flexDirection: 'row-reverse'
-        }}
-        aria-controls="panel1a-content"
-        id="panel1a-header"
-      >
-        <p className="py-1">{item.title}</p>
-      </AccordionSummary>
-      {/* <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
-          </Typography>
-        </AccordionDetails> */}
-    </Accordion>
-  )), [data]);
+
+  const renderAccordion = (items: any) => {
+    const [expandedItem, setExpandedItem] = useState(null); // Initialize with 0
+
+    const handleItemClick = (index: any) => {
+      setExpandedItem(expandedItem === index ? null : index);
+    };
+    return useMemo(() => items.map((item: any, index: any) => (
+      <Accordion key={index} expanded={(expandedItem === index)}>
+        <AccordionSummary
+          sx={{
+            backgroundColor: 'var(--sandgray)',
+            flexDirection: 'row-reverse'
+          }}
+          aria-controls={`panel${index}-content`}
+          id={`panel${index}-header`}
+          onClick={() => handleItemClick(index)}
+        >
+          <Button>
+            {item.video && <VideoIcon fontSize="small" style={{ marginRight: '0.5rem' }} />}
+            <p className="py-1" style={{ color: '#333' }}>{item.title}</p>
+          </Button>
+        </AccordionSummary>
+        <AccordionDetails style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+          {item.video && Array.isArray(item.video) ? (
+            item.video.map((video: any) => (
+              <div key={index} className="video-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '60px', marginBottom: '10px', lineHeight: 2 }}>
+                <a href={`${video.url}`}>
+                  <img alt="" style={{ width: '120px' }} src="https://www.ealpha.info/media/img/howtouse/Assignments_clip.png" />
+                </a>
+                <p>
+                  <a href={`${video.url}`}>
+                    {video.name}
+                  </a>
+                </p>
+                <a href={video.url} download={true} target="_blank" style={{ color: '#08c' }} rel="noreferrer">Click Here to Download Video</a>
+              </div>
+            ))
+          ) : (
+            <div className="video-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '60px', marginBottom: '10px', lineHeight: 2 }}>
+              <a href={`${item.url}`}>
+                <img alt="" style={{ width: '120px' }} src="https://www.ealpha.info/media/img/howtouse/Assignments_clip.png" />
+              </a>
+              <p>
+                <a href={`${item.url}`}>
+                  {item.title}
+                </a>
+              </p>
+              <a href={item.video} download={true} target="_blank" style={{ color: '#08c' }} rel="noreferrer">Click Here to Download Video</a>
+            </div>
+          )}
+        </AccordionDetails>
+      </Accordion>
+    )), [items, expandedItem]);
+  };
+
   return (
     <RouteLayout navBack={false} overflow={true}>
       <StaticHeader />
@@ -73,32 +137,11 @@ export default function HowToUse() {
       <div className="p-6">
         <p className="font-semibold mb-2">Browsing the Content:</p>
         <div className="flex flex-col gap-y-3">
-          {
-            ['Math', 'Science', 'ELA', 'ELT'].map((sub: string) => (
-              <Accordion>
-                <AccordionSummary
-                  sx={{
-                    backgroundColor: 'var(--sandgray)',
-                    flexDirection: 'row-reverse'
-                  }}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                >
-                  <p className="py-1">{sub}</p>
-                </AccordionSummary>
-                {/* <AccordionDetails>
-                  <Typography>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                    malesuada lacus ex, sit amet blandit leo lobortis eget.
-                  </Typography>
-                </AccordionDetails> */}
-              </Accordion>
-            ))
-          }
+          {renderAccordion(content)}
         </div>
         <p className="font-semibold mb-2 mt-4">How To:</p>
         <div className="flex flex-col gap-y-3">
-          {renderAccordian}
+          {renderAccordion(data)}
         </div>
       </div>
       <StaticFooter />

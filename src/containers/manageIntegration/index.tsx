@@ -3,7 +3,11 @@ import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import ReactToPrint from 'react-to-print';
 import PrintIcon from '@mui/icons-material/Print';
-import { RESULTS_PER_PAGE, TOOLBAR_LABELS, COMPONENTS } from '@constants/constants';
+import {
+  RESULTS_PER_PAGE,
+  TOOLBAR_LABELS,
+  COMPONENTS,
+} from '@constants/constants';
 import AddIcon from '@mui/icons-material/Add';
 import EmailIcon from '@mui/icons-material/Email';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -26,11 +30,11 @@ const baseURL = import.meta.env.VITE_APP_MASTER_SERVICE_URL;
 export default function Index(): JSX.Element {
   const ALL = {
     label: 'All',
-    value: 'All'
+    value: 'All',
   };
   const SELECT = {
     label: 'Select',
-    value: 'Select'
+    value: 'Select',
   };
   const componentRef = useRef(null);
   const [openPopup, setOpenPopup] = useState<boolean>(false);
@@ -52,47 +56,56 @@ export default function Index(): JSX.Element {
     else setPage(1);
   };
 
-  const csvSubHeaders = ['Sr No.', 'Integration Name', 'Integration Type', 'Assigned To', 'Integration Through', 'Description', 'Logo', 'Status'];
+  const csvSubHeaders = [
+    'Sr No.',
+    'Integration Name',
+    'Integration Type',
+    'Assigned To',
+    'Integration Through',
+    'Description',
+    'Logo',
+    'Status',
+  ];
 
   const TableColumns = [
     {
       label: 'Sr No.',
-      align: 'center'
+      align: 'center',
     },
     {
       label: 'Integration Name',
       isSort: false,
-      mapper: 'name'
+      mapper: 'name',
       // align: 'center'
     },
     {
       label: 'Integration Type',
       isSort: false,
-      mapper: 'integration_type'
+      mapper: 'integration_type',
       // align: 'center'
     },
     {
       label: 'Assigned To',
       isSort: false,
-      mapper: 'role_names'
+      mapper: 'role_names',
       // align: 'center'
     },
     {
       label: 'Integration Through',
       isSort: false,
-      mapper: 'integration_through'
+      mapper: 'integration_through',
       // align: 'center'
     },
     {
       label: 'Description',
       isSort: false,
-      mapper: 'description'
+      mapper: 'description',
       // align: 'center'
     },
     {
       label: 'Logo',
       isSort: false,
-      mapper: 'logo_names'
+      mapper: 'logo_names',
       // align: 'center'
     },
     {
@@ -100,8 +113,8 @@ export default function Index(): JSX.Element {
       mapper: 'status',
       component: COMPONENTS?.switch,
       showInHeader: false,
-      align: 'center'
-    }
+      align: 'center',
+    },
   ];
 
   const tableReset = () => {
@@ -113,7 +126,7 @@ export default function Index(): JSX.Element {
   const statusHandler = (e: any, data: object | any) => {
     setTargetStatusChange({
       id: data.id,
-      status: data.status === 'Active' ? 'Inactive' : 'Active'
+      status: data.status === 'Active' ? 'Inactive' : 'Active',
     });
   };
 
@@ -124,18 +137,16 @@ export default function Index(): JSX.Element {
       const resp = res?.data?.response?.results;
       const body: any = [];
       resp?.map((i: any) => {
-        body.push(
-          {
-            label: i?.name,
-            value: i?.name
-          }
-        );
+        body.push({
+          label: i?.name,
+          value: i?.name,
+        });
         body.sort(sortData);
         return body;
       });
       setSelectDataArray([SELECT, ...body]);
     },
-    onError: () => { }
+    onError: () => {},
   });
 
   const { isLoading: statusUpdateLoading, mutate: updateStatus } = usePatch({
@@ -149,10 +160,10 @@ export default function Index(): JSX.Element {
     },
     onError: ({ response }: any) => {
       toast('error', response?.statusText || 'Error');
-    }
+    },
   });
 
-  const temps = (rowsPerPage === 'all') ? totalDataCount : rowsPerPage;
+  const temps = rowsPerPage === 'all' ? totalDataCount : rowsPerPage;
   const { isLoading, data, refetch } = useGet({
     baseURL,
     url: `master-service/integration/?limit=${temps}&offset=${(page - 1) * Number(temps)}${sortBy !== 'All' ? `&status=${sortBy === 'Enabled' ? 'Active' : 'Inactive'}` : ''}${selectedData !== 'Select' ? `&name=${selectedData}` : ''}`,
@@ -173,7 +184,7 @@ export default function Index(): JSX.Element {
             item?.integration_through,
             item?.description,
             logo,
-            item?.status
+            item?.status,
           ]);
           const temp = { ...item, role_names: roles, logo_names: logo };
           return temp;
@@ -186,7 +197,7 @@ export default function Index(): JSX.Element {
     },
     onError: ({ response }: any) => {
       toast('error', response?.statusText || 'Error');
-    }
+    },
   });
 
   useEffect(() => {
@@ -196,7 +207,11 @@ export default function Index(): JSX.Element {
   }, [targetStatusChange]);
 
   // email api
-  const { isRefetching: emailSendLoading, refetch: sendEmail, isLoading: emailLoad } = useGet({
+  const {
+    isRefetching: emailSendLoading,
+    refetch: sendEmail,
+    isLoading: emailLoad,
+  } = useGet({
     baseURL,
     url: 'master-service/integration-list/export-pdf/',
     onSuccess: (response: any) => {
@@ -205,18 +220,18 @@ export default function Index(): JSX.Element {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
     },
-    enabled: false
+    enabled: false,
   }) as any;
 
   const ADMIN_TOOLBAR_MENU = [
     {
       title: TOOLBAR_LABELS.ADD,
-      icon: <AddIcon />
+      icon: <AddIcon />,
     },
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: 'Export',
       icon: (
@@ -228,15 +243,17 @@ export default function Index(): JSX.Element {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
   const handleToolbarAction = (title: string) => {
     if (title === 'Add') {
@@ -252,7 +269,11 @@ export default function Index(): JSX.Element {
 
   return (
     <RouteLayout navBack={true} overflow={true}>
-      <HeaderMenus title="Manage Integration" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+      <HeaderMenus
+        title="Manage Integration"
+        menuArray={ADMIN_TOOLBAR_MENU}
+        handleToolbarAction={handleToolbarAction}
+      />
       <div className="flex gap-2 mt-7 lg:items-end items-center justify-between lg:flex-row flex-col">
         <div className="flex flex-col md:flex-row gap-4">
           <Dropdown
@@ -304,7 +325,10 @@ export default function Index(): JSX.Element {
         setOpen={() => setOpenPopup(false)}
         title="Add Integration"
       >
-        <CreateSubscription close={() => setOpenPopup(false)} refetch={refetch} />
+        <CreateSubscription
+          close={() => setOpenPopup(false)}
+          refetch={refetch}
+        />
       </CustomizedDialogs>
     </RouteLayout>
   );

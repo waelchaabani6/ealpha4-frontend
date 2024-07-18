@@ -1,3 +1,5 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable indent */
 import { useMemo, useRef, useState, useEffect } from 'react';
 import RouteLayout from '@layout/routeLayout';
 import Dropdown from '@component/dropdown/Dropdown';
@@ -23,7 +25,7 @@ type DateNavigation = {
   start_date: string;
   end_date: string;
   flag: boolean;
-}
+};
 type SortByType = 'Present' | 'Absent' | 'All';
 
 function formatData(data: any, page: number, subject: string) {
@@ -32,25 +34,31 @@ function formatData(data: any, page: number, subject: string) {
   let isNext = {
     start_date: '',
     end_date: '',
-    flag: false
+    flag: false,
   } as DateNavigation;
 
   let isPrev = {
     start_date: '',
     end_date: '',
-    flag: false
+    flag: false,
   } as DateNavigation;
   // eslint-disable-next-line array-callback-return, consistent-return
-  const SubjectArr = data?.data?.response.filter((ele:any) => {
+  const SubjectArr = data?.data?.response.filter((ele: any) => {
     if (Object.keys(ele).includes(subject)) {
       return ele;
     }
   });
 
-  const newData:[] = SubjectArr?.map((item:any) => {
-    const objectKey = Object.keys(item).find((key) => typeof item[key] === 'object' && item[key] !== null);
+  const newData: [] = SubjectArr?.map((item: any) => {
+    const objectKey = Object.keys(item).find(
+      (key) => typeof item[key] === 'object' && item[key] !== null
+    );
     if (objectKey) {
-      const newObj = { Subject: item[objectKey], ...item, SubjectName: objectKey };
+      const newObj = {
+        Subject: item[objectKey],
+        ...item,
+        SubjectName: objectKey,
+      };
       delete newObj[objectKey];
       return newObj;
     }
@@ -65,7 +73,7 @@ function formatData(data: any, page: number, subject: string) {
         isPrev = {
           start_date: searchParams.get('start_date') || '',
           end_date: searchParams.get('end_date') || '',
-          flag: true
+          flag: true,
         };
       }
       if (item?.Subject?.next) {
@@ -74,7 +82,7 @@ function formatData(data: any, page: number, subject: string) {
         isNext = {
           start_date: searchParams.get('start_date') || '',
           end_date: searchParams.get('end_date') || '',
-          flag: true
+          flag: true,
         };
       }
     }
@@ -88,13 +96,21 @@ function formatData(data: any, page: number, subject: string) {
           if (headerDates.indexOf(dt) < 0) {
             headerDates.push(dt);
           }
-          return (itm.present ? 'Checked' : itm.is_weekend ? 'Weekend' : 'UnChecked');
+          return itm.present
+            ? 'Checked'
+            : itm.is_weekend
+              ? 'Weekend'
+              : itm.is_holiday
+                ? 'HoliDay'
+                : 'UnChecked';
         }),
-        subject: item?.SubjectName
+        subject: item?.SubjectName,
       } as any;
       cData.push(tmp);
     }
   });
+  console.log(cData);
+
   return { cData, headerDates, isNext, isPrev };
 }
 
@@ -104,8 +120,12 @@ export default function () {
   const [datesPerPage, setDatesPerPage] = useState(1);
   const [sortBy, setSortBy] = useState<SortByType>('All');
   const [recordsPerPage, setRecordsPerPage] = useState<number | 'all'>(10);
-  const [selectedSubject, setSelectedSubject] = useState<number | 'select'>('select');
-  const [selectedTeacher, setSelectedTeacher] = useState<number | null | 'select'>('select');
+  const [selectedSubject, setSelectedSubject] = useState<number | 'select'>(
+    'select'
+  );
+  const [selectedTeacher, setSelectedTeacher] = useState<
+    number | null | 'select'
+  >('select');
   const [fromDate, setFromDate] = useState<any>('');
   const [toDate, setToDate] = useState<any>('');
   const [totalDataCount, setTotalDataCount] = useState(0);
@@ -116,12 +136,16 @@ export default function () {
   const noOfpages = getNoOfPages(totalDataCount, RESULTS_PER_PAGE?.[0]);
   const [courses, setCourses] = useState<any>([]);
   const [TeacherData, SetTeacherData] = useState<any>([]);
+
   const handleToolbarAction = async (title: string) => {
     if (title === TOOLBAR_LABELS.EMAIL) {
       if (fromDate && toDate) {
         fetchEmailApi();
       } else {
-        toast('error', 'Please select from date and to date to send the email.');
+        toast(
+          'error',
+          'Please select from date and to date to send the email.'
+        );
       }
     }
   };
@@ -142,7 +166,7 @@ export default function () {
           schoolId: i?.school_id,
           assignClassID: i?.assign_class,
           userID: i?.user_id,
-          branchID: i?.branch_id
+          branchID: i?.branch_id,
         });
         body.sort(sortData);
         return body;
@@ -150,7 +174,7 @@ export default function () {
       // setSelectedChild(body[0].value);
       setChildrenData([...body]);
     },
-    onError: () => {}
+    onError: () => {},
   });
 
   useEffect(() => {
@@ -160,11 +184,15 @@ export default function () {
   }, [childrenData]);
 
   const StudentUserID = useMemo(() => {
-    const tmp = childrenData?.find((item: any) => item?.value === selectedChild);
+    const tmp = childrenData?.find(
+      (item: any) => item?.value === selectedChild
+    );
     return tmp?.userID;
   }, [selectedChild]);
 
-  const AssignedID = childrenData?.find((obj: any) => obj?.value === selectedChild);
+  const AssignedID = childrenData?.find(
+    (obj: any) => obj?.value === selectedChild
+  );
 
   const { isLoading: subLoading, refetch: refectSubject } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
@@ -179,7 +207,7 @@ export default function () {
         return temp3;
       });
       setCourses([...temp3]);
-    }
+    },
   });
 
   const subjectName = useMemo(() => {
@@ -191,6 +219,7 @@ export default function () {
     const tmp = childrenData?.find((obj: any) => obj?.value === selectedChild);
     return tmp?.schoolId;
   }, [selectedChild]);
+
   const BranchID = useMemo(() => {
     const tmp = childrenData?.find((obj: any) => obj?.value === selectedChild);
     return tmp?.branchID;
@@ -210,6 +239,7 @@ export default function () {
     }
     return 0;
   };
+
   const { isLoading: isLoadingTeacher, refetch: dataTeacher } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
     url: `users-service/teachers/list/dropdown/?school_id=${schoolID}${BranchID ? `&branch_id=${BranchID}` : ''}`,
@@ -218,7 +248,7 @@ export default function () {
       const respData = resp?.data?.response?.results;
       respData.sort(compare);
       SetTeacherData(respData);
-    }
+    },
   });
 
   const teacherId = useMemo(() => {
@@ -234,10 +264,11 @@ export default function () {
       dataTeacher();
     }
   }, [selectedChild]);
+
   const {
     data: data2,
     isLoading: isLoading2,
-    failureCount
+    failureCount,
   } = useGet({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
     // url: `roster-service/parent-child-attendance-report-list/?offset=${(datesPerPage - 1) * Number(noOfpages)}&limit=7&student_id=${71 || selectedChild}&start_date=${formatFromDate}&end_date=${formatToDate}${selectedSubject !== 'select' ? `&subject=${subjectName}` : ''}${selectedTeacher !== 'select' ? `&teacher_id=${14229 || teacherId}` : ''}`,
@@ -249,14 +280,14 @@ export default function () {
     },
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
-    }
+    },
   });
 
   // Toolbar Email
   const {
     isLoading: emailLoaded,
     refetch: fetchEmailApi,
-    isRefetching: refetchEmail
+    isRefetching: refetchEmail,
   } = useGet({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
     url: `roster-service/parent-child-attendance-report-list?student_id=${selectedChild}&start_date=${moment(fromDate).format('yyyy-MM-DD')}&end_date=${moment(toDate).format('yyyy-MM-DD')}${selectedSubject !== 'select' ? `&subject=${subjectName}` : ''}${selectedTeacher !== 'select' ? `&teacher_id=${teacherId}` : ''}&is_email=true`,
@@ -269,13 +300,13 @@ export default function () {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
     },
-    enabled: false
+    enabled: false,
   });
 
   const ADMIN_TOOLBAR_MENU = [
     {
       title: TOOLBAR_LABELS.EMAIL,
-      icon: emailLoaded || refetchEmail ? <Loader size={20} /> : <EmailIcon />
+      icon: emailLoaded || refetchEmail ? <Loader size={20} /> : <EmailIcon />,
     },
     {
       title: TOOLBAR_LABELS.PRINT,
@@ -284,14 +315,15 @@ export default function () {
           trigger={printButton}
           content={() => componentRef.current}
         />
-      )
-    }
+      ),
+    },
   ];
 
   const { cData, headerDates, isNext, isPrev } = useMemo(
     () => formatData(data2, page, subjectName || selectedSubject),
     [page, fromDate, toDate, data2, selectedSubject]
   );
+
   const rowsPerPageHandler = (val: number | 'all') => {
     setRecordsPerPage(val);
   };
@@ -311,27 +343,28 @@ export default function () {
     () => [
       {
         label: 'Sr No.',
-        id: 'sr_no'
+        id: 'sr_no',
       },
       {
         id: 'subject',
-        label: 'Subject'
+        label: 'Subject',
       },
       {
         id: 'AttendanceReport',
-        label: headerDates
+        label: headerDates,
       },
       {
         id: 'TotalPresent',
-        label: 'Total Present'
+        label: 'Total Present',
       },
       {
         id: 'TotalAbsent',
-        label: 'Total Absent'
-      }
+        label: 'Total Absent',
+      },
     ],
     [headerDates]
   );
+
   const fromDateHandler = (val: any) => {
     setFromDate(val.toDate());
     if (toDate && val.toDate() >= toDate) {
@@ -347,10 +380,10 @@ export default function () {
           subtitle={
             userRole().isSuperAdmin
               ? `School : ${
-                schoolData
-                  ? schoolData?.school_name
-                  : branchData?.school_data.school_name
-              }`
+                  schoolData
+                    ? schoolData?.school_name
+                    : branchData?.school_data.school_name
+                }`
               : ''
           }
           subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ''}
@@ -375,10 +408,12 @@ export default function () {
               { label: 'Select', value: 'select' },
               ...(TeacherData?.map((item: any) => ({
                 label: `${item.first_name} ${item.last_name}`,
-                value: item.user_id
-              })) || [])
+                value: item.user_id,
+              })) || []),
             ]}
-            onChangeHandler={(currentTeacher: number) => setSelectedTeacher(currentTeacher)}
+            onChangeHandler={(currentTeacher: number) =>
+              setSelectedTeacher(currentTeacher)
+            }
             sxClass={{ width: '100%' }}
           />
           <Dropdown
@@ -389,10 +424,12 @@ export default function () {
               { label: 'Select', value: 'select' },
               ...(courses?.map((item: any) => ({
                 label: item.label,
-                value: item?.value
-              })) || [])
+                value: item?.value,
+              })) || []),
             ]}
-            onChangeHandler={(currentSubject: number) => setSelectedSubject(currentSubject)}
+            onChangeHandler={(currentSubject: number) =>
+              setSelectedSubject(currentSubject)
+            }
             sxClass={{ width: '100%' }}
           />
           <div className="pb-[5px]">

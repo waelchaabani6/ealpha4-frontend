@@ -48,10 +48,16 @@ const TableColumns = [
     selector: 'id',
     showInHeader: true,
     sx: {
-      display: 'flex'
+      display: 'flex',
+      alignItems: 'center'
     },
-    cellSx: { position: 'relative', left: '25px' },
-    elementClass: 'flex items-center'
+    cellSx: {
+      // display: 'flex',
+      justifyContent: 'flex-start', 
+      position: 'relative',
+      left: '0px',
+    },
+    elementClass: 'flex items-center',
     // component: COMPONENTS?.checkbox
   },
   {

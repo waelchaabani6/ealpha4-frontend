@@ -11,11 +11,20 @@ import toast from '@shared/toast';
 import { getNoOfPages } from '@utility/utility';
 import { useEffect, useRef, useState } from 'react';
 import { CSVLink } from 'react-csv';
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import { useSelector } from 'react-redux';
 import CustomPagination from '../../components/pagination/CustomPagination';
-import { RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '../../constants/constants';
+import {
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '../../constants/constants';
 import Wrapper from '../../shared/wrapper/Wrapper';
 import RouteLayout from '../layout/routeLayout';
 
@@ -32,7 +41,7 @@ export default function StudentCompletedAssessmentList() {
     TABLE_LABELS?.STUDENT_NAME,
     TABLE_LABELS?.START_DATE,
     TABLE_LABELS?.END_DATE,
-    TABLE_LABELS?.SCORE
+    TABLE_LABELS?.SCORE,
   ];
 
   const [csvData, setCsvData] = useState<[]>([]);
@@ -41,28 +50,28 @@ export default function StudentCompletedAssessmentList() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.STUDENT_NAME,
       mapper: 'student_name',
-      isSort: true
+      isSort: true,
     },
     {
       label: TABLE_LABELS?.START_DATE,
       isSort: true,
-      mapper: 'start_date'
+      mapper: 'start_date',
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
       isSort: true,
-      mapper: 'submission_date'
+      mapper: 'submission_date',
     },
     {
       label: TABLE_LABELS?.SCORE,
       isSort: true,
-      mapper: 'percentage'
-    }
+      mapper: 'percentage',
+    },
   ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
@@ -92,20 +101,17 @@ export default function StudentCompletedAssessmentList() {
     setSearchString(value);
   };
 
-  const actionHandler = (data: any, handlername: string) => { };
+  const actionHandler = (data: any, handlername: string) => {};
 
   const redirect = (url: any, user_ting: string, item: any) => {
     const obeasses_id = item?.obeasses_id;
     setConfig(user_ting, obeasses_id);
-    navigate(
-      url,
-      {
-        state: {
-          obeasses_id,
-          user_ting
-        }
-      }
-    );
+    navigate(url, {
+      state: {
+        obeasses_id,
+        user_ting,
+      },
+    });
   };
 
   const setConfig = (user_ting: string, obeasses_id: string) => {
@@ -114,14 +120,14 @@ export default function StudentCompletedAssessmentList() {
       user: `${user?.first_name} ${user?.last_name}`,
       role: user?.role?.name,
       user_ting,
-      obeasses_id
+      obeasses_id,
     };
     fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(config)
+      body: JSON.stringify(config),
     })
       .then((response) => {
         if (!response.ok) {
@@ -129,47 +135,59 @@ export default function StudentCompletedAssessmentList() {
         }
         return response.json();
       })
-      .then((data) => {
-
-      })
-      .catch((e) => {
-      });
+      .then((data) => {})
+      .catch((e) => {});
   };
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
-  const ordering = orderBy ? order === 'asc' ? orderBy : `-${orderBy}` : '';
-  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/assessment-student-details/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&assessment_id=${aid}&class_name=${searchParams.get('class')}`,
-    onSuccess: (res: any) => {
-      const accData = res?.data?.response;
-      const respData = accData?.results;
-      setTotalDataCount(accData.count);
-      const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
-      const body: any = [];
-      const newTableData = respData?.map((item: any) => {
-        body.push([
-          item?.student_name,
-          item?.start_date,
-          item?.submission_date,
-          item?.score
-        ]);
+  const ordering = orderBy ? (order === 'asc' ? orderBy : `-${orderBy}`) : '';
+  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
+    useGet({
+      baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+      url: `assessments-service/assessment-student-details/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&assessment_id=${aid}&class_name=${searchParams.get('class')}`,
+      onSuccess: (res: any) => {
+        const accData = res?.data?.response;
+        const respData = accData?.results;
+        setTotalDataCount(accData.count);
+        const schoolNameInURL = decodeURIComponent(
+          location.pathname.split('/')[1]
+        );
+        const body: any = [];
+        const newTableData = respData?.map((item: any) => {
+          body.push([
+            item?.student_name,
+            item?.start_date,
+            item?.submission_date,
+            item?.score,
+          ]);
 
-        const link2 = `/${schoolNameInURL}/assessments/assigned/completed_assessments/completed_assessment_student_list/student_report/${aid}?user=${item?.user_ting}`;
-        const temp = {
-          ...item,
-          student_name: <span role="main" onClick={() => redirect(link2, item.user_ting, item)} className="text-accent underline cursor-pointer text-xs font-medium">{item.student_name}</span>
-        };
-        return temp;
-      });
-      setCsvData(body);
-      setTableData(newTableData);
-    }
-  });
+          const link2 = `/${schoolNameInURL}/assessments/assigned/completed_assessments/completed_assessment_student_list/student_report/${aid}?user=${item?.user_ting}`;
+          const temp = {
+            ...item,
+            student_name: (
+              <span
+                role="main"
+                onClick={() => redirect(link2)}
+                className="text-accent underline cursor-pointer text-xs font-medium"
+              >
+                {item.student_name}
+              </span>
+            ),
+          };
+          return temp;
+        });
+        setCsvData(body);
+        setTableData(newTableData);
+      },
+    });
 
   // Toolbar Email
-  const { isRefetching: emailLoaded, isLoading: loadEmail, refetch: fetchEmailApi } = useGet({
+  const {
+    isRefetching: emailLoaded,
+    isLoading: loadEmail,
+    refetch: fetchEmailApi,
+  } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/assign-assessment-student-details-email/pdf-download/?assessment_id=${aid}&class_name=${searchParams.get('class')}`,
     onSuccess: (response: any) => {
@@ -178,7 +196,7 @@ export default function StudentCompletedAssessmentList() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
     },
-    enabled: false
+    enabled: false,
   });
 
   // ----------------------------------------END API---------------------
@@ -188,10 +206,10 @@ export default function StudentCompletedAssessmentList() {
   }, [rowsPerPage, page, orderBy, order, searchString, toDate, fromDate]);
 
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailLoaded || loadEmail) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailLoaded || loadEmail) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
@@ -203,37 +221,60 @@ export default function StudentCompletedAssessmentList() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   return (
-    <RouteLayout
-      navBack={true}
-    >
-      <HeaderMenus title={`${searchParams.get('assessment') || 'Test'}`} menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+    <RouteLayout navBack={true}>
+      <HeaderMenus
+        title={`${searchParams.get('assessment') || 'Test'}`}
+        menuArray={ADMIN_TOOLBAR_MENU}
+        handleToolbarAction={handleToolbarAction}
+      />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <div className="pt-[30px]">
-            <DebounceInput
-              onChange={handleSearch}
+            <DebounceInput onChange={handleSearch} />
+          </div>
+          <div className="max-w-[150px]">
+            <CustomInput
+              value={fromDate}
+              label="From date"
+              name="add_question"
+              size="small"
+              sx={{ backgroundColor: 'var(--white)' }}
+              disabled={true}
             />
           </div>
           <div className="max-w-[150px]">
-            <CustomInput value={fromDate} label="From date" name="add_question" size="small" sx={{ backgroundColor: 'var(--white)' }} disabled={true} />
+            <CustomInput
+              value={toDate}
+              label="To date"
+              name="add_question"
+              size="small"
+              sx={{ backgroundColor: 'var(--white)' }}
+              disabled={true}
+            />
           </div>
           <div className="max-w-[150px]">
-            <CustomInput value={toDate} label="To date" name="add_question" size="small" sx={{ backgroundColor: 'var(--white)' }} disabled={true} />
-          </div>
-          <div className="max-w-[150px]">
-            <CustomInput value={searchParams.get('class')} label="Class" name="add_question" size="small" sx={{ backgroundColor: 'var(--white)' }} disabled={true} />
+            <CustomInput
+              value={searchParams.get('class')}
+              label="Class"
+              name="add_question"
+              size="small"
+              sx={{ backgroundColor: 'var(--white)' }}
+              disabled={true}
+            />
           </div>
         </div>
         <CustomPagination

@@ -18,6 +18,7 @@ import moment from 'moment';
 import { useId, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
+import ToastMessage from '@containers/dashboard/ToastMessage';
 import EventForm from './eventForm';
 import Tabs from './tabs';
 
@@ -176,6 +177,7 @@ export default function ParentsDashboard() {
 
   return (
     <RouteLayout navBack={false} overflow={true}>
+      <ToastMessage />
       <div className="flex items-center mb-3">
         <PageTitle title={`${branch_name || school_name || 'Test'}`} />
         <div className="flex items-center">

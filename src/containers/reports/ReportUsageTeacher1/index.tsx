@@ -2,7 +2,12 @@ import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import ButtonToggle from '@component/ToggleButton/ToggleButton';
 import DatePicker from '@component/datepicker';
 import Dropdown from '@component/dropdown/Dropdown';
-import { GRAPH_LABELS, RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '@constants/constants';
+import {
+  GRAPH_LABELS,
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '@constants/constants';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
 import RouteLayout from '@layout/routeLayout';
 import EmailIcon from '@mui/icons-material/Email';
@@ -41,13 +46,19 @@ export default function Index() {
   const [Graph1arr, setGraph1arr] = useState([]);
   const [Graph2Arr, setGraph2arr] = useState([]);
   const [Graph3Arr, setGraph3Arr] = useState([]);
-  const noOfpages = getNoOfPages(totalDataCount, RESULTS_PER_PAGE?.[0]);
+
+  const [rowsPerPage, setRowsPerPage] = useState<any>(RESULTS_PER_PAGE?.[0]);
+  const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const { role, user_profile_id: userId } = useSelector(selectUser);
   const [graph, setGraph] = useState('');
   const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
   const [view, setView] = React.useState('default');
 
-  const { isRefetching: emailSendLoading, refetch: sendEmail, isLoading: emailLoad } = useGet({
+  const {
+    isRefetching: emailSendLoading,
+    refetch: sendEmail,
+    isLoading: emailLoad,
+  } = useGet({
     baseURL: ReportURL,
     url: `reports-service/usage-report/send-email/?school_id=${schoolData?.id || branchData?.school_data?.id}`,
     onSuccess: () => {
@@ -57,7 +68,7 @@ export default function Index() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Unable to send email');
     },
-    enabled: false
+    enabled: false,
   }) as any;
 
   const handelSendEmail = () => {
@@ -71,14 +82,14 @@ export default function Index() {
     TABLE_LABELS?.ACTIVE_DAYS,
     TABLE_LABELS?.CONTENT_OPENED,
     TABLE_LABELS?.CONTENT_COMPLETED,
-    TABLE_LABELS?.TOTAL_TIME
+    TABLE_LABELS?.TOTAL_TIME,
   ];
 
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: 'Export',
       icon: (
@@ -90,7 +101,7 @@ export default function Index() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: 'Print',
@@ -99,8 +110,8 @@ export default function Index() {
           trigger={printButton}
           content={() => componentRef.current}
         />
-      )
-    }
+      ),
+    },
   ];
   const handleToolbarAction = async (title: string) => {
     if (title === TOOLBAR_LABELS.EMAIL) {
@@ -111,48 +122,45 @@ export default function Index() {
   const TableColumns: any = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.CLASS,
-      mapper: 'Class'
+      mapper: 'Class',
     },
     {
       label: TABLE_LABELS?.CLASSES_TAUGHT,
       mapper: 'ClassesTaught',
-      align: 'center'
-
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.TEACHER,
-      mapper: 'Teacher'
+      mapper: 'Teacher',
     },
     {
       label: TABLE_LABELS?.PROGRAM,
-      mapper: 'Program'
+      mapper: 'Program',
     },
     {
       label: TABLE_LABELS?.ACTIVE_DAYS,
       align: 'center',
-      mapper: 'ActiveDays'
+      mapper: 'ActiveDays',
     },
     {
       label: TABLE_LABELS?.CONTENT_OPENED,
       align: 'center',
-      mapper: 'ContentOpened'
+      mapper: 'ContentOpened',
     },
     {
       label: TABLE_LABELS?.CONTENT_COMPLETED,
       mapper: 'ContentCompleted',
-      align: 'center'
-
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.TOTAL_TIME,
       mapper: 'TotalTime',
-      align: 'center'
-
-    }
+      align: 'center',
+    },
   ];
 
   const handlePagination = (currPage: any) => {
@@ -163,21 +171,28 @@ export default function Index() {
   const { data: branchList, isLoading: branchListLoading } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
     url: `schools-service/school-branches/?limit=100&school_id=${schoolData?.id || branchData?.school_data?.id}`,
-    enabled: !!(schoolData?.id || branchData?.school_data?.id)
+    enabled: !!(schoolData?.id || branchData?.school_data?.id),
   });
   const BranchArr = branchList?.data?.response?.results?.sort(sortByName);
 
-  const branchName = useMemo(() => branchList?.data?.response?.results.find((itm: any) => itm.id === selectedBranch)?.name || branchData?.name, [selectedBranch, branchData]);
+  const branchName = useMemo(
+    () =>
+      branchList?.data?.response?.results.find(
+        (itm: any) => itm.id === selectedBranch
+      )?.name || branchData?.name,
+    [selectedBranch, branchData]
+  );
 
   const { isLoading: schoolClassLoading, data: schoolClassList } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}${(branchData || selectedBranch !== 'select') ? `&branch_name=${branchName}` : ''}`
+    url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}${branchData || selectedBranch !== 'select' ? `&branch_name=${branchName}` : ''}`,
   });
-  const SchooClassList = schoolClassList?.data?.response?.results?.sort(sortByName);
+  const SchooClassList =
+    schoolClassList?.data?.response?.results?.sort(sortByName);
 
   const { data: teacherList, isLoading: teacherListLoading } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
-    url: `users-service/teachers-list/?limit=1000&ordering=-created_at&school_id=${schoolData?.id || branchData?.school_data?.id}${(branchData || selectedBranch !== 'select') ? `&branch_name=${branchName}` : ''}`
+    url: `users-service/teachers-list/?limit=1000&ordering=-created_at&school_id=${schoolData?.id || branchData?.school_data?.id}${branchData || selectedBranch !== 'select' ? `&branch_name=${branchName}` : ''}`,
   });
   const compare = (a: any, b: any) => {
     if (a.username < b.username) {
@@ -191,7 +206,9 @@ export default function Index() {
   const TeacherArr = teacherList?.data?.response?.results?.sort(compare);
 
   const teacherName = useMemo(() => {
-    const obj = teacherList?.data?.response?.results?.find((itm: any) => itm.user_id === selectedteacher);
+    const obj = teacherList?.data?.response?.results?.find(
+      (itm: any) => itm.user_id === selectedteacher
+    );
     if (obj) {
       return `${obj?.first_name} ${obj?.last_name}`;
     }
@@ -200,7 +217,7 @@ export default function Index() {
 
   const { isLoading, data } = useGet({
     baseURL: ReportURL,
-    url: `reports-service/usage-report/?school_id=${schoolData?.id || branchData?.school_data?.id}${selectedBranch !== 'select' ? `&branch_id=${selectedBranch}` : userRole().isBranchAdmin || branchData ? `&branch_id=${branchData?.id}` : ''}${selectedteacher !== 'select' ? `&teacher=${teacherName}` : ''}${selectedClass !== 'select' ? `&class_id=${selectedClass}` : ''}${fromDate ? `&from_date=${moment(fromDate).format('yyyy-MM-DD')}` : ''}${toDate ? `&to_date=${moment(toDate).format('yyyy-MM-DD')}` : ''}&page=${page}${selectedprogram !== 'select' ? `&program=${selectedprogram}` : ''}${graph ? `&is_graph=${graph}` : ''}`,
+    url: `reports-service/usage-report/?school_id=${schoolData?.id || branchData?.school_data?.id}${selectedBranch !== 'select' ? `&branch_id=${selectedBranch}` : userRole().isBranchAdmin || branchData ? `&branch_id=${branchData?.id}` : ''}${selectedteacher !== 'select' ? `&teacher=${teacherName}` : ''}${selectedClass !== 'select' ? `&class_id=${selectedClass}` : ''}${fromDate ? `&from_date=${moment(fromDate).format('yyyy-MM-DD')}` : ''}${toDate ? `&to_date=${moment(toDate).format('yyyy-MM-DD')}` : ''}&page=${page}&page_size=${rowsPerPage}${selectedprogram !== 'select' ? `&program=${selectedprogram}` : ''}${graph ? `&is_graph=${graph}` : ''}`,
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.total_records);
       const Graph1 = res?.data?.response?.active_day_per_program;
@@ -210,10 +227,18 @@ export default function Index() {
         const body: any = [];
         // eslint-disable-next-line array-callback-return
         Graph1?.map((ele: any) => {
-          const convertedArray = [ele?.programs?.reduce((acc: any, curr: any) => ({ ...acc, [curr?.name]: curr?.total_active_days }), {})];
+          const convertedArray = [
+            ele?.programs?.reduce(
+              (acc: any, curr: any) => ({
+                ...acc,
+                [curr?.name]: curr?.total_active_days,
+              }),
+              {}
+            ),
+          ];
           body.push({
             name: ele?.class_name,
-            Program: convertedArray
+            Program: convertedArray,
           });
         });
         setGraph1arr(body);
@@ -221,13 +246,11 @@ export default function Index() {
       if (Graph2) {
         const body: any = [];
         Graph2?.map((i: any) => {
-          body.push(
-            {
-              content_completed_sum: i?.no_of_content_completed,
-              Opened: i?.content_opened_sum,
-              name: i?.class_name
-            }
-          );
+          body.push({
+            content_completed_sum: i?.no_of_content_completed,
+            Opened: i?.content_opened_sum,
+            name: i?.class_name,
+          });
           return true;
         });
         setGraph2arr(body);
@@ -239,7 +262,9 @@ export default function Index() {
           // eslint-disable-next-line array-callback-return
           i?.programs?.filter((ele: any) => {
             const total_time_sum = ele?.total_time;
-            const [hours, minutes, seconds] = total_time_sum.split(':').map(Number);
+            const [hours, minutes, seconds] = total_time_sum
+              .split(':')
+              .map(Number);
             const totalSeconds = hours * 3600 + minutes * 60 + seconds;
             let totalDays: any;
             if (totalSeconds >= 1) {
@@ -247,10 +272,15 @@ export default function Index() {
             } else {
               totalDays = 0;
             }
-            const convertedArray = [i?.programs?.reduce((acc: any, curr: any) => ({ ...acc, [curr?.name]: totalDays }), {})];
+            const convertedArray = [
+              i?.programs?.reduce(
+                (acc: any, curr: any) => ({ ...acc, [curr?.name]: totalDays }),
+                {}
+              ),
+            ];
             body.push({
               name: i?.class_name,
-              program: convertedArray
+              program: convertedArray,
             });
             setGraph3Arr(body);
           });
@@ -258,44 +288,52 @@ export default function Index() {
           // // eslint-disable-next-line array-callback-return
         });
       }
-    }
+    },
   });
 
   const { isLoading: subjectsLoading, data: subjectList } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/content/?ordering=-created_at&limit=100&offset=0&selection=Course`
+    url: `course-code-service/courses/content/?ordering=-created_at&limit=100&offset=0&selection=Course`,
   });
   const SubjectArr = subjectList?.data?.response?.results?.sort(sortByName);
 
   const { isLoading: graphLoading, data: graphData } = useGet({
     baseURL: ReportURL,
     url: `reports-service/usage-report/?is_graph=1${selectedprogram !== 'select' ? `&program=${selectedprogram}` : ''}`,
-    enabled: view !== 'default'
+    enabled: view !== 'default',
   });
 
-  const tableData = useMemo(() => data?.data?.response?.data?.map((itm: any) => ({
-    Program: itm?.program,
-    Class: itm?.class_name,
-    Teacher: itm?.teacher_name,
-    ClassesTaught: itm?.no_of_classes_taught,
-    TotalClass: '',
-    TotalStudent: '',
-    ActiveDays: itm?.active_days,
-    ContentOpened: itm?.content_opened,
-    ContentCompleted: itm?.no_of_content_completed,
-    TotalTime: itm?.total_time
-  })), [data]) || [];
+  const tableData =
+    useMemo(
+      () =>
+        data?.data?.response?.data?.map((itm: any) => ({
+          Program: itm?.program,
+          Class: itm?.class_name,
+          Teacher: itm?.teacher_name,
+          ClassesTaught: itm?.no_of_classes_taught,
+          TotalClass: '',
+          TotalStudent: '',
+          ActiveDays: itm?.active_days,
+          ContentOpened: itm?.content_opened,
+          ContentCompleted: itm?.no_of_content_completed,
+          TotalTime: itm?.total_time,
+        })),
+      [data]
+    ) || [];
 
   const CSVDataFunction = () => {
     const csvdata = tableData.map((i: any) => [
       i?.Class,
       i?.ClassesTaught,
-      i?.Teacher?.props?.children?.props?.children?.props?.children?.teacher_name || i?.Teacher || '',
+      i?.Teacher?.props?.children?.props?.children?.props?.children
+        ?.teacher_name ||
+        i?.Teacher ||
+        '',
       i?.Program,
       i?.ActiveDays,
       i?.ContentOpened,
       i?.ContentCompleted,
-      i?.TotalTime
+      i?.TotalTime,
     ]);
 
     setCsvData(csvdata);
@@ -321,6 +359,11 @@ export default function Index() {
     CSVDataFunction();
   }, [view, csvData]);
 
+  const handlePerPage = (e: any) => {
+    setPage(page);
+    setRowsPerPage(e);
+  };
+
   return (
     <RouteLayout>
       <HeaderMenus
@@ -329,56 +372,83 @@ export default function Index() {
         handleToolbarAction={handleToolbarAction}
       />
 
-      <div className={`w-full grid grid-cols-1 ${userRole().isBranchAdmin ? 'lg:grid-cols-6' : 'lg:grid-cols-7'} my-2 gap-2 items-center justify-between`}>
-        {
-          view === 'default'
-            ? (
-              <>
-                {
-                  !userRole().isBranchAdmin && (
-                    <Dropdown
-                      title="Select Branch"
-                      value={selectedBranch}
-                      dataArray={[{ label: 'All', value: 'select' }, ...(BranchArr?.map((item: any) => ({ label: item.name, value: item.id })) || [])]}
-                      onChangeHandler={(val) => {
-                        setselectedBranch(val);
-                        setSelectedClass('select');
-                        setSelectedTeacher('select');
-                      }}
-                      loading={branchListLoading}
-                      sxClass={{ width: '100%' }}
-                    />
-                  )
-                }
-                <Dropdown
-                  title="Teacher Name"
-                  loading={teacherListLoading}
-                  value={selectedteacher}
-                  dataArray={[{ label: 'All', value: 'select' }, ...(TeacherArr?.map((itm: any) => ({ label: `${itm?.first_name} ${itm?.last_name}`, value: itm?.user_id })) || [])]}
-                  onChangeHandler={(val) => setSelectedTeacher(val)}
-                  sxClass={{ width: '100%' }}
-                />
-                <Dropdown
-                  title="Select a class"
-                  value={selectedClass}
-                  loading={schoolClassLoading}
-                  dataArray={[{ label: 'All', value: 'select' }, ...(SchooClassList?.map((item: any) => ({ label: item.name, value: item.id })) || [])]}
-                  onChangeHandler={(val) => setSelectedClass(val)}
-                  sxClass={{ width: '100%' }}
-                />
-              </>
-            )
-            : (
+      <div
+        className={`w-full grid grid-cols-1 ${userRole().isBranchAdmin ? 'lg:grid-cols-7' : 'lg:grid-cols-8'} my-2 gap-2 items-center justify-between`}
+      >
+        {view === 'default' ? (
+          <>
+            {!userRole().isBranchAdmin && (
               <Dropdown
-                title="Select Program"
-                value={selectedprogram}
-                dataArray={[{ label: 'Select', value: 'select' }, ...(SubjectArr?.map((itm: any) => ({ label: itm?.content, value: itm?.content })) || [])]}
-                onChangeHandler={(val) => setSelectedProgram(val)}
+                title="Select Branch"
+                value={selectedBranch}
+                dataArray={[
+                  { label: 'All', value: 'select' },
+                  ...(BranchArr?.map((item: any) => ({
+                    label: item.name,
+                    value: item.id,
+                  })) || []),
+                ]}
+                onChangeHandler={(val) => {
+                  setselectedBranch(val);
+                  setSelectedClass('select');
+                  setSelectedTeacher('select');
+                }}
+                loading={branchListLoading}
                 sxClass={{ width: '100%' }}
-                loading={subjectsLoading}
               />
-            )
-        }
+            )}
+            <Dropdown
+              title="Result Of Pages"
+              value={rowsPerPage}
+              dataArray={RESULTS_PER_PAGE}
+              onChangeHandler={handlePerPage}
+              sxClass={{ width: '100%' }}
+            />
+            <Dropdown
+              title="Teacher Name"
+              loading={teacherListLoading}
+              value={selectedteacher}
+              dataArray={[
+                { label: 'All', value: 'select' },
+                ...(TeacherArr?.map((itm: any) => ({
+                  label: `${itm?.first_name} ${itm?.last_name}`,
+                  value: itm?.user_id,
+                })) || []),
+              ]}
+              onChangeHandler={(val) => setSelectedTeacher(val)}
+              sxClass={{ width: '100%' }}
+            />
+            <Dropdown
+              title="Select a class"
+              value={selectedClass}
+              loading={schoolClassLoading}
+              dataArray={[
+                { label: 'All', value: 'select' },
+                ...(SchooClassList?.map((item: any) => ({
+                  label: item.name,
+                  value: item.id,
+                })) || []),
+              ]}
+              onChangeHandler={(val) => setSelectedClass(val)}
+              sxClass={{ width: '100%' }}
+            />
+          </>
+        ) : (
+          <Dropdown
+            title="Select Program"
+            value={selectedprogram}
+            dataArray={[
+              { label: 'Select', value: 'select' },
+              ...(SubjectArr?.map((itm: any) => ({
+                label: itm?.content,
+                value: itm?.content,
+              })) || []),
+            ]}
+            onChangeHandler={(val) => setSelectedProgram(val)}
+            sxClass={{ width: '100%' }}
+            loading={subjectsLoading}
+          />
+        )}
 
         <DatePicker
           fullWidth={true}
@@ -409,17 +479,20 @@ export default function Index() {
           shouldDisableDate={() => false}
         />
         <div className={` flex gap-x-4 items-center  pt-2 lg:pt-6`}>
-          {
-            (toDate || fromDate) && (
-              <span tabIndex={0} title="Clear dates" onClick={() => reset()} role="button">
-                <RestartAltIcon />
-              </span>
-            )
-          }
-
+          {(toDate || fromDate) && (
+            <span
+              tabIndex={0}
+              title="Clear dates"
+              onClick={() => reset()}
+              role="button"
+            >
+              <RestartAltIcon />
+            </span>
+          )}
         </div>
-        <div className={`${view === 'default' ? 'lg:col-auto' : 'lg:col-span-3'} mt-3 flex justify-end`}>
-
+        <div
+          className={`${view === 'default' ? 'lg:col-auto' : 'lg:col-span-3'} mt-3 flex justify-end`}
+        >
           <ButtonToggle view={view} setView={setView} />
         </div>
 
@@ -430,7 +503,6 @@ export default function Index() {
           value={selectedBranch}
           disabled={true}
         /> */}
-
       </div>
       {view === 'default' ? (
         <div className="bg-white" ref={componentRef}>
@@ -441,7 +513,7 @@ export default function Index() {
               headerRows={TableColumns}
               currentPage={page}
               totalPages={noOfpages}
-              rowsPerPage={RESULTS_PER_PAGE?.[0]}
+              rowsPerPage={rowsPerPage}
               paginateHandler={handlePagination}
               setPage={setPage}
               maxHeight={620}
@@ -483,7 +555,6 @@ export default function Index() {
           </div>
         </>
       )}
-
     </RouteLayout>
   );
 }

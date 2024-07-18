@@ -215,7 +215,7 @@ export default function () {
 
   const { data: data2, isLoading: isLoading2 } = useGet({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
-    url: `roster-service/attendance-report-list?school_id=${schoolData?.id || branchData?.school_data?.id}${userRole().isStudent && subjectName !== 'select' ? subjectName ? `&subject=${subjectName}` : '' : `&subject=${subjectName}`}${branchId ? `&branch_id=${branchId}` : selectedBranch !== 'select' ? `&branch_id=${selectedBranch}` : ''}&class_name=${userRole().isStudent ? userClassName : className}&offset=${(page - 1) * Number(noOfpages)}&child_limit=7&child_offset=${(datesPerPage - 1) * Number(noOfpages)}&start_date=${formatFromDate}${toDate ? `&end_date=${formatToDate}` : ''}${userRole().isStudent ? `&single_students_id=${userId}` : ''}`,
+    url: `roster-service/attendance-report-list?school_id=${schoolData?.id || branchData?.school_data?.id}${userRole().isStudent && subjectName !== 'select' ? subjectName ? `&subject=${subjectName}` : '' : `&subject=${subjectName}`}${branchId ? `&branch_id=${branchId}` : selectedBranch !== 'select' ? `&branch_id=${selectedBranch}` : ''}&class_name=${userRole().isStudent ? userClassName : className}&offset=${(page - 1) * Number(noOfpages)}&child_limit=7&child_offset=${(datesPerPage - 1) * Number(noOfpages)}&start_date=${formatFromDate}${toDate ? `&end_date=${formatToDate}` : ''}${userRole().isStudent ? `&single_students_id=${userId}` : ''}&role_name=${usersRole?.name}`,
     enabled: !!((selectedClass !== 'select' && fromDate && toDate) || (selectedClass !== 'select' && subjectName && fromDate && toDate && selectedBranch) || (userRole().isStudent && fromDate && toDate)),
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.count);

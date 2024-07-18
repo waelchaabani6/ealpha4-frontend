@@ -126,7 +126,7 @@ export default function Index(props: any) {
 
   // -------------------------------API---------------------------
   //  Get Teachers List
-  const temps = (rowsPerPage === 'all') ? totalDataCount : rowsPerPage;
+  const temps = (rowsPerPage === 'All') ? totalDataCount : rowsPerPage;
   const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
   const body: any = [];
   const { isFetching: parentLoading, refetch: fetchParent } = useGet({

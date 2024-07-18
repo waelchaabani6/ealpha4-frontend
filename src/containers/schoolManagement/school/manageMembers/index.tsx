@@ -1,4 +1,8 @@
-import { RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '@constants/constants';
+import {
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '@constants/constants';
 import { getNoOfPages, sortData, userRole } from '@utility/utility';
 import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
@@ -7,11 +11,24 @@ import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import { useEffect, useState, useRef } from 'react';
 import ReactToPrint from 'react-to-print';
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import Dropdown from '@component/dropdown/Dropdown';
 import CustomPagination from '@component/pagination/CustomPagination';
 import RouteLayout from '@layout/routeLayout';
-import { ADD_PARENT, ADD_STUDENT, ADD_TEACHER, BRANCH, MANAGE_MEMBERS, SCHOOL, SCHOOL_MANAGEMENT } from '@constants/routes';
+import {
+  ADD_PARENT,
+  ADD_STUDENT,
+  ADD_TEACHER,
+  BRANCH,
+  MANAGE_MEMBERS,
+  SCHOOL,
+  SCHOOL_MANAGEMENT,
+} from '@constants/routes';
 import { CSVLink } from 'react-csv';
 import toast from '@shared/toast';
 import DeletePopup from '@shared/DeletePopup';
@@ -37,13 +54,15 @@ export default function Index() {
   const { schoolData, branchData } = useSelector(selectSchoolData);
   const ALL = {
     label: 'All',
-    value: 'All'
+    value: 'All',
   };
   const TEACHER = 'Teachers';
   const STUDENT = 'Students';
   const PARENT = 'Parents';
 
-  const [selectedTab, setSelectedTab] = useState<any>(searchParams.get('tabType') || TEACHER);
+  const [selectedTab, setSelectedTab] = useState<any>(
+    searchParams.get('tabType') || TEACHER
+  );
   const [page, setPage] = useState(1);
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
@@ -67,14 +86,14 @@ export default function Index() {
     TABLE_LABELS?.USER_NAME,
     TABLE_LABELS?.FIRST_NAME,
     TABLE_LABELS?.LAST_NAME,
-    TABLE_LABELS?.CLASSES
+    TABLE_LABELS?.CLASSES,
   ];
   const Studentheader: any = [
     TABLE_LABELS?.ID,
     TABLE_LABELS?.USER_NAME,
     TABLE_LABELS?.FIRST_NAME,
     TABLE_LABELS?.LAST_NAME,
-    TABLE_LABELS?.CLASS_NAME
+    TABLE_LABELS?.CLASS_NAME,
   ];
   const Parentheader: any = [
     TABLE_LABELS?.ID,
@@ -84,7 +103,7 @@ export default function Index() {
     TABLE_LABELS?.FIRST_NAME,
     TABLE_LABELS?.LAST_NAME,
     TABLE_LABELS?.STUDENTS,
-    TABLE_LABELS?.CLASS_NAME
+    TABLE_LABELS?.CLASS_NAME,
   ];
 
   const deleteHandler = (row: any) => {
@@ -111,7 +130,7 @@ export default function Index() {
     branchData,
     setBulkSelect,
     bulkSelect,
-    setParentData
+    setParentData,
   };
 
   const handleTabClick = (tabDetail: any) => {
@@ -125,7 +144,8 @@ export default function Index() {
   const handleHeadersForCSV = () => {
     if (selectedTab === TEACHER) {
       return Teacherheader;
-    } if (selectedTab === PARENT) {
+    }
+    if (selectedTab === PARENT) {
       return Parentheader;
     }
     return Studentheader;
@@ -135,9 +155,11 @@ export default function Index() {
     let emailUrl = 'users-service/';
     if (selectedTab === TEACHER) {
       emailUrl += 'teachers-list/';
-    } if (selectedTab === STUDENT) {
+    }
+    if (selectedTab === STUDENT) {
       emailUrl += 'students-list/';
-    } if (selectedTab === PARENT) {
+    }
+    if (selectedTab === PARENT) {
       emailUrl += 'parents-list/';
     }
     emailUrl += 'pdf-download/';
@@ -153,7 +175,11 @@ export default function Index() {
   };
 
   // Toolbar Email
-  const { isLoading: emailLoaded, isRefetching, refetch: fetchEmailApi } = useGet({
+  const {
+    isLoading: emailLoaded,
+    isRefetching,
+    refetch: fetchEmailApi,
+  } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
     url: getUrl(),
     onSuccess: (response: any) => {
@@ -162,7 +188,7 @@ export default function Index() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
     },
-    enabled: false
+    enabled: false,
   });
 
   const handelSendEmail = () => {
@@ -173,21 +199,33 @@ export default function Index() {
   const handleToolbarAction = (title: string) => {
     if (title === `${TOOLBAR_LABELS.ADD} ${TEACHER}`) {
       if (userRole().isSchoolAdmin || userRole().isBranchAdmin) {
-        navigate(`/${schoolName}/dashboard/${branchData?.id ? `branch/${branchData?.id}` : schoolData?.id}/manage-members/add-teacher`);
+        navigate(
+          `/${schoolName}/dashboard/${branchData?.id ? `branch/${branchData?.id}` : schoolData?.id}/manage-members/add-teacher`
+        );
       } else {
-        navigate(`${SCHOOL_MANAGEMENT}/${branchId ? BRANCH : SCHOOL}/${id || branchData?.id}/${MANAGE_MEMBERS}/${ADD_TEACHER}`);
+        navigate(
+          `${SCHOOL_MANAGEMENT}/${branchId ? BRANCH : SCHOOL}/${id || branchData?.id}/${MANAGE_MEMBERS}/${ADD_TEACHER}`
+        );
       }
     } else if (title === `${TOOLBAR_LABELS.ADD} ${STUDENT}`) {
       if (userRole().isSchoolAdmin || userRole().isBranchAdmin) {
-        navigate(`/${schoolName}/dashboard/${branchData?.id ? `branch/${branchData?.id}` : schoolData?.id}/manage-members/add-student`);
+        navigate(
+          `/${schoolName}/dashboard/${branchData?.id ? `branch/${branchData?.id}` : schoolData?.id}/manage-members/add-student`
+        );
       } else {
-        navigate(`${SCHOOL_MANAGEMENT}/${branchId ? BRANCH : SCHOOL}/${id || branchData?.id}/${MANAGE_MEMBERS}/${ADD_STUDENT}`);
+        navigate(
+          `${SCHOOL_MANAGEMENT}/${branchId ? BRANCH : SCHOOL}/${id || branchData?.id}/${MANAGE_MEMBERS}/${ADD_STUDENT}`
+        );
       }
     } else if (title === `${TOOLBAR_LABELS.ADD} ${PARENT}`) {
       if (userRole().isSchoolAdmin || userRole().isBranchAdmin) {
-        navigate(`/${schoolName}/dashboard/${branchData?.id ? `branch/${branchData?.id}` : schoolData?.id}/manage-members/add-parent`);
+        navigate(
+          `/${schoolName}/dashboard/${branchData?.id ? `branch/${branchData?.id}` : schoolData?.id}/manage-members/add-parent`
+        );
       } else {
-        navigate(`${SCHOOL_MANAGEMENT}/${branchId ? BRANCH : SCHOOL}/${id || branchData?.id}/${MANAGE_MEMBERS}/${ADD_PARENT}`);
+        navigate(
+          `${SCHOOL_MANAGEMENT}/${branchId ? BRANCH : SCHOOL}/${id || branchData?.id}/${MANAGE_MEMBERS}/${ADD_PARENT}`
+        );
       }
     } else if (title === TOOLBAR_LABELS.IMPORT) {
       importData();
@@ -226,11 +264,13 @@ export default function Index() {
       let selectedID = [...bulkSelect];
       const getKey = getKeyName();
       if (selectedTab === PARENT) {
-        selectedID = parentData.filter((ele: { id: number }) => bulkSelect.includes(ele.id)).map((ele: { user_id: number }) => ele.user_id);
+        selectedID = parentData
+          .filter((ele: { id: number }) => bulkSelect.includes(ele.id))
+          .map((ele: { user_id: number }) => ele.user_id);
       }
       if (getKey) {
         const payload = {
-          [getKey]: selectedID
+          [getKey]: selectedID,
         };
         setBulkSelect([]);
         multipleDeleteRow(payload);
@@ -251,19 +291,17 @@ export default function Index() {
       const respData = resp?.data?.response;
       const temp2: { label: any; value: any; id: number }[] = [];
       respData?.map((i: any) => {
-        temp2.push(
-          {
-            label: i?.name,
-            value: i?.name,
-            id: i?.id
-          }
-        );
+        temp2.push({
+          label: i?.name,
+          value: i?.name,
+          id: i?.id,
+        });
         return temp2;
       });
       setBranchArray([ALL, ...temp2]);
     },
-    onError: ({ response }: any) => { },
-    enabled: false
+    onError: ({ response }: any) => {},
+    enabled: false,
   });
 
   // Get All Classes
@@ -274,19 +312,17 @@ export default function Index() {
       const respData = resp?.data?.response?.results;
       const temp: { label: any; value: any }[] = [];
       respData?.map((i: any) => {
-        temp.push(
-          {
-            label: i?.name,
-            value: i?.name
-          }
-        );
+        temp.push({
+          label: i?.name,
+          value: i?.name,
+        });
         temp.sort(sortData);
         return temp;
       });
       setClassArray([ALL, ...temp]);
     },
-    onError: () => { },
-    enabled: false
+    onError: () => {},
+    enabled: false,
   });
 
   const reset = () => {
@@ -300,53 +336,60 @@ export default function Index() {
     url: `users-service/${selectedTab.toLowerCase().substring(0, selectedTab.length - 1) || ''}/${popupData?.id}/delete/`,
     onSuccess: () => {
       setTableReload(true);
-      toast('success', `${selectedTab.substring(0, selectedTab.length - 1)} Deleted successfully`);
+      toast(
+        'success',
+        `${selectedTab.substring(0, selectedTab.length - 1)} Deleted successfully`
+      );
       reset();
     },
     onError: ({ response }: any) => {
       toast('error', response?.statusText || 'Error');
       reset();
-    }
+    },
   });
 
   // Delete multiple Table Row
-  const { isLoading: deleteMultipleLoading, mutate: multipleDeleteRow } = usePatch({
-    baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
-    url: `users-service/${`${selectedTab.toLowerCase().substring(0, selectedTab.length - 1)}s` || ''}/bulk-delete/`,
-    onSuccess: () => {
-      setIsMultiDelete(false);
-      setTableReload(true);
-      toast('success', `${selectedTab.substring(0, selectedTab.length - 1)} Deleted successfully`);
-      reset();
-    },
-    onError: ({ response }: any) => {
-      setIsMultiDelete(false);
-      toast('error', response?.statusText || 'Error');
-      reset();
-    }
-  });
+  const { isLoading: deleteMultipleLoading, mutate: multipleDeleteRow } =
+    usePatch({
+      baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
+      url: `users-service/${`${selectedTab.toLowerCase().substring(0, selectedTab.length - 1)}s` || ''}/bulk-delete/`,
+      onSuccess: () => {
+        setIsMultiDelete(false);
+        setTableReload(true);
+        toast(
+          'success',
+          `${selectedTab.substring(0, selectedTab.length - 1)} Deleted successfully`
+        );
+        reset();
+      },
+      onError: ({ response }: any) => {
+        setIsMultiDelete(false);
+        toast('error', response?.statusText || 'Error');
+        reset();
+      },
+    });
 
   // -----------------------API---------------------------------
   tabProps = {
     ...tabProps,
     deleteLoading,
-    setAdminCsvData
+    setAdminCsvData,
   };
   const tabList = [
     { title: TEACHER, component: <Teachers {...tabProps} /> },
     { title: STUDENT, component: <Student {...tabProps} /> },
-    { title: PARENT, component: <Parent {...tabProps} /> }
+    { title: PARENT, component: <Parent {...tabProps} /> },
   ];
 
   const ADMIN_TOOLBAR_MENU = [
     {
       title: `${TOOLBAR_LABELS.ADD} ${selectedTab}`,
-      icon: <AddIcon />
+      icon: <AddIcon />,
     },
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailLoaded || isRefetching) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailLoaded || isRefetching) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
@@ -358,15 +401,17 @@ export default function Index() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   useEffect(() => {
@@ -409,25 +454,25 @@ export default function Index() {
       <div className="flex gap-2 lg:mt-7 mb-5 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex flex-wrap md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <div className="lg:pt-[30px]">
-            <DebounceInput
-              onChange={(e) => setSearchString(e)}
-            />
+            <DebounceInput onChange={(e) => setSearchString(e)} />
           </div>
           {/* !userRole().isSchoolAdmin &&  */}
-          {
-            (id) && (
-              <Dropdown
-                title="Select Branch"
-                value={selectedBranch}
-                dataArray={branchArray}
-                loading={getBranchLoading}
-                onChangeHandler={(e) => {
-                  setSelectedBranchId(branchArray.find((ele: { value: string; id: string}) => ele.value === e)?.id);
-                  setSelectedBranch(e);
-                }}
-              />
-            )
-          }
+          {id && (
+            <Dropdown
+              title="Select Branch"
+              value={selectedBranch}
+              dataArray={branchArray}
+              loading={getBranchLoading}
+              onChangeHandler={(e) => {
+                setSelectedBranchId(
+                  branchArray.find(
+                    (ele: { value: string; id: string }) => ele.value === e
+                  )?.id
+                );
+                setSelectedBranch(e);
+              }}
+            />
+          )}
           <Dropdown
             title="Select Class"
             value={selectedClass}
@@ -450,7 +495,10 @@ export default function Index() {
       </div>
       <div className="relative">
         <div className="relative right-0 float-right xl:top-0 xl:absolute">
-          <Button disabled={!bulkSelect.length} onClick={handleDelete}> Delete </Button>
+          <Button disabled={!bulkSelect.length} onClick={handleDelete}>
+            {' '}
+            Delete{' '}
+          </Button>
         </div>
         <MemberTabs
           ref={componentRef}

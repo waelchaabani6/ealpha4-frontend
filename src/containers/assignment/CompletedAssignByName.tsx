@@ -22,7 +22,11 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import UseGetProfile from '@utility/Hooks/UseGetProfile';
 import DatePicker from '@component/datepicker';
-import { RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '../../constants/constants';
+import {
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '../../constants/constants';
 import Wrapper from '../../shared/wrapper/Wrapper';
 import RouteLayout from '../layout/routeLayout';
 
@@ -31,14 +35,19 @@ const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
 
 const stateChange: any = {
   'Mark as Ongoing': 'Ongoing',
-  'Mark As Complete': 'Completed'
+  'Mark As Complete': 'Completed',
 };
 
 export default function CompletedAssignByName() {
   const navigate = useNavigate();
   const location = useLocation();
   const { schoolName } = useParams();
-  const { user_profile_id: teacherId, first_name: teacherFirstName, last_name: teacherLastName, schoolId } = useSelector(selectUser);
+  const {
+    user_profile_id: teacherId,
+    first_name: teacherFirstName,
+    last_name: teacherLastName,
+    schoolId,
+  } = useSelector(selectUser);
   const assignmentId = location?.state?.assignmentId;
   const assignmentName = location?.state?.assignmentName;
   const endData = location?.state?.endData;
@@ -49,12 +58,7 @@ export default function CompletedAssignByName() {
   const [extendedDeuData, setExtendedDeuData] = useState<Date>();
   const [ErrorMsg, setErrorMsg] = useState('');
 
-  const headers = [
-    'Student Name',
-    'State',
-    'Start Date',
-    'Score %'
-  ];
+  const headers = ['Student Name', 'State', 'Start Date', 'Score %'];
 
   const [csvData, setCsvData] = useState<[]>([]);
   const [tableData, setTableData] = useState<any>([]);
@@ -65,26 +69,26 @@ export default function CompletedAssignByName() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.STUDENT_NAME,
-      mapper: 'StudentName'
+      mapper: 'StudentName',
     },
     {
       label: TABLE_LABELS?.STATUS,
-      mapper: 'State'
+      mapper: 'State',
     },
     {
       label: TABLE_LABELS?.START_DATE,
       mapper: 'StartDate',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_LABELS?.SCORE,
       align: 'center',
-      mapper: 'score'
-    }
+      mapper: 'score',
+    },
   ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
@@ -104,57 +108,90 @@ export default function CompletedAssignByName() {
 
   useEffect(() => {
     const locationData = location.pathname;
-    setAssignmentData({ assignmentId, assignmentName, fromData: startDate, toDate: endData, grade });
+    setAssignmentData({
+      assignmentId,
+      assignmentName,
+      fromData: startDate,
+      toDate: endData,
+      grade,
+    });
     if (endData) {
       setExtendedDeuData(new Date(endData));
     }
   }, []);
 
-  const { isFetching: studentListFetching, refetch: fetchRecords, isLoading: studentListLoading } = useGet({
+  const {
+    isFetching: studentListFetching,
+    refetch: fetchRecords,
+    isLoading: studentListLoading,
+  } = useGet({
     baseURL,
     url: `assignments-service/assignment/assigned-students/${assignmentData.assignmentId}/list/?&offset=${(page - 1) * Number(rowsPerPage)}&search=${searchVal}&limit=10`,
     onSuccess: (res: any) => {
       let accData = res?.data?.response?.results;
-      const csvEleData = accData.map((stud: any) => [`${stud.first_name} ${stud.last_name}`, stud.state, stud.start_date, stud.score]);
+      const csvEleData = accData.map((stud: any) => [
+        `${stud.first_name} ${stud.last_name}`,
+        stud.state,
+        stud.start_date,
+        stud.score,
+      ]);
       setCsvData(csvEleData);
       if (accData.length) {
         setExtendedDeuData(new Date(accData[0]?.end_date));
+        console.log('isFromComplete', isFromComplete);
         accData = accData.map((ele: any) => {
-          const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
+          const schoolNameInURL = decodeURIComponent(
+            location.pathname.split('/')[1]
+          );
+
           const link = `/${schoolNameInURL}/assignment/assignment-details/${ele.id}/${assignmentData.assignmentId}/${isFromComplete}`;
-          return ({
+          return {
             ogState: ele.state,
             id: ele.id,
             StudentName: (
               <Link to={link}>
                 {' '}
-                <span role="alert" className="text-accent underline cursor-pointer font-medium">
+                <span
+                  role="alert"
+                  className="text-accent underline cursor-pointer font-medium"
+                >
                   {' '}
-                  {ele.first_name}
-                  {' '}
-                  {ele.last_name}
-                </span>
-                {' '}
+                  {ele.first_name} {ele.last_name}
+                </span>{' '}
               </Link>
             ),
             State: (
-              <span role="alert" className={ele.state === 'Submitted' ? 'text-accent underline cursor-pointer' : 'underline cursor-pointer'} onClick={() => { setSelectedId(ele.id); setMarkAssignment(true); setErrorMsg(''); }}>
+              <span
+                role="alert"
+                className={
+                  ele.state === 'Submitted'
+                    ? 'text-accent underline cursor-pointer'
+                    : 'underline cursor-pointer'
+                }
+                onClick={() => {
+                  setSelectedId(ele.id);
+                  setMarkAssignment(true);
+                  setErrorMsg('');
+                }}
+              >
                 {ele.state}
               </span>
             ),
-            StartDate: moment(ele.start_date.replace('Z', '')).format('YYYY-MM-DD'),
+            StartDate: moment(ele.start_date.replace('Z', '')).format(
+              'YYYY-MM-DD'
+            ),
             EndDate: moment(ele.end_date.replace('Z', '')).format('YYYY-MM-DD'),
             score: ele.score,
-            searchString: `${ele.first_name} ${ele.last_name}`
-          });
+            searchString: `${ele.first_name} ${ele.last_name}`,
+          };
         });
       }
       setTotalDataCount(res?.data?.response?.count);
       setTableData(accData);
       setTableDataCopy(accData);
     },
-    onError: ({ response }: any) => { },
-    enabled: false
+    onError: ({ response }: any) => {},
+    enabled: false,
   });
 
   useEffect(() => {
@@ -180,14 +217,14 @@ export default function CompletedAssignByName() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Unable to send email');
     },
-    enabled: false
+    enabled: false,
   }) as any;
 
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: emailSendLoading ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: emailSendLoading ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
@@ -199,15 +236,17 @@ export default function CompletedAssignByName() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   const handlePagination = (currPage: any) => {
@@ -233,13 +272,13 @@ export default function CompletedAssignByName() {
       setMarkAssignment(false);
       fetchRecords();
     },
-    onError: ({ response }: any) => {
-
-    }
+    onError: ({ response }: any) => {},
   });
 
   const statusChange = () => {
-    const selectedRec = tableData.find((ele: {id: string}) => ele.id === selectedId);
+    const selectedRec = tableData.find(
+      (ele: { id: string }) => ele.id === selectedId
+    );
     const passObj: any = { state: stateChange[modState] };
     passObj.remark = remarkName;
     passObj.teacher_name = `${teacherFirstName} ${teacherLastName}`;
@@ -256,7 +295,11 @@ export default function CompletedAssignByName() {
     });
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    if (modState === 'Mark as Ongoing' && extendedDeuData && yesterday > extendedDeuData) {
+    if (
+      modState === 'Mark as Ongoing' &&
+      extendedDeuData &&
+      yesterday > extendedDeuData
+    ) {
       setErrorMsg('Due date should be greater than current date.');
     } else {
       updateStatus(userFd);
@@ -268,23 +311,46 @@ export default function CompletedAssignByName() {
   };
 
   const applySearchFilter = () => {
-    const copyData = tableDataCopy.filter((ele: any) => ele.searchString.startsWith(searchVal));
+    const copyData = tableDataCopy.filter((ele: any) =>
+      ele.searchString.startsWith(searchVal)
+    );
     setTableData(copyData);
   };
 
-  const extendedDeuDataFormat = extendedDeuData ? moment(extendedDeuData).format('DD-MM-YYYY') : '';
+  const extendedDeuDataFormat = extendedDeuData
+    ? moment(extendedDeuData).format('DD-MM-YYYY')
+    : '';
 
   return (
     <RouteLayout navBack={true}>
-      <HeaderMenus title={assignmentData.assignmentName} menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
-      <CustomizedDialogs title="Mark Assignment" open={markAssignment} setOpen={() => { selectedModState(''); }} onclose={() => { setMarkAssignment(false); }} maxwidth="sm">
+      <HeaderMenus
+        title={assignmentData.assignmentName}
+        menuArray={ADMIN_TOOLBAR_MENU}
+        handleToolbarAction={handleToolbarAction}
+      />
+      <CustomizedDialogs
+        title="Mark Assignment"
+        open={markAssignment}
+        setOpen={() => {
+          selectedModState('');
+        }}
+        onclose={() => {
+          setMarkAssignment(false);
+        }}
+        maxwidth="sm"
+      >
         <div className="w-full flex justify-center flex-col">
           <div>
             <DatePicker
-              disablePast={assignmentData?.start_date && new Date(assignmentData?.start_date)}
+              disablePast={
+                assignmentData?.start_date &&
+                new Date(assignmentData?.start_date)
+              }
               value={extendedDeuData}
               label="Update Due Date"
-              handlePickerChange={(date: string) => setExtendedDeuData(new Date(date))}
+              handlePickerChange={(date: string) =>
+                setExtendedDeuData(new Date(date))
+              }
               sxType={4}
               defaultStyle={true}
               fullWidth={true}
@@ -297,18 +363,20 @@ export default function CompletedAssignByName() {
               dataArray={[
                 {
                   label: 'Select',
-                  value: 'Select'
+                  value: 'Select',
                 },
                 {
                   label: 'Mark as Complete',
-                  value: 'Mark As Complete'
+                  value: 'Mark As Complete',
                 },
                 {
                   label: 'Mark as Ongoing',
-                  value: 'Mark as Ongoing'
-                }
+                  value: 'Mark as Ongoing',
+                },
               ]}
-              onChangeHandler={(val) => { selectedModState(val); }}
+              onChangeHandler={(val) => {
+                selectedModState(val);
+              }}
               value={modState}
               title="Change Status"
               sxClass={{ width: '100%', border: '1px solid #c4c4c4' }}
@@ -319,8 +387,7 @@ export default function CompletedAssignByName() {
           {ErrorMsg && (
             <div style={{ fontSize: '0.75rem' }} className=" text-red-400">
               {' '}
-              {ErrorMsg}
-              {' '}
+              {ErrorMsg}{' '}
             </div>
           )}
           <div className="relative mt-4 top-[-8px]">
@@ -330,43 +397,42 @@ export default function CompletedAssignByName() {
               onChange={(e: any) => setRemark(e.target.value)}
               icon={true}
               size="small"
-              sx={{ width: '100%',
+              sx={{
+                width: '100%',
                 '.MuiOutlinedInput-input': {
                   fontSize: '0.75rem',
                   fontFamily: 'Montserrat-500',
-                  color: 'black'
-                } }}
+                  color: 'black',
+                },
+              }}
               parentLabelClass="relative top-[6px]"
             />
           </div>
           <div className="flex justify-center mt-5">
-            <Button
-              onClick={statusChange}
-            >
-              Update
-            </Button>
+            <Button onClick={statusChange}>Update</Button>
           </div>
         </div>
       </CustomizedDialogs>
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
-          <DebounceInput
-            onChange={(val) => setSearchVal(val)}
-          />
+          <DebounceInput onChange={(val) => setSearchVal(val)} />
           <div>
             <div className="text-sm"> From Date </div>
             <div className="border rounded border-gray-300 p-1 mt-3 text-sm w-32 h-8">
               {' '}
-              {assignmentData.fromData ? moment(assignmentData.fromData).format('DD-MM-YYYY') : ''}
-              {' '}
+              {assignmentData.fromData
+                ? moment(assignmentData.fromData).format('DD-MM-YYYY')
+                : ''}{' '}
             </div>
           </div>
           <div>
             <div className="text-sm"> To Date </div>
             <div className="border rounded border-gray-300 p-1 mt-3 text-sm w-32 h-8">
               {' '}
-              {extendedDeuDataFormat || (assignmentData.toDate ? moment(assignmentData.toDate).format('DD-MM-YYYY') : '')}
-              {' '}
+              {extendedDeuDataFormat ||
+                (assignmentData.toDate
+                  ? moment(assignmentData.toDate).format('DD-MM-YYYY')
+                  : '')}{' '}
             </div>
           </div>
 
@@ -374,8 +440,7 @@ export default function CompletedAssignByName() {
             <div className="text-sm"> Class </div>
             <div className="border rounded border-gray-300 p-1 mt-3 text-sm  h-8 w-32">
               {' '}
-              {assignmentData.grade || ``}
-              {' '}
+              {assignmentData.grade || ``}{' '}
             </div>
           </div>
         </div>
