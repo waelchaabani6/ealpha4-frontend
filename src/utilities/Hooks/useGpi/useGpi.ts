@@ -10,7 +10,7 @@
 import { useEffect, useState } from 'react';
 import useScript from './useScript';
 
-export default function useGapi({
+export function useGapi({
   apiKey,
   clientId,
   discoveryDocs,
@@ -54,23 +54,7 @@ export default function useGapi({
     return;
   }
   // Create user profile with auth metadata.
-  const createUserProfileObject = (currentUser?: any) => {
-    const user =
-      currentUser || window.gapi.auth2.getAuthInstance().currentUser.get();
-    const basicProfile = user.getBasicProfile();
-    const auth = user.getAuthResponse();
-    return {
-      auth,
-      p: {
-        googleId: basicProfile.getId(),
-        email: basicProfile.getEmail(),
-        fullName: basicProfile.getName(),
-        givenName: basicProfile.getGivenName(),
-        familyName: basicProfile.getFamilyName(),
-        imageUrl: basicProfile.getImageUrl(),
-      },
-    };
-  };
+
   // Update sign-in status according to listener.
   const updateSigninStatus = (isUserSignedIn: any) => {
     if (isUserSignedIn) {
@@ -102,6 +86,7 @@ export default function useGapi({
           })
           .catch((err) => console.log(err));
       });
+
       return () => {
         // TODO change to listenerContext?.remove
         if (listenerContext?.remove) listenerContext?.remove();
@@ -136,5 +121,29 @@ export default function useGapi({
     }
   };
 
-  return { signIn, signOut, isSignedIn, profile, client };
+  return {
+    signIn,
+    signOut,
+    isSignedIn,
+    profile,
+    client,
+  };
 }
+
+export const createUserProfileObject = (currentUser?: any) => {
+  const user =
+    currentUser || window.gapi.auth2.getAuthInstance().currentUser.get();
+  const basicProfile = user.getBasicProfile();
+  const auth = user.getAuthResponse();
+  return {
+    auth,
+    p: {
+      googleId: basicProfile.getId(),
+      email: basicProfile.getEmail(),
+      fullName: basicProfile.getName(),
+      givenName: basicProfile.getGivenName(),
+      familyName: basicProfile.getFamilyName(),
+      imageUrl: basicProfile.getImageUrl(),
+    },
+  };
+};

@@ -19,12 +19,17 @@ import TeacherRoutes from '@routes/teacherRoutes';
 import StudentRoutes from '@routes/studentRoutes';
 import ParentRoutes from '@routes/parentRoutes';
 import GetUserWrapper from '@layout/getUserWrapper';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 export default function App(): JSX.Element {
   return (
-    <GetUserWrapper>
-      <Init />
-    </GetUserWrapper>
+    <GoogleOAuthProvider
+      clientId={import.meta.env.VITE_APP_GOOGLE_CLASSROOM_CLIENT_ID}
+    >
+      <GetUserWrapper>
+        <Init />
+      </GetUserWrapper>
+    </GoogleOAuthProvider>
   );
 }
 
