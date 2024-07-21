@@ -35,15 +35,10 @@ import { useSelector } from 'react-redux';
 import React, { useEffect, useState } from 'react';
 import { Popover } from '@mui/material';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
-import toast from '@shared/toast';
 import { DISCOVERY_DOC } from '@constants/constants';
-import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import GoogleClassroomList from '../GoogleClassroomList';
-// import useGapi from '../../../utilities/Hooks/useGpi/useGpi';
-import { createUserProfileObject } from '../../../utilities/Hooks/useGpi/useGpi';
 
 const API_KEY = import.meta.env.VITE_APP_GOOGLE_CLASSROOM_KEY;
-// const API_KEY = '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';
 const CLIENT_ID = import.meta.env.VITE_APP_GOOGLE_CLASSROOM_CLIENT_ID;
 const SCOPES = 'https://www.googleapis.com/auth/classroom.courses.readonly';
 
@@ -141,126 +136,31 @@ function TeacherIconContainer() {
     setAnchorEl(null);
   };
 
-  // @ts-ignore
-  // const { signIn, signOut, profile, client } = useGapi({
-  //   apiKey: API_KEY,
-  //   scope: SCOPES,
-  //   clientId: CLIENT_ID,
-  //   script_url: 'https://apis.google.com/js/api.js',
-  //   discoveryDocs: [DISCOVERY_DOC],
-  // });
-
-  // console.log(profile, 'profile');
-  // console.log(client, 'client');
-
-  // useEffect(() => {
-  //   if (profile?.auth?.access_token) {
-  //     setToken(profile?.auth?.access_token);
-  //     toast('success', 'You are logged in with google');
-  //   } else {
-  //     setToken(null);
-  //     toast('error', 'You are logged out from google account');
-  //   }
-  // }, [profile]);
-
-  // useEffect(() => {
-  //   console.log(client, 'client');
-  //   listCourses();
-  // }, [client, profile]);
-
   /**
    * Print the names of the first 10 courses the user has access to. If
    * no courses are found an appropriate message is printed.
    */
-  // async function listCourses() {
-  //   console.log('list courses called');
-  //   let response;
-  //   try {
-  //     // @ts-expect-error
-  //     response = await window.gapi.client.classroom.courses.list({
-  //       pageSize: 10,
-  //     });
-  //   } catch (err: any) {
-  //     if (document.getElementById('content'))
-  //       // document.getElementById('content').innerText = err.message;
-  //       // Todo: show error message
-  //       return;
-  //   }
+  async function listCourses() {
+    console.log('list courses called');
+    let response;
+    try {
+      // @ts-expect-error
+      response = await window.gapi.client.classroom.courses.list({
+        pageSize: 10,
+      });
+    } catch (err: any) {
+      if (document.getElementById('content'))
+        // Todo: show error message
+        return;
+    }
 
-  //   const courses = response.result.courses;
-  //   setClassroomData(courses);
+    const courses = response.result.courses;
+    setClassroomData(courses);
 
-  //   if (!courses || courses.length == 0) {
-  //     return;
-  //   }
-  // }
-
-  // const handleSignout = () => {
-  //   signOut().then(() => {
-  //     console.log(profile);
-  //     console.log('User signed out.');
-  //   });
-  // };
-
-  // const login = useGoogleLogin({
-  //   onSuccess: (codeResponse) => {
-  //     console.log('#### codeResponse', codeResponse);
-  //     // setToken(CredentialResponse.access_token);
-  //     // const gProfile = createUserProfileObject();
-
-  //     // console.log(window.gapi.auth2.getAuthInstance(), 'gProfile');
-  //     gapi.client.setApiKey(import.meta.env.VITE_APP_GOOGLE_CLASSROOM_KEY);
-  //     const response = gapi.client.load('classroom', 'v1', () => {
-  //       // @ts-expect-error
-  //       gapi.client.classroom.courses.list({
-  //         pageSize: 10,
-  //       });
-  //     });
-  //     console.log('object', response);
-  //   },
-  //   scope: SCOPES,
-  // });
-
-  // useEffect(() => {
-  //   // Check if google script is ready.
-  //   if (token) {
-  //     let listenerContext: any;
-  //     const response = gapi.client.load('classroom', 'v1', () => {
-  //       // @ts-expect-error
-  //       gapi.client.classroom.courses.list({
-  //         pageSize: 10,
-  //       });
-  //     });
-
-  //     return () => {
-  //       // TODO change to listenerContext?.remove
-  //       if (listenerContext?.remove) listenerContext?.remove();
-  //     };
-  //   }
-
-  //   // return null;
-  // }, [token]);
-
-  // TODO(developer): Set to client ID and API key from the Developer Console
-  // const CLIENT_ID = '<YOUR_CLIENT_ID>';
-  // const API_KEY = '<YOUR_API_KEY>';
-
-  // Discovery doc URL for APIs used by the quickstart
-  // const DISCOVERY_DOC = 'https://classroom.googleapis.com/$discovery/rest';
-
-  // Authorization scopes required by the API; multiple scopes can be
-  // included, separated by spaces.
-  // const SCOPES = 'https://www.googleapis.com/auth/classroom.courses.readonly';
-
-  // let tokenClient: any;
-  let gapiInited = false;
-  let gisInited = false;
-  // @ts-ignore
-
-  // document.getElementById('authorize_button')?.style.visibility = 'hidden';
-  // @ts-ignore
-
-  // document.getElementById('signout_button')?.style.visibility = 'hidden';
+    if (!courses || courses.length == 0) {
+      return;
+    }
+  }
 
   /**
    * Callback after api.js is loaded.
@@ -278,53 +178,30 @@ function TeacherIconContainer() {
       apiKey: API_KEY,
       discoveryDocs: [DISCOVERY_DOC],
     });
-    gapiInited = true;
-    maybeEnableButtons();
   }
 
   /**
    * Callback after Google Identity Services are loaded.
    */
   function gisLoaded() {
-    console.log('gisLoaded');
     // @ts-ignore
     const tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: CLIENT_ID,
       scope: SCOPES,
       callback: '', // defined later
     });
-    gisInited = true;
-    maybeEnableButtons();
     setClientToken(tokenClient);
-    console.log('tokenClient', tokenClient);
-  }
-
-  /**
-   * Enables user interaction after all libraries are loaded.
-   */
-  function maybeEnableButtons() {
-    if (gapiInited && gisInited) {
-      // @ts-ignore
-      // document.getElementById('authorize_button')?.style.visibility = 'visible';
-    }
   }
 
   /**
    *  Sign in the user upon button click.
    */
   function handleAuthClick() {
-    console.log('auth click + tokenClient');
-
     clientToken.callback = async (resp: any) => {
       if (resp.error !== undefined) {
         throw resp;
       }
-      // @ts-ignore
 
-      // document.getElementById('signout_button')?.style.visibility = 'visible';
-      // @ts-ignore
-
-      // document.getElementById('authorize_button')?.innerText = 'Refresh';
       setGoogleToken(gapi.client.getToken());
       await listCourses();
     };
@@ -343,94 +220,24 @@ function TeacherIconContainer() {
    *  Sign out the user upon button click.
    */
   function handleSignoutClick() {
-    console.log('signout');
     const token = gapi.client.getToken();
     console.log(token);
 
     if (token !== null) {
-      console.log('token', token);
       // @ts-ignore
       google.accounts.oauth2.revoke(token.access_token);
       gapi.client.setToken(null);
       setGoogleToken(null);
-      // @ts-ignore
-
-      // document.getElementById('content')?.innerText = '';
-      // @ts-ignore
-
-      // document.getElementById('authorize_button')?.innerText = 'Authorize';
-      // @ts-ignore
-
-      // document.getElementById('signout_button')?.style.visibility = 'hidden';
     }
-  }
-
-  /**
-   * Print the names of the first 10 courses the user has access to. If
-   * no courses are found an appropriate message is printed.
-   */
-  async function listCourses() {
-    let response;
-    try {
-      // @ts-ignore
-
-      response = await gapi.client.classroom.courses.list({
-        pageSize: 10,
-      });
-
-      console.log('response', response);
-    } catch (err) {
-      console.log(err);
-      // document.getElementById('content')?.innerText = err.message;
-      return;
-    }
-
-    const courses = response.result.courses;
-    if (!courses || courses.length == 0) {
-      // @ts-ignore
-
-      // document.getElementById('content')?.innerText = 'No courses found.';
-      return;
-    }
-    // Flatten to string to display
-    const output = courses.reduce(
-      (str: any, course: any) => `${str}${course.name}\n`,
-      'Courses:\n'
-    );
-    // @ts-ignore
-    console.log(output);
-    // document.getElementById('content')?.innerText = output;
   }
 
   useEffect(() => {
     gapiLoaded();
     gisLoaded();
   }, [API_KEY, CLIENT_ID, SCOPES]);
+
   return (
     <div className="sm-container mb-7">
-      {/* <button id="authorize_button">Google</button>
-      <button id="signout_button">signout</button> */}
-      {/* <!--Add buttons to initiate auth sequence and sign out--> */}
-      {/* <button id="authorize_button" onClick={() => handleAuthClick()}>
-        Authorize
-      </button>
-      |
-      <button id="signout_button" onClick={() => handleSignoutClick()}>
-        Sign Out
-      </button> */}
-      {/* <pre id="content" /> */}
-      {/* <script
-        async
-        defer
-        src="https://apis.google.com/js/api.js"
-        onLoad={() => gapiLoaded()}
-      />
-      <script
-        async
-        defer
-        src="https://accounts.google.com/gsi/client"
-        onLoad={() => gisLoaded()}
-      /> */}
       <div className="card-container">
         {cards.map((i: any, key: number) => {
           if (i?.action) {
@@ -490,10 +297,7 @@ function TeacherIconContainer() {
             <>
               <button
                 className="font-semibold text-xs hover:border-b-2 border-b-[#4A9D2D]"
-                // onClick={handleSignout}
                 onClick={() => {
-                  // googleLogout();
-                  // setToken(null);
                   handleSignoutClick();
                 }}
               >
@@ -511,9 +315,6 @@ function TeacherIconContainer() {
             <button
               id="customBtn"
               className="font-semibold text-xs hover:border-b-2 border-b-[#4A9D2D]"
-              // onClick={() => login()}
-              // onClick={signIn}
-              // onClick={() => handleAuthClick()}
               onClick={() => handleAuthClick()}
             >
               Sign in

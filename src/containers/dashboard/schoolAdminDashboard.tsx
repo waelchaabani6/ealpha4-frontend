@@ -1,3 +1,5 @@
+/* eslint-disable no-else-return */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable curly */
 /* eslint-disable eqeqeq */
 /* eslint-disable no-useless-return */
@@ -44,7 +46,7 @@ import { Popover } from '@mui/material';
 import { DISCOVERY_DOC } from '@constants/constants';
 import toast from '@shared/toast';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
-import useGapi from '@utility/Hooks/useGpi/useGpi';
+// import useGapi from '@utility/Hooks/useGpi/useGpi';
 import GoogleClassroomList from './GoogleClassroomList';
 
 const API_KEY = import.meta.env.VITE_APP_GOOGLE_CLASSROOM_KEY;
@@ -58,7 +60,8 @@ export default function SchoolAdminDashboard() {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [openClassroomPopup, setopenClassroomPopup] = useState<boolean>(false);
   const [classroomData, setClassroomData] = useState<any>({});
-  const [token, setToken] = useState<any>(null);
+  const [googleToken, setGoogleToken] = useState<any>(null);
+  const [clientToken, setClientToken] = useState<any>(null);
 
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
@@ -182,49 +185,82 @@ export default function SchoolAdminDashboard() {
     setAnchorEl(null);
   };
 
-  // @ts-ignore
-  const { signIn, signOut, profile, client } = useGapi({
-    apiKey: API_KEY,
-    scope: SCOPES,
-    clientId: CLIENT_ID,
-    script_url: 'https://apis.google.com/js/api.js',
-    discoveryDocs: [DISCOVERY_DOC],
-  });
+  // // @ts-ignore
+  // const { signIn, signOut, profile, client } = useGapi({
+  //   apiKey: API_KEY,
+  //   scope: SCOPES,
+  //   clientId: CLIENT_ID,
+  //   script_url: 'https://apis.google.com/js/api.js',
+  //   discoveryDocs: [DISCOVERY_DOC],
+  // });
 
-  useEffect(() => {
-    if (profile?.auth?.access_token) {
-      setToken(profile?.auth?.access_token);
-      toast('success', 'You are logged in with google');
-    } else {
-      setToken(null);
-      toast('error', 'You are logged out from google account');
-    }
-  }, [profile]);
+  // useEffect(() => {
+  //   if (profile?.auth?.access_token) {
+  //     setToken(profile?.auth?.access_token);
+  //     toast('success', 'You are logged in with google');
+  //   } else {
+  //     setToken(null);
+  //     toast('error', 'You are logged out from google account');
+  //   }
+  // }, [profile]);
 
-  useEffect(() => {
-    console.log(client, 'client');
-    listCourses();
-  }, [client, profile]);
+  // useEffect(() => {
+  //   console.log(client, 'client');
+  //   listCourses();
+  // }, [client, profile]);
+
+  // /**
+  //  * Print the names of the first 10 courses the user has access to. If
+  //  * no courses are found an appropriate message is printed.
+  //  */
+  // async function listCourses() {
+  //   let response;
+  //   try {
+  //     response = await client.classroom.courses.list({
+  //       pageSize: 10,
+  //     });
+  //   } catch (err: any) {
+  //     if (document.getElementById('content'))
+  //       // document.getElementById('content').innerText = err.message;
+  //       // Todo: show error message
+  //       return;
+  //   }
+
+  //   const courses = response.result.courses;
+
+  //   setClassroomData(courses);
+
+  //   if (!courses || courses.length == 0) {
+  //     return;
+  //   }
+  // }
+
+  // const handleSignout = () => {
+  //   signOut().then(() => {
+  //     console.log(profile);
+  //     console.log('User signed out.');
+  //   });
+  // };
 
   /**
    * Print the names of the first 10 courses the user has access to. If
    * no courses are found an appropriate message is printed.
    */
   async function listCourses() {
+    console.log('list courses called');
     let response;
     try {
-      response = await client.classroom.courses.list({
+      // @ts-expect-error
+      response = await window.gapi.client.classroom.courses.list({
         pageSize: 10,
       });
     } catch (err: any) {
       if (document.getElementById('content'))
-        // document.getElementById('content').innerText = err.message;
         // Todo: show error message
         return;
     }
 
     const courses = response.result.courses;
-
     setClassroomData(courses);
 
     if (!courses || courses.length == 0) {
@@ -232,12 +268,79 @@ export default function SchoolAdminDashboard() {
     }
   }
 
-  const handleSignout = () => {
-    signOut().then(() => {
-      console.log(profile);
-      console.log('User signed out.');
+  /**
+   * Callback after api.js is loaded.
+   */
+  function gapiLoaded() {
+    gapi.load('client', initializeGapiClient);
+  }
+
+  /**
+   * Callback after the API client is loaded. Loads the
+   * discovery doc to initialize the API.
+   */
+  async function initializeGapiClient() {
+    await gapi.client.init({
+      apiKey: API_KEY,
+      discoveryDocs: [DISCOVERY_DOC],
     });
-  };
+  }
+
+  /**
+   * Callback after Google Identity Services are loaded.
+   */
+  function gisLoaded() {
+    // @ts-ignore
+    const tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      callback: '', // defined later
+    });
+    setClientToken(tokenClient);
+  }
+
+  /**
+   *  Sign in the user upon button click.
+   */
+  function handleAuthClick() {
+    clientToken.callback = async (resp: any) => {
+      if (resp.error !== undefined) {
+        throw resp;
+      }
+
+      setGoogleToken(gapi.client.getToken());
+      await listCourses();
+    };
+
+    if (gapi.client.getToken() === null) {
+      // Prompt the user to select a Google Account and ask for consent to share their data
+      // when establishing a new session.
+      clientToken.requestAccessToken({ prompt: 'consent' });
+    } else {
+      // Skip display of account chooser and consent dialog for an existing session.
+      clientToken.requestAccessToken({ prompt: '' });
+    }
+  }
+
+  /**
+   *  Sign out the user upon button click.
+   */
+  function handleSignoutClick() {
+    const token = gapi.client.getToken();
+    console.log(token);
+
+    if (token !== null) {
+      // @ts-ignore
+      google.accounts.oauth2.revoke(token.access_token);
+      gapi.client.setToken(null);
+      setGoogleToken(null);
+    }
+  }
+
+  useEffect(() => {
+    gapiLoaded();
+    gisLoaded();
+  }, [API_KEY, CLIENT_ID, SCOPES]);
 
   return (
     <RouteLayout navBack={false}>
@@ -301,11 +404,13 @@ export default function SchoolAdminDashboard() {
         }}
       >
         <div className="px-5 py-2 rounded-md border-2 border-[#4A9D2D]">
-          {token ? (
+          {googleToken ? (
             <>
               <button
                 className="font-semibold text-xs hover:border-b-2 border-b-[#4A9D2D]"
-                onClick={handleSignout}
+                onClick={() => {
+                  handleSignoutClick();
+                }}
               >
                 Sign out
               </button>
@@ -321,7 +426,7 @@ export default function SchoolAdminDashboard() {
             <button
               id="customBtn"
               className="font-semibold text-xs hover:border-b-2 border-b-[#4A9D2D]"
-              onClick={signIn}
+              onClick={() => handleAuthClick()}
             >
               Sign in
             </button>
