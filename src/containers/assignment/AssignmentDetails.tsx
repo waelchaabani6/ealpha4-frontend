@@ -343,26 +343,25 @@ function AssignmentDetails() {
     }
   }, [teacher]);
 
-  // eslint-disable-next-line consistent-return
   function colorCode(score: any, type: string) {
-    if (score >= val.exceed1 && score <= val.exceed2) {
-      // Exceeds
-      return { bg: '#E5F8E2', color: '#6CA463' }[type];
-    }
-    if (score >= val.meet1 && score <= val.meet2) {
-      /// Meets
-      return { bg: '#BECCFF', color: '#132E90 ' }[type];
-    }
-    if (score >= val.approching1 && score <= val.approching2) {
-      // Approaching
-      return { bg: '#FFF9BE', color: '#C7B551' }[type];
-    }
-    if (
-      (score >= val.Nmeet1 && score <= val.Nmeet2) ||
-      score == null ||
-      isNaN(score)
-    ) {
-      // Does not Meet
+    if (score !== null && !isNaN(score)) {
+      if (score >= val.exceed1 && score <= val.exceed2) {
+        // Exceeds
+        return { bg: '#E5F8E2', color: '#6CA463' }[type];
+      }
+      if (score >= val.meet1 && score <= val.meet2) {
+        /// Meets
+        return { bg: '#BECCFF', color: '#132E90 ' }[type];
+      }
+      if (score >= val.approching1 && score <= val.approching2) {
+        // Approaching
+        return { bg: '#FFF9BE', color: '#C7B551' }[type];
+      }
+      if (score >= val.Nmeet1 && score <= val.Nmeet2) {
+        // Does not Meet
+        return { bg: '#FCD4C6', color: '#E36B6B' }[type];
+      }
+    } else {
       return { bg: '#FCD4C6', color: '#E36B6B' }[type];
     }
   }
@@ -386,8 +385,6 @@ function AssignmentDetails() {
       return 'Does not Meet';
     }
   }
-
-  console.log('here 8');
 
   const {
     isLoading: studentAssignmentPagesLoading,

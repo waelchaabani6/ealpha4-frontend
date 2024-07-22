@@ -1,3 +1,12 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable indent */
+/* eslint-disable comma-dangle */
+/* eslint-disable no-confusing-arrow */
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable no-console */
+/* eslint-disable no-restricted-globals */
+/* eslint-disable operator-linebreak */
+/* eslint-disable react/jsx-one-expression-per-line */
 import Button from '@component/button/button';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
 import Dropdown from '@component/dropdown/Dropdown';
@@ -27,6 +36,7 @@ import DatePicker from '@component/datepicker';
 import { useOnClickOutside } from '@shared/useOnClickOutside';
 
 const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
+const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
 
 const stateChange: any = {
   'Mark as Ongoing': 'Ongoing',
@@ -187,6 +197,18 @@ function AssignmentDetails() {
   const [ErrorMsg, setErrorMsg] = useState('');
   const [fullHeight, setFullHeight] = useState(false);
 
+  const [teacher, setTeacher] = useState('');
+  const [val, setValue] = useState({
+    Nmeet1: '',
+    Nmeet2: '',
+    exceed1: '',
+    exceed2: '',
+    meet1: '',
+    meet2: '',
+    approching1: '',
+    approching2: '',
+  });
+
   const componentRef = useRef(null);
 
   useEffect(() => {
@@ -279,21 +301,30 @@ function AssignmentDetails() {
     }
   };
 
-  const colorCode = (scoreAch = 0, type = 'bg') => {
-    if (scoreAch <= 35) {
-      return { bg: '#FCD4C6', color: '#E36B6B' }[type]; // Red
+  // eslint-disable-next-line consistent-return
+  function colorCode(score: any, type: string) {
+    if (score !== null && !isNaN(score)) {
+      console.log('has score', score >= val.exceed1 && score <= val.exceed2);
+      if (score >= val.exceed1 && score <= val.exceed2) {
+        // Exceeds
+        return { bg: '#E5F8E2', color: '#6CA463' }[type];
+      }
+      if (score >= val.meet1 && score <= val.meet2) {
+        /// Meets
+        return { bg: '#BECCFF', color: '#132E90 ' }[type];
+      }
+      if (score >= val.approching1 && score <= val.approching2) {
+        // Approaching
+        return { bg: '#FFF9BE', color: '#C7B551' }[type];
+      }
+      if (score >= val.Nmeet1 && score <= val.Nmeet2) {
+        // Does not Meet
+        return { bg: '#FCD4C6', color: '#E36B6B' }[type];
+      }
+    } else {
+      return { bg: '#FCD4C6', color: '#E36B6B' }[type];
     }
-    if (scoreAch > 35 && scoreAch <= 50) {
-      return { bg: '#FFF9BE', color: '#C7B551' }[type]; // Yello
-    }
-    if (scoreAch > 50 && scoreAch <= 70) {
-      return { bg: '#BECCFF', color: '#132E90 ' }[type]; // blue
-    }
-    if (scoreAch >= 70) {
-      return { bg: '#E5F8E2', color: '#6CA463' }[type]; // green
-    }
-    return { bg: '#E5F8E2', color: '#6CA463' }[type];
-  };
+  }
 
   const {
     isLoading: studentAssignmentPagesLoading,
@@ -305,6 +336,7 @@ function AssignmentDetails() {
     onSuccess: (res: any) => {
       const results = res?.data?.response;
       setAssignmentData(results);
+      setTeacher(results?.teacher);
       if (results?.end_date) {
         setExtendedDeuData(new Date(results?.end_date));
       }
@@ -533,6 +565,70 @@ function AssignmentDetails() {
   useOnClickOutside(ref, () => {
     setAttachmentMenuVisible(false);
   });
+
+  const { isLoading: performance, refetch: GetPerformance } = useGet({
+    baseURL: ReportURL,
+    url: `reports-service/performance_expectation/?user_id=${teacher}`,
+    onSuccess: (res: any) => {
+      const resp = res?.data?.response;
+      const body: any = [];
+      const fetchedRecords = resp?.slice(0, 4);
+      const meetObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Meets'
+      );
+      const AppObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Approaching'
+      );
+      const DMeetObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Does Not Meet'
+      );
+      const ExceedsObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Exceeds'
+      );
+      setValue((prevState: any) => ({
+        ...prevState,
+        meet1: meetObj?.from_value,
+        meet2: meetObj?.to_value,
+        exceed1: ExceedsObj?.from_value,
+        exceed2: ExceedsObj?.to_value,
+        approching1: AppObj?.from_value,
+        approching2: AppObj?.to_value,
+        Nmeet1: DMeetObj?.from_value,
+        Nmeet2: DMeetObj?.to_value,
+      }));
+    },
+    enabled: false,
+    retry: false,
+  });
+
+  function getPerformanceText(score: any) {
+    if (score >= val.exceed1 && score <= val.exceed2) {
+      return 'Exceeds';
+    }
+
+    if (score >= val.meet1 && score <= val.meet2) {
+      return 'Meets';
+    }
+
+    if (score >= val.approching1 && score <= val.approching2) {
+      return 'Approaching';
+    }
+
+    if (
+      (score >= val.Nmeet1 && score <= val.Nmeet2) ||
+      score == null ||
+      isNaN(score)
+    ) {
+      return 'Does not Meet';
+    }
+    return '';
+  }
+
+  useEffect(() => {
+    if (teacher) {
+      GetPerformance();
+    }
+  }, [teacher]);
 
   return (
     <div>
@@ -764,17 +860,17 @@ function AssignmentDetails() {
               <div className="grow md:border-r md:border-r-gray-300 md:ml-4">
                 <div className="mb-5">
                   <div className="font-bold"> Lesson Name </div>
-                  {/* <div className="truncate w-[170px]"> */}{' '}
+                  {/* <div className="truncate w-[170px]"> */}
                   {assignmentData?.chapters?.map(
                     (ele: any) => `${ele.chapter_name} `
-                  )}{' '}
+                  )}
                   {/* </div> */}
                   {/* <div> - </div> */}
                 </div>
                 <div className="mb-5">
                   <div className="font-bold">
                     {' '}
-                    Status: {assignmentData?.state}{' '}
+                    Status: {assignmentData?.state}
                   </div>
                   {/* <div> - </div> */}
                 </div>
@@ -814,13 +910,16 @@ function AssignmentDetails() {
                 <div className="grow box-content flex items-center h-full justify-center ml-4">
                   <div
                     style={{
-                      backgroundColor: colorCode(assignmentData?.score, 'bg'),
+                      backgroundColor: colorCode(
+                        parseInt(assignmentData?.score, 10),
+                        'bg'
+                      ),
                     }}
                     className="h-3/5 p-4 flex text-center items-center justify-center md:text-2xl text-sm rounded"
                   >
                     <div>
                       Score
-                      <span
+                      {/* <span
                         className="text-blue-100"
                         style={{
                           color: colorCode(assignmentData?.score, 'color'),
@@ -831,7 +930,29 @@ function AssignmentDetails() {
                         {`${assignmentData?.score !== null ? assignmentData?.score : ''}`}
                         /100) &nbsp;
                       </span>
-                      - Meets
+                      - Meets */}
+                      <span
+                        className="text-blue-100"
+                        style={{
+                          color: colorCode(
+                            parseInt(assignmentData?.score, 10),
+                            'color'
+                          ),
+                        }}
+                      >
+                        &nbsp;
+                        {assignmentData?.score == null ||
+                        isNaN(assignmentData?.score)
+                          ? '0'
+                          : `${assignmentData?.score}`}
+                        % (
+                        {assignmentData?.score == null ||
+                        isNaN(assignmentData?.score)
+                          ? '0'
+                          : `${assignmentData?.score}`}
+                        /100) &nbsp;
+                      </span>
+                      - {getPerformanceText(parseInt(assignmentData?.score))}
                     </div>
                   </div>
                 </div>
