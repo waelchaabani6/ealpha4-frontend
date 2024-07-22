@@ -167,7 +167,7 @@ export default function Index() {
   };
   const { isFetching: reportdetailLoading, refetch: ProgramDetails } = useGet({
     baseURL: ReportURL,
-    url: `reports-service/program_usage_details_report/?school_id=${SCHOOL_ID}${selectedprogram ? `&selected_program=${selectedprogram}` : ''}&is_graph=${graph}&page=${page}`,
+    url: `reports-service/program_usage_details_report/?school_id=${SCHOOL_ID}${selectedprogram ? `&selected_program=${selectedprogram}` : ''}&is_graph=${graph}&page=${page}&page_size=${rowsPerPage}`,
     onSuccess: (res: any) => {
       const ProgramData = res?.data?.response;
       if (graph !== 'yes') {
