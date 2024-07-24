@@ -17,7 +17,8 @@ RUN npm install
 COPY . .
 
 ## Build the app
-RUN npm run build:staging
+RUN npm run build
+
 
 # Fetching the latest nginx image
 FROM nginx
