@@ -1,5 +1,10 @@
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import { COMPONENTS, RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '@constants/constants';
+import {
+  COMPONENTS,
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '@constants/constants';
 import RouteLayout from '@layout/routeLayout';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import Wrapper from '@shared/wrapper/Wrapper';
@@ -9,7 +14,13 @@ import PrintIcon from '@mui/icons-material/Print';
 import AddIcon from '@mui/icons-material/Add';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
 import { ReactComponent as Download } from '@images/pageHeaderIcons/download.svg';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import DebounceInput from '@component/input/DebounceInput';
 import CustomPagination from '@component/pagination/CustomPagination';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -56,7 +67,7 @@ export default function Index() {
     cacheTime: 0,
     onSuccess: (resp: any) => {
       setTotalDataCount(resp?.data?.response?.count);
-    }
+    },
   });
 
   const { isLoading: deleteLoading, mutate: deleteGroup } = useDelete({
@@ -68,21 +79,21 @@ export default function Index() {
       refetch();
       toast('success', 'Group Deleted');
     },
-    enabled: !!deleteGroupId
+    enabled: !!deleteGroupId,
   });
 
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: 'Group Name',
-      mapper: 'group_name'
+      mapper: 'group_name',
     },
     {
       label: 'Students Name',
-      mapper: `student_group`
+      mapper: `student_group`,
     },
     {
       label: TABLE_LABELS?.ACTION,
@@ -90,13 +101,13 @@ export default function Index() {
       align: 'center',
       bodyAlign: 'right',
       component: COMPONENTS?.edit,
-      showInHeader: false
+      showInHeader: false,
     },
     {
       bodyAlign: 'left',
       component: COMPONENTS?.delete,
-      showInHeader: false
-    }
+      showInHeader: false,
+    },
   ];
   const { isRefetching: emailSendLoading, refetch: sendEmail } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
@@ -104,7 +115,7 @@ export default function Index() {
     onSuccess: () => {
       toast('success', 'Email sent successfully');
     },
-    enabled: false
+    enabled: false,
   }) as any;
   const actionHandler = (acdata: any, handlername: string) => {
     if (handlername === 'add') {
@@ -127,20 +138,20 @@ export default function Index() {
     }
   };
 
-  const csvData = data?.data?.response?.results?.map((i: any) => ([
+  const csvData = data?.data?.response?.results?.map((i: any) => [
     i.group_name,
-    i?.student_group?.map((a: any) => a.student_name).join(' | ')
-  ]));
+    i?.student_group?.map((a: any) => a.student_name).join(' | '),
+  ]);
 
   const ADMIN_TOOLBAR_MENU = [
     {
       title: 'Add',
-      icon: <AddIcon />
+      icon: <AddIcon />,
     },
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: emailSendLoading ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: emailSendLoading ? <Loader size={20} /> : <EmailIcon />
+    // },
     // {
     //   title: TOOLBAR_LABELS.IMPORT,
     //   icon: <Download />
@@ -156,44 +167,53 @@ export default function Index() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
-  const lst = useMemo(() => data?.data?.response?.results?.map((itm: any) => {
-    const tmp = { ...itm };
-    const len = 3;
-    tmp.student_group = (
-      <div className="flex gap-x-4 w-max">
-        <p className="flex-1 truncate">
-          {
-            (itm.student_group.length > len ? tmp.student_group.slice(0, len) : tmp.student_group).map((i: any) => i.student_name).join(' , ')
-          }
-        </p>
-        {
-          itm.student_group.length > len && (
-            <p
-              className="flex-1 cursor-pointer underline font-semibold"
-              onClick={() => {
-                setpopupdata(itm.student_group.map((i: any) => i.student_name));
-                setopenPopup(true);
-              }}
-            >
-              {`+ ${tmp.student_group.length - len} more`}
+  const lst = useMemo(
+    () =>
+      data?.data?.response?.results?.map((itm: any) => {
+        const tmp = { ...itm };
+        const len = 3;
+        tmp.student_group = (
+          <div className="flex gap-x-4 w-max">
+            <p className="flex-1 truncate">
+              {(itm.student_group.length > len
+                ? tmp.student_group.slice(0, len)
+                : tmp.student_group
+              )
+                .map((i: any) => i.student_name)
+                .join(' , ')}
             </p>
-          )
-        }
-      </div>
-    );
-    return tmp;
-  }), [data]);
+            {itm.student_group.length > len && (
+              <p
+                className="flex-1 cursor-pointer underline font-semibold"
+                onClick={() => {
+                  setpopupdata(
+                    itm.student_group.map((i: any) => i.student_name)
+                  );
+                  setopenPopup(true);
+                }}
+              >
+                {`+ ${tmp.student_group.length - len} more`}
+              </p>
+            )}
+          </div>
+        );
+        return tmp;
+      }),
+    [data]
+  );
 
   useEffect(() => {
     if (location?.state?.page) {
@@ -208,9 +228,7 @@ export default function Index() {
         handleToolbarAction={handleToolbarAction}
       />
       <div className="flex flex-col gap-y-4 md:flex-row md:gap-y-0 justify-between py-4">
-        <DebounceInput
-          onChange={(e) => setSearchString(e)}
-        />
+        <DebounceInput onChange={(e) => setSearchString(e)} />
         <CustomPagination
           totalPages={noOfpages}
           paginateHandler={handlePagination}
@@ -233,11 +251,14 @@ export default function Index() {
           />
         </Wrapper>
       </div>
-      <CustomizedDialogs title="Students Name" open={openPopup} setOpen={setopenPopup} onclose={() => setopenPopup(false)}>
+      <CustomizedDialogs
+        title="Students Name"
+        open={openPopup}
+        setOpen={setopenPopup}
+        onclose={() => setopenPopup(false)}
+      >
         <div className="w-full grid sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {
-            popupdata?.map((ele: string) => <p className="p-2">{ele}</p>)
-          }
+          {popupdata?.map((ele: string) => <p className="p-2">{ele}</p>)}
         </div>
       </CustomizedDialogs>
       <DeletePopup

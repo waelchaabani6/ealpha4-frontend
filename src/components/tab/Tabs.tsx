@@ -96,7 +96,7 @@ const Tabs = React.forwardRef((props: Props, ref: any) => {
           }
         }
       }}
-      className={`w-[175px] h-[52px] text-sm grid place-items-center font-medium cursor-pointer
+      className={`min-w-[100px] h-[52px] overflow-x-auto px-4 text-sm grid place-items-center font-medium cursor-pointer
       ${!isDisable(index)
           ? (
             `${currentTab.title === tab.title

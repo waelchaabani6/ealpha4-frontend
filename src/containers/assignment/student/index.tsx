@@ -24,6 +24,7 @@ import { CSVLink } from 'react-csv';
 import { useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
+import Dropdown from '@component/dropdown/Dropdown';
 import CustomPagination from '../../../components/pagination/CustomPagination';
 import { RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '../../../constants/constants';
 import Wrapper from '../../../shared/wrapper/Wrapper';
@@ -48,7 +49,7 @@ export default function Index() {
 
   const headers = [
     TABLE_LABELS?.ASSIGNMET_NAME,
-    TABLE_LABELS?.SUBJECT,
+    TABLE_LABELS?.COURSES,
     TABLE_LABELS?.TEACHER,
     TABLE_LABELS?.LESSONS,
     TABLE_LABELS?.START_DATE,
@@ -79,7 +80,7 @@ export default function Index() {
       isSort: true
     },
     {
-      label: TABLE_LABELS?.SUBJECT,
+      label: TABLE_LABELS?.COURSES,
       isSort: true,
       mapper: 'subject_name'
     },
@@ -91,7 +92,7 @@ export default function Index() {
     {
       label: TABLE_LABELS?.LESSONS,
       mapper: 'Lessons',
-      sx: { width: '120px' }
+      sx: { width: '200px' }
     },
     {
       label: TABLE_LABELS?.STATUS,
@@ -269,14 +270,21 @@ export default function Index() {
             tempLoaderIndexArray = tempLoaderIndexArray.filter((item) => item !== index);
             setLoaderIndexArray([...tempLoaderIndexArray]);
           }
-          response.arrayBuffer().then((buffer) => {
-            const url = window.URL.createObjectURL(new Blob([buffer]));
-            const fileName = fileUrl.split('/')[fileUrl.split('/').length - 1];
+          response.blob().then((blob) => {
+            const url = window.URL.createObjectURL(blob);
+           // const fileName = fileUrl.split('/')[fileUrl.split('/').length - 1];
+            const fileName = response.url.split('?')[0];
+            console.log("file name",fileName);
+            console.log("response url",response.url);
             const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', fileName);
+            link.href = fileName;
+            link.target="_blank";
+            link.setAttribute('download', "");
             document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
+          
+            //window.URL.revokeObjectURL(url);
           });
         })
         .catch((err) => {
@@ -423,7 +431,7 @@ export default function Index() {
           {/* eslint-disable-next-line react/jsx-closing-tag-location */}
         </Link>,
         teacher_name: ele.state === 'Submitted' ? <p className="">{ele.teacher_name}</p> : ele.teacher_name,
-        Lessons: ele.state === 'Submitted' ? <p className="">{ele.lesson_name.length <= 25 ? ele.lesson_name : `${ele.lesson_name.substring(0, 25)}...`}</p> : ele.lesson_name.length <= 25 ? ele.lesson_name : <p title={ele.lesson_name}>{`${ele.lesson_name.substring(0, 25)}...`}</p>,
+        Lessons: ele.chapters && ele.chapters.length > 0 && ele.chapters[0].chapter_name,
         // start_date: ele.state === 'Submitted' ? <p className="">{ele.start_date}</p> : ele.start_date,
         // end_date: ele.state === 'Submitted' ? <p className="">{ele.end_date}</p> : <span>{ele.end_date}</span>,
         score: ele.state === 'Submitted' ? <p className="">{ele.score}</p> : <div className="text-center relative left-[-10px]">{ele.score ? ele.score : 'N/A'}</div>,
@@ -564,12 +572,12 @@ export default function Index() {
 
   useEffect(() => {
     refetchAssignmentList();
-  }, [fromDate, toDate, page, order, orderBy]);
+  }, [rowsPerPage, fromDate, toDate, page, order, orderBy]);
 
   const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
   const { isLoading, refetch: refetchAssignmentList, isRefetching }: any = useGet({
     baseURL,
-    url: `assignments-service/student/assignment/list/?student_id=${studentID}${searchVal !== '' ? `&search=${searchVal}` : ''}&ordering=${ordering}&offset=${(page - 1) * Number(rowsPerPage)}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&end_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}&limit=10&all_assignments=all`,
+    url: `assignments-service/student/assignment/list/?student_id=${studentID}${searchVal !== '' ? `&search=${searchVal}` : ''}&ordering=${ordering}&offset=${(page - 1) * Number(rowsPerPage)}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&end_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}&limit=${rowsPerPage}&all_assignments=all`,
     onSuccess: (res: any) => {
       const tempAssignmentList: any = res?.data?.results;
       const myCsvData = tempAssignmentList.map((ele: any) => ([
@@ -662,6 +670,11 @@ export default function Index() {
       />
     }
   ];
+
+  const handlePerPage = (e: any) => {
+    setRowsPerPage(e);
+  };
+
   return (
     <RouteLayout>
       <HeaderMenus title="Assigned Assignments" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
@@ -718,7 +731,7 @@ export default function Index() {
               label="From"
               format="yyyy-DD-MM"
               handlePickerChange={(date: string) => setFromDate(date)}
-              sxType={1}
+              sxType={4}
               defaultStyle={true}
               disableFuture={toDate}
               disablePast={false}
@@ -730,12 +743,19 @@ export default function Index() {
               label="To"
               format="yyyy-DD-MM"
               handlePickerChange={(date: string) => setToDate(date)}
-              sxType={1}
+              sxType={4}
               defaultStyle={true}
               disablePast={false}
               disableOld={fromDate}
             />
           </div>
+          <Dropdown
+            title="Result Of Pages"
+            value={rowsPerPage}
+            dataArray={RESULTS_PER_PAGE}
+            onChangeHandler={handlePerPage}
+            sxClass={{ width: '206px', marginRight: '5px' }}
+          />
           <div className="flex gap-2 justify-center items-center h-[36px]">
             <span tabIndex={0} title="Clear dates" onClick={reset} role="button">
               <RestartAltIcon />

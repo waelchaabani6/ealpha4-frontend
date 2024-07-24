@@ -55,14 +55,14 @@ export default function AssignedAssessments() {
 
   const { isLoading: loadCourses, refetch: getCourses } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/assigned_courses/${user?.userId}/details/?all_courses=all`,
+    url: `course-code-service/courses/assigned_courses/${user?.userId}/details`,
     onSuccess: (response: any) => {
       const data = response?.data?.response;
       const arr: any = [];
       data?.map((item: any) => {
         arr.push(
           {
-            label: item?.name,
+            label: item?.short_name,
             value: item?.id
           }
         );
@@ -105,8 +105,8 @@ export default function AssignedAssessments() {
       grade_name: getGrade?.label,
       school_id: schoolData?.id || branchData?.school_data?.id || '',
       branch_id: branchData?.id || null,
-      created_by: user?.user_profile_id,
-      updated_by: user?.user_profile_id
+      created_by: user?.userId,
+      updated_by: user?.userId
     };
     mutateAssesment(payload);
   };

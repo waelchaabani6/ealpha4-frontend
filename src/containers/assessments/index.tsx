@@ -2,7 +2,7 @@ import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import Button from '@component/button/button';
 import Dropdown from '@component/dropdown/Dropdown';
 import CustomPagination from '@component/pagination/CustomPagination';
-import { ASSESSMENT_TYPE, COMPONENTS, TABLE_LABELS } from '@constants/constants';
+import { ASSESSMENT_TYPE, COMPONENTS, RESULTS_PER_PAGE, TABLE_LABELS } from '@constants/constants';
 import RouteLayout from '@layout/routeLayout';
 import DeletePopup from '@shared/DeletePopup';
 import { useDelete, useGet } from '@shared/api/useApi';
@@ -77,9 +77,9 @@ export default function Index() {
   const [playloadData, setPlayloadData] = useState<any | undefined>({});
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [page, setPage] = useState(1);
-  const [rowsPerPage] = useState(10);
   const [order, setOrder] = useState<any>('desc');
   const [orderBy, setOrderBy] = useState<any>('assessment_name');
+  const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const location = useLocation();
 
@@ -219,6 +219,10 @@ export default function Index() {
     }
   }, [rowsPerPage, page, orderBy, order, selectedGrade, assessmentType, selectedCategory]);
 
+  const handlePerPage = (e: any) => {
+    setRowsPerPage(e);
+  };
+
   return (
     <RouteLayout navBack={true}>
       <div className="flex flex-col mb-4">
@@ -235,6 +239,7 @@ export default function Index() {
                 setCurrentCourse(d);
                 setPage(1);
               }}
+              sxClass={{ width: '206px' }}
               loading={loadCourses}
             />
             <Dropdown
@@ -243,6 +248,7 @@ export default function Index() {
               dataArray={[...ALL, ...filteredGrades]}
               onChangeHandler={(d: any) => setselectedGrade(d)}
               loading={loadGrades || refetchingGrades}
+              sxClass={{ width: '206px' }}
             />
             <Dropdown
               title="Select Category"
@@ -253,6 +259,7 @@ export default function Index() {
                 setPage(1);
               }}
               loading={loadCategories || refetchingCategories}
+              sxClass={{ width: '206px' }}
             />
             <Dropdown
               title="Assessment Type"
@@ -262,6 +269,14 @@ export default function Index() {
                 setassessmentType(d);
                 setPage(1);
               }}
+              sxClass={{ width: '206px' }}
+            />
+            <Dropdown
+              title="Result Of Pages"
+              value={rowsPerPage}
+              dataArray={RESULTS_PER_PAGE}
+              onChangeHandler={handlePerPage}
+              sxClass={{ width: '206px' }}
             />
             <div className="pt-4 md:pt-8 h-full flex items-center">
               <Link to={`${location?.pathname}/my-assessments`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">

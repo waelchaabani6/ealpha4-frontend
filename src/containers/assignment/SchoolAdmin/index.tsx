@@ -17,14 +17,19 @@ import { selectUser } from '@shared/store/userSlice';
 import toast from '@shared/toast';
 import { getNoOfPages } from '@utility/utility';
 import moment from 'moment';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CSVLink } from 'react-csv';
 import { useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import DeletePopup from '@shared/DeletePopup';
 import UseGetProfile from '@utility/Hooks/UseGetProfile';
-import { COMPONENTS, RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '../../../constants/constants';
+import {
+  COMPONENTS,
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '../../../constants/constants';
 import Wrapper from '../../../shared/wrapper/Wrapper';
 import RouteLayout from '../../layout/routeLayout';
 
@@ -34,41 +39,46 @@ const printButton = () => <PrintIcon />;
 export default function Index() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { schoolId, branchId, user_profile_id: userID, userId } = useSelector(selectUser);
+  const {
+    schoolId,
+    branchId,
+    user_profile_id: userID,
+    userId,
+  } = useSelector(selectUser);
   const [payloadData, setPlayloadData] = useState('');
   const { getUser } = UseGetProfile();
 
   const CompletedTableColumns = [
     {
       label: 'First Name',
-      mapper: 'FirstName'
+      mapper: 'FirstName',
     },
     {
       label: 'Last Name',
-      mapper: 'LastName'
-    }
+      mapper: 'LastName',
+    },
   ];
 
   const PendingTableColumns = [
     {
       label: 'First Name',
-      mapper: 'FirstName'
+      mapper: 'FirstName',
     },
     {
       label: 'Last Name',
-      mapper: 'LastName'
-    }
+      mapper: 'LastName',
+    },
   ];
 
   const csvSubHeaders = [
     TABLE_LABELS?.ASSIGNMET_NAME,
-    TABLE_LABELS?.SUBJECT,
+    TABLE_LABELS?.COURSES,
     TABLE_LABELS?.GRADE,
     TABLE_LABELS?.LESSONS,
     TABLE_LABELS?.STATE,
     TABLE_LABELS?.CLASS_STUDENTS,
     TABLE_LABELS?.START_DATE,
-    TABLE_LABELS?.END_DATE
+    TABLE_LABELS?.END_DATE,
   ];
 
   const [csvData, setCsvData] = useState<[]>([]);
@@ -80,60 +90,60 @@ export default function Index() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.ASSIGNMET_NAME,
       mapper: 'name',
-      isSort: true
+      isSort: true,
     },
     {
-      label: TABLE_LABELS?.SUBJECT,
+      label: TABLE_LABELS?.COURSES,
       isSort: true,
-      mapper: 'subject_name'
+      mapper: 'subject_name',
     },
     {
       label: TABLE_LABELS?.COMPONENT,
-      mapper: 'component_name'
+      mapper: 'component_name',
     },
     {
       label: TABLE_LABELS?.LESSONS,
-      mapper: 'Lessons'
+      mapper: 'Lessons',
     },
     {
       label: TABLE_LABELS?.STATUS,
       isSort: true,
       mapper: 'state',
-      sx: { width: '100px' }
+      sx: { width: '100px' },
     },
     {
       label: TABLE_LABELS?.CLASS,
       sx: { maxWidth: '200px' },
       mapper: 'class_name',
-      isSort: true
+      isSort: true,
     },
     {
       label: TABLE_LABELS?.STUDENTS,
-      mapper: 'Students'
+      mapper: 'Students',
     },
     {
       label: TABLE_LABELS?.START_DATE,
       isSort: true,
       mapper: 'start_date',
-      sx: { width: '110px' }
+      sx: { width: '110px' },
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
       align: 'center',
       isSort: true,
       mapper: 'end_date',
-      sx: { width: '110px' }
+      sx: { width: '110px' },
     },
     {
       bodyAlign: 'left',
       component: COMPONENTS?.delete,
-      showInHeader: false
-    }
+      showInHeader: false,
+    },
   ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
@@ -156,8 +166,13 @@ export default function Index() {
 
   const [allClasses, setClasses] = useState('');
   const [ClassesPopup, setClassesPopup] = useState(false);
+  const [pageSize, setPageSize] = useState<any>(RESULTS_PER_PAGE?.[0]);
 
-  const { isRefetching: emailSendLoading, refetch: sendEmail, isLoading: emailLoad } = useGet({
+  const {
+    isRefetching: emailSendLoading,
+    refetch: sendEmail,
+    isLoading: emailLoad,
+  } = useGet({
     baseURL,
     url: `assignments-service/pdf-download-1/?school_id=${schoolId}&user_id=${userId}`,
     onSuccess: () => {
@@ -167,22 +182,22 @@ export default function Index() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Unable to send email');
     },
-    enabled: false
+    enabled: false,
   }) as any;
 
   const ADMIN_TOOLBAR_MENU = [
     {
       title: TOOLBAR_LABELS.ADD_ASSIGNMENT,
-      icon: <AddIcon />
+      icon: <AddIcon />,
     },
     // {
     //   title: TOOLBAR_LABELS.IMPORT,
     //   icon: <DriveFolderUploadIcon />
     // },
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
@@ -194,15 +209,17 @@ export default function Index() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   const { mutate: mutateDelete } = useDelete({
@@ -215,7 +232,7 @@ export default function Index() {
     },
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
-    }
+    },
   });
 
   const handelSendEmail = () => {
@@ -243,60 +260,142 @@ export default function Index() {
   };
 
   const init = () => {
-    const rows2 = assignmentList.map((ele: {
-      course_table_id: string;
-      lesson_name: any;
-      grade_name: any;
-      course_name: any;
-      class_name: string; AssignmentName: string; name: string; student_count: string; subject_name: string; state: string; start_date: string; end_date: string; score: string; id: number; component_name: string;
-    }, inde: number) => {
-      const link = `/${schoolNameInURL}/assignment/assigned-students`;
-      const subjectLink = `/${schoolNameInURL}/MySubject/${ele.course_name.split(':')[0]}/${ele.grade_name}/${ele.course_table_id}`;
-      const Lessons = ele.lesson_name.map((chapterName: any) => chapterName.chapter_name).join(' ').substring(0, 50);
-      const classes = ele.class_name;
-      let classElement;
-      if (classes && classes.length && classes.split(',').length > 2) {
-        classElement = (
-          <div>
-            {' '}
-            {classes.split(',')[0]}
-            ,
-            {' '}
-            {classes.split(',')[1]}
-            {' '}
-            <span role="contentinfo" className="ml-2 text-accent cursor-pointer" onClick={() => openClass(classes)}>
+    const rows2 = assignmentList.map(
+      (
+        ele: {
+          course_table_id: string;
+          lesson_name: any;
+          grade_name: any;
+          course_name: any;
+          class_name: string;
+          AssignmentName: string;
+          name: string;
+          student_count: string;
+          subject_name: string;
+          state: string;
+          start_date: string;
+          end_date: string;
+          score: string;
+          id: number;
+          component_name: string;
+        },
+        inde: number
+      ) => {
+        const link = `/${schoolNameInURL}/assignment/assigned-students`;
+        const subjectLink = `/${schoolNameInURL}/MySubject/${ele.course_name.split(':')[0]}/${ele.grade_name}/${ele.course_table_id}`;
+        const Lessons = ele.lesson_name
+          .map((chapterName: any) => chapterName.chapter_name)
+          .join(' ')
+          .substring(0, 50);
+        const classes = ele.class_name;
+        let classElement;
+        if (classes && classes.length && classes.split(',').length > 2) {
+          classElement = (
+            <div>
               {' '}
-              +
-              {' '}
-              {`${classes.split(',').length - 2}`}
-              {' '}
-              more
-              {' '}
+              {classes.split(',')[0]}, {classes.split(',')[1]}{' '}
+              <span
+                role="contentinfo"
+                className="ml-2 text-accent cursor-pointer"
+                onClick={() => openClass(classes)}
+              >
+                {' '}
+                + {`${classes.split(',').length - 2}`} more{' '}
+              </span>
+            </div>
+          );
+        } else {
+          classElement = <div> {classes}</div>;
+        }
+        return {
+          ...ele,
+          name: (
+            <Link
+              to={link}
+              state={{
+                page,
+                assignmentId: ele.id,
+                assignmentName: ele.name,
+                startDate: ele.start_date,
+                endData: ele.end_date,
+                grade: ele?.class_name,
+                isFromComplete: false,
+                path: `/${schoolNameInURL}/assignment`,
+              }}
+            >
+              <span className="text-accent underline cursor-pointer font-medium">
+                {ele.name}
+              </span>
+            </Link>
+          ),
+          class_name: classElement,
+          Students: (
+            <span
+              role="presentation"
+              className="text-accent underline cursor-pointer font-medium"
+              onClick={() => {
+                setDialogOpen(true);
+                setSelectedAssignmentId(ele.id);
+              }}
+            >
+              {ele.student_count}
             </span>
-          </div>);
-      } else {
-        classElement = (
-          <div>
-            {' '}
-            {classes}
-          </div>);
+          ),
+          subject_name: (
+            <Link
+              state={{
+                page,
+                isFromComplete: false,
+                path: `/${schoolNameInURL}/assignment`,
+              }}
+              to={subjectLink}
+            >
+              <span
+                className={`${ele.state === 'Submitted' ? 'text-accent' : ''} underline cursor-pointer`}
+              >
+                {ele.course_name}
+              </span>
+            </Link>
+          ),
+          State: (
+            <div
+              className={`whitespace-nowrap ${ele.state === 'Submitted' ? 'text-accent' : ''}`}
+            >
+              {ele.state}
+            </div>
+          ),
+          end_date: (
+            <span className={ele.state === 'Submitted' ? 'text-accent' : ''}>
+              {moment(ele.end_date.replace('Z', '')).format('DD-MM-YYYY')}
+            </span>
+          ),
+          start_date: (
+            <span className={ele.state === 'Submitted' ? 'text-accent' : ''}>
+              {moment(ele.start_date.replace('Z', '')).format('DD-MM-YYYY')}
+            </span>
+          ),
+          SR_NO: inde + 1,
+          score: ele.score,
+          Grade: (
+            <span className={ele.state === 'Submitted' ? 'text-accent' : ''}>
+              {ele.grade_name}
+            </span>
+          ),
+          Lessons: (
+            <span className={ele.state === 'Submitted' ? 'text-accent' : ''}>
+              {Lessons.length >= 50 ? `${Lessons}...` : Lessons}
+            </span>
+          ),
+          component_name: (
+            <div
+              className={`${ele.state === 'Submitted' ? 'text-accent' : ''}`}
+            >
+              {ele.component_name}
+            </div>
+          ),
+        };
       }
-      return {
-        ...ele,
-        name: <Link to={link} state={{ page, assignmentId: ele.id, assignmentName: ele.name, startDate: ele.start_date, endData: ele.end_date, grade: ele?.class_name, isFromComplete: false, path: `/${schoolNameInURL}/assignment` }}><span className="text-accent underline cursor-pointer font-medium">{ele.name}</span></Link>,
-        class_name: classElement,
-        Students: <span role="presentation" className="text-accent underline cursor-pointer font-medium" onClick={() => { setDialogOpen(true); setSelectedAssignmentId(ele.id); }}>{ele.student_count}</span>,
-        subject_name: <Link state={{ page, isFromComplete: false, path: `/${schoolNameInURL}/assignment` }} to={subjectLink}><span className={`${ele.state === 'Submitted' ? 'text-accent' : ''} underline cursor-pointer`}>{ele.course_name}</span></Link>,
-        State: <div className={`whitespace-nowrap ${ele.state === 'Submitted' ? 'text-accent' : ''}`}>{ele.state}</div>,
-        end_date: <span className={ele.state === 'Submitted' ? 'text-accent' : ''}>{moment(ele.end_date.replace('Z', '')).format('DD-MM-YYYY')}</span>,
-        start_date: <span className={ele.state === 'Submitted' ? 'text-accent' : ''}>{moment(ele.start_date.replace('Z', '')).format('DD-MM-YYYY')}</span>,
-        SR_NO: inde + 1,
-        score: ele.score,
-        Grade: <span className={ele.state === 'Submitted' ? 'text-accent' : ''}>{ele.grade_name}</span>,
-        Lessons: <span className={ele.state === 'Submitted' ? 'text-accent' : ''}>{Lessons.length >= 50 ? `${Lessons}...` : Lessons}</span>,
-        component_name: <div className={`${ele.state === 'Submitted' ? 'text-accent' : ''}`}>{ele.component_name}</div>
-      };
-    });
+    );
     setTableData(rows2);
   };
 
@@ -315,20 +414,36 @@ export default function Index() {
   };
 
   const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
-  const { refetch: refetchAssignmentList, isLoading, isRefetching }: any = useGet({
+  const {
+    refetch: refetchAssignmentList,
+    isLoading,
+    isRefetching,
+  }: any = useGet({
     baseURL,
-    url: `assignments-service/assignment/list/?school_id=${schoolId}${branchId !== null ? `&branch_id=${branchId}` : ''}&offset=${(page - 1) * Number(rowsPerPage)}&user_id=${userId}&ordering=${ordering}&limit=10${searchVal !== '' ? `&search=${searchVal}` : ''}${(selectedState !== 'All' && selectedState !== 'Select') ? `&status=${selectedState}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&end_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}&limit=10&all_assignments=all`,
+    url: `assignments-service/assignment/list/?school_id=${schoolId}${branchId !== null ? `&branch_id=${branchId}` : ''}&offset=${(page - 1) * Number(rowsPerPage)}&user_id=${userId}&ordering=${ordering}&limit=10${searchVal !== '' ? `&search=${searchVal}` : ''}${selectedState !== 'All' && selectedState !== 'Select' ? `&status=${selectedState}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&end_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}&limit=${rowsPerPage}&all_assignments=all`,
     onSuccess: (res: any) => {
       const assignmentListData = res?.data?.response?.results;
       setAssignmentList(assignmentListData);
       setTotalDataCount(res?.data?.response?.count);
-      const csvEleData = assignmentListData.map((assignmentEle: any) => [assignmentEle.name, assignmentEle.course_name, assignmentEle.grade_name, assignmentEle.lesson_name.map((chapterName: any) => chapterName.chapter_name).join(' ').substring(0, 50), assignmentEle.state, assignmentEle.student_count, assignmentEle.start_date, assignmentEle.end_date]);
+      const csvEleData = assignmentListData.map((assignmentEle: any) => [
+        assignmentEle.name,
+        assignmentEle.course_name,
+        assignmentEle.grade_name,
+        assignmentEle.lesson_name
+          .map((chapterName: any) => chapterName.chapter_name)
+          .join(' ')
+          .substring(0, 50),
+        assignmentEle.state,
+        assignmentEle.student_count,
+        assignmentEle.start_date,
+        assignmentEle.end_date,
+      ]);
       setCsvData(csvEleData);
     },
     onError: ({ response }: any) => {
       // setAssignmentList(Resp.response);
     },
-    enabled: false
+    enabled: false,
   });
 
   const { isLoading: studentAssignmentStatusLoading }: any = useGet({
@@ -337,14 +452,22 @@ export default function Index() {
     onSuccess: (res: any) => {
       setStudentAssignmentData(res?.data?.response?.results);
     },
-    onError: ({ response }: any) => {
-    },
-    enabled: selectedAssignmentId !== -1
+    onError: ({ response }: any) => {},
+    enabled: selectedAssignmentId !== -1,
   });
 
   useEffect(() => {
     refetchAssignmentList();
-  }, [selectedState, page, fromDate, toDate, orderBy, order, searchVal, rowsPerPage]);
+  }, [
+    pageSize,
+    selectedState,
+    page,
+    fromDate,
+    toDate,
+    orderBy,
+    order,
+    searchVal,
+  ]);
 
   const reset = () => {
     setToDate('');
@@ -369,12 +492,18 @@ export default function Index() {
   };
 
   const handlePerPage = (e: any) => {
+    setPage(page);
+    setPageSize(e);
     setRowsPerPage(e);
   };
 
   return (
     <RouteLayout>
-      <HeaderMenus title="Assigned Assignments" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+      <HeaderMenus
+        title="Assigned Assignments"
+        menuArray={ADMIN_TOOLBAR_MENU}
+        handleToolbarAction={handleToolbarAction}
+      />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <div className="max-w-xs">
@@ -400,18 +529,12 @@ export default function Index() {
               value={fromDate}
               label="From"
               handlePickerChange={(date: string) => setFromDate(date)}
-              sxType={1}
+              sxType={4}
               defaultStyle={true}
               disableFuture={toDate}
               noFontSize={true}
             />
           </div>
-          <Dropdown
-              title="Result Of Pages"
-              value={rowsPerPage}
-              dataArray={RESULTS_PER_PAGE}
-              onChangeHandler={handlePerPage}
-          />
           <div>
             <DatePicker
               disablePast={false}
@@ -419,18 +542,36 @@ export default function Index() {
               value={toDate}
               label="To"
               handlePickerChange={(date: string) => setToDate(date)}
-              sxType={1}
+              sxType={4}
               defaultStyle={true}
               noFontSize={true}
             />
           </div>
+          <div>
+            <Dropdown
+              title="Result Of Pages"
+              value={pageSize}
+              dataArray={RESULTS_PER_PAGE}
+              onChangeHandler={handlePerPage}
+              sxClass={{ width: '206px', marginRight: '5px' }}
+            />
+          </div>
           <div className="relative top-[-7px]">
-            <span tabIndex={0} title="Clear dates" onClick={reset} role="button">
+            <span
+              tabIndex={0}
+              title="Clear dates"
+              onClick={reset}
+              role="button"
+            >
               <RestartAltIcon />
             </span>
           </div>
           <div className="flex gap-2 justify-center items-center h-[36px]">
-            <Divider orientation="vertical" flexItem={true} className="border-[#D2D2D2] pl-2" />
+            <Divider
+              orientation="vertical"
+              flexItem={true}
+              className="border-[#D2D2D2] pl-2"
+            />
             <Link to={`/${schoolNameInURL}/assignment/completed-assignments`}>
               <div className="text-accent underline cursor-pointer text-base font-medium pl-2">
                 Completed Assignments
@@ -478,7 +619,16 @@ export default function Index() {
           <div className="max-h-80 overflow-x-auto">
             <Wrapper>
               <AdvanceTable
-                tableData={StudentAssignmentData && StudentAssignmentData.length && StudentAssignmentData.filter((ele: any) => ele.state === 'Submitted').map((ele: any) => ({ FirstName: ele.first_name, LastName: ele.last_name }))}
+                tableData={
+                  StudentAssignmentData &&
+                  StudentAssignmentData.length &&
+                  StudentAssignmentData.filter(
+                    (ele: any) => ele.state === 'Submitted'
+                  ).map((ele: any) => ({
+                    FirstName: ele.first_name,
+                    LastName: ele.last_name,
+                  }))
+                }
                 headerRows={CompletedTableColumns}
                 maxHeight="300px"
               />
@@ -490,7 +640,17 @@ export default function Index() {
           <div className="max-h-80 overflow-x-auto">
             <Wrapper>
               <AdvanceTable
-                tableData={StudentAssignmentData && StudentAssignmentData.length && StudentAssignmentData.filter((ele: any) => ele.state !== 'Submitted' && ele.state !== 'Completed').map((ele: any) => ({ FirstName: ele.first_name, LastName: ele.last_name }))}
+                tableData={
+                  StudentAssignmentData &&
+                  StudentAssignmentData.length &&
+                  StudentAssignmentData.filter(
+                    (ele: any) =>
+                      ele.state !== 'Submitted' && ele.state !== 'Completed'
+                  ).map((ele: any) => ({
+                    FirstName: ele.first_name,
+                    LastName: ele.last_name,
+                  }))
+                }
                 headerRows={PendingTableColumns}
               />
             </Wrapper>

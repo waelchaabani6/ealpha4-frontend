@@ -1,3 +1,7 @@
+/* eslint-disable no-console */
+/* eslint-disable operator-linebreak */
+/* eslint-disable comma-dangle */
+/* eslint-disable implicit-arrow-linebreak */
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import EmailIcon from '@mui/icons-material/Email';
@@ -9,7 +13,15 @@ import { ReactComponent as Add } from '@images/longMenuIcons/Add.svg';
 import { ReactComponent as Delete } from '@images/longMenuIcons/Delete.svg';
 import { ReactComponent as License } from '@images/longMenuIcons/license.svg';
 import { useNavigate, Link } from 'react-router-dom';
-import routes, { PANEL, SCHOOL, SCHOOL_MANAGEMENT, BRANCH, EDIT, NEW_BRANCH, BRANCHES } from '@constants/routes';
+import routes, {
+  PANEL,
+  SCHOOL,
+  SCHOOL_MANAGEMENT,
+  BRANCH,
+  EDIT,
+  NEW_BRANCH,
+  BRANCHES,
+} from '@constants/routes';
 import { CSVLink } from 'react-csv';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import ReactToPrint from 'react-to-print';
@@ -23,7 +35,13 @@ import Loader from '@shared/loader';
 import moment from 'moment';
 import DebounceInput from '@component/input/DebounceInput';
 // import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
-import { STATUS_ITEMS, RESULTS_PER_PAGE, COMPONENTS, TABLE_LABELS, TOOLBAR_LABELS } from '../../constants/constants';
+import {
+  STATUS_ITEMS,
+  RESULTS_PER_PAGE,
+  COMPONENTS,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '../../constants/constants';
 import CustomPagination from '../../components/pagination/CustomPagination';
 import { getNoOfPages } from '../../utilities/utility';
 import Wrapper from '../../shared/wrapper/Wrapper';
@@ -32,6 +50,8 @@ import RemoveBranchPopup from './components/RemoveBranchPopup';
 import MigrateUser from './components/MigrateUser';
 import PermanentlyRemoveBranch from './components/PermanentlyRemoveBranch';
 import RouteLayout from '../layout/routeLayout';
+import { useSelector } from 'react-redux';
+import { selectUser } from '@shared/store/userSlice';
 
 const printButton = () => <PrintIcon />;
 const masterServiceBaseURL = import.meta.env.VITE_APP_MASTER_SERVICE_URL;
@@ -40,7 +60,7 @@ const SELECT = 'Select';
 type removedBranchObjectType = {
   school_id: string;
   current_branch_id: string;
-}
+};
 
 const SchoolManagmentList = (): JSX.Element => {
   let noOfpages = 1;
@@ -49,36 +69,36 @@ const SchoolManagmentList = (): JSX.Element => {
     {
       icon: <Edit />,
       label: 'Edit School Details',
-      value: 'editSchoolDetails'
+      value: 'editSchoolDetails',
     },
     {
       icon: <Add />,
       label: 'Add New Branch',
-      value: 'addNewBranch'
+      value: 'addNewBranch',
     },
     {
       icon: <License />,
       label: 'Extend License',
-      value: 'extendLicense'
+      value: 'extendLicense',
     },
     {
       icon: <Delete />,
       label: 'Delete',
-      value: 'delete'
-    }
+      value: 'delete',
+    },
   ];
 
   const BranchTableMenus = [
     {
       icon: <License />,
       label: 'Extend License',
-      value: 'extendLicense'
+      value: 'extendLicense',
     },
     {
       icon: <Delete />,
       label: 'Delete',
-      value: 'delete'
-    }
+      value: 'delete',
+    },
   ];
   const headers = [
     TABLE_LABELS?.SCHOOL_ID,
@@ -88,7 +108,7 @@ const SchoolManagmentList = (): JSX.Element => {
     TABLE_LABELS?.CREATED_ON,
     TABLE_LABELS?.EXPIRATION,
     TABLE_LABELS?.EXPIRATION_DAYS_LEFT,
-    TABLE_LABELS?.STATUS
+    TABLE_LABELS?.STATUS,
   ];
 
   const csvSubHeaders = [
@@ -100,7 +120,7 @@ const SchoolManagmentList = (): JSX.Element => {
     TABLE_LABELS?.CREATED_ON,
     TABLE_LABELS?.EXPIRATION,
     TABLE_LABELS?.EXPIRATION_DAYS_LEFT,
-    TABLE_LABELS?.STATUS
+    TABLE_LABELS?.STATUS,
   ];
 
   const [tempCSVData, setTempCSVData] = useState<[]>([]);
@@ -108,14 +128,17 @@ const SchoolManagmentList = (): JSX.Element => {
 
   const [tableData, setTableData] = useState<any>([]);
   const [bulkSelect, setBulkSelect] = useState<any>([]);
-  const [removedBranchObject, setRemovedBranchObject] = useState<removedBranchObjectType | null>(null);
+  const [removedBranchObject, setRemovedBranchObject] =
+    useState<removedBranchObjectType | null>(null);
 
   useEffect(() => {
     let finalData = [];
     if (bulkSelect?.length) {
       let tempArr: any = [];
       tableData?.map((i: any) => {
-        const getBranchDatas = i.subData?.filter((i2: any) => bulkSelect.includes(i2.id));
+        const getBranchDatas = i.subData?.filter((i2: any) =>
+          bulkSelect.includes(i2.id)
+        );
         tempArr = [...tempArr, ...getBranchDatas];
         return tempArr;
       });
@@ -131,7 +154,7 @@ const SchoolManagmentList = (): JSX.Element => {
             moment(item1?.created_at).format('DD-MM-YYYY'),
             item1?.activation_end_date,
             item1?.expiration_days,
-            item1?.status
+            item1?.status,
           ]);
           return body;
         });
@@ -148,124 +171,124 @@ const SchoolManagmentList = (): JSX.Element => {
       label: '',
       isSort: false,
       mapper: '',
-      isAdd: true
+      isAdd: true,
     },
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.SCHOOL_ID,
       mapper: 'id',
-      isSort: true
+      isSort: true,
     },
     {
       label: TABLE_LABELS?.SCHOOL_NAME,
       isSort: true,
-      mapper: 'name'
+      mapper: 'name',
     },
     {
       label: TABLE_LABELS?.SCHOOL_TYPE,
       isSort: true,
-      mapper: 'school_type'
+      mapper: 'school_type',
     },
     {
       label: TABLE_LABELS?.BRANCHES,
       isSort: true,
-      mapper: 'branch_count'
+      mapper: 'branch_count',
     },
     {
       label: TABLE_LABELS?.COUNTRY_NAME,
       isSort: true,
-      mapper: 'country_code'
+      mapper: 'country_code',
     },
     {
       label: TABLE_LABELS?.CREATED_ON,
       isSort: true,
       mapper: 'created_at',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_LABELS?.EXPIRATION,
       isSort: true,
-      mapper: 'activation_end_date'
+      mapper: 'activation_end_date',
     },
     {
       label: TABLE_LABELS?.EXPIRATION_DAYS_LEFT,
       isSort: true,
-      mapper: 'expiration_days_left'
+      mapper: 'expiration_days_left',
     },
     {
       label: TABLE_LABELS?.STATUS,
       align: 'center',
       mapper: 'status',
       component: COMPONENTS?.switch,
-      showInHeader: false
+      showInHeader: false,
     },
     {
       label: TABLE_LABELS?.ACTION,
       component: COMPONENTS?.longmenu,
-      menuArray: moreMenuOptions
-    }
+      menuArray: moreMenuOptions,
+    },
   ];
   const subTableHeader = [
     {
       align: 'center',
       component: COMPONENTS?.checkbox,
       selector: 'id',
-      showInHeader: true
+      showInHeader: true,
     },
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.BRANCH_ID,
       align: 'center',
-      mapper: 'id'
+      mapper: 'id',
     },
     {
       label: TABLE_LABELS?.BRANCH_NAME,
       align: 'center',
-      mapper: 'name'
+      mapper: 'name',
     },
     {
       label: TABLE_LABELS?.BRANCH_TYPE,
       align: 'center',
-      mapper: 'branch_type'
+      mapper: 'branch_type',
     },
     {
       label: TABLE_LABELS?.CREATED_ON,
       isSort: true,
       mapper: 'created_at',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_LABELS?.EXPIRATION,
       isSort: true,
-      mapper: 'activation_end_date'
+      mapper: 'activation_end_date',
     },
     {
       label: TABLE_LABELS?.EXPIRATION_DAYS_LEFT,
       isSort: true,
-      mapper: 'expiration_days'
+      mapper: 'expiration_days',
     },
     {
       label: TABLE_LABELS?.STATUS,
       align: 'center',
       mapper: 'status',
       component: COMPONENTS?.switch,
-      showInHeader: false
+      showInHeader: false,
     },
     {
       label: TABLE_LABELS?.ACTION,
       component: COMPONENTS?.longmenu,
-      menuArray: BranchTableMenus
-    }
+      menuArray: BranchTableMenus,
+    },
   ];
   const ALL = {
     label: 'Select',
-    value: 'All'
+    value: 'All',
   };
   const [selectData, setSelectData] = useState<any>(ALL?.value);
   const [selectedAcademicYear, setselectedAcademicYear] = useState(ALL?.value);
@@ -354,16 +377,17 @@ const SchoolManagmentList = (): JSX.Element => {
 
   const handelSendEmail = () => {
     const payload = {
-      list_type: 'school-list'
+      list_type: 'school-list',
     };
     setPlayloadData({
       apicall: 'sendEmail',
-      payload
+      payload,
     });
   };
 
   const handleMoreOption = (id: any, rowData: any) => {
     if (id === 'editSchoolDetails') {
+      console.log(`${SCHOOL_MANAGEMENT}/${SCHOOL}/${rowData.id}/${EDIT}`);
       navigate(`${SCHOOL_MANAGEMENT}/${SCHOOL}/${rowData.id}/${EDIT}`);
     } else if (id === 'addNewBranch') {
       navigate(`${SCHOOL_MANAGEMENT}/${SCHOOL}/${rowData.id}/${NEW_BRANCH}`);
@@ -383,19 +407,19 @@ const SchoolManagmentList = (): JSX.Element => {
 
   const statusHandler = (e: any, data: object | any) => {
     const payload = {
-      status: (e.target.checked) ? 'Active' : 'Inactive'
+      status: e.target.checked ? 'Active' : 'Inactive',
     };
     if ('branch_ting' in data) {
       setPlayloadData({
         apicall: 'branchStatus',
         payload,
-        id: data?.id
+        id: data?.id,
       });
     } else {
       setPlayloadData({
         apicall: 'schoolStatus',
         payload,
-        id: data?.school_id
+        id: data?.school_id,
       });
     }
   };
@@ -433,7 +457,7 @@ const SchoolManagmentList = (): JSX.Element => {
     onSuccess: (res: any) => {
       const resp = res?.data || [];
       setAcademicYearArray([ALL, ...resp]);
-    }
+    },
   });
 
   // Toolbar Email
@@ -447,7 +471,7 @@ const SchoolManagmentList = (): JSX.Element => {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
       tempDataReset();
-    }
+    },
   });
 
   // Import CSV
@@ -480,22 +504,23 @@ const SchoolManagmentList = (): JSX.Element => {
     onError: ({ response }: any) => {
       toast('error', response?.statusText || 'Error');
       tempDataReset();
-    }
+    },
   });
 
   //  Delete School
-  const { isLoading: loadingDeleteSchool, mutate: mutateDeleteSchool } = useDelete({
-    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/schools/delete-school/${popupData?.school_id}/`,
-    onSuccess: (response: any) => {
-      tempDataReset();
-      refetch();
-      toast('success', 'School deleted successfully');
-    },
-    onError: ({ response }: any) => {
-      toast('error', response?.statusText || 'Error');
-    }
-  });
+  const { isLoading: loadingDeleteSchool, mutate: mutateDeleteSchool } =
+    useDelete({
+      baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+      url: `schools-service/schools/delete-school/${popupData?.school_id}/`,
+      onSuccess: (response: any) => {
+        tempDataReset();
+        refetch();
+        toast('success', 'School deleted successfully');
+      },
+      onError: ({ response }: any) => {
+        toast('error', response?.statusText || 'Error');
+      },
+    });
 
   // Status Update : School
   const { isLoading: loadingStatus, mutate: mutateSchoolStatus } = usePatch({
@@ -509,30 +534,31 @@ const SchoolManagmentList = (): JSX.Element => {
     onError: ({ response }: any) => {
       refetch();
       toast('error', response?.statusText || 'Error');
-    }
+    },
   });
 
   // Status Update : Branch
-  const { isLoading: loadingBranchStatus, mutate: mutateBranchStatus } = usePatch({
-    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/school-branches/change-status/${playloadData?.id}`,
-    onSuccess: (response: any) => {
-      setPlayloadData({});
-      refetch();
-      toast('success', 'Status Updated successfully');
-    },
-    onError: ({ response }: any) => {
-      toast('error', response?.statusText || 'Error');
-    }
-  });
+  const { isLoading: loadingBranchStatus, mutate: mutateBranchStatus } =
+    usePatch({
+      baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+      url: `schools-service/school-branches/change-status/${playloadData?.id}`,
+      onSuccess: (response: any) => {
+        setPlayloadData({});
+        refetch();
+        toast('success', 'Status Updated successfully');
+      },
+      onError: ({ response }: any) => {
+        toast('error', response?.statusText || 'Error');
+      },
+    });
 
   const { data: countryData, isLoading: countryLoading } = useGet({
     baseURL: masterServiceBaseURL,
-    url: 'master-service/country/'
+    url: 'master-service/country/',
   });
 
   // Get School Listing
-  const temps = (rowsPerPage === 'all') ? totalDataCount : rowsPerPage;
+  const temps = rowsPerPage === 'all' ? totalDataCount : rowsPerPage;
   const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
   const { isLoading, isRefetching, refetch } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
@@ -552,9 +578,12 @@ const SchoolManagmentList = (): JSX.Element => {
             moment(item?.created_at).format('DD-MM-YYYY'),
             item?.activation_end_date,
             item?.expiration_days_left,
-            item?.status
+            item?.status,
           ]);
-          if (removedBranchObject && removedBranchObject.school_id === item?.id) {
+          if (
+            removedBranchObject &&
+            removedBranchObject.school_id === item?.id
+          ) {
             item.branch_count -= 1;
           }
           let temp = {
@@ -565,31 +594,44 @@ const SchoolManagmentList = (): JSX.Element => {
               </Link>
             ),
             branch_count: (
-              <Link to={`${SCHOOL_MANAGEMENT}/${SCHOOL}/${item?.id}/${BRANCHES}`}>
+              <Link
+                to={`${SCHOOL_MANAGEMENT}/${SCHOOL}/${item?.id}/${BRANCHES}`}
+              >
                 <span className="navigateLink">{item?.branch_count}</span>
               </Link>
             ),
             school_name: item?.name,
-            activation_end_date: moment(item?.activation_end_date).format('DD-MM-YYYY')
+            activation_end_date: moment(item?.activation_end_date).format(
+              'DD-MM-YYYY'
+            ),
           };
           if (temp?.subData?.length) {
-            const subData = temp?.subData.map((i: any) => {
-              if (removedBranchObject && removedBranchObject.current_branch_id === i?.id) {
-                return null;
-              }
-              const newD = {
-                ...i,
-                name: (
-                  <Link to={`${SCHOOL_MANAGEMENT}/${BRANCH}/${i?.id}/${PANEL}`}>
-                    <span className="navigateLink">{i?.name}</span>
-                  </Link>
-                ),
-                branch_name: i?.name,
-                school_name: item?.name,
-                activation_end_date: moment(item?.activation_end_date).format('DD-MM-YYYY')
-              };
-              return newD;
-            }).filter((ele: any) => ele);
+            const subData = temp?.subData
+              .map((i: any) => {
+                if (
+                  removedBranchObject &&
+                  removedBranchObject.current_branch_id === i?.id
+                ) {
+                  return null;
+                }
+                const newD = {
+                  ...i,
+                  name: (
+                    <Link
+                      to={`${SCHOOL_MANAGEMENT}/${BRANCH}/${i?.id}/${PANEL}`}
+                    >
+                      <span className="navigateLink">{i?.name}</span>
+                    </Link>
+                  ),
+                  branch_name: i?.name,
+                  school_name: item?.name,
+                  activation_end_date: moment(item?.activation_end_date).format(
+                    'DD-MM-YYYY'
+                  ),
+                };
+                return newD;
+              })
+              .filter((ele: any) => ele);
             temp = { ...temp, subData };
           }
           return temp;
@@ -604,22 +646,26 @@ const SchoolManagmentList = (): JSX.Element => {
     onError: ({ response }: any) => {
       allStateReset();
     },
-    enabled: false
+    enabled: false,
   });
 
-  const { isLoading: migrateBranchLoading, mutate: mutateMigrateBranch } = usePost({
-    baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
-    url: `users-service/branch/migrate-remove/`,
-    onSuccess: (response: any) => {
-      setPlayloadData({});
-      setMigrateDialog(false);
-      refetch();
-      toast('success', response?.data?.message || 'Branch Migrated successfully');
-    },
-    onError: ({ response }: any) => {
-      toast('error', response?.data?.message || 'Error');
-    }
-  });
+  const { isLoading: migrateBranchLoading, mutate: mutateMigrateBranch } =
+    usePost({
+      baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
+      url: `users-service/branch/migrate-remove/`,
+      onSuccess: (response: any) => {
+        setPlayloadData({});
+        setMigrateDialog(false);
+        refetch();
+        toast(
+          'success',
+          response?.data?.message || 'Branch Migrated successfully'
+        );
+      },
+      onError: ({ response }: any) => {
+        toast('error', response?.data?.message || 'Error');
+      },
+    });
   /* ---------------------------------------------------------------------------------------------------------
      * End API *
      --------------------------------------------------------------------------------------------------------- */
@@ -627,32 +673,38 @@ const SchoolManagmentList = (): JSX.Element => {
   const ADMIN_TOOLBAR_MENU = [
     {
       title: TOOLBAR_LABELS.ADD_NEW_SCHOOL,
-      icon: <AddIcon />
+      icon: <AddIcon />,
     },
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailLoaded) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: emailLoaded ? <Loader size={20} /> : <EmailIcon />,
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
         <CSVLink
-          filename={bulkSelect?.length ? 'Branch List.csv' : 'School Management List.csv'}
+          filename={
+            bulkSelect?.length
+              ? 'Branch List.csv'
+              : 'School Management List.csv'
+          }
           data={csvData}
           headers={bulkSelect?.length ? csvSubHeaders : headers}
           enclosingCharacter=""
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   useEffect(() => {
@@ -668,8 +720,18 @@ const SchoolManagmentList = (): JSX.Element => {
   }, [playloadData]);
 
   useEffect(() => {
+    console.log('refresh data');
     refetch();
-  }, [rowsPerPage, page, selectData, selectedAcademicYear, orderBy, order, searchString, selectedCountry]);
+  }, [
+    rowsPerPage,
+    page,
+    selectData,
+    selectedAcademicYear,
+    orderBy,
+    order,
+    searchString,
+    selectedCountry,
+  ]);
 
   useEffect(() => {
     academicFetch();
@@ -678,25 +740,41 @@ const SchoolManagmentList = (): JSX.Element => {
   noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const componentRef = useRef(null);
 
-  const branchArr = tableData?.find((item: any) => item?.id === popupData?.school_id)?.subData?.filter((i: any) => i?.id !== popupData?.id);
+  const branchArr = tableData
+    ?.find((item: any) => item?.id === popupData?.school_id)
+    ?.subData?.filter((i: any) => i?.id !== popupData?.id);
 
   if (importLoaded) {
-    return (<Loader />);
+    return <Loader />;
   }
 
   const countryDataArray = useMemo(() => {
-    if (countryData?.data?.results && Array.isArray(countryData?.data?.results)) {
-      return [{ label: SELECT, value: SELECT }, ...(countryData.data.results.map((item: any) => ({
-        label: item.name,
-        value: item.name
-      })) ?? [])];
+    if (
+      countryData?.data?.results &&
+      Array.isArray(countryData?.data?.results)
+    ) {
+      return [
+        { label: SELECT, value: SELECT },
+        ...(countryData.data.results.map((item: any) => ({
+          label: item.name,
+          value: item.name,
+        })) ?? []),
+      ];
     }
     return [{ label: SELECT, value: SELECT }];
   }, [countryData]);
 
+  // const { school_name: schoolName, role } = useSelector(selectUser);
+  // console.log(role.name, 'role');
+  // console.log(schoolName, 'schoolName');
+
   return (
     <RouteLayout>
-      <HeaderMenus title="School Management" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+      <HeaderMenus
+        title="School Management"
+        menuArray={ADMIN_TOOLBAR_MENU}
+        handleToolbarAction={handleToolbarAction}
+      />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex flex-wrap md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <div className="max-w-xs">
@@ -770,7 +848,9 @@ const SchoolManagmentList = (): JSX.Element => {
             order={order}
             setOrder={setOrder}
             statusHandler={statusHandler}
-            isLoading={loadingDeleteSchool || isLoading || loadingStatus || isRefetching}
+            isLoading={
+              loadingDeleteSchool || isLoading || loadingStatus || isRefetching
+            }
           />
         </Wrapper>
       </div>
@@ -818,6 +898,7 @@ const SchoolManagmentList = (): JSX.Element => {
       <DeletePopup
         title="Remove School"
         description="Are you sure you want to remove the school?"
+        remark="Please note that this action Will take some time to take effect."
         open={schoolDeleteDialog}
         setOpen={setSchoolDeleteDialog}
         handleDelete={handleSchoolDelete}

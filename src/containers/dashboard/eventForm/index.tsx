@@ -28,7 +28,7 @@ type Props = {
 
 export default function Index(props: Props) {
   const roasterBaseURL = import.meta.env.VITE_APP_ROSTER_SERVICE_URL;
-  const { schoolId, user_profile_id: userID } = useSelector(selectUser);
+  const { schoolId, userId: userID } = useSelector(selectUser);
 
   const { handleSubmit, control, setError, watch } = useForm<Inputs>({
     resolver: yupResolver(schema)

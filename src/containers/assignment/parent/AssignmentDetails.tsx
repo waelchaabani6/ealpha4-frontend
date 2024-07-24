@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import routes from '@constants/routes';
 import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
@@ -23,7 +24,7 @@ const dataArray = [
   { label: 'Page', value: 'Page' },
   { label: 'Page 1', value: 'Page 1' },
   { label: 'Page 2', value: 'Page 2' },
-  { label: 'Page 3', value: 'Page 3' }
+  { label: 'Page 3', value: 'Page 3' },
 ];
 
 interface Column {
@@ -38,11 +39,19 @@ interface Column {
 }
 // readonly Column[]
 const columns: Column[] = [
-  { id: 'Pages', label: 'Page', minWidth: 170, align: 'right', component: 'Dropdown', dataArray, selectedValue: '' },
+  {
+    id: 'Pages',
+    label: 'Page',
+    minWidth: 170,
+    align: 'right',
+    component: 'Dropdown',
+    dataArray,
+    selectedValue: '',
+  },
   { id: 'Correct', label: 'Correct', minWidth: 170, align: 'right' },
   { id: 'Wrong', label: 'Incorrect', minWidth: 170, align: 'right' },
   { id: 'Unattempted', label: 'Unattempted', minWidth: 170, align: 'right' },
-  { id: 'MyScore', label: 'Score', minWidth: 100, align: 'right' }
+  { id: 'MyScore', label: 'Score', minWidth: 100, align: 'right' },
 ];
 
 interface Data {
@@ -65,9 +74,20 @@ function createData(
   pageNumber: string,
   scormData: any
 ): Data {
-  const MyScore: any = Score === 0 ? `0%` : `${parseFloat(((Number(Correct) * 100) / Number(maxScore)).toFixed(2))}%`;
+  const MyScore: any =
+    Score === 0
+      ? `0%`
+      : `${parseFloat(((Number(Correct) * 100) / Number(maxScore)).toFixed(2))}%`;
   const scormDataView = scormData ? JSON.parse(scormData) : {};
-  return { Pages, Unattempted, Wrong, Correct, MyScore, pageNumber, scormDataView };
+  return {
+    Pages,
+    Unattempted,
+    Wrong,
+    Correct,
+    MyScore,
+    pageNumber,
+    scormDataView,
+  };
 }
 
 function AssignmentDetails() {
@@ -83,13 +103,7 @@ function AssignmentDetails() {
   const { assignmentID, studentID } = useParams();
   const componentRef = useRef(null);
 
-  const csvSubHeaders = [
-    'Pages',
-    'Correct',
-    'Wrong',
-    'Unattempted',
-    'Score'
-  ];
+  const csvSubHeaders = ['Pages', 'Correct', 'Wrong', 'Unattempted', 'Score'];
 
   const changeColumnsHeader = (val: string, cIndex: number) => {
     const columnsHeader2 = columnsHeader.map((ele, index) => {
@@ -113,23 +127,31 @@ function AssignmentDetails() {
   };
 
   // Toolbar Email
-  const { isLoading: emailLoaded, refetch: fetchEmailApi, isRefetching: refetchEmail } = useGet({
+  const {
+    isLoading: emailLoaded,
+    refetch: fetchEmailApi,
+    isRefetching: refetchEmail,
+  } = useGet({
     baseURL,
     url: `assignments-service/student/assignment-report/pdf-download/?assign_assignment_id=${studentID}`,
     onSuccess: (response: any) => {
-      toast('success', response?.data?.message || 'Email sent successfully to you, please check your inbox');
+      toast(
+        'success',
+        response?.data?.message ||
+          'Email sent successfully to you, please check your inbox'
+      );
     },
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
     },
-    enabled: false
+    enabled: false,
   });
 
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailLoaded || refetchEmail) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: emailLoaded || refetchEmail ? <Loader size={20} /> : <EmailIcon />,
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
@@ -141,35 +163,41 @@ function AssignmentDetails() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-        onAfterPrint={() => setFullHeight(false)}
-        onBeforeGetContent={() => new Promise((resolve) => {
-          setFullHeight(true);
-          setTimeout(() => { resolve(0); }, 1000);
-        })}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+          onAfterPrint={() => setFullHeight(false)}
+          onBeforeGetContent={() =>
+            new Promise((resolve) => {
+              setFullHeight(true);
+              setTimeout(() => {
+                resolve(0);
+              }, 1000);
+            })
+          }
+        />
+      ),
+    },
   ];
 
   // eslint-disable-next-line consistent-return
   function colorCode(scoreAch: number, type: string) {
-    if (scoreAch <= 35) {
-      return { bg: '#FEE2E2', color: '#E36B6B' }[type]; // Red
+    if (scoreAch < 60) {
+      return { bg: '#FCD4C6', color: '#E36B6B' }[type]; // Red
     }
-    if (scoreAch > 35 && scoreAch <= 50) {
-      return { bg: '#6582EA', color: '#132E90' }[type]; // blue
+    if (scoreAch >= 60 && scoreAch <= 70) {
+      return { bg: '#FFF9BE', color: '#C7B551' }[type]; // Yellow
     }
-    if (scoreAch > 50 && scoreAch <= 70) {
-      return { bg: '#FEF9C3', color: '#C7B551 ' }[type]; // yello
+    if (scoreAch > 70 && scoreAch <= 80) {
+      return { bg: '#BECCFF', color: '#4B0082' }[type]; // Purple
     }
-    if (scoreAch >= 70) {
-      return { bg: '#E5F8E2', color: '#6CA463' }[type]; // green
+    if (scoreAch > 80) {
+      return { bg: '#E5F8E2', color: '#6CA463' }[type]; // Green
     }
   }
 
@@ -190,8 +218,25 @@ function AssignmentDetails() {
         }
       });
       if (jsonRespData && jsonRespData.length !== 0) {
-        const pagesArray = jsonRespData.map((ele: any) => ({ label: ele.page_name, value: ele.page_name }));
-        jsonRespData = jsonRespData && jsonRespData.length !== 0 ? jsonRespData.map((ele: any) => createData(ele.page_name, ele.score, ele.unattendedCount, ele.mistake_count, ele.absolute_score, ele.max_score, ele?.page_number, ele?.scormData)) : [];
+        const pagesArray = jsonRespData.map((ele: any) => ({
+          label: ele.page_name,
+          value: ele.page_name,
+        }));
+        jsonRespData =
+          jsonRespData && jsonRespData.length !== 0
+            ? jsonRespData.map((ele: any) =>
+                createData(
+                  ele.page_name,
+                  ele.score,
+                  ele.unattendedCount,
+                  ele.mistake_count,
+                  ele.absolute_score,
+                  ele.max_score,
+                  ele?.page_number,
+                  ele?.scormData
+                )
+              )
+            : [];
         setJsonData(jsonRespData);
         setJsonCopyData(jsonRespData);
         if (jsonRespData && jsonRespData.length !== 0) {
@@ -208,30 +253,37 @@ function AssignmentDetails() {
       }
       setAssignmentData(resp);
     },
-    onError: () => { }
+    onError: () => {},
   });
 
   const Status = () => {
-    if (assignmentData?.score <= 35) {
+    if (assignmentData?.score <= 60) {
       setPassignStatus('Does Not Meet');
-    } else if (assignmentData?.score > 35 && assignmentData?.score <= 50) {
-      setPassignStatus('Meets');
-    } else if (assignmentData?.score > 50 && assignmentData?.score <= 70) {
+    } else if (assignmentData?.score > 60 && assignmentData?.score < 70) {
       setPassignStatus('Approching');
-    } else if (assignmentData?.score >= 70) {
+    } else if (assignmentData?.score >= 70 && assignmentData?.score <= 80) {
+      setPassignStatus('Meets');
+    } else if (assignmentData?.score >= 80) {
       setPassignStatus('Exceeds');
     }
   };
 
   useEffect(() => {
     details();
+  }, [assignmentData]);
+
+  useEffect(() => {
     Status();
-  }, []);
+  }, [assignmentData]);
 
   return (
     <div>
       <RouteLayout navBack={true}>
-        <HeaderMenus title="Assignments Details" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+        <HeaderMenus
+          title="Assignments Details 000"
+          menuArray={ADMIN_TOOLBAR_MENU}
+          handleToolbarAction={handleToolbarAction}
+        />
         <div className="flex flex-col bg-white p-4 mt-5 md:flex-row w-full justify-evenly">
           <div className="flex flex-col md:flex-row w-full">
             <div className="w-full flex flex-col md:border-r md:border-r-gray-300 pr-[5%]">
@@ -241,45 +293,56 @@ function AssignmentDetails() {
               </div>
 
               <div className="mb-5">
-                <div className="font-bold"> Lesson </div>
+                <div className="font-bold"> Lesson Name </div>
                 <p>
                   {' '}
-                  {assignmentData.lesson_name && assignmentData?.lesson_name.length >= 50 ? `${assignmentData?.lesson_name.slice(0, 50)}...` : assignmentData?.lesson_name}
-                  {' '}
+                  {assignmentData.lesson_name &&
+                  assignmentData?.lesson_name.length >= 50
+                    ? `${assignmentData?.lesson_name.slice(0, 50)}...`
+                    : assignmentData?.lesson_name}{' '}
                 </p>
               </div>
-
               <div className="flex">
-                <div className="pr-4">
+                <div className="pr-4 mb-4">
                   <div className="font-bold"> Teacher </div>
                   <div>{assignmentData?.teacher_name}</div>
                 </div>
-                <div>
+              </div>
+              <div className="flex">
+                <div className="pr-4">
+                  <div className="font-bold"> Student </div>
+                  <div>
+                    {`${assignmentData?.first_name !== null ? assignmentData?.first_name : ''}  ${assignmentData?.last_name !== null ? assignmentData?.last_name : ''}`}{' '}
+                  </div>
+                </div>
+                {/* <div>
                   <div className="font-bold"> Student </div>
                   <div>
                     {`${assignmentData?.first_name !== null ? assignmentData?.first_name : ''}  ${assignmentData?.last_name !== null ? assignmentData?.last_name : ''}`}
                     {' '}
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
 
             <div className="w-full flex flex-col md:flex-row md:border-r justify-evenly md:border-r-gray-300">
-
               <div className="box-content flex items-center h-full justify-center min-w-[400px]">
-                <div style={{ backgroundColor: colorCode(assignmentData?.score, 'bg') }} className="h-3/5 w-[88%] flex items-center justify-center md:text-2xl text-sm rounded">
+                <div
+                  style={{
+                    backgroundColor: colorCode(assignmentData?.score, 'bg'),
+                  }}
+                  className="h-3/5 w-[88%] flex items-center justify-center md:text-2xl text-sm rounded"
+                >
                   Score
-                  <span className="text-blue-100" style={{ color: colorCode(assignmentData?.score, 'color') }}>
+                  <span
+                    className="text-blue-100"
+                    style={{ color: colorCode(assignmentData?.score, 'color') }}
+                  >
                     &nbsp;
                     {assignmentData?.score !== null ? assignmentData?.score : 0}
-                    {' '}
                     %
-                    {' '}
-
                   </span>
-                  -
-                  {' '}
-                  {passingStatus || 'Does Not Meet'}
+                  - {passingStatus || 'Does Not Meet'}
                 </div>
               </div>
             </div>
@@ -288,28 +351,31 @@ function AssignmentDetails() {
               <div className="mb-5">
                 <div className="font-bold">
                   {' '}
-                  State:
-                  {' '}
-                  {assignmentData?.state}
-                  {' '}
+                  State: {assignmentData?.state}{' '}
                 </div>
                 <div>
                   {' '}
-                  {assignmentData?.start_date ? moment(assignmentData?.start_date).format('DD-MM-YYYY') : ''}
-                  {' '}
+                  {assignmentData?.start_date
+                    ? moment(assignmentData?.start_date).format('DD-MM-YYYY')
+                    : ''}{' '}
                 </div>
               </div>
               <div className="mb-5">
                 <div className="font-bold"> Start Date </div>
                 <div>
                   {' '}
-                  {assignmentData?.start_date ? moment(assignmentData?.start_date).format('DD-MM-YYYY') : ''}
-                  {' '}
+                  {assignmentData?.start_date
+                    ? moment(assignmentData?.start_date).format('DD-MM-YYYY')
+                    : ''}{' '}
                 </div>
               </div>
               <div>
                 <div className="font-bold"> End Date </div>
-                <div>{assignmentData?.end_date ? moment(assignmentData?.end_date).format('DD-MM-YYYY') : ''}</div>
+                <div>
+                  {assignmentData?.end_date
+                    ? moment(assignmentData?.end_date).format('DD-MM-YYYY')
+                    : ''}
+                </div>
               </div>
             </div>
           </div>
@@ -320,8 +386,13 @@ function AssignmentDetails() {
             <SimpleTableDx
               rows={jsonData}
               columns={columnsHeader}
-              onChangeHandler={(val: string, cIndex: number) => { changeColumnsHeader(val, cIndex); }}
-              handleClearClick={() => { setJsonData(jsonCopyData); setColumns(columns); }}
+              onChangeHandler={(val: string, cIndex: number) => {
+                changeColumnsHeader(val, cIndex);
+              }}
+              handleClearClick={() => {
+                setJsonData(jsonCopyData);
+                setColumns(columns);
+              }}
               fullHeight={fullHeight}
             />
           </Wrapper>

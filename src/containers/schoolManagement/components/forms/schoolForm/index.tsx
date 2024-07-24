@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Button from '@component/button/button';
@@ -23,7 +24,7 @@ import UploadSchoolLogo from './uploadSchoolLogo';
 type Props = {
   context: React.Context<any>;
   isEdit?: boolean;
-}
+};
 
 export default function Index(props: Props) {
   const { id: schoolId, schoolName } = useParams();
@@ -51,11 +52,11 @@ export default function Index(props: Props) {
           contact_designation: '',
           contact_others: '',
           contact_alternate_mobile: '',
-          contact_alternate_email: ''
-        }
+          contact_alternate_email: '',
+        },
       ],
-      documents: []
-    }
+      documents: [],
+    },
   });
 
   const handleErrorResponse = (errorObj: any) => {
@@ -64,19 +65,25 @@ export default function Index(props: Props) {
       Object.keys(errorObj).forEach((key1: string, index1: number) => {
         if (key1 === 'contact_information') {
           Object.keys(errorObj[key1]).forEach((key2: string) => {
-            Object.keys(errorObj[key1][key2]).forEach((key3: string, index: number) => {
-              if (index === 0) {
-                focusKey = `${key1}[${key2}].${key3}`;
+            Object.keys(errorObj[key1][key2]).forEach(
+              (key3: string, index: number) => {
+                if (index === 0) {
+                  focusKey = `${key1}[${key2}].${key3}`;
+                }
+                methods.setError(`${key1}[${key2}].${key3}` as any, {
+                  message: errorObj[key1][key2][key3][0],
+                });
               }
-              methods.setError(`${key1}[${key2}].${key3}` as any, { message: errorObj[key1][key2][key3][0] });
-            });
+            );
           });
         } else if (key1 === 'profile_information') {
           Object.keys(errorObj[key1]).forEach((key: string, index: number) => {
             if (index === 0) {
               focusKey = `${key1}[${key}]`;
             }
-            methods.setError(`${key1}[${key}]` as any, { message: errorObj[key1][key][0] });
+            methods.setError(`${key1}[${key}]` as any, {
+              message: errorObj[key1][key][0],
+            });
           });
         } else {
           if (index1 === 0) {
@@ -109,7 +116,7 @@ export default function Index(props: Props) {
         country: '',
         phone_number: '',
         fax: '',
-        school_type: ''
+        school_type: '',
       },
       contact_information: [
         {
@@ -119,9 +126,9 @@ export default function Index(props: Props) {
           contact_designation: '',
           contact_others: '',
           contact_alternate_mobile: '',
-          contact_alternate_email: ''
-        }
-      ]
+          contact_alternate_email: '',
+        },
+      ],
     } as any);
     setSchoolLogo(undefined);
     setSchoolDocuments(undefined);
@@ -136,7 +143,7 @@ export default function Index(props: Props) {
     if (user && props?.isEdit) {
       context?.setContextData({
         ...contextData,
-        schoolData: user
+        schoolData: user,
       });
       methods.reset({
         school_name: user.school_name || '',
@@ -156,7 +163,7 @@ export default function Index(props: Props) {
           address: user.profile_information?.address || '',
           zipcode: user.profile_information?.zipcode || '',
           country: user.profile_information?.country || '',
-          school_type: user.profile_information?.school_type || ''
+          school_type: user.profile_information?.school_type || '',
         },
         contact_information: user.contact_information?.map((ele: any) => ({
           contact_name: ele?.contact_name || '',
@@ -165,19 +172,21 @@ export default function Index(props: Props) {
           contact_designation: ele?.contact_designation || '',
           contact_others: ele?.contact_others || '',
           contact_mobile_alternate: ele?.contact_mobile_alternate || '',
-          contact_email_alternate: ele?.contact_email_alternate || ''
-        }))
+          contact_email_alternate: ele?.contact_email_alternate || '',
+        })),
       });
       if ('logo' in user && user.logo) {
         methods.setValue('logo', user.logo || '');
       }
       if ('school_document' in user) {
-        const fileData = user.school_document.map((doc: any, index: number) => ({
-          sr_no: index + 1,
-          document_name: doc.name,
-          file: doc.document_file,
-          school_document_ting: doc.school_document_ting
-        }));
+        const fileData = user.school_document.map(
+          (doc: any, index: number) => ({
+            sr_no: index + 1,
+            document_name: doc.name,
+            file: doc.document_file,
+            school_document_ting: doc.school_document_ting,
+          })
+        );
         methods.setValue('documents', fileData);
       }
 
@@ -190,9 +199,9 @@ export default function Index(props: Props) {
     url: `schools-service/schools/${schoolId}/`,
     onSuccess: (resp: any) => {
       dispatch(setStoreSchool(resp?.data));
-      navigate(`/${schoolName}/dashboard`);
+      window.location.reload();
     },
-    enabled: false
+    enabled: false,
   });
 
   const {
@@ -203,10 +212,10 @@ export default function Index(props: Props) {
     data: logoDocument,
     isError: logoUploadErrorHappened,
     error: logoUploadError,
-    failureCount: logoUploadFailedCount
+    failureCount: logoUploadFailedCount,
   } = usePatch({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/schools/upload-school-logo/${contextData?.schoolData?.school_id}/`
+    url: `schools-service/schools/upload-school-logo/${contextData?.schoolData?.school_id}/`,
   });
 
   const {
@@ -217,10 +226,10 @@ export default function Index(props: Props) {
     data: uploadedDocument,
     isError: documentUploadErrorHappened,
     error: documentUploadError,
-    failureCount: documentUploadFailedCount
+    failureCount: documentUploadFailedCount,
   } = usePost({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/schools/upload-school-documents/${contextData?.schoolData?.id}/`
+    url: `schools-service/schools/upload-school-documents/${contextData?.schoolData?.id}/`,
   });
 
   // if (logoUploadErrorHappened) {
@@ -246,10 +255,10 @@ export default function Index(props: Props) {
     isSuccess: updateSchoolSuccess,
     data: updateSchoolData,
     isError: updateSchoolErrorHappened,
-    error: schoolUpdationError
+    error: schoolUpdationError,
   } = usePut({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/schools/edit-school/${contextData?.schoolData?.school_id || schoolId}/`
+    url: `schools-service/schools/edit-school/${contextData?.schoolData?.school_id || schoolId}/`,
   });
   useEffect(() => {
     if (updateSchoolSuccess) {
@@ -264,10 +273,10 @@ export default function Index(props: Props) {
     isSuccess: createSchoolSuccess,
     data: createSchoolData,
     isError: createSchoolErrorHappened,
-    error: schoolCreationError
+    error: schoolCreationError,
   } = usePost({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: 'schools-service/schools/add-school/'
+    url: 'schools-service/schools/add-school/',
   });
 
   useEffect(() => {
@@ -275,7 +284,7 @@ export default function Index(props: Props) {
       setCreateSchoolCount((prev: number) => prev + 1);
       setContextData({
         ...contextData,
-        schoolData: createSchoolData.data.response
+        schoolData: createSchoolData.data.response,
       });
     }
   }, [createSchoolSuccess]);
@@ -311,22 +320,24 @@ export default function Index(props: Props) {
         }
       }
       if (reqArr.length > 0) {
-        Promise.all(reqArr).then((res: any) => {
-          toast('success', `School ${props?.isEdit ? 'Updated' : 'Created'}`);
-          if (userData.role.name === USER_TYPE.SCHOOL_ADMIN) {
-            refetchSchoolData();
-          } else if (isNew) {
-            resetForm();
-          } else {
-            nextTab([2]);
-          }
-        }).catch((error: any) => {
-          if (!(error as AxiosError)?.response) {
-            toast('error', 'Document Size Too Large To Upload');
-          } else {
-            toast('error', error?.response?.data?.errors?.logo?.[0]);
-          }
-        });
+        Promise.all(reqArr)
+          .then((res: any) => {
+            toast('success', `School ${props?.isEdit ? 'Updated' : 'Created'}`);
+            if (userData.role.name === USER_TYPE.SCHOOL_ADMIN) {
+              refetchSchoolData();
+            } else if (isNew) {
+              resetForm();
+            } else {
+              nextTab([2]);
+            }
+          })
+          .catch((error: any) => {
+            if (!(error as AxiosError)?.response) {
+              toast('error', 'Document Size Too Large To Upload');
+            } else {
+              toast('error', error?.response?.data?.errors?.logo?.[0]);
+            }
+          });
       } else {
         // no files we have to upload
         toast('success', `School ${props?.isEdit ? 'Updated' : 'Created'}`);
@@ -369,13 +380,19 @@ export default function Index(props: Props) {
   }, [updateSchoolErrorHappened]);
 
   const onSubmit: SubmitHandler<any> = (values) => {
-    values.activation_start_date = moment(values.activation_start_date).format('YYYY-MM-DD');
-    values.activation_end_date = moment(values.activation_end_date).format('YYYY-MM-DD');
-    values.academic_information = values.academic_information.map((ele: any) => ({
-      ...ele,
-      from_date: moment(ele.from_date).format('YYYY-MM-DD'),
-      to_date: moment(ele.to_date).format('YYYY-MM-DD')
-    }));
+    values.activation_start_date = moment(values.activation_start_date).format(
+      'YYYY-MM-DD'
+    );
+    values.activation_end_date = moment(values.activation_end_date).format(
+      'YYYY-MM-DD'
+    );
+    values.academic_information = values.academic_information.map(
+      (ele: any) => ({
+        ...ele,
+        from_date: moment(ele.from_date).format('YYYY-MM-DD'),
+        to_date: moment(ele.to_date).format('YYYY-MM-DD'),
+      })
+    );
     // values.profile_information.city = selectedCity.name;
     values.number_of_terms_or_semester = +values.number_of_terms_or_semester;
     if ('logo' in values) {
@@ -394,7 +411,11 @@ export default function Index(props: Props) {
       delete values.school_url;
     }
 
-    if (props?.isEdit || (documentUploadFailedCount > 0 || logoUploadFailedCount > 0)) {
+    if (
+      props?.isEdit ||
+      documentUploadFailedCount > 0 ||
+      logoUploadFailedCount > 0
+    ) {
       updateSchool(values);
     } else {
       createSchool(values);
@@ -404,22 +425,22 @@ export default function Index(props: Props) {
   const { data: academicYearList, isLoading: academicYearLoading } = useGet({
     baseURL: import.meta.env.VITE_APP_MASTER_SERVICE_URL,
     url: 'master-service/academic-year/',
-    cacheTime: 2000
+    cacheTime: 2000,
   });
   const { data: countryList, isLoading: countryLoading } = useGet({
     baseURL: import.meta.env.VITE_APP_MASTER_SERVICE_URL,
     url: 'master-service/country/',
-    cacheTime: 2000
+    cacheTime: 2000,
   });
 
   const { data: schoolTypeList, isLoading: schoolTypeLoading } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
     url: 'schools-service/schools/school-type/',
-    cacheTime: 2000
+    cacheTime: 2000,
   });
 
-  const apisLoading = (
-    schoolTypeLoading || countryLoading || academicYearLoading);
+  const apisLoading =
+    schoolTypeLoading || countryLoading || academicYearLoading;
   if (apisLoading) {
     return (
       <div className="h-[300px] flex-1 grid place-items-center">
@@ -432,11 +453,16 @@ export default function Index(props: Props) {
     <div className="h-full w-full flex flex-col">
       <div className="flex justify-between items-center px-6 py-4">
         <PageTitle title="Enter School Details" />
-        <p className="text-sm text-red-500 opacity-80">All (*) marked fields are mandatory</p>
+        <p className="text-sm text-red-500 opacity-80">
+          All (*) marked fields are mandatory
+        </p>
       </div>
       <hr />
       <FormProvider {...methods}>
-        <form className="flex-1 p-6 space-y-7 overflow-auto" onSubmit={methods.handleSubmit(onSubmit)}>
+        <form
+          className="flex-1 p-6 space-y-7 overflow-auto"
+          onSubmit={methods.handleSubmit(onSubmit)}
+        >
           <BasicInformation
             // academicYearList={academicYearList}
             isEdit={props?.isEdit}
@@ -447,35 +473,54 @@ export default function Index(props: Props) {
             // cityList={cityList}
             // cityLoading={cityLoading}
             schoolTypeList={schoolTypeList}
-          // setSearchCity={setSearchCity}
+            // setSearchCity={setSearchCity}
           />
           <ContactInformation name="contact_information" />
           <UploadSchoolLogo logoError={logoError} setlogoError={setlogoError} />
           <UploadDocuments />
           <div className="float-right space-x-5">
-            {
-              (userRole().isSuperAdmin || userRole().isSubAdmin) && (
-                <Button
-                  disabled={createSchoolLoading || updateSchoolLoading || documentUploadLoading || logoUploadLoading}
-                  onClick={() => setIsNew(true)}
-                  variant="outlined"
-                  {...(isNew ? { loading: createSchoolLoading || updateSchoolLoading || documentUploadLoading || logoUploadLoading } : null)}
-                >
-                  {
-                    props?.isEdit ? 'Update ' : 'Create '
-                  }
-                  & Add New
-                </Button>
-              )
-            }
+            {(userRole().isSuperAdmin || userRole().isSubAdmin) && (
+              <Button
+                disabled={
+                  createSchoolLoading ||
+                  updateSchoolLoading ||
+                  documentUploadLoading ||
+                  logoUploadLoading
+                }
+                onClick={() => setIsNew(true)}
+                variant="outlined"
+                {...(isNew
+                  ? {
+                      loading:
+                        createSchoolLoading ||
+                        updateSchoolLoading ||
+                        documentUploadLoading ||
+                        logoUploadLoading,
+                    }
+                  : null)}
+              >
+                {props?.isEdit ? 'Update ' : 'Create '}& Add New
+              </Button>
+            )}
             <Button
-              disabled={createSchoolLoading || updateSchoolLoading || documentUploadLoading || logoUploadLoading}
-              onClick={() => setIsNew(false)}
-              {...(!isNew ? { loading: createSchoolLoading || updateSchoolLoading || documentUploadLoading || logoUploadLoading } : null)}
-            >
-              {
-                props?.isEdit ? 'Update' : 'Create'
+              disabled={
+                createSchoolLoading ||
+                updateSchoolLoading ||
+                documentUploadLoading ||
+                logoUploadLoading
               }
+              onClick={() => setIsNew(false)}
+              {...(!isNew
+                ? {
+                    loading:
+                      createSchoolLoading ||
+                      updateSchoolLoading ||
+                      documentUploadLoading ||
+                      logoUploadLoading,
+                  }
+                : null)}
+            >
+              {props?.isEdit ? 'Update' : 'Create'}
             </Button>
           </div>
         </form>

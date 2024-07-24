@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable comma-dangle */
+
 import 'react-toastify/dist/ReactToastify.css';
 import ErrorBoundary from '@utility/errorBoundary';
 import { RouterProvider } from 'react-router-dom';
@@ -16,12 +19,17 @@ import TeacherRoutes from '@routes/teacherRoutes';
 import StudentRoutes from '@routes/studentRoutes';
 import ParentRoutes from '@routes/parentRoutes';
 import GetUserWrapper from '@layout/getUserWrapper';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 export default function App(): JSX.Element {
   return (
-    <GetUserWrapper>
-      <Init />
-    </GetUserWrapper>
+    <GoogleOAuthProvider
+      clientId={import.meta.env.VITE_APP_GOOGLE_CLASSROOM_CLIENT_ID}
+    >
+      <GetUserWrapper>
+        <Init />
+      </GetUserWrapper>
+    </GoogleOAuthProvider>
   );
 }
 
@@ -52,20 +60,15 @@ function Init() {
   }, [role.name]);
   return (
     <ErrorBoundary>
-      {
-        loading && (
-          <div className="backdrop-blur-sm bg-white/30 w-screen h-screen absolute z-50 top-0 left-0 grid place-items-center">
-            <div>
-              <Loader size={50} />
-            </div>
+      {loading && (
+        <div className="backdrop-blur-sm bg-white/30 w-screen h-screen absolute z-50 top-0 left-0 grid place-items-center">
+          <div>
+            <Loader size={50} />
           </div>
-        )
-      }
+        </div>
+      )}
       <React.Suspense fallback={<Loader />}>
-        <RouterProvider
-          router={myRoutes}
-          fallbackElement={<Loader />}
-        />
+        <RouterProvider router={myRoutes} fallbackElement={<Loader />} />
       </React.Suspense>
       <ToastContainer />
     </ErrorBoundary>

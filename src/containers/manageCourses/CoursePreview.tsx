@@ -112,10 +112,11 @@ const CoursePreview = () => {
   };
 
   const receiveMessageHandler = (event: any) => {
-    if (event?.data?.startsWith('RESIZE:')) {
-      const values = event?.data?.replace('RESIZE:', '').split(';');
-      if (values.length === 2 && values.every((val:number) => val > 0)) {
-        setResizeContent(values);
+    if (typeof event?.data === 'string' && event?.data.startsWith('RESIZE:')) {
+      const values = event?.data.replace('RESIZE:', '').split(';');
+      // eslint-disable-next-line no-restricted-globals
+      if (values.length === 2 && values.every((val: any) => !isNaN(val))) {
+        setResizeContent(values.map((val: any) => parseInt(val, 10)));
       }
     }
     if (event?.data === 'PAGE_LOADED') {

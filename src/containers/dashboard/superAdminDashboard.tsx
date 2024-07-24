@@ -13,6 +13,7 @@ import Dropdown from '@component/dropdown/Dropdown';
 import { useGet } from '@shared/api/useApi';
 import Loader from '@shared/loader';
 import moment from 'moment';
+import ToastMessage from '@containers/dashboard/ToastMessage';
 import RadialGraph from './radialGraph';
 import BarChart from './barChart';
 import Crousel from './crousel';
@@ -253,6 +254,7 @@ export default function SuperAdminDashboard() {
   };
   return (
     <RouteLayout navBack={false} overflow={true}>
+      <ToastMessage />
       <div className="h-32 w-full">
         <Crousel responsive={card1BreakPoints} uiArr={cardList} />
       </div>

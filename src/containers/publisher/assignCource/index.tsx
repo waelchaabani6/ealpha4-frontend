@@ -16,7 +16,13 @@ import ReactToPrint from 'react-to-print';
 import Button from '@component/button/button';
 import { CustomAutoComplete } from '@component/autoComplete/autoComplete';
 import CustomPagination from '../../../components/pagination/CustomPagination';
-import { COMPONENTS, RESULTS_PER_PAGE, TABLE_ASSIGNEDCOURCE, TABLE_LABELS, TOOLBAR_LABELS } from '../../../constants/constants';
+import {
+  COMPONENTS,
+  RESULTS_PER_PAGE,
+  TABLE_ASSIGNEDCOURCE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '../../../constants/constants';
 import Wrapper from '../../../shared/wrapper/Wrapper';
 import { getNoOfPages } from '../../../utilities/utility';
 import RouteLayout from '../../layout/routeLayout';
@@ -32,48 +38,48 @@ const AssignCource = (): JSX.Element => {
       align: 'center',
       component: COMPONENTS?.checkbox,
       selector: 'id',
-      showInHeader: true
+      showInHeader: true,
     },
     {
       label: '',
       isSort: false,
       mapper: '',
-      isAdd: true
+      isAdd: true,
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.ASSIGNEDUSERS,
       isSort: true,
-      mapper: 'assigned_user'
+      mapper: 'assigned_user',
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.COURCE,
-      mapper: 'courses_name'
+      mapper: 'courses_name',
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.REGION,
-      mapper: 'courses_region'
+      mapper: 'courses_region',
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.SCHOOL,
       isSort: true,
-      mapper: 'school_name'
+      mapper: 'school_name',
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.BRANCH,
       isSort: true,
-      mapper: 'branch_name'
+      mapper: 'branch_name',
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.ACCESS_FROM,
       isSort: true,
       mapper: 'access_from',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.ACCESS_TO,
       isSort: true,
       mapper: 'access_to',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.STATUS,
@@ -82,59 +88,59 @@ const AssignCource = (): JSX.Element => {
       // colspan: 2,
       // bodyAlign: 'right',
       component: COMPONENTS?.switch,
-      showInHeader: false
+      showInHeader: false,
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.ACTION,
       mapper: 'Action',
       align: 'left',
       component: COMPONENTS?.delete,
-      showInHeader: false
-    }
+      showInHeader: false,
+    },
   ];
   const subTableHeader = [
     {
       align: 'center',
       component: COMPONENTS?.checkbox,
       selector: 'id',
-      showInHeader: true
+      showInHeader: true,
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.ASSIGNEDUSERS,
       align: 'center',
-      mapper: 'assigned_user'
+      mapper: 'assigned_user',
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.COURCE,
       align: 'center',
-      mapper: 'course_name'
+      mapper: 'course_name',
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.REGION,
       isSort: true,
-      mapper: 'course_region'
+      mapper: 'course_region',
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.SCHOOL,
       isSort: true,
-      mapper: 'school_name'
+      mapper: 'school_name',
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.BRANCH,
       isSort: true,
-      mapper: 'branch_name'
+      mapper: 'branch_name',
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.ACCESS_FROM,
       isSort: true,
       mapper: 'access_from',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.ACCESS_TO,
       isSort: true,
       mapper: 'access_to',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.STATUS,
@@ -143,20 +149,20 @@ const AssignCource = (): JSX.Element => {
       // colspan: 2,
       // bodyAlign: 'right',
       component: COMPONENTS?.switch,
-      showInHeader: false
+      showInHeader: false,
     },
     {
       label: TABLE_ASSIGNEDCOURCE?.ACTION,
       mapper: 'status',
       align: 'left',
       component: COMPONENTS?.delete,
-      showInHeader: false
-    }
+      showInHeader: false,
+    },
   ];
   const navigate = useNavigate();
   const ALL = {
     label: 'All',
-    value: 'All'
+    value: 'All',
   };
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
   const [page, setPage] = useState(1);
@@ -190,7 +196,7 @@ const AssignCource = (): JSX.Element => {
     TABLE_ASSIGNEDCOURCE?.BRANCH,
     TABLE_ASSIGNEDCOURCE?.ACCESS_FROM,
     TABLE_ASSIGNEDCOURCE?.ACCESS_TO,
-    TABLE_ASSIGNEDCOURCE?.STATUS
+    TABLE_ASSIGNEDCOURCE?.STATUS,
   ];
 
   const handlePagination = (currPage: any) => {
@@ -214,26 +220,26 @@ const AssignCource = (): JSX.Element => {
         data_list: [
           {
             id: data?.id,
-            is_active: !data?.status
-          }
-        ]
+            is_active: !data?.status,
+          },
+        ],
       };
       setPlayloadData({
         apicall: 'change-status',
-        payload
+        payload,
       });
     } else {
       payload = {
         data_list: [
           {
             id: data?.id,
-            status: !data?.status
-          }
-        ]
+            status: !data?.status,
+          },
+        ],
       };
       setPlayloadData({
         apicall: 'change-status-all',
-        payload
+        payload,
       });
     }
   };
@@ -247,7 +253,7 @@ const AssignCource = (): JSX.Element => {
 
   const handleDelete = () => {
     const payload = {
-      course_code_ids: bulkSelect
+      course_code_ids: bulkSelect,
     };
     setBulkSelect([]);
     bulkDeleteAssignedCourse(payload);
@@ -262,7 +268,7 @@ const AssignCource = (): JSX.Element => {
     },
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
-    }
+    },
   });
 
   const { isLoading: regionsLoading, refetch: regionsFetch } = useGet({
@@ -272,17 +278,15 @@ const AssignCource = (): JSX.Element => {
       const resp = res?.data?.response?.results;
       const body: any = [];
       resp?.map((i: any) => {
-        body.push(
-          {
-            label: i?.content,
-            value: i?.content
-          }
-        );
+        body.push({
+          label: i?.content,
+          value: i?.content,
+        });
         return true;
       });
       setArrayRegions([ALL, ...body]);
     },
-    onError: () => { }
+    onError: () => {},
   });
 
   const { isLoading: schoolListLoading, refetch: schoolList } = useGet({
@@ -292,18 +296,16 @@ const AssignCource = (): JSX.Element => {
       const resp = res?.data?.response?.results;
       const body: any = [];
       resp?.map((i: any) => {
-        body.push(
-          {
-            id: i?.id,
-            label: i?.name,
-            value: i?.name
-          }
-        );
+        body.push({
+          id: i?.id,
+          label: i?.name,
+          value: i?.name,
+        });
         return true;
       });
       setSchoolArray([ALL, ...body]);
     },
-    onError: () => { }
+    onError: () => {},
   });
 
   const { isLoading: courseListLoading, data: courseList } = useGet({
@@ -313,17 +315,15 @@ const AssignCource = (): JSX.Element => {
       const resp = res?.data?.response?.results;
       const body: any = [];
       resp?.map((i: any) => {
-        body.push(
-          {
-            label: i?.name,
-            value: i?.name
-          }
-        );
+        body.push({
+          label: i?.name,
+          value: i?.name,
+        });
         return true;
       });
       setCourseArray([...body]);
     },
-    onError: () => { }
+    onError: () => {},
   });
 
   const { isLoading: branchListLoading, data: branchList } = useGet({
@@ -334,20 +334,21 @@ const AssignCource = (): JSX.Element => {
       const resp = res?.data?.response;
       const body: any = [];
       resp?.map((i: any) => {
-        body.push(
-          {
-            label: i?.name,
-            value: i?.name
-          }
-        );
+        body.push({
+          label: i?.name,
+          value: i?.name,
+        });
         return true;
       });
       setBranchArray([ALL, ...body]);
     },
-    onError: () => { }
+    onError: () => {},
   });
 
-  const { isLoading: loadingDeleteAssignCourse, mutate: mutateDeleteAssignCourse } = useDelete({
+  const {
+    isLoading: loadingDeleteAssignCourse,
+    mutate: mutateDeleteAssignCourse,
+  } = useDelete({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
     url: `course-code-service/courses/assign-course/${playloadData?.id}/delete/`,
     onSuccess: (response: any) => {
@@ -357,10 +358,13 @@ const AssignCource = (): JSX.Element => {
     },
     onError: ({ response }: any) => {
       toast('error', response?.statusText || 'Error');
-    }
+    },
   });
 
-  const { isLoading: loadingAllDeleteAssignCourse, mutate: mutateAllDeleteAssignCourse } = useDelete({
+  const {
+    isLoading: loadingAllDeleteAssignCourse,
+    mutate: mutateAllDeleteAssignCourse,
+  } = useDelete({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
     url: `course-code-service/courses/assign/${playloadData?.id}/delete/`,
     onSuccess: (response: any) => {
@@ -370,10 +374,13 @@ const AssignCource = (): JSX.Element => {
     },
     onError: ({ response }: any) => {
       toast('error', response?.statusText || 'Error');
-    }
+    },
   });
 
-  const { isLoading: loadingBulkDeleteAssignedCourse, mutate: bulkDeleteAssignedCourse } = useDelete({
+  const {
+    isLoading: loadingBulkDeleteAssignedCourse,
+    mutate: bulkDeleteAssignedCourse,
+  } = useDelete({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
     url: `course-code-service/courses/assign/bulk-selection/delete/`,
     onSuccess: (response: any) => {
@@ -382,40 +389,42 @@ const AssignCource = (): JSX.Element => {
     },
     onError: ({ response }: any) => {
       toast('error', response?.statusText || 'Error');
-    }
+    },
   });
 
   // Status Update : Course
-  const { isLoading: loadingStatus, mutate: mutateAssignCourseStatus } = usePost({
-    baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/assign/change-status/`,
-    onSuccess: (response: any) => {
-      setPlayloadData({});
-      refetch();
-      toast('success', 'Status Updated successfully');
-    },
-    onError: ({ response }: any) => {
-      refetch();
-      toast('error', response?.statusText || 'Error');
-    }
-  });
+  const { isLoading: loadingStatus, mutate: mutateAssignCourseStatus } =
+    usePost({
+      baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
+      url: `course-code-service/courses/assign/change-status/`,
+      onSuccess: (response: any) => {
+        setPlayloadData({});
+        refetch();
+        toast('success', 'Status Updated successfully');
+      },
+      onError: ({ response }: any) => {
+        refetch();
+        toast('error', response?.statusText || 'Error');
+      },
+    });
 
   // Status Update : Course
-  const { isLoading: loadingAllStatus, mutate: mutateAllAssignCourseStatus } = usePatch({
-    baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/assign/edit/`,
-    onSuccess: (response: any) => {
-      setPlayloadData({});
-      refetch();
-      toast('success', 'Status Updated successfully');
-    },
-    onError: ({ response }: any) => {
-      refetch();
-      toast('error', response?.statusText || 'Error');
-    }
-  });
+  const { isLoading: loadingAllStatus, mutate: mutateAllAssignCourseStatus } =
+    usePatch({
+      baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
+      url: `course-code-service/courses/assign/edit/`,
+      onSuccess: (response: any) => {
+        setPlayloadData({});
+        refetch();
+        toast('success', 'Status Updated successfully');
+      },
+      onError: ({ response }: any) => {
+        refetch();
+        toast('error', response?.statusText || 'Error');
+      },
+    });
 
-  const temps = (rowsPerPage === 'all') ? totalDataCount : rowsPerPage;
+  const temps = rowsPerPage === 'all' ? totalDataCount : rowsPerPage;
   const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
   const { isLoading, isRefetching, refetch } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
@@ -427,8 +436,14 @@ const AssignCource = (): JSX.Element => {
       if (respData?.length) {
         setTotalDataCount(accData?.count);
         const newtableData = respData?.map((item: any): any => {
-          const allCourses = item?.user_assigned_courses?.map((obj: any) => obj.course.name).filter((name: any) => name).join(', ');
-          const allRegions = item?.user_assigned_courses?.map((obj: any) => obj.course.course_region).filter((region: any) => region).join(', ');
+          const allCourses = item?.user_assigned_courses
+            ?.map((obj: any) => obj.course.name)
+            .filter((name: any) => name)
+            .join(', ');
+          const allRegions = item?.user_assigned_courses
+            ?.map((obj: any) => obj.course.course_region)
+            .filter((region: any) => region)
+            .join(', ');
           body.push([
             item?.assigned_user,
             allCourses,
@@ -437,9 +452,13 @@ const AssignCource = (): JSX.Element => {
             item?.branch_name,
             item?.access_from,
             item?.access_to,
-            item?.status
+            item?.status,
           ]);
-          let temp = { ...item, courses_name: allCourses, courses_region: allRegions };
+          let temp = {
+            ...item,
+            courses_name: allCourses,
+            courses_region: allRegions,
+          };
           if (temp?.user_assigned_courses?.length) {
             const subData = temp?.user_assigned_courses.map((i: any) => {
               const newD = {
@@ -451,7 +470,7 @@ const AssignCource = (): JSX.Element => {
                 branch_name: item?.branch_name,
                 access_from: item?.access_from,
                 access_to: item?.access_to,
-                status: i?.is_active
+                status: i?.is_active,
               };
               return newD;
             });
@@ -470,14 +489,14 @@ const AssignCource = (): JSX.Element => {
     onError: ({ response }: any) => {
       tableReset();
     },
-    enabled: false
+    enabled: false,
   });
 
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailLoaded) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailLoaded) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
@@ -489,20 +508,32 @@ const AssignCource = (): JSX.Element => {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   useEffect(() => {
     refetch();
-  }, [rowsPerPage, page, regions, searchString, orderBy, order, selectedSchool, selectBranch, selectCourse]);
+  }, [
+    rowsPerPage,
+    page,
+    regions,
+    searchString,
+    orderBy,
+    order,
+    selectedSchool,
+    selectBranch,
+    selectCourse,
+  ]);
 
   useEffect(() => {
     if (Object.keys(playloadData).length) {
@@ -518,12 +549,17 @@ const AssignCource = (): JSX.Element => {
     }
   }, [playloadData]);
 
-  const list = (data: any[]): JSX.Element[] => data?.map((item: any, index: number) => (
-    <li key={item.id} data-target={index}>{item.name}</li>
-  ));
+  const list = (data: any[]): JSX.Element[] =>
+    data?.map((item: any, index: number) => (
+      <li key={item.id} data-target={index}>
+        {item.name}
+      </li>
+    ));
 
   const onSelectSchool = (school: any) => {
-    const schoolName: any = schoolArray.find((ele: any) => ele?.value === school);
+    const schoolName: any = schoolArray.find(
+      (ele: any) => ele?.value === school
+    );
     setSelectedSchoolId(schoolName?.id);
     setSelectedSchool(school);
   };
@@ -532,12 +568,12 @@ const AssignCource = (): JSX.Element => {
     if ('course_name' in data) {
       setPlayloadData({
         apicall: 'delete-course',
-        id: data?.id
+        id: data?.id,
       });
     } else {
       setPlayloadData({
         apicall: 'delete-course-all',
-        id: data?.id
+        id: data?.id,
       });
     }
   };
@@ -582,11 +618,20 @@ const AssignCource = (): JSX.Element => {
           />
           <CustomAutoComplete
             list={courseArray}
-            setDebounceValue={(e: string) => { if (!e) { setCourseInputVal(undefined); setSelectCourse('All'); } else { setCourseInputVal(e); } }} //
+            setDebounceValue={(e: string) => {
+              if (!e) {
+                setCourseInputVal(undefined);
+                setSelectCourse('All');
+              } else {
+                setCourseInputVal(e);
+              }
+            }} //
             value={courseInputVal}
             isLoading={courseListLoading}
             targetKey="label"
-            onSelect={(val: { label: string }) => { setSelectCourse(val.label); }}
+            onSelect={(val: { label: string }) => {
+              setSelectCourse(val.label);
+            }}
             error={true}
             label="Sort By: Course"
             name="auto"
@@ -606,7 +651,10 @@ const AssignCource = (): JSX.Element => {
           currentPage={page}
         />
         <div className="relative self-end xl:self-auto">
-          <Button disabled={!bulkSelect.length} onClick={handleDelete}> Delete </Button>
+          <Button disabled={!bulkSelect.length} onClick={handleDelete}>
+            {' '}
+            Delete{' '}
+          </Button>
         </div>
       </div>
       {/* Table Section */}
@@ -629,7 +677,15 @@ const AssignCource = (): JSX.Element => {
             setOrder={setOrder}
             statusHandler={statusHandler}
             deleteHandler={deleteHandler}
-            isLoading={isLoading || loadingDeleteAssignCourse || loadingAllDeleteAssignCourse || loadingStatus || loadingAllStatus || isRefetching || loadingBulkDeleteAssignedCourse}
+            isLoading={
+              isLoading ||
+              loadingDeleteAssignCourse ||
+              loadingAllDeleteAssignCourse ||
+              loadingStatus ||
+              loadingAllStatus ||
+              isRefetching ||
+              loadingBulkDeleteAssignedCourse
+            }
           />
         </Wrapper>
       </div>

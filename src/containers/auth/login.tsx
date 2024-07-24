@@ -23,6 +23,7 @@ export default function Login(): JSX.Element {
   const { schoolName } = useParams();
   const navigate = useNavigate();
   const [remember, setRemember] = useState<boolean>(false);
+  
   useEffect(() => {
     const savedUser = localStorage.getItem('rememberUser');
     if (savedUser) {
@@ -44,6 +45,7 @@ export default function Login(): JSX.Element {
       window.history.replaceState({}, document.title);
     };
   }, [locationState]);
+
   const dispatch = useDispatch();
   const {
     handleSubmit,
@@ -60,7 +62,7 @@ export default function Login(): JSX.Element {
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
     url: 'users-service/login/',
     onSuccess: ({ data: { response: { data } } }: any) => {
-      localStorage.setItem('token', `${data.TokenType} ${data.AccessToken}`);
+      localStorage.setItem('token', `Bearer ${data.AccessToken}`);
       localStorage.setItem('RefreshToken', `${data.RefreshToken}`);
       if (remember) {
         localStorage.setItem('rememberUser', JSON.stringify({
@@ -107,7 +109,7 @@ export default function Login(): JSX.Element {
 
   return (
     <UiAnimate type="slideIn">
-      <form className="h-full overflow-auto" onSubmit={handleSubmit(onSubmit)}>
+      <form className="overflow-auto" onSubmit={handleSubmit(onSubmit)}>
         <br />
         <p className="text-xs font-light text-center relative">
           Welcome back! Please login to your account.
@@ -175,9 +177,45 @@ export default function Login(): JSX.Element {
                 <Link to="/privacy-policy">Privacy policy.</Link>
               </div>
             </div>
+            
           </div>
         </div>
       </form>
+      <div className="flex justify-center mt-2">
+              <Button
+                sx={{
+                  width: '200px'
+                }}
+                variant="contained"
+                onClick={() => navigate('/system-requirements')}
+              >
+                System Requirements
+              </Button>
+            </div>
+      <div className="shadow-xl bg-white p-4 rounded-lg">
+        <p className="text-xs font-light mb-2">
+          We made a recent update to the LMS Application both Web and Mobile APPS. Aimed at enhancing your overall experience, providing you with a more reliable browsing experience and better performance.
+        </p>
+        <div className="text-xs font-light mb-3">
+          If you encounter any login issues, please follow the steps below.
+          We also recommend uninstalling the current app version and installing the latest version of the eAlpha4 mobile app from the Android and iOS Stores.
+        </div>
+
+        <div className="text-xs font-light mb-2">
+          {`We're committed to providing you with the best possible experience, and this update is just one of the many ways we're striving to achieve that goal. As always, if you have any questions, concerns, or feedback, don't hesitate to reach out to us.`}
+        </div>
+        <div className="text-xs font-light mb-2">
+          <a
+            href="mailto:digital.accounts@alphapublishing.com, technical.support@alphapublishing.com"
+            className="text-blue-500 underline ml-1"
+          >
+            digital.accounts@alphapublishing.com, technical.support@alphapublishing.com
+          </a>
+        </div>
+        <div className="text-xs font-light mb-2">
+          Your satisfaction is our top priority!
+        </div>
+      </div>
     </UiAnimate>
   );
 }

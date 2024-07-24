@@ -1,7 +1,15 @@
+/* eslint-disable comma-dangle */
 import Dropdown from '@component/dropdown/Dropdown';
 import DebounceInput from '@component/input/DebounceInput';
 import { TABLE_LABELS, TOOLBAR_LABELS } from '@constants/constants';
-import { ADD_STUDENT, ADD_TEACHER, BRANCH, MANAGE_MEMBERS, SCHOOL, SCHOOL_MANAGEMENT } from '@constants/routes';
+import {
+  ADD_STUDENT,
+  ADD_TEACHER,
+  BRANCH,
+  MANAGE_MEMBERS,
+  SCHOOL,
+  SCHOOL_MANAGEMENT,
+} from '@constants/routes';
 import MemberTabs from '@containers/schoolManagement/school/manageMembers/components/MemberTabs';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
 import RouteLayout from '@layout/routeLayout';
@@ -32,13 +40,15 @@ export default function AssignClasses() {
   const { schoolData, branchData } = useSelector(selectSchoolData);
   const ALL = {
     label: 'All',
-    value: 'All'
+    value: 'All',
   };
   const TEACHER = 'Teachers';
   const STUDENT = 'Students';
   const PARENT = 'Parents';
   // Pagination States
-  const [selectedTab, setSelectedTab] = useState<any>(searchParams.get('tabType') || STUDENT);
+  const [selectedTab, setSelectedTab] = useState<any>(
+    searchParams.get('tabType') || STUDENT
+  );
   const [page, setPage] = useState(1);
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState<any>(100);
@@ -55,15 +65,15 @@ export default function AssignClasses() {
 
   const Teacherheader: any = [
     TABLE_LABELS?.ID,
-    TABLE_LABELS?.USER_NAME,
     TABLE_LABELS?.FIRST_NAME,
-    TABLE_LABELS?.LAST_NAME
+    TABLE_LABELS?.LAST_NAME,
+    TABLE_LABELS?.USER_NAME,
   ];
   const Studentheader: any = [
     TABLE_LABELS?.ID,
-    TABLE_LABELS?.USER_NAME,
     TABLE_LABELS?.FIRST_NAME,
-    TABLE_LABELS?.LAST_NAME
+    TABLE_LABELS?.LAST_NAME,
+    TABLE_LABELS?.USER_NAME,
   ];
   const Parentheader: any = [
     TABLE_LABELS?.ID,
@@ -71,7 +81,7 @@ export default function AssignClasses() {
     TABLE_LABELS?.FIRST_NAME,
     TABLE_LABELS?.LAST_NAME,
     TABLE_LABELS?.REGION,
-    TABLE_LABELS?.STATUS
+    TABLE_LABELS?.STATUS,
   ];
 
   const deleteHandler = (row: any) => {
@@ -95,12 +105,12 @@ export default function AssignClasses() {
     schoolId: id,
     setSelectedBranch,
     setAdminCsvData,
-    classDetail
+    classDetail,
   };
 
   const tabList = [
     { title: STUDENT, component: <Student {...tabProps} /> },
-    { title: TEACHER, component: <Teacher {...tabProps} /> }
+    { title: TEACHER, component: <Teacher {...tabProps} /> },
   ];
 
   const handleTabClick = (tabDetail: any) => {
@@ -113,7 +123,8 @@ export default function AssignClasses() {
   const handleHeadersForCSV = () => {
     if (selectedTab === TEACHER) {
       return Teacherheader;
-    } if (selectedTab === PARENT) {
+    }
+    if (selectedTab === PARENT) {
       return Parentheader;
     }
     return Studentheader;
@@ -122,7 +133,7 @@ export default function AssignClasses() {
   const ADMIN_TOOLBAR_MENU = [
     {
       title: `${TOOLBAR_LABELS.ADD} ${selectedTab}`,
-      icon: <AddIcon />
+      icon: <AddIcon />,
     },
     // {
     //   title: TOOLBAR_LABELS.IMPORT,
@@ -143,15 +154,17 @@ export default function AssignClasses() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   // Toolbar Actions
@@ -159,15 +172,23 @@ export default function AssignClasses() {
     if (title === `${TOOLBAR_LABELS.ADD} ${TEACHER}`) {
       // navigate(`${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/${MANAGE_MEMBERS}/${ADD_TEACHER}`);
       if (userRole().isSchoolAdmin || userRole().isBranchAdmin) {
-        navigate(`/${schoolName}/dashboard/${branchData?.id ? `branch/${branchData?.id}` : schoolData?.id}/manage-members/add-teacher`);
+        navigate(
+          `/${schoolName}/dashboard/${branchData?.id ? `branch/${branchData?.id}` : schoolData?.id}/manage-members/add-teacher`
+        );
       } else {
-        navigate(`${SCHOOL_MANAGEMENT}/${branchId ? BRANCH : SCHOOL}/${id || branchData?.id}/${MANAGE_MEMBERS}/${ADD_TEACHER}`);
+        navigate(
+          `${SCHOOL_MANAGEMENT}/${branchId ? BRANCH : SCHOOL}/${id || branchData?.id}/${MANAGE_MEMBERS}/${ADD_TEACHER}`
+        );
       }
     } else if (title === `${TOOLBAR_LABELS.ADD} ${STUDENT}`) {
       if (userRole().isSchoolAdmin || userRole().isBranchAdmin) {
-        navigate(`/${schoolName}/dashboard/${branchData?.id ? `branch/${branchData?.id}` : schoolData?.id}/manage-members/add-student`);
+        navigate(
+          `/${schoolName}/dashboard/${branchData?.id ? `branch/${branchData?.id}` : schoolData?.id}/manage-members/add-student`
+        );
       } else {
-        navigate(`${SCHOOL_MANAGEMENT}/${branchId ? BRANCH : SCHOOL}/${id || branchData?.id}/${MANAGE_MEMBERS}/${ADD_STUDENT}`);
+        navigate(
+          `${SCHOOL_MANAGEMENT}/${branchId ? BRANCH : SCHOOL}/${id || branchData?.id}/${MANAGE_MEMBERS}/${ADD_STUDENT}`
+        );
       }
     } else if (title === TOOLBAR_LABELS.IMPORT) {
       importData();
@@ -211,18 +232,16 @@ export default function AssignClasses() {
       const respData = resp?.data?.response;
       const temp2: { label: any; value: any }[] = [];
       respData?.map((i: any) => {
-        temp2.push(
-          {
-            label: i?.name,
-            value: i?.id
-          }
-        );
+        temp2.push({
+          label: i?.name,
+          value: i?.id,
+        });
         return temp2;
       });
       setBranchArray([ALL, ...temp2]);
     },
-    onError: ({ response }: any) => { },
-    enabled: false
+    onError: ({ response }: any) => {},
+    enabled: false,
   });
 
   // Get All Classes
@@ -233,31 +252,31 @@ export default function AssignClasses() {
       const respData = resp?.data?.response?.results;
       const temp: { label: any; value: any }[] = [];
       respData?.map((i: any) => {
-        temp.push(
-          {
-            label: i?.name,
-            value: i?.id
-          }
-        );
+        temp.push({
+          label: i?.name,
+          value: i?.id,
+        });
         return temp;
       });
       setClassArray([ALL, ...temp]);
     },
-    onError: () => { },
-    enabled: false
+    onError: () => {},
+    enabled: false,
   });
 
   // Get Class Detail
-  const { isLoading: classDetailLoading, refetch: fetchDetailClasses } = useGet({
-    baseURL: schoolServiceBaseURL,
-    url: `schools-service/school-classes/${classID}/details/`,
-    onSuccess: (resp: any) => {
-      const respData = resp?.data?.response;
-      setClassDetail(respData);
-    },
-    onError: () => { },
-    enabled: false
-  });
+  const { isLoading: classDetailLoading, refetch: fetchDetailClasses } = useGet(
+    {
+      baseURL: schoolServiceBaseURL,
+      url: `schools-service/school-classes/${classID}/details/`,
+      onSuccess: (resp: any) => {
+        const respData = resp?.data?.response;
+        setClassDetail(respData);
+      },
+      onError: () => {},
+      enabled: false,
+    }
+  );
   // -----------------------End API---------------------------------
   useEffect(() => {
     if (id) {
@@ -269,7 +288,7 @@ export default function AssignClasses() {
   }, [id, branchId]);
 
   if (classDetailLoading) {
-    return (<Loader />);
+    return <Loader />;
   }
   return (
     <RouteLayout>
@@ -283,22 +302,17 @@ export default function AssignClasses() {
       <div className="flex gap-2 lg:mt-3 mb-5 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex flex-wrap md:justify-start justify-center gap-2 lg:grow grow-0">
           <div className="lg:pt-[30px]">
-            <DebounceInput
-              onChange={(e) => setSearchString(e)}
-            />
+            <DebounceInput onChange={(e) => setSearchString(e)} />
           </div>
-          {
-            id
-              ? (
-                <Dropdown
-                  title="Select Branch"
-                  value={selectedBranch}
-                  dataArray={branchArray}
-                  loading={getBranchLoading}
-                  onChangeHandler={(e) => setSelectedBranch(e)}
-                />
-              ) : null
-          }
+          {id ? (
+            <Dropdown
+              title="Select Branch"
+              value={selectedBranch}
+              dataArray={branchArray}
+              loading={getBranchLoading}
+              onChangeHandler={(e) => setSelectedBranch(e)}
+            />
+          ) : null}
           {/* <Dropdown
             title="Select Class"
             value={selectedClass}
@@ -314,7 +328,9 @@ export default function AssignClasses() {
         /> */}
       </div>
       <MemberTabs
-        selectedTab={searchParams.get('tabType') === TEACHER ? TEACHER : STUDENT}
+        selectedTab={
+          searchParams.get('tabType') === TEACHER ? TEACHER : STUDENT
+        }
         handleTabClick={handleTabClick}
         tabs={tabList}
         paginateHandler={setPage}

@@ -75,7 +75,7 @@ export default function dropdown(props: dropdownProps) {
         onClose={handleClose}
         onOpen={handleOpen}
         displayEmpty={displayEmpty || false}
-        value={value?.toString() || ''}
+        value={value}
         onChange={handleChange}
         IconComponent={() => <KeyboardArrowDownIcon onClick={handleOpen} className={`cursor-pointer ${IconParentClass}`} />}
         sx={{

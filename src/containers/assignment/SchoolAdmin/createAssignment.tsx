@@ -347,7 +347,7 @@ export default function CreateAssignment() {
           </div>
           {listofStudentAssignmentNotCreated.length ? (
             <div className="mb-4 flex flex-col">
-              <div className="font-bold text-center">Courses have not been assigned to these students, so assignments have not been created for them.</div>
+              <div className="font-bold text-center">Assignments not created for</div>
               <div className="text-center font-normal">
                 {' '}
                 {listofStudentAssignmentNotCreated.join(', ')}
@@ -362,21 +362,24 @@ export default function CreateAssignment() {
         onclose={() => { setErrorDialogOpen(false); }}
         open={ErrorDialogOpen}
         setOpen={() => { setErrorDialogOpen(false); }}
-        title="Error"
+        title="Assigmnent Information"
       >
         <div className="text-center">
           <div className="mb-4 font-bold">
-            {' '}
+            {/* {' '}
             {ErrorMsg !== '' ? ErrorMsg : ''}
             .
-            {' '}
+            {' '} */}
             {listofStudentAssignmentNotCreated.length ? (
               <div className="mt-4 mb-4 flex flex-col">
-                <div className="font-bold text-center">Courses have not been assigned to these students, so assignments have not been created for them.</div>
+                <div className="font-bold text-center">Assignments not created for</div>
                 <div className="text-center font-normal">
                   {' '}
                   {listofStudentAssignmentNotCreated.join(', ')}
                   {' '}
+                </div>
+                <div className="text-center font-normal mt-2">
+                  Note: Assignment is not created for the above students as courses are not assigned to them. Please contact the administrator support team on <a href="mailto:digital.accounts@alphapublishing.com" className="text-blue-600 underline">digital.accounts@alphapublishing.com</a> and request them to assign the courses. Once the courses are assigned then you can able to create the assignments.
                 </div>
               </div>
             ) : null}

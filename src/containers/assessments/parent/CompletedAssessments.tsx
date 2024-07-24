@@ -20,7 +20,11 @@ import { useSelector } from 'react-redux';
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import CustomPagination from '../../../components/pagination/CustomPagination';
-import { RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '../../../constants/constants';
+import {
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '../../../constants/constants';
 import Wrapper from '../../../shared/wrapper/Wrapper';
 import RouteLayout from '../../layout/routeLayout';
 
@@ -36,7 +40,7 @@ export default function CompletedAssessments() {
     TABLE_LABELS?.ASSIGNMET_NAME,
     TABLE_LABELS?.TEACHER,
     TABLE_LABELS?.START_DATE,
-    TABLE_LABELS?.DUE_DATE
+    TABLE_LABELS?.DUE_DATE,
   ];
 
   const [exportData, setExportData] = useState<[]>([]);
@@ -45,41 +49,41 @@ export default function CompletedAssessments() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.ASSESSMENT_NAME,
       mapper: 'assessment_name',
-      isSort: true
+      isSort: true,
     },
     {
       label: TABLE_LABELS?.TEACHERS,
       isSort: true,
-      mapper: 'teacher'
+      mapper: 'teacher',
     },
     {
       label: TABLE_LABELS?.START_DATE,
       isSort: true,
       mapper: 'start_date',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
       align: 'center',
       mapper: 'submission_date',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_LABELS?.ACTION,
-      mapper: 'action'
-    }
+      mapper: 'action',
+    },
   ];
 
   const statusArray = [
     { label: 'All', value: 'All' },
     { label: 'Ongoing', value: 'Ongoing' },
     { label: 'Submitted', value: 'Submitted' },
-    { label: 'Yet to Start', value: 'Yet to start' }
+    { label: 'Yet to Start', value: 'Yet to start' },
   ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
@@ -122,7 +126,11 @@ export default function CompletedAssessments() {
   };
 
   // Toolbar Email
-  const { isLoading: emailLoaded, isRefetching: refetchEmail, refetch: fetchEmailApi } = useGet({
+  const {
+    isLoading: emailLoaded,
+    isRefetching: refetchEmail,
+    refetch: fetchEmailApi,
+  } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/assign-assessment-student-list/pdf-download/?student_id=${selectedChild}`,
     onSuccess: (response: any) => {
@@ -131,12 +139,22 @@ export default function CompletedAssessments() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
     },
-    enabled: false
+    enabled: false,
   });
 
   const handleButtonClick = (data: any) => {
-    const selectedChildId = childrenData?.find((i: any) => i.value === selectedChild);
-    navigate(`/${schoolName}/assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${data?.assessment_name}&user_ting=${selectedChildId?.user_ting || ''}`, { state: { page, path: `/${schoolName}/assessments/completed-assessments` } });
+    const selectedChildId = childrenData?.find(
+      (i: any) => i.value === selectedChild
+    );
+    navigate(
+      `/${schoolName}/assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${data?.assessment_name}&user_ting=${selectedChildId?.user_ting || ''}`,
+      {
+        state: {
+          page,
+          path: `/${schoolName}/assessments/completed-assessments`,
+        },
+      }
+    );
   };
 
   // ----------------------------------------API-------------------------
@@ -148,20 +166,18 @@ export default function CompletedAssessments() {
       const resp = res?.data?.response?.students;
       const body: any = [];
       resp?.map((i: any) => {
-        body.push(
-          {
-            label: `${i?.first_name} ${i?.last_name}`,
-            value: i?.id,
-            class: i?.class_name,
-            user_ting: i?.user_ting
-          }
-        );
+        body.push({
+          label: `${i?.first_name} ${i?.last_name}`,
+          value: i?.id,
+          class: i?.class_name,
+          user_ting: i?.user_ting,
+        });
         return true;
       });
       // setSelectedChild(body[0].value);
       setChildrenData([...body]);
     },
-    onError: () => { }
+    onError: () => {},
   });
 
   useEffect(() => {
@@ -172,43 +188,48 @@ export default function CompletedAssessments() {
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
-  const ordering = orderBy ? order === 'asc' ? orderBy : `-${orderBy}` : '';
-  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/completed-assign-assessment-student-list/?student_id=${selectedChild}&limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}${searchString ? `&search=${searchString}` : ''}${selectedStatus !== 'All' ? `&status=${selectedStatus}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&submission_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}`,
-    onSuccess: (res: any) => {
-      const accData = res?.data?.response;
-      const respData = accData?.results;
-      setTotalDataCount(accData.count);
-      const body: any = [];
-      const newTableData = respData?.map((item: any) => {
-        body.push([
-          item?.id,
-          item?.assessment_name,
-          item?.teacher,
-          item?.start_date,
-          item?.submission_date
-        ]);
+  const ordering = orderBy ? (order === 'asc' ? orderBy : `-${orderBy}`) : '';
+  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
+    useGet({
+      baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+      url: `assessments-service/completed-assign-assessment-student-list/?student_id=${selectedChild}&limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}${searchString ? `&search=${searchString}` : ''}${selectedStatus !== 'All' ? `&status=${selectedStatus}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&submission_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}`,
+      onSuccess: (res: any) => {
+        const accData = res?.data?.response;
+        const respData = accData?.results;
+        setTotalDataCount(accData.count);
+        const body: any = [];
+        const newTableData = respData?.map((item: any) => {
+          body.push([
+            item?.id,
+            item?.assessment_name,
+            item?.teacher,
+            item?.start_date,
+            item?.submission_date,
+          ]);
 
-        const temp = {
-          ...item,
-          action: <Button onClick={() => handleButtonClick(item)}>Get Report</Button>
-        };
-        return temp;
-      });
-      setExportData(body);
-      setTableData(newTableData);
-    },
-    enabled: false
-  });
+          const temp = {
+            ...item,
+            action: (
+              <Button onClick={() => handleButtonClick(item)}>
+                Get Report
+              </Button>
+            ),
+          };
+          return temp;
+        });
+        setExportData(body);
+        setTableData(newTableData);
+      },
+      enabled: false,
+    });
 
   // ----------------------------------------END API---------------------
 
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailLoaded || refetchEmail) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailLoaded || refetchEmail) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
@@ -220,22 +241,33 @@ export default function CompletedAssessments() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   useEffect(() => {
     if (selectedChild && selectedChild !== '') {
       fetchAssignedAssignments();
     }
-  }, [rowsPerPage, page, orderBy, order, searchString, selectedChild, toDate, fromDate]);
+  }, [
+    rowsPerPage,
+    page,
+    orderBy,
+    order,
+    searchString,
+    selectedChild,
+    toDate,
+    fromDate,
+  ]);
 
   if (emailLoaded) {
     <div className="backdrop-blur-sm bg-white/30 w-screen h-screen absolute z-50 top-0 left-0 grid place-items-center">
@@ -251,13 +283,15 @@ export default function CompletedAssessments() {
 
   return (
     <RouteLayout>
-      <HeaderMenus title="Completed Assessments" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+      <HeaderMenus
+        title="Completed Assessments"
+        menuArray={ADMIN_TOOLBAR_MENU}
+        handleToolbarAction={handleToolbarAction}
+      />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <div className="pt-[30px]">
-            <DebounceInput
-              onChange={handleSearch}
-            />
+            <DebounceInput onChange={handleSearch} />
           </div>
           <Dropdown
             title="Sort by: Status"
@@ -298,12 +332,20 @@ export default function CompletedAssessments() {
             />
           </div>
           <div className="flex gap-2 justify-center items-center h-[36px]">
-            <span tabIndex={0} title="Clear dates" onClick={reset} role="button">
+            <span
+              tabIndex={0}
+              title="Clear dates"
+              onClick={reset}
+              role="button"
+            >
               <RestartAltIcon />
             </span>
           </div>
           <div className="flex gap-2 justify-center items-center h-[36px]">
-            <Link to={`/${schoolName}/assessments`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
+            <Link
+              to={`/${schoolName}/assessments`}
+              className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent"
+            >
               Assessments
             </Link>
           </div>
@@ -317,11 +359,21 @@ export default function CompletedAssessments() {
       <div className="flex mt-3">
         <div className="mr-12">
           <span className="text-sm font-semibold">Child Name: </span>
-          <span className="text-sm font-normal">{childrenData?.find((obj: any) => obj?.value === selectedChild)?.label}</span>
+          <span className="text-sm font-normal">
+            {
+              childrenData?.find((obj: any) => obj?.value === selectedChild)
+                ?.label
+            }
+          </span>
         </div>
         <div>
           <span className="text-sm font-semibold">Class: </span>
-          <span className="text-sm font-normal">{childrenData?.find((obj: any) => obj?.value === selectedChild)?.class}</span>
+          <span className="text-sm font-normal">
+            {
+              childrenData?.find((obj: any) => obj?.value === selectedChild)
+                ?.class
+            }
+          </span>
         </div>
       </div>
       {/* Table Section */}

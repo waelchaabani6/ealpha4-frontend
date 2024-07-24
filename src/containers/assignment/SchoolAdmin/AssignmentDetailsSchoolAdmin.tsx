@@ -1,3 +1,12 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable indent */
+/* eslint-disable comma-dangle */
+/* eslint-disable no-confusing-arrow */
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable no-console */
+/* eslint-disable no-restricted-globals */
+/* eslint-disable operator-linebreak */
+/* eslint-disable react/jsx-one-expression-per-line */
 import Button from '@component/button/button';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
 import Dropdown from '@component/dropdown/Dropdown';
@@ -27,17 +36,18 @@ import DatePicker from '@component/datepicker';
 import { useOnClickOutside } from '@shared/useOnClickOutside';
 
 const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
+const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
 
 const stateChange: any = {
   'Mark as Ongoing': 'Ongoing',
-  'Mark As Complete': 'Completed'
+  'Mark As Complete': 'Completed',
 };
 
 type accDataType = {
   label: string;
   value: string;
   id: null | number;
-}
+};
 interface ScromPage {
   label: string;
   value: string;
@@ -61,22 +71,24 @@ interface ScromPage {
 const SELECT: accDataType = {
   label: 'Select',
   value: 'Select',
-  id: null
+  id: null,
 };
 
 const printButton = () => <PrintIcon />;
 
 const dataArray: any = [];
 
-const csvSubHeaders = [
-  'Pages',
-  'Score',
-  'Unattempted',
-  'Incorrect',
-  'Correct'
-];
+const csvSubHeaders = ['Pages', 'Score', 'Unattempted', 'Incorrect', 'Correct'];
 interface Column {
-  id: 'Pages' | 'Score' | 'Errors' | 'Mistake' | 'Unattempted' | 'Wrong' | 'Correct' | 'MyScore';
+  id:
+    | 'Pages'
+    | 'Score'
+    | 'Errors'
+    | 'Mistake'
+    | 'Unattempted'
+    | 'Wrong'
+    | 'Correct'
+    | 'MyScore';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -86,11 +98,19 @@ interface Column {
   selectedValue?: string;
 }
 const columns: Column[] = [
-  { id: 'Pages', label: 'Page', minWidth: 170, align: 'right', component: 'Dropdown', dataArray, selectedValue: '' },
+  {
+    id: 'Pages',
+    label: 'Page',
+    minWidth: 170,
+    align: 'right',
+    component: 'Dropdown',
+    dataArray,
+    selectedValue: '',
+  },
   { id: 'Unattempted', label: 'Unattempted', minWidth: 170, align: 'right' },
   { id: 'Wrong', label: 'Incorrect', minWidth: 170, align: 'right' },
   { id: 'Correct', label: 'Correct', minWidth: 170, align: 'right' },
-  { id: 'MyScore', label: 'Score', minWidth: 100, align: 'right' }
+  { id: 'MyScore', label: 'Score', minWidth: 100, align: 'right' },
 ];
 interface Data {
   Pages: string;
@@ -112,9 +132,20 @@ function createData(
   pageNumber: string,
   scormData: any
 ): Data {
-  const MyScore: any = Score === 0 ? `0%` : `${parseFloat(((Number(Correct) * 100) / Number(maxScore)).toFixed(2))}%`;
+  const MyScore: any =
+    Score === 0
+      ? `0%`
+      : `${parseFloat(((Number(Correct) * 100) / Number(maxScore)).toFixed(2))}%`;
   const scormDataView = scormData ? JSON.parse(scormData) : {};
-  return { Pages, Unattempted, Wrong, Correct, MyScore, pageNumber, scormDataView };
+  return {
+    Pages,
+    Unattempted,
+    Wrong,
+    Correct,
+    MyScore,
+    pageNumber,
+    scormDataView,
+  };
 }
 
 function createExcellData(ele: any) {
@@ -124,7 +155,12 @@ function createExcellData(ele: any) {
 function AssignmentDetails() {
   const navigate = useNavigate();
   const params = useParams();
-  const { assignId: assignStudentId, assignedStudentsList: assignedMainId, isFromComplete, schoolName } = params;
+  const {
+    assignId: assignStudentId,
+    assignedStudentsList: assignedMainId,
+    isFromComplete,
+    schoolName,
+  } = params;
 
   const [csvData, setCsvData] = useState<[]>([]);
   const [bulkSelect, setBulkSelect] = useState<any>([]);
@@ -137,7 +173,12 @@ function AssignmentDetails() {
   const [markStatusChange, setMarkStatusChange] = useState(false);
   const [modState, selectedModState] = useState('');
   const teacherData = useSelector(selectUser);
-  const { first_name: fName, last_name: lName, user_profile_id: teacherId, schoolId } = teacherData;
+  const {
+    first_name: fName,
+    last_name: lName,
+    user_profile_id: teacherId,
+    schoolId,
+  } = teacherData;
   const [jsonData, setJsonData] = useState([]);
   const [jsonCopyData, setJsonCopyData] = useState([]);
   const [AttachmentMenuVisible, setAttachmentMenuVisible] = useState(false);
@@ -156,11 +197,25 @@ function AssignmentDetails() {
   const [ErrorMsg, setErrorMsg] = useState('');
   const [fullHeight, setFullHeight] = useState(false);
 
+  const [teacher, setTeacher] = useState('');
+  const [val, setValue] = useState({
+    Nmeet1: '',
+    Nmeet2: '',
+    exceed1: '',
+    exceed2: '',
+    meet1: '',
+    meet2: '',
+    approching1: '',
+    approching2: '',
+  });
+
   const componentRef = useRef(null);
 
   useEffect(() => {
     if (studentList.length !== 0) {
-      const obj: any = studentList.filter((ele: { id: any }) => Number(ele.id) === Number(assignStudentId))[0];
+      const obj: any = studentList.filter(
+        (ele: { id: any }) => Number(ele.id) === Number(assignStudentId)
+      )[0];
       setSelectedStudentName(obj.label);
       setAssignReportId(`${obj.id}`);
     }
@@ -180,13 +235,13 @@ function AssignmentDetails() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Unable to send email');
     },
-    enabled: false
+    enabled: false,
   }) as any;
 
   const ADMIN_TOOLBAR_MENU = [
     {
       title: TOOLBAR_LABELS.ATTACH,
-      icon: <AttachIcon />
+      icon: <AttachIcon />,
     },
     {
       title: TOOLBAR_LABELS.EXPORT,
@@ -199,24 +254,30 @@ function AssignmentDetails() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: emailSendLoading ? <Loader /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: emailSendLoading ? <Loader /> : <EmailIcon />,
+    // },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-        onAfterPrint={() => setFullHeight(false)}
-        onBeforeGetContent={() => new Promise((resolve) => {
-          setFullHeight(true);
-          setTimeout(() => { resolve(0); }, 1000);
-        })}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+          onAfterPrint={() => setFullHeight(false)}
+          onBeforeGetContent={() =>
+            new Promise((resolve) => {
+              setFullHeight(true);
+              setTimeout(() => {
+                resolve(0);
+              }, 1000);
+            })
+          }
+        />
+      ),
+    },
   ];
 
   const changeColumnsHeader = (val: string, cIndex: number) => {
@@ -240,29 +301,42 @@ function AssignmentDetails() {
     }
   };
 
-  const colorCode = (scoreAch = 0, type = 'bg') => {
-    if (scoreAch <= 35) {
-      return { bg: '#FEE2E2', color: '#E36B6B' }[type]; // Red
+  // eslint-disable-next-line consistent-return
+  function colorCode(score: any, type: string) {
+    if (score !== null && !isNaN(score)) {
+      console.log('has score', score >= val.exceed1 && score <= val.exceed2);
+      if (score >= val.exceed1 && score <= val.exceed2) {
+        // Exceeds
+        return { bg: '#E5F8E2', color: '#6CA463' }[type];
+      }
+      if (score >= val.meet1 && score <= val.meet2) {
+        /// Meets
+        return { bg: '#BECCFF', color: '#132E90 ' }[type];
+      }
+      if (score >= val.approching1 && score <= val.approching2) {
+        // Approaching
+        return { bg: '#FFF9BE', color: '#C7B551' }[type];
+      }
+      if (score >= val.Nmeet1 && score <= val.Nmeet2) {
+        // Does not Meet
+        return { bg: '#FCD4C6', color: '#E36B6B' }[type];
+      }
+    } else {
+      return { bg: '#FCD4C6', color: '#E36B6B' }[type];
     }
-    if (scoreAch > 35 && scoreAch <= 50) {
-      return { bg: '#FEF9C3', color: '#C7B551' }[type]; // Yello
-    }
-    if (scoreAch > 50 && scoreAch <= 70) {
-      return { bg: '#6582EA', color: '#132E90 ' }[type]; // blue
-    }
-    if (scoreAch >= 70) {
-      return { bg: '#E5F8E2', color: '#6CA463' }[type]; // green
-    }
-    return { bg: '#E5F8E2', color: '#6CA463' }[type];
-  };
+  }
 
-  const { isLoading: studentAssignmentPagesLoading, refetch: refetchJsonData }: any = useGet({
+  const {
+    isLoading: studentAssignmentPagesLoading,
+    refetch: refetchJsonData,
+  }: any = useGet({
     baseURL,
     url: `assignments-service/assignment/student/${assignReportId}/report/`,
     queryKey: [assignReportId],
     onSuccess: (res: any) => {
       const results = res?.data?.response;
       setAssignmentData(results);
+      setTeacher(results?.teacher);
       if (results?.end_date) {
         setExtendedDeuData(new Date(results?.end_date));
       }
@@ -278,8 +352,25 @@ function AssignmentDetails() {
       });
 
       if (jsonRespData && jsonRespData.length !== 0) {
-        const pagesArray = jsonRespData.map((ele: any) => ({ label: ele.page_name, value: ele.page_name }));
-        jsonRespData = jsonRespData && jsonRespData.length !== 0 ? jsonRespData.map((ele: any) => createData(ele.page_name, ele.score, ele.unattempted_count, ele.mistake_count, ele.absolute_score, ele.max_score, ele?.page_number, ele?.scormData)) : [];
+        const pagesArray = jsonRespData.map((ele: any) => ({
+          label: ele.page_name,
+          value: ele.page_name,
+        }));
+        jsonRespData =
+          jsonRespData && jsonRespData.length !== 0
+            ? jsonRespData.map((ele: any) =>
+                createData(
+                  ele.page_name,
+                  ele.score,
+                  ele.unattempted_count,
+                  ele.mistake_count,
+                  ele.absolute_score,
+                  ele.max_score,
+                  ele?.page_number,
+                  ele?.scormData
+                )
+              )
+            : [];
         setJsonData(jsonRespData);
         setJsonCopyData(jsonRespData);
 
@@ -304,10 +395,18 @@ function AssignmentDetails() {
           chapter?.lessons?.forEach((lesson: any) => {
             const pageNumberArray: string[] = [];
             const pageNameArray: string[] = [];
-            lesson?.pages?.forEach(({ name, page_number }: { name: string; page_number: string }) => {
-              pageNumberArray.push(page_number);
-              pageNameArray.push(name);
-            });
+            lesson?.pages?.forEach(
+              ({
+                name,
+                page_number,
+              }: {
+                name: string;
+                page_number: string;
+              }) => {
+                pageNumberArray.push(page_number);
+                pageNameArray.push(name);
+              }
+            );
             scromPagesTemp.push({
               label: `${lesson.unit_name}`,
               value: `${lesson.unit_name}`,
@@ -323,7 +422,7 @@ function AssignmentDetails() {
               course_table_id: assignmentMainList.course_table_id,
               assignmentId: assignmentMainList.id,
               contentUrl: lesson.content_url,
-              moduleName: 'assignment'
+              moduleName: 'assignment',
             });
             if (lesson?.pages.length === 0) {
               scromPagesTemp.push({
@@ -341,18 +440,23 @@ function AssignmentDetails() {
                 course_table_id: assignmentMainList.course_table_id,
                 assignmentId: assignmentMainList.id,
                 contentUrl: lesson.content_url,
-                moduleName: 'assignment'
+                moduleName: 'assignment',
               });
             }
           });
         });
-        scromPagesTemp.sort((a, b) => ((a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0)));
-        setScromPages([{ label: 'Select', value: 'Select', id: null }, ...scromPagesTemp]);
+        scromPagesTemp.sort((a, b) =>
+          a.label > b.label ? 1 : b.label > a.label ? -1 : 0
+        );
+        setScromPages([
+          { label: 'Select', value: 'Select', id: null },
+          ...scromPagesTemp,
+        ]);
       }
     },
     enabled: !!assignReportId,
-    onError: ({ response }: any) => { },
-    cacheTime: 0
+    onError: ({ response }: any) => {},
+    cacheTime: 0,
   });
 
   const { isFetching: studentListPending, refetch: fetchRecords } = useGet({
@@ -360,11 +464,15 @@ function AssignmentDetails() {
     url: `assignments-service/assignment/assigned-students/${assignedMainId}/list/?limit=1000`,
     onSuccess: (res: any) => {
       const accData = res?.data?.response?.results;
-      const studentData = (accData.map((ele: any) => ({ label: `${ele.first_name} ${ele.last_name}`, value: `${ele.first_name} ${ele.last_name}`, id: ele.id })));
+      const studentData = accData.map((ele: any) => ({
+        label: `${ele.first_name} ${ele.last_name}`,
+        value: `${ele.first_name} ${ele.last_name}`,
+        id: ele.id,
+      }));
       setStudentList([SELECT, ...studentData]);
     },
-    onError: ({ response }: any) => { },
-    enabled: false
+    onError: ({ response }: any) => {},
+    enabled: false,
   });
 
   useEffect(() => {
@@ -378,8 +486,7 @@ function AssignmentDetails() {
       setMarkStatusChange(false);
       refetchJsonData();
     },
-    onError: ({ response }: any) => {
-    }
+    onError: ({ response }: any) => {},
   });
 
   const statusChange = () => {
@@ -399,7 +506,11 @@ function AssignmentDetails() {
     });
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    if (modState === 'Mark as Ongoing' && extendedDeuData && yesterday > extendedDeuData) {
+    if (
+      modState === 'Mark as Ongoing' &&
+      extendedDeuData &&
+      yesterday > extendedDeuData
+    ) {
       setErrorMsg('Due date should be greater than current date.');
     } else {
       updateStatus(userFd);
@@ -421,7 +532,7 @@ function AssignmentDetails() {
   const downloadLink = (fileUrl: any) => {
     fetch(fileUrl, {
       method: 'GET',
-      headers: {}
+      headers: {},
     })
       .then((response) => {
         response.arrayBuffer().then((buffer) => {
@@ -434,8 +545,7 @@ function AssignmentDetails() {
           link.click();
         });
       })
-      .catch((err) => {
-      });
+      .catch((err) => {});
   };
 
   const onPreviewClick = () => {
@@ -448,32 +558,136 @@ function AssignmentDetails() {
 
   const navigatToPreview = (state: any) => {
     navigate(`/${schoolName}/course-preview`, {
-      state
+      state,
     });
   };
 
-  useOnClickOutside(ref, () => { setAttachmentMenuVisible(false); });
+  useOnClickOutside(ref, () => {
+    setAttachmentMenuVisible(false);
+  });
+
+  const { isLoading: performance, refetch: GetPerformance } = useGet({
+    baseURL: ReportURL,
+    url: `reports-service/performance_expectation/?user_id=${teacher}`,
+    onSuccess: (res: any) => {
+      const resp = res?.data?.response;
+      const body: any = [];
+      const fetchedRecords = resp?.slice(0, 4);
+      const meetObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Meets'
+      );
+      const AppObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Approaching'
+      );
+      const DMeetObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Does Not Meet'
+      );
+      const ExceedsObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Exceeds'
+      );
+      setValue((prevState: any) => ({
+        ...prevState,
+        meet1: meetObj?.from_value,
+        meet2: meetObj?.to_value,
+        exceed1: ExceedsObj?.from_value,
+        exceed2: ExceedsObj?.to_value,
+        approching1: AppObj?.from_value,
+        approching2: AppObj?.to_value,
+        Nmeet1: DMeetObj?.from_value,
+        Nmeet2: DMeetObj?.to_value,
+      }));
+    },
+    enabled: false,
+    retry: false,
+  });
+
+  function getPerformanceText(score: any) {
+    if (score >= val.exceed1 && score <= val.exceed2) {
+      return 'Exceeds';
+    }
+
+    if (score >= val.meet1 && score <= val.meet2) {
+      return 'Meets';
+    }
+
+    if (score >= val.approching1 && score <= val.approching2) {
+      return 'Approaching';
+    }
+
+    if (
+      (score >= val.Nmeet1 && score <= val.Nmeet2) ||
+      score == null ||
+      isNaN(score)
+    ) {
+      return 'Does not Meet';
+    }
+    return '';
+  }
+
+  useEffect(() => {
+    if (teacher) {
+      GetPerformance();
+    }
+  }, [teacher]);
 
   return (
     <div>
       <RouteLayout navBack={true}>
         <div className="relative">
-          <HeaderMenus title="Assignment Details" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
-          <div ref={ref} className={`absolute right-[150px] top-[65px] bg-white p-2 z-10 border ${!AttachmentMenuVisible ? 'opacity-0' : ''}`}>
-            {teacherDownloadLink && <div className="h-10 cursor-pointer flex items-center" onClick={() => handleTeacherDownLoadClick()}> View Teacher Attachment </div>}
-            {studentDownloadLink && <div className="h-10 cursor-pointer flex items-center" onClick={() => handleStudentDownLoadClick()}> View Student Attachment </div>}
-            {(!teacherDownloadLink && !studentDownloadLink) && <div> Attachment not found </div>}
+          <HeaderMenus
+            title="Assignment Details"
+            menuArray={ADMIN_TOOLBAR_MENU}
+            handleToolbarAction={handleToolbarAction}
+          />
+          <div
+            ref={ref}
+            className={`absolute right-[150px] top-[65px] bg-white p-2 z-10 border ${!AttachmentMenuVisible ? 'opacity-0' : ''}`}
+          >
+            {teacherDownloadLink && (
+              <div
+                className="h-10 cursor-pointer flex items-center"
+                onClick={() => handleTeacherDownLoadClick()}
+              >
+                {' '}
+                View Teacher Attachment{' '}
+              </div>
+            )}
+            {studentDownloadLink && (
+              <div
+                className="h-10 cursor-pointer flex items-center"
+                onClick={() => handleStudentDownLoadClick()}
+              >
+                {' '}
+                View Student Attachment{' '}
+              </div>
+            )}
+            {!teacherDownloadLink && !studentDownloadLink && (
+              <div> Attachment not found </div>
+            )}
           </div>
         </div>
 
-        <CustomizedDialogs title="Mark Assignment" open={markStatusChange} setOpen={() => { }} onclose={() => { setMarkStatusChange(false); }} maxwidth="sm">
+        <CustomizedDialogs
+          title="Mark Assignment"
+          open={markStatusChange}
+          setOpen={() => {}}
+          onclose={() => {
+            setMarkStatusChange(false);
+          }}
+          maxwidth="sm"
+        >
           <div className="w-full flex justify-center flex-col">
             <div>
               <DatePicker
-                disablePast={assignmentData?.start_date && new Date(assignmentData?.start_date)}
+                disablePast={
+                  assignmentData?.start_date &&
+                  new Date(assignmentData?.start_date)
+                }
                 value={extendedDeuData}
                 label="Update Due Date"
-                handlePickerChange={(date: string) => setExtendedDeuData(new Date(date))}
+                handlePickerChange={(date: string) =>
+                  setExtendedDeuData(new Date(date))
+                }
                 sxType={4}
                 defaultStyle={true}
                 fullWidth={true}
@@ -486,17 +700,20 @@ function AssignmentDetails() {
                 dataArray={[
                   {
                     label: 'Select',
-                    value: 'Select'
+                    value: 'Select',
                   },
                   {
                     label: 'Mark As Complete',
-                    value: 'Mark As Complete'
+                    value: 'Mark As Complete',
                   },
                   {
                     label: 'Mark as Ongoing',
-                    value: 'Mark as Ongoing'
-                  }]}
-                onChangeHandler={(val) => { selectedModState(val); }}
+                    value: 'Mark as Ongoing',
+                  },
+                ]}
+                onChangeHandler={(val) => {
+                  selectedModState(val);
+                }}
                 value={modState}
                 title="Change Status"
                 sxClass={{ width: '100%', border: '1px solid #c4c4c4' }}
@@ -506,11 +723,10 @@ function AssignmentDetails() {
               />
             </div>
             {ErrorMsg && (
-            <div style={{ fontSize: '0.75rem' }} className="text-red-400">
-              {' '}
-              {ErrorMsg}
-              {' '}
-            </div>
+              <div style={{ fontSize: '0.75rem' }} className="text-red-400">
+                {' '}
+                {ErrorMsg}{' '}
+              </div>
             )}
             <div className="relative mt-4 top-[-8px]">
               <CustomInput
@@ -519,62 +735,65 @@ function AssignmentDetails() {
                 onChange={(e: any) => setRemark(e.target.value)}
                 icon={true}
                 size="small"
-                sx={{ width: '100%',
+                sx={{
+                  width: '100%',
                   '.MuiOutlinedInput-input': {
                     fontSize: '0.75rem',
                     color: 'black',
                     fontFamily: 'Montserrat-500',
-                    padding: '10px 0px 10px 14px'
-                  } }}
+                    padding: '10px 0px 10px 14px',
+                  },
+                }}
                 parentLabelClass="relative top-[6px]"
               />
             </div>
             <div className="flex justify-center mt-5">
-              <Button
-                onClick={statusChange}
-              >
-                Update
-              </Button>
+              <Button onClick={statusChange}>Update</Button>
             </div>
           </div>
         </CustomizedDialogs>
         <div className="flex mt-2">
-          {isFromComplete === 'false'
-            ? (
-              <>
-                <Dropdown
-                  title="Select Students"
-                  value={selectedStudentName || ''}
-                  dataArray={studentList}
-                  onChangeHandler={(val: any) => {
-                    const obj: any = studentList.filter((ele: { label: any }) => ele.label === val)[0];
-                    if (obj.id !== null) {
-                      setSelectedStudentName(obj.value);
-                      setAssignReportId(`${obj.id}`);
-                    } else {
-                      setAssignReportId('');
-                      setSelectedStudentName('Select');
-                      setAssignmentData(undefined);
-                      setJsonData([]);
-                      setJsonCopyData([]);
-                    }
-                  }}
-                  displayEmpty={false}
-                  parentStyle="mr-5 "
-                  sxClass={{ width: '160px', paddingRight: 'unset' }}
-                />
+          {isFromComplete === 'false' ? (
+            <>
+              <Dropdown
+                title="Select Students"
+                value={selectedStudentName || ''}
+                dataArray={studentList}
+                onChangeHandler={(val: any) => {
+                  const obj: any = studentList.filter(
+                    (ele: { label: any }) => ele.label === val
+                  )[0];
+                  if (obj.id !== null) {
+                    setSelectedStudentName(obj.value);
+                    setAssignReportId(`${obj.id}`);
+                  } else {
+                    setAssignReportId('');
+                    setSelectedStudentName('Select');
+                    setAssignmentData(undefined);
+                    setJsonData([]);
+                    setJsonCopyData([]);
+                  }
+                }}
+                displayEmpty={false}
+                parentStyle="mr-5 "
+                sxClass={{ width: '160px', paddingRight: 'unset' }}
+              />
 
-                <div>
-                  <div className="text-[0.75rem]">
-                    Status
-                  </div>
-                  <Button sx={{ height: '32px' }} className="relative top-[10px]" onClick={() => { setMarkStatusChange(true); setErrorMsg(''); }}>
-                    Modify Status
-                  </Button>
-                </div>
-              </>
-            )
-            : null}
+              <div>
+                <div className="text-[0.75rem]">Status</div>
+                <Button
+                  sx={{ height: '32px' }}
+                  className="relative top-[10px]"
+                  onClick={() => {
+                    setMarkStatusChange(true);
+                    setErrorMsg('');
+                  }}
+                >
+                  Modify Status
+                </Button>
+              </div>
+            </>
+          ) : null}
 
           <div className="flex-1" />
           <div className="flex">
@@ -583,7 +802,9 @@ function AssignmentDetails() {
                 dataArray={scromPages}
                 onChangeHandler={(val) => {
                   setSelectedScromPage(val);
-                  const tempScromPage = scromPages.filter((scrom) => scrom.label === val);
+                  const tempScromPage = scromPages.filter(
+                    (scrom) => scrom.label === val
+                  );
                   if (tempScromPage && tempScromPage.length) {
                     setScromState(tempScromPage[0]);
                     setshowSelectPageError(false);
@@ -594,7 +815,12 @@ function AssignmentDetails() {
                 sxClass={{ width: '200px' }}
                 displayEmpty={false}
               />
-              {showSelectPageError ? <div className="absolute text-red-500 text-xs whitespace-nowrap"> Please select pages from dropdown </div> : null}
+              {showSelectPageError ? (
+                <div className="absolute text-red-500 text-xs whitespace-nowrap">
+                  {' '}
+                  Please select pages from dropdown{' '}
+                </div>
+              ) : null}
             </div>
             <div className="flex h-10 self-end ml-4">
               <Button onClick={onPreviewClick}> Preview </Button>
@@ -607,39 +833,25 @@ function AssignmentDetails() {
               <div className="grow flex flex-col md:border-r md:border-r-gray-300">
                 <div className="mb-5">
                   <div className="font-bold"> Assignment Name </div>
-                  <div>
-                    {' '}
-                    {assignmentData?.assignment_name}
-                  </div>
-                  {/* Math Homework - Grade 1-Aug24th */}
+                  <div> {assignmentData?.assignment_name}</div>
                 </div>
 
                 <div className="mb-5">
-                  <div className="font-bold"> Page </div>
-                  <div className="truncate w-[170px]">
+                  <div className="font-bold"> Teacher </div>
+                  <div>
                     {' '}
-                    {assignmentData?.chapters?.map((ele: any) => `${ele.chapter_name} `)}
-                    {' '}
+                    {fName} {lName}{' '}
                   </div>
                 </div>
 
                 <div className="flex mb-5">
                   <div className="mr-4">
-                    <div className="font-bold"> Teacher </div>
-                    <div>
-                      {' '}
-                      {fName}
-                      {' '}
-                      {lName}
-                      {' '}
-                    </div>
-                  </div>
-                  <div className="mr-4">
                     <div className="font-bold"> Student </div>
                     <div>
                       {' '}
-                      {selectedStudentName !== 'Select' ? selectedStudentName : ''}
-                      {' '}
+                      {selectedStudentName !== 'Select'
+                        ? selectedStudentName
+                        : ''}{' '}
                     </div>
                   </div>
                 </div>
@@ -647,27 +859,38 @@ function AssignmentDetails() {
 
               <div className="grow md:border-r md:border-r-gray-300 md:ml-4">
                 <div className="mb-5">
+                  <div className="font-bold"> Lesson Name </div>
+                  {/* <div className="truncate w-[170px]"> */}
+                  {assignmentData?.chapters?.map(
+                    (ele: any) => `${ele.chapter_name} `
+                  )}
+                  {/* </div> */}
+                  {/* <div> - </div> */}
+                </div>
+                <div className="mb-5">
                   <div className="font-bold">
                     {' '}
-                    Status:
-                    {' '}
-                    {assignmentData?.state}
-                    {' '}
+                    Status: {assignmentData?.state}
                   </div>
                   {/* <div> - </div> */}
                 </div>
-
               </div>
             </div>
 
             <div className="flex flex-col grow md:flex-row">
-              <div className={`px-8 flex ${isFromComplete === 'true' ? `md:border-r md:border-r-gray-300` : ``}`}>
-                <div className={`mb-5 ${isFromComplete === 'true' ? `mr-5` : ``}`}>
+              <div
+                className={`px-8 flex ${isFromComplete === 'true' ? `md:border-r md:border-r-gray-300` : ``}`}
+              >
+                <div
+                  className={`mb-5 ${isFromComplete === 'true' ? `mr-5` : ``}`}
+                >
                   <div className="font-bold"> Start Date </div>
                   <div>
                     {' '}
-                    {assignmentData && moment(assignmentData?.start_date?.replace('Z', ''))?.format('DD-MM-YYYY')}
-                    {' '}
+                    {assignmentData &&
+                      moment(
+                        assignmentData?.start_date?.replace('Z', '')
+                      )?.format('DD-MM-YYYY')}{' '}
                   </div>
                 </div>
 
@@ -675,35 +898,66 @@ function AssignmentDetails() {
                   <div className="font-bold"> End Date </div>
                   <div>
                     {' '}
-                    {assignmentData && moment(assignmentData?.end_date?.replace('Z', ''))?.format('DD-MM-YYYY')}
-                    {' '}
+                    {assignmentData &&
+                      moment(
+                        assignmentData?.end_date?.replace('Z', '')
+                      )?.format('DD-MM-YYYY')}{' '}
                   </div>
                 </div>
               </div>
 
-              {isFromComplete === 'true'
-                ? (
-                  <div className="grow box-content flex items-center h-full justify-center ml-4">
-                    <div style={{ backgroundColor: colorCode(assignmentData?.score, 'bg') }} className="h-3/5 p-4 flex text-center items-center justify-center md:text-2xl text-sm rounded">
-                      <div>
-                        Score
-                        <span className="text-blue-100" style={{ color: colorCode(assignmentData?.score, 'color') }}>
-                          &nbsp;
-                          {assignmentData?.score}
-                          %
-                          {' '}
-                          (
-                          {`${assignmentData?.score !== null ? assignmentData?.score : ''}`}
-                          /100)
-                          &nbsp;
-                        </span>
-                        - Meets
-                      </div>
+              {isFromComplete === 'true' ? (
+                <div className="grow box-content flex items-center h-full justify-center ml-4">
+                  <div
+                    style={{
+                      backgroundColor: colorCode(
+                        parseInt(assignmentData?.score, 10),
+                        'bg'
+                      ),
+                    }}
+                    className="h-3/5 p-4 flex text-center items-center justify-center md:text-2xl text-sm rounded"
+                  >
+                    <div>
+                      Score
+                      {/* <span
+                        className="text-blue-100"
+                        style={{
+                          color: colorCode(assignmentData?.score, 'color'),
+                        }}
+                      >
+                        &nbsp;
+                        {assignmentData?.score}% (
+                        {`${assignmentData?.score !== null ? assignmentData?.score : ''}`}
+                        /100) &nbsp;
+                      </span>
+                      - Meets */}
+                      <span
+                        className="text-blue-100"
+                        style={{
+                          color: colorCode(
+                            parseInt(assignmentData?.score, 10),
+                            'color'
+                          ),
+                        }}
+                      >
+                        &nbsp;
+                        {assignmentData?.score == null ||
+                        isNaN(assignmentData?.score)
+                          ? '0'
+                          : `${assignmentData?.score}`}
+                        % (
+                        {assignmentData?.score == null ||
+                        isNaN(assignmentData?.score)
+                          ? '0'
+                          : `${assignmentData?.score}`}
+                        /100) &nbsp;
+                      </span>
+                      - {getPerformanceText(parseInt(assignmentData?.score))}
                     </div>
                   </div>
-                ) : null}
+                </div>
+              ) : null}
             </div>
-
           </div>
 
           <div className="wrapperBorder mt-8">
@@ -711,8 +965,13 @@ function AssignmentDetails() {
               <SimpleTableDx
                 rows={jsonData}
                 columns={columnsHeader}
-                onChangeHandler={(val: string, cIndex: number) => { changeColumnsHeader(val, cIndex); }}
-                handleClearClick={() => { setJsonData(jsonCopyData); setColumns(columns); }}
+                onChangeHandler={(val: string, cIndex: number) => {
+                  changeColumnsHeader(val, cIndex);
+                }}
+                handleClearClick={() => {
+                  setJsonData(jsonCopyData);
+                  setColumns(columns);
+                }}
                 fullHeight={fullHeight}
               />
             </Wrapper>

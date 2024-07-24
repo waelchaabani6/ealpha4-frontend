@@ -20,7 +20,11 @@ import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import CustomPagination from '../../../components/pagination/CustomPagination';
-import { RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '../../../constants/constants';
+import {
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '../../../constants/constants';
 import Wrapper from '../../../shared/wrapper/Wrapper';
 import RouteLayout from '../../layout/routeLayout';
 
@@ -37,13 +41,13 @@ export default function Index() {
   const headers = [
     TABLE_LABELS?.SR_NO,
     TABLE_LABELS?.ASSIGNMENT_NAME,
-    TABLE_LABELS?.SUBJECT,
+    TABLE_LABELS?.COURSES,
     TABLE_LABELS?.TEACHER,
     TABLE_LABELS?.LESSONS,
     TABLE_LABELS?.STATUS,
     TABLE_LABELS?.START_DATE,
     TABLE_LABELS?.END_DATE,
-    TABLE_LABELS?.SCORE
+    TABLE_LABELS?.SCORE,
   ];
 
   const [exportData, setExportData] = useState<[]>([]);
@@ -52,61 +56,61 @@ export default function Index() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.ASSIGNMET_NAME,
       mapper: 'assignment_name',
-      isSort: true
+      isSort: true,
     },
     {
-      label: TABLE_LABELS?.SUBJECT,
+      label: TABLE_LABELS?.COURSES,
       isSort: true,
-      mapper: 'subject_name'
+      mapper: 'course_name',
     },
     {
       label: TABLE_LABELS?.TEACHER,
       isSort: true,
-      mapper: 'teacher_name'
+      mapper: 'teacher_name',
     },
     {
       label: TABLE_LABELS?.LESSONS,
-      mapper: 'lesson_name'
+      mapper: 'lesson_name',
     },
     {
       label: TABLE_LABELS?.STATUS,
       align: 'center',
-      mapper: 'state'
+      mapper: 'state',
     },
     {
       label: TABLE_LABELS?.START_DATE,
       isSort: true,
       mapper: 'start_date',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
       isSort: true,
       mapper: 'end_date',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_LABELS?.SCORE,
       isSort: true,
-      mapper: 'score'
+      mapper: 'score',
     },
     {
       label: TABLE_LABELS?.ACTION,
       mapper: 'action',
-      align: 'center'
-    }
+      align: 'center',
+    },
   ];
 
   const statusArray = [
     { label: 'All', value: 'All' },
     { label: 'Ongoing', value: 'Ongoing' },
     { label: 'Submitted', value: 'Submitted' },
-    { label: 'Yet to Start', value: 'Yet to start' }
+    { label: 'Yet to Start', value: 'Yet to start' },
   ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
@@ -150,24 +154,31 @@ export default function Index() {
   };
 
   // Toolbar Email
-  const { isLoading: emailLoaded, refetch: fetchEmailApi, isRefetching: refetchEmail } = useGet({
+  const {
+    isLoading: emailLoaded,
+    refetch: fetchEmailApi,
+    isRefetching: refetchEmail,
+  } = useGet({
     baseURL,
     url: `assignments-service/student-assigned-pdf-download/?student_id=${selectedChild}`,
     onSuccess: (response: any) => {
-      toast('success', 'Email sent successfully to you, please check your inbox');
+      toast(
+        'success',
+        'Email sent successfully to you, please check your inbox'
+      );
     },
     retry: false,
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Unable to send email');
     },
-    enabled: false
+    enabled: false,
   });
 
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailLoaded || refetchEmail) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailLoaded || refetchEmail) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
@@ -179,15 +190,17 @@ export default function Index() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   // ----------------------------------------API-------------------------
@@ -199,13 +212,11 @@ export default function Index() {
       const resp = res?.data?.response?.students;
       const body: any = [];
       resp?.map((i: any) => {
-        body.push(
-          {
-            label: `${i?.first_name} ${i?.last_name}`,
-            value: i?.id,
-            class: i?.class_name
-          }
-        );
+        body.push({
+          label: `${i?.first_name} ${i?.last_name}`,
+          value: i?.id,
+          class: i?.class_name,
+        });
         const compare = (a: any, b: any) => {
           if (a.label < b.label) {
             return -1;
@@ -221,43 +232,49 @@ export default function Index() {
       setSelectedChild(body[0].value);
       setChildrenData([...body]);
     },
-    onError: () => { }
+    onError: () => {},
   });
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
-  const ordering = orderBy ? order === 'asc' ? orderBy : `-${orderBy}` : '';
-  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } = useGet({
-    baseURL,
-    url: `assignments-service/student/assignment/list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}${searchString ? `&search=${searchString}` : ''}${selectedStatus !== 'All' ? `&state=${selectedStatus}` : ''}${selectedChild ? `&student_id=${selectedChild}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&end_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}`,
-    onSuccess: (res: any) => {
-      const accData = res?.data;
-      const respData = accData?.results;
-      setTotalDataCount(accData.count);
-      const body: any = [];
-      const newTableData = respData?.map((item: any) => {
-        body.push([
-          item?.id,
-          item?.assignment_name,
-          item?.subject_name,
-          item?.teacher_name,
-          item?.lesson_name,
-          item?.state,
-          item?.start_date,
-          item?.end_date,
-          item?.score
-        ]);
-        const temp = {
-          ...item,
-          action: item.state === 'Completed' ? <Button onClick={() => handleButtonClick(item)}>Get Report</Button> : null
-        };
-        return temp;
-      });
-      setTableData(newTableData);
-      setExportData(body);
-    },
-    enabled: false
-  });
+  const ordering = orderBy ? (order === 'asc' ? orderBy : `-${orderBy}`) : '';
+  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
+    useGet({
+      baseURL,
+      url: `assignments-service/student/assignment/list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}${searchString ? `&search=${searchString}` : ''}${selectedStatus !== 'All' ? `&state=${selectedStatus}` : ''}${selectedChild ? `&student_id=${selectedChild}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&end_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}`,
+      onSuccess: (res: any) => {
+        const accData = res?.data;
+        const respData = accData?.results;
+        setTotalDataCount(accData.count);
+        const body: any = [];
+        const newTableData = respData?.map((item: any) => {
+          body.push([
+            item?.id,
+            item?.assignment_name,
+            item?.subject_name,
+            item?.teacher_name,
+            item?.lesson_name,
+            item?.state,
+            item?.start_date,
+            item?.end_date,
+            item?.score,
+          ]);
+          const temp = {
+            ...item,
+            action:
+              item.state === 'Completed' ? (
+                <Button onClick={() => handleButtonClick(item)}>
+                  Get Report
+                </Button>
+              ) : null,
+          };
+          return temp;
+        });
+        setTableData(newTableData);
+        setExportData(body);
+      },
+      enabled: false,
+    });
 
   // ----------------------------------------END API---------------------
 
@@ -277,16 +294,28 @@ export default function Index() {
     if (selectedChild) {
       fetchAssignedAssignments();
     }
-  }, [searchString, rowsPerPage, page, orderBy, order, selectedStatus, selectedChild, toDate, fromDate]);
+  }, [
+    searchString,
+    rowsPerPage,
+    page,
+    orderBy,
+    order,
+    selectedStatus,
+    selectedChild,
+    toDate,
+    fromDate,
+  ]);
   return (
     <RouteLayout>
-      <HeaderMenus title="Assignments" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+      <HeaderMenus
+        title="Assignments"
+        menuArray={ADMIN_TOOLBAR_MENU}
+        handleToolbarAction={handleToolbarAction}
+      />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <div className="pt-[30px]">
-            <DebounceInput
-              onChange={handleSearch}
-            />
+            <DebounceInput onChange={handleSearch} />
           </div>
           <Dropdown
             title="Sort by: Status"
@@ -326,18 +355,18 @@ export default function Index() {
               format="YYYY-MM-DD"
             />
           </div>
-          {
-            fromDate || toDate
-              ? (
-                <div className="flex gap-2 justify-center items-center h-[36px]">
-                  <span tabIndex={0} title="Clear dates" onClick={reset} role="button">
-                    <RestartAltIcon />
-                  </span>
-                </div>
-
-              )
-              : null
-          }
+          {fromDate || toDate ? (
+            <div className="flex gap-2 justify-center items-center h-[36px]">
+              <span
+                tabIndex={0}
+                title="Clear dates"
+                onClick={reset}
+                role="button"
+              >
+                <RestartAltIcon />
+              </span>
+            </div>
+          ) : null}
         </div>
         <CustomPagination
           totalPages={noOfpages}
@@ -348,11 +377,21 @@ export default function Index() {
       <div className="flex mt-3">
         <div className="mr-12">
           <span className="text-sm font-semibold">Child Name: </span>
-          <span className="text-sm font-normal">{childrenData?.find((obj: any) => obj?.value === selectedChild)?.label}</span>
+          <span className="text-sm font-normal">
+            {
+              childrenData?.find((obj: any) => obj?.value === selectedChild)
+                ?.label
+            }
+          </span>
         </div>
         <div>
           <span className="text-sm font-semibold">Class: </span>
-          <span className="text-sm font-normal">{childrenData?.find((obj: any) => obj?.value === selectedChild)?.class}</span>
+          <span className="text-sm font-normal">
+            {
+              childrenData?.find((obj: any) => obj?.value === selectedChild)
+                ?.class
+            }
+          </span>
         </div>
       </div>
       {/* Table Section */}

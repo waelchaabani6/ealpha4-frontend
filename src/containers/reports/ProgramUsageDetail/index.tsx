@@ -3,7 +3,11 @@ import ButtonToggle from '@component/ToggleButton/ToggleButton';
 import DatePicker from '@component/datepicker';
 import Dropdown from '@component/dropdown/Dropdown';
 import { CustomInput } from '@component/input';
-import { GRAPH_LABELS, TABLE_LABELS, TOOLBAR_LABELS } from '@constants/constants';
+import {
+  GRAPH_LABELS,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '@constants/constants';
 import RouteLayout from '@layout/routeLayout';
 import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
@@ -59,9 +63,13 @@ export default function Index() {
     TABLE_LABELS?.PROGRAM,
     TABLE_LABELS?.ASSIGNMET_NAME,
     TABLE_LABELS?.START_DATE,
-    TABLE_LABELS?.END_DATE
+    TABLE_LABELS?.END_DATE,
   ];
-  const { isRefetching: emailSendLoading, refetch: sendEmail, isLoading: emailLoad } = useGet({
+  const {
+    isRefetching: emailSendLoading,
+    refetch: sendEmail,
+    isLoading: emailLoad,
+  } = useGet({
     baseURL: ReportURL,
     url: `reports-service/program_usage-report/send-email/?school_id=${SCHOOL_ID}${selectedprogram ? `&selected_program=${selectedprogram}` : ''}`,
     onSuccess: () => {
@@ -71,14 +79,14 @@ export default function Index() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Unable to send email');
     },
-    enabled: false
+    enabled: false,
   }) as any;
 
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: 'Export',
       icon: (
@@ -90,7 +98,7 @@ export default function Index() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: 'Print',
@@ -99,8 +107,8 @@ export default function Index() {
           trigger={printButton}
           content={() => componentRef.current}
         />
-      )
-    }
+      ),
+    },
   ];
   const handelSendEmail = () => {
     sendEmail();
@@ -114,48 +122,43 @@ export default function Index() {
   const TableColumns: any = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.CLASS,
       mapper: 'class_name',
-      align: 'center'
-
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.TEACHER,
       mapper: 'teacher',
-      align: 'center'
-
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.NO_OF_STUDENT,
       mapper: 'total_students',
-      align: 'center'
-
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.NO_OF_ACTIVE_STD,
       mapper: 'number_of_active_students',
-      align: 'center'
-
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.NO_OF_NONACTIVE_STD,
       mapper: 'number_of_non_active_students',
-      align: 'center'
-
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.NO_OF_ASSIGNMENT,
       align: 'center',
-      mapper: 'total_assignment'
+      mapper: 'total_assignment',
     },
     {
       label: TABLE_LABELS?.NO_OF_ASSESSMENT,
       align: 'center',
-      mapper: 'total_assessments'
-    }
+      mapper: 'total_assessments',
+    },
   ];
 
   const handlePagination = (currPage: any) => {
@@ -164,7 +167,7 @@ export default function Index() {
   };
   const { isFetching: reportdetailLoading, refetch: ProgramDetails } = useGet({
     baseURL: ReportURL,
-    url: `reports-service/program_usage_details_report/?school_id=${SCHOOL_ID}${selectedprogram ? `&selected_program=${selectedprogram}` : ''}&is_graph=${graph}`,
+    url: `reports-service/program_usage_details_report/?school_id=${SCHOOL_ID}${selectedprogram ? `&selected_program=${selectedprogram}` : ''}&is_graph=${graph}&page=${page}`,
     onSuccess: (res: any) => {
       const ProgramData = res?.data?.response;
       if (graph !== 'yes') {
@@ -172,42 +175,51 @@ export default function Index() {
         setCsvData([]);
       } else {
         // Total Students
-        const tempStudent = (ProgramData?.total_vs_active_students || []).map((i: any) => ({
-          name: i?.name,
-          count1: Number(i?.total_students) - Number(i?.active_students),
-          count2: Number(i?.active_students)
-        }));
+        const tempStudent = (ProgramData?.total_vs_active_students || []).map(
+          (i: any) => ({
+            name: i?.name,
+            count1: Number(i?.total_students) - Number(i?.active_students),
+            count2: Number(i?.active_students),
+          })
+        );
         setTotalStudent(tempStudent);
 
         // Total Assignment
-        const tempAssignment = (ProgramData?.total_assignments || []).map((i: any) => ({
-          name: i?.name,
-          count1: Number(i?.total_assignment)
-        }));
+        const tempAssignment = (ProgramData?.total_assignments || []).map(
+          (i: any) => ({
+            name: i?.name,
+            count1: Number(i?.total_assignment),
+          })
+        );
         settotalAssignments(tempAssignment);
 
         // Total Assessment
-        const tempAssessment = (ProgramData?.total_assessments || []).map((i: any) => ({
-          name: i?.name,
-          count1: Number(i?.total_assessments)
-        }));
+        const tempAssessment = (ProgramData?.total_assessments || []).map(
+          (i: any) => ({
+            name: i?.name,
+            count1: Number(i?.total_assessments),
+          })
+        );
         settotalAssessments(tempAssessment);
       }
       setTotalRecords(ProgramData?.total_records);
     },
-    onError: ({ response }: any) => {
-    },
-    enabled: false
+    onError: ({ response }: any) => {},
+    enabled: false,
   });
 
-  const { isRefetching: programRefetching, isLoading: loadProgram, data } = useGet({
+  const {
+    isRefetching: programRefetching,
+    isLoading: loadProgram,
+    data,
+  } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
     url: `course-code-service/courses/content/?ordering=-created_at&limit=1000&selection=Course`,
-    enabled: true
+    enabled: true,
   });
   const programs = (data?.data?.response?.results || [])?.map((item: any) => ({
     label: item?.content,
-    value: item?.id
+    value: item?.id,
   }));
 
   useEffect(() => {
@@ -226,7 +238,10 @@ export default function Index() {
   }, [view]);
 
   return (
-    <RouteLayout state={location?.state ? { page: location?.state?.page } : {}} path={`/${schoolName}/reports/program-usage-reports`}>
+    <RouteLayout
+      state={location?.state ? { page: location?.state?.page } : {}}
+      path={`/${schoolName}/reports/program-usage-reports`}
+    >
       <HeaderMenus
         title={`Report - Program Usage - ${view !== 'default' ? 'Graph View' : 'Detailed View'} `}
         menuArray={ADMIN_TOOLBAR_MENU}
@@ -234,35 +249,31 @@ export default function Index() {
       />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
-          {
-            view === 'default'
-              ? (
-                <div className="max-w-[200px]">
-                  <CustomInput
-                    name="Program"
-                    label="Program"
-                    size="small"
-                    value={ProgramName}
-                    disabled={true}
-                  />
-                </div>
-              )
-              : (
-                <div>
-                  <p className="mb-4 text-sm">Program</p>
-                  <Dropdown
-                    value={selectedprogram}
-                    dataArray={programs}
-                    onChangeHandler={(val) => {
-                      setselectedProgram(val);
-                    }}
-                    sxClass={{ width: '206px', marginRight: '10px' }}
-                    displayEmpty={true}
-                    loading={loadProgram || programRefetching}
-                  />
-                </div>
-              )
-          }
+          {view === 'default' ? (
+            <div className="max-w-[200px]">
+              <CustomInput
+                name="Program"
+                label="Program"
+                size="small"
+                value={ProgramName}
+                disabled={true}
+              />
+            </div>
+          ) : (
+            <div>
+              <p className="mb-4 text-sm">Program</p>
+              <Dropdown
+                value={selectedprogram}
+                dataArray={programs}
+                onChangeHandler={(val) => {
+                  setselectedProgram(val);
+                }}
+                sxClass={{ width: '206px', marginRight: '10px' }}
+                displayEmpty={true}
+                loading={loadProgram || programRefetching}
+              />
+            </div>
+          )}
           <div className="max-w-[200px]">
             <DatePicker
               value={FromDate}
@@ -313,7 +324,6 @@ export default function Index() {
                 </p>
               </div>
               <div className="overflow-x-auto">
-
                 <TotalStudentGraph data={totalStudent || []} />
               </div>
             </div>
@@ -322,7 +332,6 @@ export default function Index() {
                 {GRAPH_LABELS.TOTAL_ASSIGNMENT}
               </p>
               <div className="overflow-x-auto">
-
                 <TotalAssignment data={totalAssignments || []} />
               </div>
             </div>
@@ -331,14 +340,12 @@ export default function Index() {
                 {GRAPH_LABELS.TOTAL_ASSESSMENT}
               </p>
               <div className="overflow-x-auto">
-
                 <TotalAssessment data={totalAssessments || []} />
               </div>
             </div>
           </div>
         </>
       )}
-
     </RouteLayout>
   );
 }

@@ -1,11 +1,17 @@
 import Global from '@containers/adminPanel/components/Global';
 import Region from '@containers/adminPanel/components/Region';
-import React, { Suspense, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import React, {
+  Suspense,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from 'react';
 import Loader from '../../shared/loader';
 
 type tabType = {
   title: string;
-}
+};
 interface Props {
   tabs: tabType[];
   border?: boolean;
@@ -36,29 +42,33 @@ const Tabs = React.forwardRef((props: Props, ref: any) => {
     props?.setSelectedRegion(props.tabs[0]);
   }, []);
 
-  const renderTabs = useMemo(() => props.tabs.map((tab: tabType, index: number) => (
-    <div
-      key={tab.title}
-      role="presentation"
-      data-name={tab.title}
-      onClick={(ev) => {
-        if (props?.setRowsPerPage) {
-          props?.setRowsPerPage(10);
-          props?.setPage(1);
-        }
-        ev.stopPropagation();
-        setCurrentTab(tab);
-        props?.setSelectedRegion(tab);
-        setCurrentIndex(index);
-        props.paginateHandler(1);
-      }}
-      className={`w-[175px] h-[52px]
+  const renderTabs = useMemo(
+    () =>
+      props.tabs.map((tab: tabType, index: number) => (
+        <div
+          key={tab.title}
+          role="presentation"
+          data-name={tab.title}
+          onClick={(ev) => {
+            if (props?.setRowsPerPage) {
+              props?.setRowsPerPage(10);
+              props?.setPage(1);
+            }
+            ev.stopPropagation();
+            setCurrentTab(tab);
+            props?.setSelectedRegion(tab);
+            setCurrentIndex(index);
+            props.paginateHandler(1);
+          }}
+          className={`min-w-[100px] h-[52px] overflow-x-auto px-4
       ${currentTab.title === tab.title ? 'bg-accent text-white' : 'bg-[#FAFAFA] border border-[#CCCCCC] text-black'}
       rounded-tr-lg rounded-tl-lg text-sm grid place-items-center font-medium cursor-pointer`}
-    >
-      {tab.title}
-    </div>
-  )), [currentTab, currentIndex]);
+        >
+          {tab.title}
+        </div>
+      )),
+    [currentTab, currentIndex]
+  );
 
   const tabProps = {
     searchString: props.searchString,
@@ -72,14 +82,12 @@ const Tabs = React.forwardRef((props: Props, ref: any) => {
     setTriggerExport: props?.setTriggerExport,
     handleEditPopup: props?.handleEditPopup,
     setAdminCsvData: props?.setAdminCsvData,
-    editMode: props?.editMode
+    editMode: props?.editMode,
   };
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="flex">
-        {renderTabs}
-      </div>
+      <div className="flex">{renderTabs}</div>
       <div
         className={`
         flex-1
@@ -88,7 +96,13 @@ const Tabs = React.forwardRef((props: Props, ref: any) => {
         relative -top-1`}
       >
         <div ref={ref}>
-          <Suspense fallback={<div className="h-[200px] grid place-items-center"><Loader /></div>}>
+          <Suspense
+            fallback={
+              <div className="h-[200px] grid place-items-center">
+                <Loader />
+              </div>
+            }
+          >
             {currentTab.title === 'Global' && <Global {...tabProps} />}
             {currentTab.title === 'Region' && <Region {...tabProps} />}
           </Suspense>

@@ -3,7 +3,7 @@ import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
@@ -20,6 +20,15 @@ type StickyHeadTableProps = {
 export default function StickyHeadTable({ rows, columns, onChangeHandler, handleClearClick, fullHeight = false }:StickyHeadTableProps) {
   const location = useLocation();
   const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
+  const navigate = useNavigate();
+
+/*  const navigatToPreview = (state: any) => {
+    console.log('from nagivate to preview action');
+    navigate(`/${schoolNameInURL}/course-preview`, {
+      state
+    });
+  };*/
+
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <TableContainer sx={fullHeight ? {} : { maxHeight: 440 }}>
@@ -71,6 +80,11 @@ export default function StickyHeadTable({ rows, columns, onChangeHandler, handle
                               <span className="underline cursor-pointer font-medium">{value}</span>
                               {' '}
                             </Link>
+                            {/*<button onClick={() => navigatToPreview({ ...row?.scormDataView, isDueDatedExceeded: true, pageNumber: row?.pageNumber })}>
+                              {' '}
+                              <span className="underline cursor-pointer font-medium">{value}</span>
+                              {' '}
+                            </button>*/}
                           </TableCell>)
                         : (
                           <TableCell key={column.id}>

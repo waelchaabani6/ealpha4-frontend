@@ -14,7 +14,7 @@ export default function DigitalLib() {
       navBack={true}
     >
       <HeaderMenus
-        title="Digital Library"
+        title="My Library"
         menuArray={[]}
       />
       <div className="flex flex-row mt-4">

@@ -13,6 +13,7 @@
     "build": "tsc && vite build",
     "build:uat": "tsc && vite build --mode uat",
     "build:preprod": "tsc && vite build --mode preprod",
+    "build:staging": "vite build --mode staging",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -25,9 +26,12 @@
     "@mui/material": "^5.11.3",
     "@mui/system": "^5.11.2",
     "@mui/x-date-pickers": "^5.0.13",
+    "@react-oauth/google": "^0.12.1",
     "@react-spring/types": "^9.6.1",
     "@reduxjs/toolkit": "^1.9.2",
+    "@types/gapi": "^0.0.47",
     "@types/react-csv": "^1.1.3",
+    "@use-gapi/react": "^0.0.3",
     "axios": "^1.2.2",
     "country-calling-code": "^0.0.3",
     "dayjs": "^1.11.7",
@@ -45,6 +49,7 @@
     "react-dom": "^18.2.0",
     "react-draft-wysiwyg": "^1.15.0",
     "react-export-table-to-excel": "^1.0.6",
+    "react-gapi-auth2": "^1.0.4",
     "react-hook-form": "^7.43.0",
     "react-infinite-scroll-component": "^6.1.0",
     "react-multi-carousel": "^2.8.4",

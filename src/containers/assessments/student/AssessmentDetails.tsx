@@ -12,7 +12,13 @@ import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import Wrapper from '@shared/wrapper/Wrapper';
 import Dropdown from '@component/dropdown/Dropdown';
 import RouteLayout from '../../layout/routeLayout';
-import { STATUS_ITEMS, RESULTS_PER_PAGE, COMPONENTS, TABLE_LABELS, TOOLBAR_LABELS } from '../../../constants/constants';
+import {
+  STATUS_ITEMS,
+  RESULTS_PER_PAGE,
+  COMPONENTS,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '../../../constants/constants';
 import SimpleTableDx from '../../../components/SimpleTableDx/index';
 
 const printButton = () => <PrintIcon />;
@@ -21,33 +27,33 @@ const dataArray = [
   { label: 'Page', value: 'Page' },
   { label: 'Page 1', value: 'Page 1' },
   { label: 'Page 2', value: 'Page 2' },
-  { label: 'Page 3', value: 'Page 3' }
+  { label: 'Page 3', value: 'Page 3' },
 ];
 
 const headers = [
   TABLE_LABELS?.SR_NO,
   TABLE_LABELS?.ASSIGNMET_NAME,
-  TABLE_LABELS?.SUBJECT,
+  TABLE_LABELS?.COURSES,
   TABLE_LABELS?.GRADE,
   TABLE_LABELS?.LESSONS,
   TABLE_LABELS?.STATE,
   TABLE_LABELS?.CLASS_STUDENTS,
   TABLE_LABELS?.START_DATE,
   TABLE_LABELS?.END_DATE,
-  TABLE_LABELS?.SCORE
+  TABLE_LABELS?.SCORE,
 ];
 
 const csvSubHeaders = [
   TABLE_LABELS?.SR_NO,
   TABLE_LABELS?.ASSIGNMET_NAME,
-  TABLE_LABELS?.SUBJECT,
+  TABLE_LABELS?.COURSES,
   TABLE_LABELS?.GRADE,
   TABLE_LABELS?.LESSONS,
   TABLE_LABELS?.STATE,
   TABLE_LABELS?.CLASS_STUDENTS,
   TABLE_LABELS?.START_DATE,
   TABLE_LABELS?.END_DATE,
-  TABLE_LABELS?.SCORE
+  TABLE_LABELS?.SCORE,
 ];
 // Here -->
 interface Column {
@@ -62,11 +68,19 @@ interface Column {
 }
 // readonly Column[]
 const columns: Column[] = [
-  { id: 'Pages', label: 'Page', minWidth: 170, align: 'right', component: 'Dropdown', dataArray, selectedValue: 'Page' },
+  {
+    id: 'Pages',
+    label: 'Page',
+    minWidth: 170,
+    align: 'right',
+    component: 'Dropdown',
+    dataArray,
+    selectedValue: 'Page',
+  },
   { id: 'Score', label: 'Score', minWidth: 100, align: 'right' },
   { id: 'Unattempted', label: 'Unattempted', minWidth: 170, align: 'right' },
   { id: 'Wrong', label: 'Wrong', minWidth: 170, align: 'right' },
-  { id: 'Correct', label: 'Correct', minWidth: 170, align: 'right' }
+  { id: 'Correct', label: 'Correct', minWidth: 170, align: 'right' },
 ];
 
 interface Data {
@@ -90,7 +104,7 @@ function createData(
 const rows = [
   createData('Page1', '30%', 1, 1, 1),
   createData('Page2', '10%', 1, 1, 1),
-  createData('Page3', '70%', 1, 1, 1)
+  createData('Page3', '70%', 1, 1, 1),
 ];
 
 function AssessmentDetails() {
@@ -106,11 +120,11 @@ function AssessmentDetails() {
 
   const handelSendEmail = () => {
     const payload = {
-      list_type: 'school-list'
+      list_type: 'school-list',
     };
     setPlayloadData({
       apicall: 'sendEmail',
-      payload
+      payload,
     });
   };
 
@@ -135,33 +149,35 @@ function AssessmentDetails() {
   };
 
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: <EmailIcon />,
+    // },
     {
       title: 'Download',
-      icon: <Download />
+      icon: <Download />,
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   // eslint-disable-next-line consistent-return
   function colorCode(scoreAch: number, type: string) {
     if (scoreAch <= 35) {
-      return { bg: '#FEE2E2', color: '#E36B6B' }[type]; // Red
+      return { bg: '#FCD4C6', color: '#E36B6B' }[type]; // Red
     }
     if (scoreAch > 35 && scoreAch <= 50) {
-      return { bg: '#FEF9C3', color: '#C7B551' }[type]; // Yello
+      return { bg: '#FFF9BE', color: '#C7B551' }[type]; // Yello
     }
     if (scoreAch > 50 && scoreAch <= 70) {
-      return { bg: '#6582EA', color: '#132E90 ' }[type]; // blue
+      return { bg: '#BECCFF', color: '#132E90 ' }[type]; // blue
     }
     if (scoreAch >= 70) {
       return { bg: '#E5F8E2', color: '#6CA463' }[type]; // green
@@ -171,10 +187,13 @@ function AssessmentDetails() {
   return (
     <div>
       <RouteLayout>
-        <HeaderMenus title="Assessment Details" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+        <HeaderMenus
+          title="Assessment Details"
+          menuArray={ADMIN_TOOLBAR_MENU}
+          handleToolbarAction={handleToolbarAction}
+        />
 
         <div className="flex flex-col bg-white p-4 mt-5 md:flex-row">
-
           <div className="flex flex-col grow md:flex-row ">
             <div className="grow flex flex-col md:border-r md:border-r-gray-300">
               <div className="mb-5">
@@ -191,7 +210,6 @@ function AssessmentDetails() {
                 <div className="font-bold"> Teacher </div>
                 <div> Mark MSE </div>
               </div>
-
             </div>
 
             <div className="grow md:border-r md:border-r-gray-300 md:ml-4">
@@ -221,23 +239,23 @@ function AssessmentDetails() {
             </div>
 
             <div className="grow box-content flex items-center h-full justify-center">
-              <div style={{ backgroundColor: colorCode(score, 'bg') }} className="h-3/5 w-5/6 flex items-center justify-center md:text-2xl text-sm rounded">
+              <div
+                style={{ backgroundColor: colorCode(score, 'bg') }}
+                className="h-3/5 w-5/6 flex items-center justify-center md:text-2xl text-sm rounded"
+              >
                 Score
-                <span className="text-blue-100" style={{ color: colorCode(score, 'color') }}>
+                <span
+                  className="text-blue-100"
+                  style={{ color: colorCode(score, 'color') }}
+                >
                   &nbsp;
-                  {score}
-                  %
-                  {' '}
-                  (
-                  {`${score}`}
-                  /100)
-                  &nbsp;
+                  {score}% ({`${score}`}
+                  /100) &nbsp;
                 </span>
                 - Meets
               </div>
             </div>
           </div>
-
         </div>
 
         <div className="wrapperBorder mt-8" ref={componentRef}>
@@ -245,7 +263,9 @@ function AssessmentDetails() {
             <SimpleTableDx
               rows={rows}
               columns={columnsHeader}
-              onChangeHandler={(val: string, cIndex: number) => { changeColumnsHeader(val, cIndex); }}
+              onChangeHandler={(val: string, cIndex: number) => {
+                changeColumnsHeader(val, cIndex);
+              }}
             />
             {/* <AdvanceTable
               tableData={tableData}

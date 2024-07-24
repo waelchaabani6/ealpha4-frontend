@@ -3,7 +3,13 @@ import ButtonToggle from '@component/ToggleButton/ToggleButton';
 import DatePicker from '@component/datepicker';
 import Dropdown from '@component/dropdown/Dropdown';
 import { CustomInput } from '@component/input';
-import { GRAPH_LABELS, TABLE_LABELS, TOOLBAR_LABELS, USER_TYPE } from '@constants/constants';
+import {
+  GRAPH_LABELS,
+  TABLE_LABELS,
+  RESULTS_PER_PAGE,
+  TOOLBAR_LABELS,
+  USER_TYPE,
+} from '@constants/constants';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
 import RouteLayout from '@layout/routeLayout';
 import EmailIcon from '@mui/icons-material/Email';
@@ -13,7 +19,7 @@ import {
   FormControl,
   FormControlLabel,
   Radio,
-  RadioGroup
+  RadioGroup,
 } from '@mui/material';
 import { useGet } from '@shared/api/useApi';
 import Loader from '@shared/loader';
@@ -39,7 +45,8 @@ export default function Index() {
   const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
   const link = `/${schoolNameInURL}/reports/program-usage-detail`;
   const componentRef = useRef(null);
-  const rowsPerPage = 10;
+  // const rowsPerPage = 10;
+  const [rowsPerPage, setRowsPerPage] = useState<any>(RESULTS_PER_PAGE?.[0]);
   const USER_ROLE = userData?.role?.name;
 
   const [csvData, setCsvData] = useState<[]>([]);
@@ -60,44 +67,51 @@ export default function Index() {
 
   const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || '';
   const BRANCH_ID = branchData?.school_data?.id || '';
+
   const noOfpages = getNoOfPages(totalRecords, rowsPerPage);
 
   const Y_AXIS_RADIO_OPTIONS = [
     {
       label: 'Students',
-      value: 'option1'
+      value: 'option1',
     },
     {
       label: 'Teachers',
-      value: 'option2'
+      value: 'option2',
     },
     {
       label: 'Total Time - Students',
-      value: 'option3'
+      value: 'option3',
     },
     {
       label: 'Total Time - Teachers',
-      value: 'option4'
+      value: 'option4',
     },
     {
       label: 'Total Time - Student + Teachers',
-      value: 'option5'
-    }
+      value: 'option5',
+    },
   ];
-  const filteredOptions = Y_AXIS_RADIO_OPTIONS.filter((option) => option.label !== 'Teachers');
+  const filteredOptions = Y_AXIS_RADIO_OPTIONS.filter(
+    (option) => option.label !== 'Teachers'
+  );
 
   const X_AXIS_RADIO_OPTIONS = [
     {
       label: 'Class',
-      value: 'class'
+      value: 'class',
     },
     {
       label: 'Teacher',
-      value: 'teacher'
-    }
+      value: 'teacher',
+    },
   ];
 
-  const { isRefetching: emailSendLoading, refetch: sendEmail, isLoading: emailLoad } = useGet({
+  const {
+    isRefetching: emailSendLoading,
+    refetch: sendEmail,
+    isLoading: emailLoad,
+  } = useGet({
     baseURL: ReportURL,
     url: `reports-service/program_usage-report/send-email/?school_id=${SCHOOL_ID}`,
     onSuccess: () => {
@@ -107,7 +121,7 @@ export default function Index() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Unable to send email');
     },
-    enabled: false
+    enabled: false,
   }) as any;
 
   const csvSubHeaders = [
@@ -121,14 +135,13 @@ export default function Index() {
     TABLE_LABELS?.AVG_TIME_STUDENT,
     TABLE_LABELS?.TOTAL_TIME_TEACHER,
     TABLE_LABELS?.AVG_TIME_TEACHER,
-    TABLE_LABELS?.TOTAL_TIME_TEACH_STD
-
+    TABLE_LABELS?.TOTAL_TIME_TEACH_STD,
   ];
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: 'Export',
       icon: (
@@ -140,7 +153,7 @@ export default function Index() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: 'Print',
@@ -149,8 +162,8 @@ export default function Index() {
           trigger={printButton}
           content={() => componentRef.current}
         />
-      )
-    }
+      ),
+    },
   ];
   const handleToolbarAction = async (title: string) => {
     if (title === TOOLBAR_LABELS.EMAIL) {
@@ -162,12 +175,12 @@ export default function Index() {
     {
       label: TABLE_LABELS?.SR_NO,
       mapper: 'SR_NO',
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.PROGRAM,
       mapper: 'Program',
-      align: 'center'
+      align: 'center',
     },
     // {
     //   label: TABLE_LABELS?.NO_OF_SCHOOL,
@@ -177,48 +190,43 @@ export default function Index() {
     {
       label: TABLE_LABELS?.TOTAL_CLASS,
       mapper: 'Class',
-      align: 'center'
-
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.TOTAL_STUDENT,
       align: 'center',
-      mapper: 'TotalStudent'
+      mapper: 'TotalStudent',
     },
     {
       label: TABLE_LABELS?.TOTAL_TEACHER,
       align: 'center',
-      mapper: 'TotalTeacher'
+      mapper: 'TotalTeacher',
     },
     {
       label: TABLE_LABELS?.TOTAL_TIME_STUDENT,
       align: 'center',
-      mapper: 'TotalTimeStudent'
+      mapper: 'TotalTimeStudent',
     },
     {
       label: TABLE_LABELS?.AVG_TIME_STUDENT,
       mapper: 'AvgTimeStudent',
-      align: 'center'
-
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.TOTAL_TIME_TEACHER,
       mapper: 'TotalTimeTeacher',
-      align: 'center'
-
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.AVG_TIME_TEACHER,
       mapper: 'AvgTimeTeacher',
-      align: 'center'
-
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.TOTAL_TIME_TEACH_STD,
       mapper: 'TotalTimeTeacherStd',
-      align: 'center'
-
-    }
+      align: 'center',
+    },
   ];
 
   const handlePagination = (currPage: any) => {
@@ -231,10 +239,15 @@ export default function Index() {
   const handleOptionXaxisChange = (event: any) => {
     setXaxis(event.target.value);
   };
-  const branchid = selectedBranch !== 'All' ? (BranchArray?.find((i: any) => i?.label === selectedBranch)?.id || BRANCH_ID || '') : '';
+  const branchid =
+    selectedBranch !== 'All'
+      ? BranchArray?.find((i: any) => i?.label === selectedBranch)?.id ||
+        BRANCH_ID ||
+        ''
+      : '';
   const { isFetching: reportLoading, refetch: FetchProgramUsage } = useGet({
     baseURL: ReportURL,
-    url: `reports-service/program_usage_report/?school_id=${SCHOOL_ID}${fromDate ? `&from_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&to_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}&page=${page}${graph ? `&is_graph=${graph}` : ''}${branchid ? `&branch_id=${branchid}` : ''}`,
+    url: `reports-service/program_usage_report/?school_id=${SCHOOL_ID}${fromDate ? `&from_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&to_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}&page=${page}&page_size=${rowsPerPage}${graph ? `&is_graph=${graph}` : ''}${branchid ? `&branch_id=${branchid}` : ''}`,
     onSuccess: (res: any) => {
       const ProgramData = res?.data?.response;
       const tableArray = ProgramData?.data;
@@ -245,25 +258,38 @@ export default function Index() {
         const csvbody: any = [];
         tableArray?.map((i: any, index: any) => {
           const rowLink = `${link}/${i.start_date}/${i.end_date}/${i.program_id}/${i.program}`;
-          body.push(
-            {
-              SR_NO: i.series_no,
-              Program: <Link state={{ page }} to={rowLink}><span className="text-accent underline cursor-pointer text-xs font-medium">{i.program}</span></Link>,
-              Class: i.total_classes,
-              TotalStudent: i.total_students,
-              TotalTeacher: i.total_teachers,
-              TotalTimeStudent: i.total_time_students,
-              AvgTimeStudent: i.average_time_students,
-              TotalTimeTeacher: i.total_time_teachers,
-              AvgTimeTeacher: i.average_time_teachers,
-              TotalTimeTeacherStd: i.total_time_teachers_and_students,
-              ProgramId: i.program_id,
-              FromDate: i.start_date,
-              ToDate: i.end_date
-
-            }
-          );
-          csvbody.push([i.program, i.total_classes, i.total_students, i.total_teachers, i.total_time_students, i.average_time_students, i.total_time_teachers, i.average_time_teachers, i.total_time_teachers_and_students]);
+          body.push({
+            SR_NO: i.series_no,
+            Program: (
+              <Link state={{ page }} to={rowLink}>
+                <span className="text-accent underline cursor-pointer text-xs font-medium">
+                  {i.program}
+                </span>
+              </Link>
+            ),
+            Class: i.total_classes,
+            TotalStudent: i.total_students,
+            TotalTeacher: i.total_teachers,
+            TotalTimeStudent: i.total_time_students,
+            AvgTimeStudent: i.average_time_students,
+            TotalTimeTeacher: i.total_time_teacher,
+            AvgTimeTeacher: i.average_time_teachers,
+            TotalTimeTeacherStd: i.total_time_teachers_and_students,
+            ProgramId: i.program_id,
+            FromDate: i.start_date,
+            ToDate: i.end_date,
+          });
+          csvbody.push([
+            i.program,
+            i.total_classes,
+            i.total_students,
+            i.total_teachers,
+            i.total_time_students,
+            i.average_time_students,
+            i.total_time_teachers,
+            i.average_time_teachers,
+            i.total_time_teachers_and_students,
+          ]);
           return true;
         });
         setTableData(body);
@@ -278,9 +304,15 @@ export default function Index() {
           const time_teachers = ele?.total_time_teachers;
           const teacherstudent = ele?.total_time_teachers_and_students;
 
-          const [hours1, minutes1, seconds1] = total_time_student.split(':').map(Number);
-          const [hours2, minutes2, seconds2] = time_teachers.split(':').map(Number);
-          const [hours3, minutes3, seconds3] = teacherstudent.split(':').map(Number);
+          const [hours1, minutes1, seconds1] = total_time_student
+            .split(':')
+            .map(Number);
+          const [hours2, minutes2, seconds2] = time_teachers
+            .split(':')
+            .map(Number);
+          const [hours3, minutes3, seconds3] = teacherstudent
+            .split(':')
+            .map(Number);
 
           const totalSeconds1 = hours1 * 3600 + minutes1 * 60 + seconds1;
           const totalSeconds2 = hours2 * 3600 + minutes2 * 60 + seconds2;
@@ -301,15 +333,14 @@ export default function Index() {
             ...ele,
             total_time_students: totalDays1,
             total_time_teachers: totalDay2,
-            total_time_teachers_and_students: totalDays3
+            total_time_teachers_and_students: totalDays3,
           });
         });
         setBarData(body);
       }
     },
-    onError: ({ response }: any) => {
-    },
-    enabled: false
+    onError: ({ response }: any) => {},
+    enabled: false,
   });
   const handelSendEmail = () => {
     sendEmail();
@@ -330,19 +361,29 @@ export default function Index() {
       const branchArray: never[] = respData.map((i: any) => ({
         label: i?.name,
         value: i?.name,
-        id: i?.id
+        id: i?.id,
       }));
       branchArray?.sort(sortData);
       setBranchArray(branchArray);
     },
-    enabled: false
+    enabled: false,
   });
 
   useEffect(() => {
     if (SCHOOL_ID || BRANCH_ID) {
       FetchProgramUsage();
     }
-  }, [selectedBranch, schoolData, branchData, fromDate, toDate, graph, page, temp]);
+  }, [
+    selectedBranch,
+    schoolData,
+    branchData,
+    fromDate,
+    toDate,
+    graph,
+    page,
+    rowsPerPage,
+    temp,
+  ]);
 
   useEffect(() => {
     if (view === 'secondary') {
@@ -370,9 +411,13 @@ export default function Index() {
       setPage(location?.state?.page);
     }
   }, []);
+  const handlePerPage = (e: any) => {
+    setPage(page);
+    setRowsPerPage(e);
+  };
 
   return (
-    <RouteLayout navBack={false}>
+    <RouteLayout navBack={true}>
       <HeaderMenus
         title={`Report - Program Usage ${view !== 'default' ? '- Overview' : ''} `}
         menuArray={ADMIN_TOOLBAR_MENU}
@@ -393,6 +438,15 @@ export default function Index() {
                 sxClass={{ width: '206px', marginRight: '10px' }}
               />
             )}
+            <div>
+              <Dropdown
+                title="Result Of Pages"
+                value={rowsPerPage}
+                dataArray={RESULTS_PER_PAGE}
+                onChangeHandler={handlePerPage}
+                sxClass={{ width: '206px', marginRight: '10px' }}
+              />
+            </div>
             {userData && USER_ROLE === USER_TYPE.BRANCH_ADMIN && (
               <div className="w-max">
                 <CustomInput
@@ -426,15 +480,18 @@ export default function Index() {
                 disableOld={fromDate}
               />
             </div>
-            {
-              (toDate || fromDate) && (
-                <div className="relative top-[-5px]">
-                  <span tabIndex={0} title="Clear dates" onClick={() => reset()} role="button">
-                    <RestartAltIcon />
-                  </span>
-                </div>
-              )
-            }
+            {(toDate || fromDate) && (
+              <div className="relative top-[-5px]">
+                <span
+                  tabIndex={0}
+                  title="Clear dates"
+                  onClick={() => reset()}
+                  role="button"
+                >
+                  <RestartAltIcon />
+                </span>
+              </div>
+            )}
           </div>
         </>
         <div>
@@ -462,9 +519,10 @@ export default function Index() {
             <div className="wrapperBorder mt-3">
               <Wrapper>
                 <div className="flex flex-col">
-                  <p className="font-semibold text-xl items-center justify-center flex">Total Students vs Active Students</p>
+                  <p className="font-semibold text-xl items-center justify-center flex">
+                    Total Students vs Active Students
+                  </p>
                   <div className="m-2">
-
                     <div className="flex">
                       <p className="m-2"> Select to view values on Y-Axis:</p>
                       <FormControl>
@@ -476,24 +534,25 @@ export default function Index() {
                           value={yaxis}
                           onChange={handleOptionChange}
                         >
-                          {
-                            (xaxis === 'teacher' ? filteredOptions : Y_AXIS_RADIO_OPTIONS)?.map((i: any) => (
-                              <FormControlLabel
-                                value={i?.value || ''}
-                                control={
-                                  <Radio
-                                    sx={{
+                          {(xaxis === 'teacher'
+                            ? filteredOptions
+                            : Y_AXIS_RADIO_OPTIONS
+                          )?.map((i: any) => (
+                            <FormControlLabel
+                              value={i?.value || ''}
+                              control={
+                                <Radio
+                                  sx={{
+                                    color: 'var(--sunlight)',
+                                    '&.Mui-checked': {
                                       color: 'var(--sunlight)',
-                                      '&.Mui-checked': {
-                                        color: 'var(--sunlight)'
-                                      }
-                                    }}
-                                  />
-                                }
-                                label={i?.label}
-                              />
-                            ))
-                          }
+                                    },
+                                  }}
+                                />
+                              }
+                              label={i?.label}
+                            />
+                          ))}
                         </RadioGroup>
                       </FormControl>
                     </div>
@@ -508,39 +567,42 @@ export default function Index() {
                           value={xaxis}
                           onChange={handleOptionXaxisChange}
                         >
-                          {
-                            X_AXIS_RADIO_OPTIONS?.map((i: any) => (
-                              <FormControlLabel
-                                value={i?.value || ''}
-                                control={
-                                  <Radio
-                                    sx={{
+                          {X_AXIS_RADIO_OPTIONS?.map((i: any) => (
+                            <FormControlLabel
+                              value={i?.value || ''}
+                              control={
+                                <Radio
+                                  sx={{
+                                    color: 'var(--sunlight)',
+                                    '&.Mui-checked': {
                                       color: 'var(--sunlight)',
-                                      '&.Mui-checked': {
-                                        color: 'var(--sunlight)'
-                                      }
-                                    }}
-                                  />
-                                }
-                                label={i?.label}
-                              />
-                            ))
-                          }
+                                    },
+                                  }}
+                                />
+                              }
+                              label={i?.label}
+                            />
+                          ))}
                         </RadioGroup>
                       </FormControl>
                     </div>
                   </div>
-                  <ProgramUsageOverview barData={barData} xaxis={xaxis} yaxis={yaxis} />
-                  <h1 className="font-semibold text-lg flex justify-center mb-19">{xaxis === 'class' ? GRAPH_LABELS.CLASSES : TABLE_LABELS.TEACHERS}</h1>
-
+                  <ProgramUsageOverview
+                    barData={barData}
+                    xaxis={xaxis}
+                    yaxis={yaxis}
+                  />
+                  <h1 className="font-semibold text-lg flex justify-center mb-19">
+                    {xaxis === 'class'
+                      ? GRAPH_LABELS.CLASSES
+                      : TABLE_LABELS.TEACHERS}
+                  </h1>
                 </div>
               </Wrapper>
             </div>
-
           </div>
         </>
       )}
-
     </RouteLayout>
   );
 }

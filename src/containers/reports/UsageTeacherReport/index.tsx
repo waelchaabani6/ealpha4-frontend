@@ -51,7 +51,8 @@ export default function Index() {
   const componentRef = useRef(null);
   const [graph, setGraph] = useState('');
   const location = useLocation();
-  const rowsPerPage = 10;
+  // const rowsPerPage = 10;
+  const [rowsPerPage, setRowsPerPage] = useState<any>(RESULTS_PER_PAGE?.[0]);
   const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
@@ -207,7 +208,7 @@ export default function Index() {
   }, [selectedteacher]) as string;
   const { isLoading, data } = useGet({
     baseURL: ReportURL,
-    url: `reports-service/usage-report-teacher-detail/?school_id=${schoolData?.id || branchData?.school_data?.id}${selectedBranch !== 'select' ? `&branch_id=${selectedBranch}` : userRole().isBranchAdmin || branchData ? `&branch_id=${branchData?.id}` : ''}${selectedteacher !== 'select' ? `&teacher=${teacherName}` : ''}${selectedClass !== 'select' ? `&class_id=${selectedClass}` : ''}${fromDate ? `&from_date=${moment(fromDate).format('yyyy-MM-DD')}` : ''}${toDate ? `&to_date=${moment(toDate).format('yyyy-MM-DD')}` : ''}&page=${page}&is_graph=${graph}${selectedprogram !== 'select' ? `&program=${selectedprogram}` : ''}`,
+    url: `reports-service/usage-report-teacher-detail/?school_id=${schoolData?.id || branchData?.school_data?.id}${selectedBranch !== 'select' ? `&branch_id=${selectedBranch}` : userRole().isBranchAdmin || branchData ? `&branch_id=${branchData?.id}` : ''}${selectedteacher !== 'select' ? `&teacher=${teacherName}` : ''}${selectedClass !== 'select' ? `&class_id=${selectedClass}` : ''}${fromDate ? `&from_date=${moment(fromDate).format('yyyy-MM-DD')}` : ''}${toDate ? `&to_date=${moment(toDate).format('yyyy-MM-DD')}` : ''}&page=${page}&page_size=${rowsPerPage}&is_graph=${graph}${selectedprogram !== 'select' ? `&program=${selectedprogram}` : ''}`,
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.total_records);
       const Graph1 = res?.data?.response?.total_students_vs_active_students;
@@ -276,6 +277,11 @@ export default function Index() {
     }
   }, []);
 
+  const handlePerPage = (e: any) => {
+    setPage(page);
+    setRowsPerPage(e);
+  };
+
   return (
     <RouteLayout>
       <HeaderMenus
@@ -283,7 +289,7 @@ export default function Index() {
         menuArray={ADMIN_TOOLBAR_MENU}
         handleToolbarAction={handleToolbarAction}
       />
-      <div className={`w-full grid grid-cols-1 ${userRole().isBranchAdmin ? 'lg:grid-cols-6' : 'lg:grid-cols-7'} my-2 gap-2 items-center justify-between`}>
+      <div className={`w-full grid grid-cols-1 ${userRole().isBranchAdmin ? 'lg:grid-cols-7' : 'lg:grid-cols-8'} my-2 gap-2 items-center justify-between`}>
         {
           view === 'default'
             ? (
@@ -304,6 +310,14 @@ export default function Index() {
                     />
                   )
                 }
+
+                <Dropdown
+                  title="Result Of Pages"
+                  value={rowsPerPage}
+                  dataArray={RESULTS_PER_PAGE}
+                  onChangeHandler={handlePerPage}
+                  sxClass={{ width: '100%' }}
+                />
                 <Dropdown
                   title="Teacher Name"
                   loading={teacherListLoading}
@@ -392,10 +406,10 @@ export default function Index() {
               headerRows={TableColumns}
               currentPage={page}
               totalPages={noOfpages}
-              rowsPerPage={RESULTS_PER_PAGE?.[0]}
+              rowsPerPage={rowsPerPage}
               paginateHandler={handlePagination}
               setPage={setPage}
-              maxHeight={620}
+              // maxHeight={620}
             />
           </Wrapper>
         </div>

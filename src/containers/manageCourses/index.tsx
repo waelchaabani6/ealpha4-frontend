@@ -16,8 +16,10 @@ import moment from 'moment';
 import RouteLayout from '@layout/routeLayout';
 import Dropdown from '@component/dropdown/Dropdown';
 import {
-  RESULTS_PER_PAGE, COMPONENTS, TABLE_COURCES,
-  TOOLBAR_LABELS
+  RESULTS_PER_PAGE,
+  COMPONENTS,
+  TABLE_COURCES,
+  TOOLBAR_LABELS,
 } from '@constants/constants';
 import CustomPagination from '@component/pagination/CustomPagination';
 import { getNoOfPages } from '@utility/utility';
@@ -26,7 +28,7 @@ import Wrapper from '@shared/wrapper/Wrapper';
 type DropDownType = {
   name: string;
   dataArray: { label: string; value: number | string }[];
-}
+};
 
 const printButton = () => <PrintIcon />;
 
@@ -54,7 +56,7 @@ const ManageCourses = (): JSX.Element => {
     { name: 'Course' },
     { name: 'Grade' },
     { name: 'Component' },
-    { name: 'Volume' }
+    { name: 'Volume' },
   ]);
 
   const [order, setOrder] = useState<any>('desc');
@@ -67,78 +69,82 @@ const ManageCourses = (): JSX.Element => {
     'Grade',
     'Category',
     'Component',
-    'Volume'
+    'Volume',
     // ...dropdownHeaders
   ];
 
   const TableColumns = [
     {
       label: TABLE_COURCES?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_COURCES?.CourceName,
       isSort: true,
-      mapper: 'name'
+      mapper: 'name',
     },
     {
       label: TABLE_COURCES?.Category,
       isSort: true,
-      mapper: 'Category'
+      mapper: 'Category',
     },
     {
       label: TABLE_COURCES?.Course,
       isSort: true,
-      mapper: 'Course'
+      mapper: 'Course',
     },
     {
       label: TABLE_COURCES?.Grade,
       isSort: true,
-      mapper: 'Grade'
+      mapper: 'Grade',
     },
     {
       label: TABLE_COURCES?.Component,
       isSort: true,
-      mapper: 'Component'
+      mapper: 'Component',
     },
     {
       label: TABLE_COURCES?.Volume,
       isSort: true,
-      mapper: 'Volume'
+      mapper: 'Volume',
     },
     {
       label: 'Uploaded From',
       mapper: 'uploaded_from',
-      isSort: false
+      isSort: false,
     },
     {
       label: 'Created At',
       mapper: 'created_at',
-      isSort: false
+      isSort: false,
     },
     {
       label: TABLE_COURCES?.ISBN,
-      mapper: 'isbn_number'
+      mapper: 'isbn_number',
     },
     {
       label: TABLE_COURCES?.ACTION,
       mapper: 'status',
       component: COMPONENTS?.switch,
       showInHeader: false,
-      align: 'center'
-    }
+      align: 'center',
+    },
   ];
 
-  const navigateToPreview = (id: number, name: string, image: any, logo: any) => {
-    navigate(`/manage-courses/upload-course/preview`,
-      {
-        state: {
-          id,
-          name,
-          image,
-          logo
-        }
-      });
+  const navigateToPreview = (
+    id: number,
+    name: string,
+    image: any,
+    logo: any
+  ) => {
+    navigate(`/manage-courses/upload-course/preview`, {
+      state: {
+        id,
+        name,
+        image,
+        logo,
+      },
+    });
   };
 
   const handlePerPage = (e: any) => {
@@ -149,7 +155,7 @@ const ManageCourses = (): JSX.Element => {
   const selectHandleChange = (label: string, value: string) => {
     setSelectData((prev) => ({
       ...prev,
-      [label]: value
+      [label]: value,
     }));
     // setSelectData((prev) => {
     //   const newData: any = {};
@@ -166,12 +172,15 @@ const ManageCourses = (): JSX.Element => {
     // Object.keys(selectData).forEach((key) => {
     //   newData[key] = key;
     // });
-    const newData = Object.entries(selectData).map(([key, value]) => {
-      if (value !== 'Select') {
-        return `${key}=${value}`;
-      }
-      return null;
-    }).filter((str) => str !== null).join('&');
+    const newData = Object.entries(selectData)
+      .map(([key, value]) => {
+        if (value !== 'Select') {
+          return `${key}=${value}`;
+        }
+        return null;
+      })
+      .filter((str) => str !== null)
+      .join('&');
     setDropdownSearch(newData);
   }, [selectData]);
 
@@ -202,38 +211,54 @@ const ManageCourses = (): JSX.Element => {
     },
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
-    }
+    },
   });
 
   const getDatas = (dataArr: any) => {
-    const apis = dataArr?.map((item: any) => api(import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL).get(`course-code-service/courses/content/?ordering=-created_at&limit=3000&offset=${0}&selection=${item.name}`));
-    Promise.allSettled(apis).then((res: any) => {
-      const headerData: any = [];
-      const tmp = res.map((element: any) => {
-        const url = new URL(`${import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL}/${element.value.config.url}`);
-        const searchParams = new URLSearchParams(url.search);
-        const arrDropdown = element.value.data.response.results.map((i: any) => ({ label: i.content, value: i.content }));
-        headerData.push({
-          label: searchParams.get('selection'),
-          isSort: true,
-          mapper: searchParams.get('selection')
-          // align: 'center'
+    const apis = dataArr?.map((item: any) =>
+      api(import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL).get(
+        `course-code-service/courses/content/?ordering=-created_at&limit=3000&offset=${0}&selection=${item.name}`
+      )
+    );
+    Promise.allSettled(apis)
+      .then((res: any) => {
+        const headerData: any = [];
+        const tmp = res.map((element: any) => {
+          const url = new URL(
+            `${import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL}/${element.value.config.url}`
+          );
+          const searchParams = new URLSearchParams(url.search);
+          const arrDropdown = element.value.data.response.results.map(
+            (i: any) => ({ label: i.content, value: i.content })
+          );
+          headerData.push({
+            label: searchParams.get('selection'),
+            isSort: true,
+            mapper: searchParams.get('selection'),
+            // align: 'center'
+          });
+          return {
+            name: searchParams.get('selection'),
+            dataArray: [{ label: 'Select', value: 'Select' }, ...arrDropdown],
+          };
         });
-        return ({
-          name: searchParams.get('selection'),
-          dataArray: [{ label: 'Select', value: 'Select' }, ...arrDropdown]
-        });
-      });
 
-      setDynamicDropdown(tmp);
-      setSelectData(tmp.reduce(
-        (acc: any, dropdown: any) => ({ ...acc, [dropdown.name]: dropdown.dataArray[0].value }),
-        {}
-      ));
-      setDropdownHeaders(headerData);
-    }).catch((err: any) => {
-      setError('Someting Went Wrong');
-    }).finally(() => setLoad(false));
+        setDynamicDropdown(tmp);
+        setSelectData(
+          tmp.reduce(
+            (acc: any, dropdown: any) => ({
+              ...acc,
+              [dropdown.name]: dropdown.dataArray[0].value,
+            }),
+            {}
+          )
+        );
+        setDropdownHeaders(headerData);
+      })
+      .catch((err: any) => {
+        setError('Someting Went Wrong');
+      })
+      .finally(() => setLoad(false));
   };
 
   // Status Update : Course
@@ -248,9 +273,9 @@ const ManageCourses = (): JSX.Element => {
     onError: ({ response }: any) => {
       refetch();
       toast('error', response?.statusText || 'Error');
-    }
+    },
   });
-  const temps = (rowsPerPage === 'all') ? totalDataCount : rowsPerPage;
+  const temps = rowsPerPage === 'all' ? totalDataCount : rowsPerPage;
   const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
   const { isLoading, isRefetching, refetch } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
@@ -267,12 +292,30 @@ const ManageCourses = (): JSX.Element => {
             ...item,
             created_at: moment(item.created_at).format('DD-MM-YYYY'),
             name: (
-              <span className="text-accent underline cursor-pointer text-xs font-medium" role="presentation" onClick={() => navigateToPreview(item?.id, item?.name, item?.logo_access_link, item?.logo_file)}>{item?.name}</span>
-            )
+              <span
+                className="text-accent underline cursor-pointer text-xs font-medium"
+                role="presentation"
+                onClick={() =>
+                  navigateToPreview(
+                    item?.id,
+                    item?.name,
+                    item?.logo_access_link,
+                    item?.logo_file
+                  )
+                }
+              >
+                {item?.name}
+              </span>
+            ),
           };
           if (temp?.course_contents?.length) {
-            const headerContents = temp?.course_contents.reduce((acc: any, element: any) => ({ ...acc, [element?.course_selection]: element?.category }),
-              {});
+            const headerContents = temp?.course_contents.reduce(
+              (acc: any, element: any) => ({
+                ...acc,
+                [element?.course_selection]: element?.category,
+              }),
+              {}
+            );
             temp = { ...temp, ...headerContents };
           }
           body.push([
@@ -282,7 +325,7 @@ const ManageCourses = (): JSX.Element => {
             temp?.Grade,
             temp?.Category,
             temp?.Component,
-            temp?.Volume
+            temp?.Volume,
           ]);
           return temp;
         });
@@ -292,19 +335,18 @@ const ManageCourses = (): JSX.Element => {
         setTableData([]);
       }
     },
-    onError: ({ response }: any) => {
-    }
+    onError: ({ response }: any) => {},
   });
 
   const ADMIN_TOOLBAR_MENU = [
     {
       title: TOOLBAR_LABELS.ADD,
-      icon: <AddIcon />
+      icon: <AddIcon />,
     },
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailLoaded) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailLoaded) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
@@ -316,15 +358,17 @@ const ManageCourses = (): JSX.Element => {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   useEffect(() => {
@@ -363,7 +407,11 @@ const ManageCourses = (): JSX.Element => {
   return (
     <>
       <RouteLayout navBack={true}>
-        <HeaderMenus title="Manage Courses" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+        <HeaderMenus
+          title="Manage Courses"
+          menuArray={ADMIN_TOOLBAR_MENU}
+          handleToolbarAction={handleToolbarAction}
+        />
         <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
           <div className="flex flex-wrap md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
             <div>
@@ -372,7 +420,13 @@ const ManageCourses = (): JSX.Element => {
                 loading={isLoading}
               />
             </div>
-            {load ? <div className="flex justify-center pl-16"><Loader size={20} /></div> : dropdowns}
+            {load ? (
+              <div className="flex justify-center pl-16">
+                <Loader size={20} />
+              </div>
+            ) : (
+              dropdowns
+            )}
             <Dropdown
               title="Result Of Pages"
               value={rowsPerPage}

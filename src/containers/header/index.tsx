@@ -64,6 +64,8 @@ export default function Index(): JSX.Element {
                 <Link className="px-2 hover:font-semibold hover:text-accent" to="/faq">FAQ</Link>
                 <Link className="px-2 hover:font-semibold hover:text-accent" to="/how-to-use">How to Use eAlpha</Link>
                 <Link className="px-2 hover:font-semibold hover:text-accent" to="/contact-us">Contact Us</Link>
+                <Link className="px-2 hover:font-semibold hover:text-accent" to="/system-requirements" style={{ fontWeight: 'bold', color: 'orange' }}>System Requirements</Link>
+
               </>
             )
           }
