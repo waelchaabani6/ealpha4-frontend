@@ -103,6 +103,7 @@ export const TABLE_LABELS = {
   END_DATE: 'End Date',
   SUBMITTED_DATE: 'Submitted Date',
   SCORE: 'Score %',
+  SCORE_AVG: 'Score Average %',
   CLASS_SCORE: 'Class Score',
   COHORT_SCORE: 'Cohort Score',
   CLASS_PER: 'Class Percentage',
