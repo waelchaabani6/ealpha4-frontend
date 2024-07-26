@@ -1,167 +1,166 @@
 .studentSchedular .rbc-row-content {
-    display: none;
+  display: none;
 }
 
 .studentSchedular .rbc-row.rbc-time-header-cell {
-    min-height: 62px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #E5F8E2;
+  min-height: 62px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #beccff;
 }
 
 .studentSchedular .rbc-header {
-    border-bottom: unset;
+  border-bottom: unset;
 }
 
 .studentSchedular .rbc-label.rbc-time-header-gutter {
-    background-color: #E5F8E2;
-}
-
-.studentSchedular .rbc-time-gutter.rbc-time-column  .rbc-timeslot-group {
-    background-color: #E5F8E2;
-    /* margin-top: 10px; */
-}
-
-.studentSchedular .rbc-toolbar {
-    position: relative;
-    height: 60px;
-}
-
-.studentSchedular .rbc-btn-group {
-    position: absolute;
-    right: 29px;
+  background-color: #beccff;
 }
 
 .studentSchedular .rbc-time-gutter.rbc-time-column .rbc-timeslot-group {
-    min-width: 85px;
-    border: unset;
+  background-color: #beccff;
+  /* margin-top: 10px; */
+}
+
+.studentSchedular .rbc-toolbar {
+  position: relative;
+  height: 60px;
+}
+
+.studentSchedular .rbc-btn-group {
+  position: absolute;
+  right: 29px;
+}
+
+.studentSchedular .rbc-time-gutter.rbc-time-column .rbc-timeslot-group {
+  min-width: 85px;
+  border: unset;
 }
 
 .studentSchedular .rbc-timeslot-group {
-    border: unset;
+  border: unset;
 }
 
 .studentSchedular .rbc-time-slot {
-    text-align: center;
-    position: relative;
-    /* bottom: -10px; */
+  text-align: center;
+  position: relative;
+  /* bottom: -10px; */
 }
 
-.studentSchedular .rbc-time-slot::before{
-    border: unset;
+.studentSchedular .rbc-time-slot::before {
+  border: unset;
 }
-.studentSchedular .rbc-time-slot::after{
-    border: unset;
+.studentSchedular .rbc-time-slot::after {
+  border: unset;
 }
 
 .studentSchedular .rbc-time-slot .rbc-label {
-    font-size: 0.7rem;
-    z-index: 3;
-    font-weight: 600;
+  font-size: 0.7rem;
+  z-index: 3;
+  font-weight: 600;
 }
 
 .studentSchedular .rbc-time-content {
-    padding-top: 5px;
-    overflow: hidden;
+  padding-top: 5px;
+  overflow: hidden;
 }
 
 .studentSchedular .rbc-timeslot-group {
-    /* margin: 5px; */
-    border: 0.364984px solid #f1f1f1;   
+  /* margin: 5px; */
+  border: 0.364984px solid #f1f1f1;
 }
 
-.studentSchedular .rbc-header{
-    font-size: 0.7rem;
+.studentSchedular .rbc-header {
+  font-size: 0.7rem;
 }
 
 .rbc-btn-group > button:first-child {
-    display: none;
+  display: none;
 }
 .rbc-btn-group > button:nth-child(2) {
-    visibility: hidden;
-    
+  visibility: hidden;
 }
 
-.rbc-btn-group > button:nth-child(2):after{
-    content: "";
-    visibility: visible;
-    background: url("/src/public/left-arrow.svg");
-    background-repeat: no-repeat;
-    display: block;
-    position: relative;
-    height: 41px;
-    left: 81px;
+.rbc-btn-group > button:nth-child(2):after {
+  content: '';
+  visibility: visible;
+  background: url('/src/public/left-arrow.svg');
+  background-repeat: no-repeat;
+  display: block;
+  position: relative;
+  height: 41px;
+  left: 81px;
 }
 
 .rbc-btn-group > button:nth-child(3) {
-    visibility: hidden;
+  visibility: hidden;
 }
-.rbc-btn-group > button:nth-child(3):after{
-    content: "";
-    visibility: visible;    
-    background: url("/src/public/right-arrow.svg");
-    background-repeat: no-repeat;
-    display: block;
-    position: relative;
-    height: 41px;
-    left: 41px;
+.rbc-btn-group > button:nth-child(3):after {
+  content: '';
+  visibility: visible;
+  background: url('/src/public/right-arrow.svg');
+  background-repeat: no-repeat;
+  display: block;
+  position: relative;
+  height: 41px;
+  left: 41px;
 }
 
 .studentSchedular .rbc-day-slot.rbc-time-column.rbc-now.rbc-today {
-    background-color: #ffffff00;
+  background-color: #ffffff00;
 }
 
 .rbc-day-slot .rbc-events-container {
-    overflow: hidden;
-    bottom: 0;
-    left: 3px;
-    position: absolute;
-    right: 0;
-    /* margin-right: 10px; */
-    /* top: 5px; */
-    width: calc(100% - 6.5px);
-    /* height: calc(100% - 10%); */
+  overflow: hidden;
+  bottom: 0;
+  left: 3px;
+  position: absolute;
+  right: 0;
+  /* margin-right: 10px; */
+  /* top: 5px; */
+  width: calc(100% - 6.5px);
+  /* height: calc(100% - 10%); */
 }
 
-.rbc-day-slot .rbc-event, .rbc-day-slot .rbc-background-event {
-    max-height: calc(100% - 9px);
+.rbc-day-slot .rbc-event,
+.rbc-day-slot .rbc-background-event {
+  max-height: calc(100% - 9px);
 }
 
 .studentSchedular .rbc-day-slot .rbc-time-slot {
-    border-top: unset;
+  border-top: unset;
 }
 
 .mycustomedialog .MuiPaper-root {
-    width: 580px;
+  width: 580px;
 }
 
 .mycustomedialog .crossButton {
-    top: -3px;
+  top: -3px;
 }
 
 .studentSchedular .rbc-event-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    font-size: 12px;
-    color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 12px;
+  color: black;
 }
 
-
 .pointerHide .rbc-time-view {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 .rbc-event-content {
-    -moz-user-select: -moz-none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    /*
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  /*
       Introduced in IE 10.
       See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
     */
-    -ms-user-select: none;
-    user-select: none;
- }
+  -ms-user-select: none;
+  user-select: none;
+}

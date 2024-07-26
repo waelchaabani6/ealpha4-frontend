@@ -27,9 +27,9 @@ export default function SingleReportAssessment() {
       return { bg: '#BFCDFD', color: '#000000 ' }[type];
     }
     if (scoreAch > 80) {
-      return { bg: '#E5F8E2', color: '#000000' }[type];
+      return { bg: '#BECCFF', color: '#000000' }[type];
     }
-    return { bg: '#E5F8E2', color: '#000000' }[type];
+    return { bg: '#BECCFF', color: '#000000' }[type];
   }
 
   const { isLoading: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({

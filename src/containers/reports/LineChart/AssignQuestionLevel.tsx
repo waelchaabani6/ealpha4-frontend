@@ -8,15 +8,15 @@ import {
   YAxis,
   Legend,
   ResponsiveContainer,
-  LabelList
+  LabelList,
 } from 'recharts';
 
-type Props={
+type Props = {
   // eslint-disable-next-line react/no-unused-prop-types
-  checked?:boolean;
+  checked?: boolean;
   // eslint-disable-next-line react/no-unused-prop-types
   linedata?: (string | number)[];
-}
+};
 
 const CustomLegend = () => (
   <div className="flex flex-col items-center justify-center">
@@ -24,7 +24,7 @@ const CustomLegend = () => (
   </div>
 );
 
-function AssignQuestionLevel(props:Props) {
+function AssignQuestionLevel(props: Props) {
   const { checked, linedata } = props;
 
   return (
@@ -33,47 +33,32 @@ function AssignQuestionLevel(props:Props) {
         {GRAPH_LABELS.PERCENTAGE}
       </p>
       <div className="h-[600px]">
-        <ComposedChart width={linedata ? 200 * linedata.length : 1200} height={250} data={linedata}>
+        <ComposedChart
+          width={linedata ? 200 * linedata.length : 1200}
+          height={250}
+          data={linedata}
+        >
           <XAxis dataKey="name" axisLine={false} tickLine={false} />
           <YAxis axisLine={false} tickLine={false} width={150} />
-          <Area
-            type="monotone"
-            dataKey="area4"
-            fill="#D9FFC8"
-            stroke="none"
-          />
-          <Area
-            type="monotone"
-            dataKey="area3"
-            fill="#BECCFF"
-            stroke="none"
-          />
-          <Area
-            type="monotone"
-            dataKey="area2"
-            fill="#FFF9BE"
-            stroke="none"
-          />
-          <Area
-            type="monotone"
-            dataKey="area1"
-            fill="#FCD4C6"
-            stroke="none"
-          />
-          {
-              checked && (
-
-                <Line
-                  type="monotone"
-                  dataKey="score_in_percent"
-                  strokeWidth={5}
-                  dot={{ stroke: 'white', fill: 'black', strokeWidth: 4, r: 6 }}
-                  stroke="#EDAD49"
-                >
-                  <LabelList dataKey="score_in_percent" position="top" fill="black" />
-                </Line>
-              )
-            }
+          <Area type="monotone" dataKey="area4" fill="#D9FFC8" stroke="none" />
+          <Area type="monotone" dataKey="area3" fill="#BECCFF" stroke="none" />
+          <Area type="monotone" dataKey="area2" fill="#FFF9BE" stroke="none" />
+          <Area type="monotone" dataKey="area1" fill="#FCD4C6" stroke="none" />
+          {checked && (
+            <Line
+              type="monotone"
+              dataKey="score_in_percent"
+              strokeWidth={5}
+              dot={{ stroke: 'white', fill: 'black', strokeWidth: 4, r: 6 }}
+              stroke="#EDAD49"
+            >
+              <LabelList
+                dataKey="score_in_percent"
+                position="top"
+                fill="black"
+              />
+            </Line>
+          )}
           <Line
             type="monotone"
             dataKey="class_score_in_percent"
@@ -81,7 +66,11 @@ function AssignQuestionLevel(props:Props) {
             dot={{ stroke: 'white', fill: 'black', strokeWidth: 4, r: 6 }}
             stroke="#52499C"
           >
-            <LabelList dataKey="class_score_in_percent" position="top" fill="black" />
+            <LabelList
+              dataKey="class_score_in_percent"
+              position="top"
+              fill="black"
+            />
           </Line>
           {/* <Legend verticalAlign="top" height={36} /> */}
         </ComposedChart>

@@ -225,7 +225,7 @@ const Setting = (props: Props) => {
                 </TableHead>
                 <TableBody>
                   <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                    <TableCell key="1" align="left" className="bg-[#E5F8E2]">
+                    <TableCell key="1" align="left" className="bg-[#BECCFF]">
                       Exceeds
                     </TableCell>
                     <TableCell key="2" align="center">
@@ -256,7 +256,7 @@ const Setting = (props: Props) => {
                     </TableCell>
                   </TableRow>
                   <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                    <TableCell key="1" align="left" className="bg-[#BECCFF]">
+                    <TableCell key="1" align="left" className="bg-[#D9FFC8]">
                       Meets
                     </TableCell>
                     <TableCell key="2" align="center">

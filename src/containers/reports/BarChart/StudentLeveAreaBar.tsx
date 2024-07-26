@@ -1,3 +1,5 @@
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable operator-linebreak */
 import { GRAPH_LABELS } from '@constants/constants';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -7,15 +9,15 @@ import {
   XAxis,
   YAxis,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from 'recharts';
 
-type Props={
+type Props = {
   // eslint-disable-next-line react/no-unused-prop-types
-  performance:(string | number)[];
+  performance: (string | number)[];
   // eslint-disable-next-line react/no-unused-prop-types
-  Per?:string;
-}
+  Per?: string;
+};
 
 const CustomBar = (props: any) => {
   const { fill, x, y, width, height } = props;
@@ -23,7 +25,15 @@ const CustomBar = (props: any) => {
   const barColor = isFirstGraph ? '#E53945' : fill;
 
   return (
-    <rect x={x} y={y} width={width} height={height} fill={barColor} rx="5" ry="5" />
+    <rect
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      fill={barColor}
+      rx="5"
+      ry="5"
+    />
   );
 };
 
@@ -54,28 +64,56 @@ const makeLabel = (value: number) => {
   }
   return '0';
 };
-const color = ['#E53945', '#3376BD', '#E53945', '#3376BD', '#E53945', '#3376BD', '#E53945', '#3376BD', '#E53945', '#3376BD', '#E53945', '#3376BD', '#E53945', '#3376BD', '#E53945', '#3376BD', '#E53945', '#3376BD', '#E53945', '#3376BD'];
+const color = [
+  '#E53945',
+  '#3376BD',
+  '#E53945',
+  '#3376BD',
+  '#E53945',
+  '#3376BD',
+  '#E53945',
+  '#3376BD',
+  '#E53945',
+  '#3376BD',
+  '#E53945',
+  '#3376BD',
+  '#E53945',
+  '#3376BD',
+  '#E53945',
+  '#3376BD',
+  '#E53945',
+  '#3376BD',
+  '#E53945',
+  '#3376BD',
+];
 
 const CustomLegend = (props: any) => (
   <div>
     <ul className="flex items-center justify-start gap-x-4">
-      {
-        props?.subjects?.map((el: any, i: any) => (
-          <li className="flex items-center gap-x-2">
-            <p className="h-4 w-4 rounded-[4px]" style={{ backgroundColor: `${color[i] || color[0]}` }} />
-            <p className="text-xs">{el}</p>
-          </li>
-        ))
-      }
+      {props?.subjects?.map((el: any, i: any) => (
+        <li className="flex items-center gap-x-2">
+          <p
+            className="h-4 w-4 rounded-[4px]"
+            style={{ backgroundColor: `${color[i] || color[0]}` }}
+          />
+          <p className="text-xs">{el}</p>
+        </li>
+      ))}
     </ul>
   </div>
 );
-function StudentLeveAreaBar(props:Props) {
-  const [dataArr, setData] = useState<(string|number)[]>([]);
+function StudentLeveAreaBar(props: Props) {
+  const [dataArr, setData] = useState<(string | number)[]>([]);
   const { performance, Per } = props;
 
   const datagraph = dataArr?.map((ele: any) => {
-    const obj: any = { name: ele?.name, area1: ele?.area1, area2: ele?.area2, area3: ele?.area3, area4: ele?.area4 };
+    const obj: any = {
+      name: ele?.name,
+      area1: ele?.area1,
+      area2: ele?.area2,
+      area3: ele?.area3,
+      area4: ele?.area4,
+    };
     ele?.assignment?.forEach((item: any) => {
       const key = Object.keys(item)[0];
       obj[key] = item[key];
@@ -85,7 +123,20 @@ function StudentLeveAreaBar(props:Props) {
 
   const subjects = Array.from(
     new Set(
-      datagraph?.reduce((acc: any, obj: any) => acc.concat(Object.keys(obj).filter((key) => key !== 'name' && key !== 'area1' && key !== 'area2' && key !== 'area3' && key !== 'area4')), [])
+      datagraph?.reduce(
+        (acc: any, obj: any) =>
+          acc.concat(
+            Object.keys(obj).filter(
+              (key) =>
+                key !== 'name' &&
+                key !== 'area1' &&
+                key !== 'area2' &&
+                key !== 'area3' &&
+                key !== 'area4'
+            )
+          ),
+        []
+      )
     )
   );
   useEffect(() => {
@@ -134,17 +185,14 @@ function StudentLeveAreaBar(props:Props) {
               fill="#FCD4C6"
               stroke="none"
             />
-            {
-            subjects.map((subs: any, ind: any) => (
+            {subjects.map((subs: any, ind: any) => (
               <Bar
                 dataKey={subs}
                 fill={color[ind] || color[0]}
                 shape={<CustomBar />}
                 barSize={16}
-
               />
-            ))
-          }
+            ))}
           </ComposedChart>
         </ResponsiveContainer>
         <div className="flex items-center justify-center mb-2">
