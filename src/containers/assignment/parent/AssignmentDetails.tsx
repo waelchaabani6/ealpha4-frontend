@@ -1,3 +1,6 @@
+/* eslint-disable indent */
+/* eslint-disable comma-dangle */
+/* eslint-disable no-restricted-globals */
 /* eslint-disable react/jsx-one-expression-per-line */
 import routes from '@constants/routes';
 import EmailIcon from '@mui/icons-material/Email';
@@ -17,8 +20,10 @@ import SimpleTableDx from '../../../components/SimpleTableDx/index';
 import { TOOLBAR_LABELS } from '../../../constants/constants';
 import RouteLayout from '../../layout/routeLayout';
 
-const printButton = () => <PrintIcon />;
+const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
 const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
+
+const printButton = () => <PrintIcon />;
 
 const dataArray = [
   { label: 'Page', value: 'Page' },
@@ -99,6 +104,18 @@ function AssignmentDetails() {
   const [jsonData, setJsonData] = useState([]);
   const [jsonCopyData, setJsonCopyData] = useState([]);
   const [fullHeight, setFullHeight] = useState(false);
+  const [teacher, setTeacher] = useState('');
+
+  const [val, setValue] = useState({
+    Nmeet1: '',
+    Nmeet2: '',
+    exceed1: '',
+    exceed2: '',
+    meet1: '',
+    meet2: '',
+    approching1: '',
+    approching2: '',
+  });
 
   const { assignmentID, studentID } = useParams();
   const componentRef = useRef(null);
@@ -186,20 +203,79 @@ function AssignmentDetails() {
   ];
 
   // eslint-disable-next-line consistent-return
-  function colorCode(scoreAch: number, type: string) {
-    if (scoreAch < 60) {
-      return { bg: '#FCD4C6', color: '#E36B6B' }[type]; // Red
-    }
-    if (scoreAch >= 60 && scoreAch <= 70) {
-      return { bg: '#FFF9BE', color: '#C7B551' }[type]; // Yellow
-    }
-    if (scoreAch > 70 && scoreAch <= 80) {
-      return { bg: '#BECCFF', color: '#4B0082' }[type]; // Purple
-    }
-    if (scoreAch > 80) {
-      return { bg: '#E5F8E2', color: '#6CA463' }[type]; // Green
+  // function colorCode(scoreAch: number, type: string) {
+  //   if (scoreAch < 60) {
+  //     return { bg: '#FCD4C6', color: '#E36B6B' }[type]; // Red
+  //   }
+  //   if (scoreAch >= 60 && scoreAch <= 70) {
+  //     return { bg: '#FFF9BE', color: '#C7B551' }[type]; // Yellow
+  //   }
+  //   if (scoreAch > 70 && scoreAch <= 80) {
+  //     return { bg: '#BECCFF', color: '#4B0082' }[type]; // Purple
+  //   }
+  //   if (scoreAch > 80) {
+  //     return { bg: '#E5F8E2', color: '#6CA463' }[type]; // Green
+  //   }
+  // }
+
+  // eslint-disable-next-line consistent-return
+  function colorCode(score: any, type: string) {
+    if (score !== null && !isNaN(score)) {
+      if (score >= val.exceed1 && score <= val.exceed2) {
+        // Exceeds
+        return { bg: '#E5F8E2', color: '#6CA463' }[type];
+      }
+      if (score >= val.meet1 && score <= val.meet2) {
+        /// Meets
+        return { bg: '#BECCFF', color: '#132E90 ' }[type];
+      }
+      if (score >= val.approching1 && score <= val.approching2) {
+        // Approaching
+        return { bg: '#FFF9BE', color: '#C7B551' }[type];
+      }
+      if (score >= val.Nmeet1 && score <= val.Nmeet2) {
+        // Does not Meet
+        return { bg: '#FCD4C6', color: '#E36B6B' }[type];
+      }
+    } else {
+      return { bg: '#FCD4C6', color: '#E36B6B' }[type];
     }
   }
+
+  const { isLoading: performance, refetch: GetPerformance } = useGet({
+    baseURL: ReportURL,
+    url: `reports-service/performance_expectation/?user_id=${teacher}`,
+    onSuccess: (res: any) => {
+      const resp = res?.data?.response;
+      const body: any = [];
+      const fetchedRecords = resp?.slice(0, 4);
+      const meetObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Meets'
+      );
+      const AppObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Approaching'
+      );
+      const DMeetObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Does Not Meet'
+      );
+      const ExceedsObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Exceeds'
+      );
+      setValue((prevState: any) => ({
+        ...prevState,
+        meet1: meetObj?.from_value,
+        meet2: meetObj?.to_value,
+        exceed1: ExceedsObj?.from_value,
+        exceed2: ExceedsObj?.to_value,
+        approching1: AppObj?.from_value,
+        approching2: AppObj?.to_value,
+        Nmeet1: DMeetObj?.from_value,
+        Nmeet2: DMeetObj?.to_value,
+      }));
+    },
+    enabled: false,
+    retry: false,
+  });
 
   function createExcellData(ele: any) {
     return [ele.Pages, ele.Correct, ele.Wrong, ele.Unattempted, ele.MyScore];
@@ -225,6 +301,7 @@ function AssignmentDetails() {
         jsonRespData =
           jsonRespData && jsonRespData.length !== 0
             ? jsonRespData.map((ele: any) =>
+                // eslint-disable-next-line implicit-arrow-linebreak
                 createData(
                   ele.page_name,
                   ele.score,
@@ -252,6 +329,7 @@ function AssignmentDetails() {
         setColumns(columnsHeader2);
       }
       setAssignmentData(resp);
+      setTeacher(resp?.teacher);
     },
     onError: () => {},
   });
@@ -276,11 +354,17 @@ function AssignmentDetails() {
     Status();
   }, [assignmentData]);
 
+  useEffect(() => {
+    if (teacher) {
+      GetPerformance();
+    }
+  }, [teacher]);
+
   return (
     <div>
       <RouteLayout navBack={true}>
         <HeaderMenus
-          title="Assignments Details 000"
+          title="Assignments Details"
           menuArray={ADMIN_TOOLBAR_MENU}
           handleToolbarAction={handleToolbarAction}
         />
@@ -329,14 +413,22 @@ function AssignmentDetails() {
               <div className="box-content flex items-center h-full justify-center min-w-[400px]">
                 <div
                   style={{
-                    backgroundColor: colorCode(assignmentData?.score, 'bg'),
+                    backgroundColor: colorCode(
+                      parseInt(assignmentData?.score, 10),
+                      'bg'
+                    ),
                   }}
                   className="h-3/5 w-[88%] flex items-center justify-center md:text-2xl text-sm rounded"
                 >
                   Score
                   <span
                     className="text-blue-100"
-                    style={{ color: colorCode(assignmentData?.score, 'color') }}
+                    style={{
+                      color: colorCode(
+                        parseInt(assignmentData?.score, 10),
+                        'color'
+                      ),
+                    }}
                   >
                     &nbsp;
                     {assignmentData?.score !== null ? assignmentData?.score : 0}

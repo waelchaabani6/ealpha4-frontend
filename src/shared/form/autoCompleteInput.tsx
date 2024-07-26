@@ -1,4 +1,11 @@
-import { Autocomplete, CircularProgress, FormControl, TextField, Typography } from '@mui/material';
+/* eslint-disable no-confusing-arrow */
+import {
+  Autocomplete,
+  CircularProgress,
+  FormControl,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { Control, Controller } from 'react-hook-form';
 import { ReactComponent as Search } from '@images/search.svg';
 import React, { useImperativeHandle } from 'react';
@@ -16,7 +23,7 @@ type Props = {
   onChange?: (value: string | null) => void;
   onSelect?: (value: string | null) => void;
   onClose?: (vallue: string) => void;
-}
+};
 
 /**
  *
@@ -28,9 +35,11 @@ type Props = {
 const AutoCompleteInput = React.forwardRef((props: Props, myref: any) => {
   useImperativeHandle(myref, () => ({
     clear() {
-      const element: HTMLElement = document.querySelector('[title="Clear"]') as HTMLElement;
+      const element: HTMLElement = document.querySelector(
+        '[title="Clear"]'
+      ) as HTMLElement;
       element?.click();
-    }
+    },
   }));
   return (
     <Controller
@@ -62,7 +71,7 @@ const AutoCompleteInput = React.forwardRef((props: Props, myref: any) => {
             id="material_ui_autocomplete2"
             className="hasPopupIcon"
             sx={{
-              '& .MuiAutocomplete-popupIndicator': { transform: 'none' }
+              '& .MuiAutocomplete-popupIndicator': { transform: 'none' },
             }}
             disableClearable={true}
             popupIcon={<Search />}
@@ -74,19 +83,23 @@ const AutoCompleteInput = React.forwardRef((props: Props, myref: any) => {
             renderInput={(params) => (
               <TextField
                 {...params}
-                onChange={(event: any) => (props?.onChange ? props.onChange(event.target.value) : onChange(event))}
+                onChange={(event: any) =>
+                  props?.onChange
+                    ? props.onChange(event.target.value)
+                    : onChange(event)
+                }
                 value={props?.value || value}
                 name={props.name}
                 fullWidth={true}
                 placeholder={props?.placeholder || 'Search'}
                 sx={{
-                  '& .MuiAutocomplete-endAdornment': { top: '2px' },
+                  // '& .MuiAutocomplete-endAdornment': { top: '2px' },
                   '& .MuiAutocomplete-clearIndicator': { marginRight: '4px' },
                   '.Mui-disabled': {
                     backgroundColor: 'var(--sandgray)',
                     borderRadius: '4px',
-                    borderColor: 'var(---linegray)'
-                  }
+                    borderColor: 'var(---linegray)',
+                  },
                 }}
                 InputProps={{
                   ...params.InputProps,
@@ -101,15 +114,25 @@ const AutoCompleteInput = React.forwardRef((props: Props, myref: any) => {
                       ) : null}
                       {params.InputProps.endAdornment}
                     </>
-                  )
+                  ),
                 }}
                 inputRef={ref}
                 size="small"
                 error={!!error}
               />
             )}
-            value={(value ? props?.dataArray?.find((items: any) => value === items.value) ?? null : null) as any}
-            onChange={(event: any, newValue: any) => (props?.onSelect ? props.onSelect(newValue ? newValue.value as string : null) : onChange(newValue ? newValue.value as string : null))}
+            value={
+              (value
+                ? (props?.dataArray?.find(
+                    (items: any) => value === items.value
+                  ) ?? null)
+                : null) as any
+            }
+            onChange={(event: any, newValue: any) =>
+              props?.onSelect
+                ? props.onSelect(newValue ? (newValue.value as string) : null)
+                : onChange(newValue ? (newValue.value as string) : null)
+            }
           />
           {!!error && (
             <Typography

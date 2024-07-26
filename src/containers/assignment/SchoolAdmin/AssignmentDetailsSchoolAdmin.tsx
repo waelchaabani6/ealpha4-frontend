@@ -304,7 +304,6 @@ function AssignmentDetails() {
   // eslint-disable-next-line consistent-return
   function colorCode(score: any, type: string) {
     if (score !== null && !isNaN(score)) {
-      console.log('has score', score >= val.exceed1 && score <= val.exceed2);
       if (score >= val.exceed1 && score <= val.exceed2) {
         // Exceeds
         return { bg: '#E5F8E2', color: '#6CA463' }[type];
