@@ -648,7 +648,7 @@ function AssignmentDetails() {
             >
               {teacherDownloadLink && (
                 <div
-                  className="h-10 cursor-pointer flex items-center"
+                  className="h-10 cursor-pointer flex items-center hover:bg-linegray"
                   onClick={() => handleTeacherDownLoadClick()}
                 >
                   View Teacher Attachment
@@ -656,7 +656,7 @@ function AssignmentDetails() {
               )}
               {studentDownloadLink && (
                 <div
-                  className="h-10 cursor-pointer flex items-center"
+                  className="h-10 cursor-pointer flex items-center hover:bg-linegray"
                   onClick={() => handleStudentDownLoadClick()}
                 >
                   View Student Attachment
