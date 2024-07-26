@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-curly-newline */
+/* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable comma-dangle */
 /* eslint-disable indent */
 import { useMemo, useRef, useState, useEffect } from 'react';
@@ -109,7 +111,6 @@ function formatData(data: any, page: number, subject: string) {
       cData.push(tmp);
     }
   });
-  console.log(cData);
 
   return { cData, headerDates, isNext, isPrev };
 }
@@ -230,6 +231,11 @@ export default function () {
     return tmp?.class;
   }, [selectedChild]);
 
+  const ClassId = useMemo(() => {
+    const tmp = childrenData?.find((obj: any) => obj?.value === selectedChild);
+    return tmp?.assignClassID;
+  }, [selectedChild]);
+
   const compare = (a: any, b: any) => {
     if (a.first_name < b.first_name) {
       return -1;
@@ -272,7 +278,7 @@ export default function () {
   } = useGet({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
     // url: `roster-service/parent-child-attendance-report-list/?offset=${(datesPerPage - 1) * Number(noOfpages)}&limit=7&student_id=${71 || selectedChild}&start_date=${formatFromDate}&end_date=${formatToDate}${selectedSubject !== 'select' ? `&subject=${subjectName}` : ''}${selectedTeacher !== 'select' ? `&teacher_id=${14229 || teacherId}` : ''}`,
-    url: `roster-service/parent-child-attendance-report-list/?offset=${(datesPerPage - 1) * Number(noOfpages)}&limit=7&student_id=${selectedChild || ''}&start_date=${moment(fromDate).format('yyyy-MM-DD')}&end_date=${moment(toDate).format('yyyy-MM-DD')}${selectedSubject !== 'select' ? `&subject_name=${subjectName}` : ''}${selectedTeacher !== 'select' ? `&teacher_id=${teacherId}` : ''}`,
+    url: `roster-service/parent-child-attendance-report-list/?offset=${(datesPerPage - 1) * Number(noOfpages)}&limit=7&student_id=${selectedChild || ''}&class_id=${ClassId}&start_date=${moment(fromDate).format('yyyy-MM-DD')}&end_date=${moment(toDate).format('yyyy-MM-DD')}${selectedSubject !== 'select' ? `&subject_name=${subjectName}` : ''}${selectedTeacher !== 'select' ? `&teacher_id=${teacherId}` : ''}`,
     enabled: !!(fromDate && toDate && selectedChild),
     retry: 0,
     onSuccess: (res: any) => {
