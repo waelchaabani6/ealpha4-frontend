@@ -644,7 +644,7 @@ function AssignmentDetails() {
           {AttachmentMenuVisible === true ? (
             <div
               ref={ref}
-              className={`absolute right-[145px] top-[35px] bg-white p-2 z-10 border ${!AttachmentMenuVisible ? 'opacity-0' : ''}`}
+              className={`absolute right-[145px] top-[15px] bg-white p-2 z-10 border ${!AttachmentMenuVisible ? 'opacity-0' : ''}`}
             >
               {teacherDownloadLink && (
                 <div
