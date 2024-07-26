@@ -1,15 +1,18 @@
+/* eslint-disable react/button-has-type */
 /* eslint-disable comma-dangle */
 /* eslint-disable no-console */
 /* eslint-disable operator-linebreak */
 /* eslint-disable react/jsx-one-expression-per-line */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useGet } from '@shared/api/useApi';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@shared/store/userSlice';
 import { ReactComponent as Book } from '@images/book.svg';
-import { Popover } from '@mui/material';
+import { Fade, Popover, Popper, PopperPlacementType } from '@mui/material';
+import { v4 as uuidv4 } from 'uuid';
+
 import SmallBook from './SmallBook';
 
 type Props = {
@@ -38,8 +41,10 @@ function SmallCard({ ind, shortName, courseContents, image, logo }: Props) {
     name: string,
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
+    setAnchorEl(null);
     setCourseName(name);
-    setAnchorEl(e.currentTarget);
+    // setAnchorEl(e.currentTarget);
+    setAnchorEl(anchorEl ? null : e.currentTarget);
   };
 
   const handleClick = (index: number) => {
@@ -99,6 +104,9 @@ function SmallCard({ ind, shortName, courseContents, image, logo }: Props) {
   };
 
   const open = Boolean(anchorEl);
+  // const [placement, setPlacement] = useState<PopperPlacementType>();
+  // const [open, setOpen] = useState(false);
+  // const uid = uuidv4();
 
   return (
     <div className="mr-6 mb-6 ml-6">
@@ -149,7 +157,7 @@ function SmallCard({ ind, shortName, courseContents, image, logo }: Props) {
           horizontal: 'left',
         }}
       >
-        <div className={`flex flex-wrap left-0 `}>
+        <div className={`flex flex-wrap `}>
           {gradesDetails?.map((ele: any, index: any, array: any) => {
             let isTopCenter = false;
             const isEmpty = false;
@@ -185,6 +193,49 @@ function SmallCard({ ind, shortName, courseContents, image, logo }: Props) {
           })}
         </div>
       </Popover>
+
+      {/* <Popper
+        id={ind.toString()}
+        open={open}
+        anchorEl={anchorEl}
+        placement="bottom-start"
+      >
+        <div className={`flex flex-wrap  `}>
+          {gradesDetails?.map((ele: any, index: any, array: any) => {
+            let isTopCenter = false;
+            const isEmpty = false;
+            let leftArrow = false;
+
+            if (isCloserToCenter) {
+              isTopCenter = false;
+            } else if (showFromLeft === false) {
+              if (index === 0) {
+                isTopCenter = true;
+              } else {
+                leftArrow = true;
+              }
+            } else if (index === array.length - 1) {
+              isTopCenter = true;
+            } else if (index === 0) {
+              leftArrow = false;
+            } else {
+              leftArrow = true;
+            }
+            return (
+              <SmallBook
+                handleClick={handleClick}
+                leftArrow={leftArrow}
+                isTopCenter={isTopCenter}
+                isEmpty={isEmpty}
+                gradesName={ele}
+                index={index}
+                image={ele?.icon_file}
+                logo={ele?.icon_link}
+              />
+            );
+          })}
+        </div>
+      </Popper> */}
     </div>
   );
 }
