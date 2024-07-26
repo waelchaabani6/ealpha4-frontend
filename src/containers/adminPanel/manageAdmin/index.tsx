@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-return-assign */
 import Button from '@component/button/button';
@@ -34,9 +35,10 @@ import { usePatch, usePost } from '@shared/api/useApi';
 import Loader from '@shared/loader';
 import Tabs from '@shared/newTab/Tab';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FormControlLabel } from '@mui/material';
+import { backdropClasses, FormControlLabel } from '@mui/material';
 import { CSVLink } from 'react-csv';
 import * as yup from 'yup';
+import { textTransform } from '@mui/system';
 
 type FormInputTypes = {
   user_name: any;
@@ -419,6 +421,12 @@ export default function Index(props: any) {
                 name="user_name"
                 label="Username"
                 disabled={!!editMode}
+                sxClass={{
+                  'input[type="text"]': {
+                    textTransform: 'lowercase',
+                  },
+                }}
+                tolowercase={true}
               />
               <Input
                 required={true}

@@ -20,6 +20,7 @@ import StudentRoutes from '@routes/studentRoutes';
 import ParentRoutes from '@routes/parentRoutes';
 import GetUserWrapper from '@layout/getUserWrapper';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import '@cyntler/react-doc-viewer/dist/index.css';
 
 export default function App(): JSX.Element {
   return (

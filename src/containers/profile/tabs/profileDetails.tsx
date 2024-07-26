@@ -39,57 +39,68 @@ export default function ProfileDetails() {
   const TableColumns = [
     {
       label: 'Sr No.',
-      mapper: 'sr_no'
+      mapper: 'sr_no',
     },
     {
       label: 'Document Name',
-      mapper: 'document_name'
+      mapper: 'document_name',
     },
     {
       label: TABLE_LABELS?.ACTION,
-      component: COMPONENTS?.longmenu
-    }
+      component: COMPONENTS?.longmenu,
+    },
   ];
 
   const moreMenuOptions = [
     {
       icon: <Eye className="scale-75" />,
       label: 'Preview',
-      value: 'preview'
+      value: 'preview',
     },
     {
       icon: <DownloadIcon className="scale-75" />,
       label: 'Download',
-      value: 'download'
+      value: 'download',
     },
     {
       icon: <DeleteIcon className="scale-75" />,
       label: 'Delete',
-      value: 'delete'
-    }
+      value: 'delete',
+    },
   ];
+
   const { isLoading: submitLoading, mutateAsync: updateUser } = usePatch({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
-    url: `users-service/admin/${userId}/`
+    url: `users-service/admin/${userId}/`,
   });
+
   const { refetch: refetchUser, data: userData } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
     url: `users-service/admin/${userId}/`,
-    enabled: false
+    enabled: false,
   });
+
   useEffect(() => {
     if (userData) {
-      dispatch(setUserProfile({
-        profile_picture: userData?.data?.response?.profile_picture,
-        first_name: userData?.data?.response?.first_name,
-        last_name: userData?.data?.response?.last_name
-      }));
+      dispatch(
+        setUserProfile({
+          profile_picture: userData?.data?.response?.profile_picture,
+          first_name: userData?.data?.response?.first_name,
+          last_name: userData?.data?.response?.last_name,
+        })
+      );
     }
   }, [userData]);
-  const { mutateAsync: uploadDocuments, failureCount, error } = usePost({
+
+  const {
+    mutateAsync: uploadDocuments,
+    failureCount,
+    error,
+  } = usePost({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
-    url: `users-service/upload-documents/${userId}/`
+    url: `users-service/upload-documents/${userId}/`,
   });
+
   useEffect(() => {
     if (failureCount > 0) {
       if (!(error as AxiosError)?.response) {
@@ -99,23 +110,32 @@ export default function ProfileDetails() {
       }
     }
   }, [failureCount]);
+
   const onSubmit: SubmitHandler<any> = (values) => {
-    if ('documents' in values && (typeof values.documents === 'string' || values.documents.length === 0)) {
+    if (
+      'documents' in values &&
+      (typeof values.documents === 'string' || values.documents.length === 0)
+    ) {
       delete values.documents;
     }
-    if ('profile_picture' in values && (typeof values.profile_picture === 'string' || !values.profile_picture)) {
+    if (
+      'profile_picture' in values &&
+      (typeof values.profile_picture === 'string' || !values.profile_picture)
+    ) {
       delete values.profile_picture;
     }
     const reqArr = [];
     if ('documents' in values) {
       const documentFormData = new FormData();
       let flag = 0;
-      values.documents.map((ele: any) => ele.file).forEach((file: any) => {
-        if (typeof file !== 'string') {
-          flag += 1;
-          documentFormData.append('document_file', file);
-        }
-      });
+      values.documents
+        .map((ele: any) => ele.file)
+        .forEach((file: any) => {
+          if (typeof file !== 'string') {
+            flag += 1;
+            documentFormData.append('document_file', file);
+          }
+        });
       if (flag > 0) {
         reqArr.push(uploadDocuments(documentFormData));
       }
@@ -129,29 +149,35 @@ export default function ProfileDetails() {
     reqArr.push(updateUser(userFd));
     setIsLoading(true);
     if (reqArr.length > 0) {
-      Promise.all(reqArr).then(([data]: any) => {
-        toast('success', 'Profile Updated Successfully!');
-      }).catch(({ response }: any) => {
-        if (typeof response.data !== 'string') {
-          Object.keys(response.data).forEach((ele: any) => (
-            setError(ele as any, { message: response.data[ele] })
-          ));
-        }
-        toast('error', `${response?.data?.detail || 'Error'}`);
-      }).finally(() => {
-        refetchUser();
-        setIsLoading(false);
-      });
+      Promise.all(reqArr)
+        .then(([data]: any) => {
+          toast('success', 'Profile Updated Successfully!');
+        })
+        .catch(({ response }: any) => {
+          if (typeof response.data !== 'string') {
+            Object.keys(response.data).forEach((ele: any) =>
+              setError(ele as any, { message: response.data[ele] })
+            );
+          }
+          toast('error', `${response?.data?.detail || 'Error'}`);
+        })
+        .finally(() => {
+          refetchUser();
+          setIsLoading(false);
+        });
     }
   };
 
   const onChange = (files: FileList | File[]) => {
     if (files.length > 0) {
       const fileData = Array.from(files).map((item: File, index: number) => ({
-        sr_no: (watch('documents') && watch('documents').length > 0) ? watch('documents').length + (index + 1) : index + 1,
+        sr_no:
+          watch('documents') && watch('documents').length > 0
+            ? watch('documents').length + (index + 1)
+            : index + 1,
         document_name: item.name,
         file: item,
-        document_ting: `${item.name}_${index}`
+        document_ting: `${item.name}_${index}`,
       }));
       setValue('documents', [...watch('documents'), ...fileData]);
     }
@@ -161,13 +187,18 @@ export default function ProfileDetails() {
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
     url: `users-service/upload-documents/${deleteDocId}/delete/`,
     onSuccess: ({ res }: any) => {
-      setValue('documents', watch('documents').filter((ele: any) => ele.document_ting !== deleteDocId));
+      setValue(
+        'documents',
+        watch('documents').filter(
+          (ele: any) => ele.document_ting !== deleteDocId
+        )
+      );
       setDeleteDocId(false);
       toast('success', 'File Deleted');
     },
     onError: () => {
       toast('error', 'Something went wrong');
-    }
+    },
   });
 
   useEffect(() => {
@@ -182,19 +213,26 @@ export default function ProfileDetails() {
         setDeleteDocId(rowData.document_ting);
       } else {
         const dt = watch('documents');
-        setValue('documents', dt.filter((ele: any) => ele.sr_no !== rowData.sr_no));
+        setValue(
+          'documents',
+          dt.filter((ele: any) => ele.sr_no !== rowData.sr_no)
+        );
       }
     }
     if (id === 'preview') {
       if (typeof rowData?.file === 'string') {
-        setFileUrl([{
-          uri: rowData?.file
-        }]);
+        setFileUrl([
+          {
+            uri: rowData?.file,
+          },
+        ]);
       } else {
-        setFileUrl([{
-          uri: window.URL.createObjectURL(rowData?.file),
-          fileName: rowData?.file.name
-        }]);
+        setFileUrl([
+          {
+            uri: window.URL.createObjectURL(rowData?.file),
+            fileName: rowData?.file.name,
+          },
+        ]);
       }
       setDialogOpen(true);
     }
@@ -209,18 +247,21 @@ export default function ProfileDetails() {
 
   const { data: countryData, isLoading: countryLoading } = useGet({
     baseURL: import.meta.env.VITE_APP_MASTER_SERVICE_URL,
-    url: 'master-service/country/'
+    url: 'master-service/country/',
   });
 
   const { data: cityData, isLoading: cityLoading } = useGet({
     baseURL: import.meta.env.VITE_APP_MASTER_SERVICE_URL,
     url: `master-service/city/?country_code=${watch('country')}${debouncedValue ? `&city_name=${debouncedValue}` : ''}`,
-    enabled: !!watch('country')
+    enabled: !!watch('country'),
   });
 
   useDebounce(
     () => {
-      const found = cityData?.data?.results?.findIndex((item: any) => item.value === value) > -1;
+      const found =
+        cityData?.data?.results?.findIndex(
+          (item: any) => item.value === value
+        ) > -1;
       if (!found) {
         setDebouncedValue(value);
       }
@@ -271,18 +312,41 @@ export default function ProfileDetails() {
     <div className="w-full h-full flex flex-col bg-white overflow-hidden">
       <div className="flex justify-between items-center px-5 pt-4">
         <PageTitle title="Basic Information" />
-        <p className="text-sm text-red-500 opacity-80">All (*) marked fields are mandatory</p>
+        <p className="text-sm text-red-500 opacity-80">
+          All (*) marked fields are mandatory
+        </p>
       </div>
-      <form className="flex-1 p-6 space-y-7 overflow-auto" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className="flex-1 p-6 space-y-7 overflow-auto"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 content-center gap-y-3 md:gap-x-6">
-          <Input control={control} name="phone_number" label="Phone" required={true} />
-          <Input control={control} name="alternative_phone_number" label="Alternative Phone" />
+          <Input
+            control={control}
+            name="phone_number"
+            label="Phone"
+            required={true}
+          />
+          <Input
+            control={control}
+            name="alternative_phone_number"
+            label="Alternative Phone"
+          />
           <Input control={control} name="email" label="Email" required={true} />
-          <Input control={control} name="alternate_email" label="Alternative Email" />
+          <Input
+            control={control}
+            name="alternate_email"
+            label="Alternative Email"
+          />
           <Input control={control} name="address" label="Address" />
           <Input control={control} name="street" label="Street" />
           <Input control={control} name="area" label="Area" />
-          <Input control={control} name="zip_code" label="Zip Code" required={true} />
+          <Input
+            control={control}
+            name="zip_code"
+            label="Zip Code"
+            required={true}
+          />
           <Select
             control={control}
             name="country"
@@ -298,7 +362,10 @@ export default function ProfileDetails() {
             label="City"
             name="city"
             value={value}
-            dataArray={cityData?.data?.results?.map((ele: any) => ({ label: ele.label, value: ele.value }))}
+            dataArray={cityData?.data?.results?.map((ele: any) => ({
+              label: ele.label,
+              value: ele.value,
+            }))}
             isLoading={isLoading}
             onChange={cityHandler}
             onSelect={onSelect}
@@ -306,36 +373,31 @@ export default function ProfileDetails() {
         </div>
         <div className="min-h-[100px]">
           <h4 className="text-base font-semibold pb-6">Documents</h4>
-          <FileSelect
-            ref={imageRef}
-            onChange={onChange}
-          />
+          <FileSelect ref={imageRef} onChange={onChange} />
         </div>
         <div>
           <h4 className="text-base font-semibold pb-6">Uploaded Documents</h4>
           <div>
-            {
-              watch('documents') && watch('documents').length > 0 && !deleteLoading
-                ? (
-                  <Wrapper>
-                    <AdvanceTable
-                      moreMenuOptions={moreMenuOptions}
-                      handleMoreOption={handleMoreOption}
-                      headerRows={TableColumns}
-                      tableData={watch('documents')}
-                    />
-                  </Wrapper>
-                )
-                : (
-                  <div className="bg-sandgray h-[180px] grid place-items-center">
-                    {
-                      deleteLoading
-                        ? <Loader />
-                        : <p className="text-xl">No Data</p>
-                    }
-                  </div>
-                )
-            }
+            {watch('documents') &&
+            watch('documents').length > 0 &&
+            !deleteLoading ? (
+              <Wrapper>
+                <AdvanceTable
+                  moreMenuOptions={moreMenuOptions}
+                  handleMoreOption={handleMoreOption}
+                  headerRows={TableColumns}
+                  tableData={watch('documents')}
+                />
+              </Wrapper>
+            ) : (
+              <div className="bg-sandgray h-[180px] grid place-items-center">
+                {deleteLoading ? (
+                  <Loader />
+                ) : (
+                  <p className="text-xl">No Data</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
         <CustomizedDialogs

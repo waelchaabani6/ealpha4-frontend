@@ -29,19 +29,19 @@ const DeletePopup = (props: any) => {
 
       {remark && <div className="text-sm text-center"> {remark} </div>}
 
-      <div className="flex justify-between items-center">
-        <div className="mt-10 mb-5 text-center">
-          <Button onClick={handleDelete} loading={isLoading || false}>
-            {removeText || 'Remove'}
-          </Button>
-        </div>
+      {/* <div className="flex justify-between items-center"> */}
+      <div className="mt-10 mb-5 text-center">
+        <Button onClick={handleDelete} loading={isLoading || false}>
+          {removeText || 'Remove'}
+        </Button>
+      </div>
 
-        <div className="mt-10 mb-5 text-center">
+      {/* <div className="mt-10 mb-5 text-center">
           <Button onClick={() => setOpen(false)} variant="outlined">
             {cancelText || 'Cancel'}
           </Button>
-        </div>
-      </div>
+        </div> */}
+      {/* </div> */}
     </CustomizedDialogs>
   );
 };

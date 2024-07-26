@@ -1,3 +1,8 @@
+/* eslint-disable operator-linebreak */
+/* eslint-disable comma-dangle */
+/* eslint-disable react/jsx-curly-newline */
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import { ReactComponent as Search } from '@images/search.svg';
 import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import { useClickAway, useDebounce } from 'react-use';
@@ -14,7 +19,7 @@ type AutoCompleteProps = {
   onSelect?: (val: string | any) => void;
   targetKey: string;
   appendSearch: boolean;
-}
+};
 
 export default function AutoComplete(props: AutoCompleteProps) {
   const ref = useRef(null);
@@ -25,7 +30,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     url: props.appendSearch ? `${props.path}${value}` : props.path,
     // url: `https://jsonplaceholder.typicode.com/posts/${debouncedValue}/comments`,
     cacheTime: 5000,
-    enabled: false
+    enabled: false,
   });
   useEffect(() => {
     if ((data?.response?.results || []).length > 0) {
@@ -75,9 +80,15 @@ export default function AutoComplete(props: AutoCompleteProps) {
   };
 
   const noDataMessage = useMemo(() => {
-    setTimeout(() => (
-      <div className="h-full w-full text-center py-6 hover:bg-white">No Match</div>
-    ), 500, undefined);
+    setTimeout(
+      () => (
+        <div className="h-full w-full text-center py-6 hover:bg-white">
+          No Match
+        </div>
+      ),
+      500,
+      undefined
+    );
     return (
       <li className="h-20 w-full">
         <Loader size={30} />
@@ -103,35 +114,42 @@ export default function AutoComplete(props: AutoCompleteProps) {
             <Search className="p-px pl-1" />
           </div>
         </div>
-        {
-          (value !== '' && (error || open)) && (
-            <ListStyle
-              tabIndex={0}
-              onClick={listClick}
-            >
-              {
-                isLoading
-                  ? (
-                    <li className="h-20 w-full">
-                      <Loader size={30} />
-                    </li>
-                  )
-                  : error
-                    ? <div className="h-full w-full text-center py-6 text-red-500">Error</div>
-                    : ((data?.response?.results || []).length > 0)
-                      ? makeList
-                      : noDataMessage
-              }
-            </ListStyle>
-          )
-        }
+        {value !== '' && (error || open) && (
+          <ListStyle tabIndex={0} onClick={listClick}>
+            {isLoading ? (
+              <li className="h-20 w-full">
+                <Loader size={30} />
+              </li>
+            ) : error ? (
+              <div className="h-full w-full text-center py-6 text-red-500">
+                Error
+              </div>
+            ) : (data?.response?.results || []).length > 0 ? (
+              makeList
+            ) : (
+              noDataMessage
+            )}
+          </ListStyle>
+        )}
       </div>
     </div>
   );
 }
 
 export function CustomAutoComplete(props: any) {
-  const { isLoading, list, setDebounceValue, targetKey, onSelect, error, required, label, name, disabled, parentClass = '' } = props;
+  const {
+    isLoading,
+    list,
+    setDebounceValue,
+    targetKey,
+    onSelect,
+    error,
+    required,
+    label,
+    name,
+    disabled,
+    parentClass = '',
+  } = props;
   const ref = useRef(null);
   const [open, setOpen] = useState<boolean>(false);
   const [value, setvalue] = useState<string>('');
@@ -158,13 +176,25 @@ export function CustomAutoComplete(props: any) {
       setOpen(true);
     }
   };
-  const noDataMessage = useMemo(() => <div className="h-full w-full text-center py-6 hover:bg-white">No Match</div>, []);
+  const noDataMessage = useMemo(
+    () => (
+      <div className="h-full w-full text-center py-6 hover:bg-white">
+        No Match
+      </div>
+    ),
+    []
+  );
 
   const makeList = () => {
     if (list.length) {
-      return list.length && list.map((item: any, index: number) => (
-        <li key={item?.id} data-target={index}>{item[targetKey]}</li>
-      ));
+      return (
+        list.length &&
+        list.map((item: any, index: number) => (
+          <li key={item?.id} data-target={index}>
+            {item[targetKey]}
+          </li>
+        ))
+      );
     }
     return noDataMessage;
   };
@@ -213,39 +243,39 @@ export function CustomAutoComplete(props: any) {
               disabled={disabled || false}
             />
           </div>
-          {
-            value !== '' && (
-              <div role="button" tabIndex={0} className="clearIconAutoComplete" onClick={() => { setvalue(''); setDebounceValue(''); }}>
-                <ClearIcon />
-              </div>
-            )
-          }
+          {value !== '' && (
+            <div
+              role="button"
+              tabIndex={0}
+              className="clearIconAutoComplete"
+              onClick={() => {
+                setvalue('');
+                setDebounceValue('');
+              }}
+            >
+              <ClearIcon />
+            </div>
+          )}
           <div className="w-[32px] h-full grid justify-center place-items-center">
             <Search className="p-px pl-1" />
           </div>
         </div>
-        {
-          (value !== '' && (open)) && (
-            <ListStyle
-              tabIndex={0}
-              onClick={listClick}
-            >
-              {
-                isLoading
-                  ? (
-                    <li className="h-20 w-full">
-                      <Loader size={30} />
-                    </li>
-                  )
-                  : makeList()
-              }
-            </ListStyle>
-          )
-        }
-        {
-          !value && <p id="requiredInMultiselect" className="text-xs text-red-600">required</p>
-        }
-
+        {value !== '' && open && (
+          <ListStyle tabIndex={0} onClick={listClick}>
+            {isLoading ? (
+              <li className="h-20 w-full">
+                <Loader size={30} />
+              </li>
+            ) : (
+              makeList()
+            )}
+          </ListStyle>
+        )}
+        {!value && (
+          <p id="requiredInMultiselect" className="text-xs text-red-600">
+            required
+          </p>
+        )}
       </div>
     </div>
   );
@@ -262,7 +292,7 @@ const MaterialAutoComplete = forwardRef((props: any, ref: any) => {
     required,
     label,
     name,
-    disabled
+    disabled,
   } = props;
 
   const refs = useRef(null);
@@ -277,7 +307,9 @@ const MaterialAutoComplete = forwardRef((props: any, ref: any) => {
 
   useEffect(() => {
     if (!list?.length) {
-      const element: HTMLElement = document.querySelector('[title="Clear"]') as HTMLElement;
+      const element: HTMLElement = document.querySelector(
+        '[title="Clear"]'
+      ) as HTMLElement;
       element?.click();
     }
   }, [list?.length]);
@@ -313,11 +345,13 @@ const MaterialAutoComplete = forwardRef((props: any, ref: any) => {
             disabled={!!disabled}
             ref={refs}
             options={list || []}
-            isOptionEqualToValue={(option, val: any) => option[targetKey] === val[targetKey]}
+            isOptionEqualToValue={(option, val: any) =>
+              option[targetKey] === val[targetKey]
+            }
             getOptionLabel={(option) => option[targetKey]}
             className="hasPopupIcon"
             sx={{
-              '& .MuiAutocomplete-popupIndicator': { transform: 'none' }
+              '& .MuiAutocomplete-popupIndicator': { transform: 'none' },
             }}
             popupIcon={<Search />}
             forcePopupIcon={true}
@@ -342,8 +376,8 @@ const MaterialAutoComplete = forwardRef((props: any, ref: any) => {
                 helperText={error ? error.message : ''}
                 placeholder="Search"
                 sx={{
-                  '& .MuiAutocomplete-endAdornment': { top: '2px' },
-                  '& .MuiAutocomplete-clearIndicator': { marginRight: '4px' }
+                  // '& .MuiAutocomplete-endAdornment': { top: '2px' },
+                  '& .MuiAutocomplete-clearIndicator': { marginRight: '4px' },
                 }}
                 onChange={onChange}
                 InputProps={{
@@ -359,7 +393,7 @@ const MaterialAutoComplete = forwardRef((props: any, ref: any) => {
                       ) : null}
                       {params.InputProps.endAdornment}
                     </>
-                  )
+                  ),
                 }}
               />
             )}
@@ -373,22 +407,22 @@ const MaterialAutoComplete = forwardRef((props: any, ref: any) => {
 export { MaterialAutoComplete };
 
 const ListStyle = styled('ul')`
-position: absolute;
-z-index: 20;
-top:32px;
-max-height: 224px;
-width:100%;
-overflow: auto;
-margin-top: 8px;
-border-radius: 5px;
-background-color: white;
-box-shadow: 0px 10px 15px rgba(0,0,0,0.1);
-li{
-  padding: 5px;
-  font-weight: 500;
-  cursor: pointer;
-  &:hover{
-    background: lightgray;
+  position: absolute;
+  z-index: 20;
+  top: 32px;
+  max-height: 224px;
+  width: 100%;
+  overflow: auto;
+  margin-top: 8px;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+  li {
+    padding: 5px;
+    font-weight: 500;
+    cursor: pointer;
+    &:hover {
+      background: lightgray;
+    }
   }
-}
 `;
