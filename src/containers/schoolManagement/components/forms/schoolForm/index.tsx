@@ -1,3 +1,7 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable operator-linebreak */
+/* eslint-disable indent */
+/* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable no-console */
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -324,7 +328,8 @@ export default function Index(props: Props) {
           .then((res: any) => {
             toast('success', `School ${props?.isEdit ? 'Updated' : 'Created'}`);
             if (userData.role.name === USER_TYPE.SCHOOL_ADMIN) {
-              refetchSchoolData();
+              // refetchSchoolData();
+              navigate(`/${schoolName}/dashboard`);
             } else if (isNew) {
               resetForm();
             } else {
@@ -342,7 +347,8 @@ export default function Index(props: Props) {
         // no files we have to upload
         toast('success', `School ${props?.isEdit ? 'Updated' : 'Created'}`);
         if (userData.role.name === USER_TYPE.SCHOOL_ADMIN) {
-          refetchSchoolData();
+          // refetchSchoolData();
+          navigate(`/${schoolName}/dashboard`);
         } else if (isNew) {
           resetForm();
         } else {
@@ -427,6 +433,7 @@ export default function Index(props: Props) {
     url: 'master-service/academic-year/',
     cacheTime: 2000,
   });
+
   const { data: countryList, isLoading: countryLoading } = useGet({
     baseURL: import.meta.env.VITE_APP_MASTER_SERVICE_URL,
     url: 'master-service/country/',
