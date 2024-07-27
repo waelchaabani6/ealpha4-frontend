@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import React, { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
@@ -177,10 +178,10 @@ function AssessmentDetails() {
       return { bg: '#FFF9BE', color: '#C7B551' }[type]; // Yello
     }
     if (scoreAch > 50 && scoreAch <= 70) {
-      return { bg: '#BECCFF', color: '#132E90 ' }[type]; // blue
+      return { bg: '#BECCFF', color: '#6CA463' }[type]; // blue
     }
     if (scoreAch >= 70) {
-      return { bg: '#E5F8E2', color: '#6CA463' }[type]; // green
+      return { bg: '#D9FFC8', color: '#132E90 ' }[type]; // green
     }
   }
 

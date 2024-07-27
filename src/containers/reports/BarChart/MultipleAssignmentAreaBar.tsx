@@ -1,14 +1,16 @@
 import { GRAPH_LABELS } from '@constants/constants';
 import React from 'react';
-import { ComposedChart,
+import {
+  ComposedChart,
   Area,
   Bar,
   XAxis,
   YAxis,
-  ResponsiveContainer } from 'recharts';
+  ResponsiveContainer,
+} from 'recharts';
 
 type Props = {
-  performance:(string | number)[];
+  performance: (string | number)[];
 };
 
 const CustomBar = (props: any) => {
@@ -33,7 +35,7 @@ const CustomLegend = () => (
   </div>
 );
 
-function MultipleAssignmentAreaBar(prop:Props) {
+function MultipleAssignmentAreaBar(prop: Props) {
   const { performance } = prop;
   const makeLabel = (value: number) => {
     if (value >= 80) {
@@ -72,7 +74,11 @@ function MultipleAssignmentAreaBar(prop:Props) {
         Performance Expectations
       </p>
       <div className="h-[460px] mt-10">
-        <ComposedChart width={performance ? 230 * performance.length : 800} height={450} data={performance}>
+        <ComposedChart
+          width={performance ? 230 * performance.length : 800}
+          height={450}
+          data={performance}
+        >
           <XAxis dataKey="name" axisLine={false} tickLine={false} />
           <YAxis
             axisLine={false}
@@ -81,30 +87,10 @@ function MultipleAssignmentAreaBar(prop:Props) {
             tick={myTick}
             domain={[0, 100]}
           />
-          <Area
-            type="monotone"
-            dataKey="area4"
-            fill="#D9FFC8"
-            stroke="none"
-          />
-          <Area
-            type="monotone"
-            dataKey="area3"
-            fill="#BECCFF"
-            stroke="none"
-          />
-          <Area
-            type="monotone"
-            dataKey="area2"
-            fill="#FFF9BE"
-            stroke="none"
-          />
-          <Area
-            type="monotone"
-            dataKey="area1"
-            fill="#FCD4C6"
-            stroke="none"
-          />
+          <Area type="monotone" dataKey="area4" fill="#D9FFC8" stroke="none" />
+          <Area type="monotone" dataKey="area3" fill="#BECCFF" stroke="none" />
+          <Area type="monotone" dataKey="area2" fill="#FFF9BE" stroke="none" />
+          <Area type="monotone" dataKey="area1" fill="#FCD4C6" stroke="none" />
           <Bar
             barSize={16}
             dataKey="class_percent"

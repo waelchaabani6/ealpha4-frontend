@@ -211,10 +211,10 @@ function AssignmentDetails() {
   //     return { bg: '#FFF9BE', color: '#C7B551' }[type]; // Yellow
   //   }
   //   if (scoreAch > 70 && scoreAch <= 80) {
-  //     return { bg: '#BECCFF', color: '#4B0082' }[type]; // Purple
+  //     return { bg: '#BECCFF00', color: '#4B0082' }[type]; // Purple
   //   }
   //   if (scoreAch > 80) {
-  //     return { bg: '#E5F8E2', color: '#6CA463' }[type]; // Green
+  //     return { bg: '#BECCFF', color: '#6CA463' }[type]; // Green
   //   }
   // }
 
@@ -223,11 +223,11 @@ function AssignmentDetails() {
     if (score !== null && !isNaN(score)) {
       if (score >= val.exceed1 && score <= val.exceed2) {
         // Exceeds
-        return { bg: '#E5F8E2', color: '#6CA463' }[type];
+        return { bg: '#D9FFC8', color: '#132E90 ' }[type];
       }
       if (score >= val.meet1 && score <= val.meet2) {
         /// Meets
-        return { bg: '#BECCFF', color: '#132E90 ' }[type];
+        return { bg: '#BFCDFD', color: '#6CA463' }[type];
       }
       if (score >= val.approching1 && score <= val.approching2) {
         // Approaching
