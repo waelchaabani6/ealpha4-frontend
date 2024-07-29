@@ -182,6 +182,8 @@ function AssignmentDetails() {
   } = teacherData;
   const [jsonData, setJsonData] = useState([]);
   const [jsonCopyData, setJsonCopyData] = useState([]);
+  const [assignmentPages, setAssignmentsPages] = useState([]);
+
   const [AttachmentMenuVisible, setAttachmentMenuVisible] = useState(false);
   const [assignReportId, setAssignReportId] = useState('');
 
@@ -415,6 +417,7 @@ function AssignmentDetails() {
           label: ele.page_name,
           value: ele.page_name,
         }));
+        setAssignmentsPages(pagesArray);
         jsonRespData =
           jsonRespData && jsonRespData.length !== 0
             ? jsonRespData.map((ele: any) =>
@@ -449,6 +452,7 @@ function AssignmentDetails() {
       const scromPagesTemp: ScromPage[] = [];
       if (res?.data?.response?.chapters) {
         const assignmentMainList = res?.data?.response;
+        console.log('assignmentMainList', assignmentMainList);
         res?.data?.response?.chapters?.forEach((chapter: any) => {
           chapter?.lessons?.forEach((lesson: any) => {
             const pageNumberArray: string[] = [];
@@ -510,6 +514,7 @@ function AssignmentDetails() {
           { label: 'Select', value: 'Select', id: null },
           ...scromPagesTemp,
         ]);
+        console.log(scromPagesTemp);
       }
     },
     enabled: !!assignReportId,
@@ -807,6 +812,24 @@ function AssignmentDetails() {
           <div className="flex">
             <div className="relative">
               <Dropdown
+                dataArray={assignmentPages}
+                onChangeHandler={(val) => {
+                  setSelectedScromPage(val);
+                  console.log(scromPages, 'scromPages');
+                  const tempScromPage = scromPages.filter(
+                    (scrom) => scrom.label === val
+                  );
+                  if (tempScromPage && tempScromPage.length) {
+                    setScromState(tempScromPage[0]);
+                    setshowSelectPageError(false);
+                  }
+                }}
+                value={selectedScromPage}
+                title="Select Page"
+                sxClass={{ width: '206px', marginRight: '5px' }}
+                displayEmpty={false}
+              />
+              {/* <Dropdown
                 dataArray={scromPages}
                 onChangeHandler={(val) => {
                   setSelectedScromPage(val);
@@ -822,7 +845,7 @@ function AssignmentDetails() {
                 title="Select Page"
                 sxClass={{ width: '206px', marginRight: '5px' }}
                 displayEmpty={false}
-              />
+              /> */}
               {showSelectPageError ? (
                 <div className="absolute text-red-500 text-xs whitespace-nowrap">
                   Please select pages from dropdown
