@@ -658,7 +658,7 @@ const AccordianCheckbox = React.forwardRef(
                       aria-controls="panel1a-content"
                       id="panel1a-header"
                       sx={{
-                        backgroundColor: '#BECCFF',
+                        backgroundColor: '#e5f8e2',
                       }}
                     >
                       <div className="font-bold">{chapter.chapter_name}</div>
