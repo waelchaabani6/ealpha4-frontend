@@ -1,3 +1,6 @@
+/* eslint-disable curly */
+/* eslint-disable no-param-reassign */
+/* eslint-disable nonblock-statement-body-position */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable react/jsx-curly-newline */
 /* eslint-disable no-console */
@@ -60,10 +63,16 @@ const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
 
 const dataArray: any = [];
 
-const csvSubHeaders = ['Pages', 'Score', 'Unattempted', 'Incorrect', 'Correct'];
+const csvSubHeaders = [
+  'page_name',
+  'Score',
+  'Unattempted',
+  'Incorrect',
+  'Correct',
+];
 interface Column {
   id:
-    | 'Pages'
+    | 'page_name'
     | 'Score'
     | 'Errors'
     | 'Mistake'
@@ -79,9 +88,10 @@ interface Column {
   dataArray?: Array<{ label: string; value: string }>;
   selectedValue?: string;
 }
+
 const columns: Column[] = [
   {
-    id: 'Pages',
+    id: 'page_name',
     label: 'Page',
     minWidth: 170,
     align: 'right',
@@ -94,8 +104,10 @@ const columns: Column[] = [
   { id: 'Correct', label: 'Correct', minWidth: 170, align: 'right' },
   { id: 'MyScore', label: 'Score', minWidth: 100, align: 'right' },
 ];
+
 interface Data {
   Pages: string;
+  PageId: string;
   MyScore: string;
   Unattempted: number;
   Wrong: number;
@@ -103,6 +115,7 @@ interface Data {
   pageNumber: string;
   scormDataView: any;
 }
+
 interface ScromPage {
   label: string;
   value: string;
@@ -125,6 +138,7 @@ interface ScromPage {
 
 function createData(
   Pages: string,
+  PageId: string,
   Score: number,
   Unattempted: number,
   Wrong: number,
@@ -140,6 +154,7 @@ function createData(
   const scormDataView = scormData ? JSON.parse(scormData) : {};
   return {
     Pages,
+    PageId,
     Unattempted,
     Wrong,
     Correct,
@@ -164,8 +179,8 @@ function AssignmentDetails() {
   } = params;
 
   const [csvData, setCsvData] = useState<[]>([]);
-  const [bulkSelect, setBulkSelect] = useState<any>([]);
-  const [playloadData, setPlayloadData] = useState<any | undefined>({});
+  // const [bulkSelect, setBulkSelect] = useState<any>([]);
+  // const [playloadData, setPlayloadData] = useState<any | undefined>({});
   const [columnsHeader, setColumns] = useState(columns);
   const [columnsHeaderCopy, setColumnsCopy] = useState(columns);
   const [assignmentData, setAssignmentData] = useState<any>({});
@@ -178,7 +193,7 @@ function AssignmentDetails() {
     first_name: fName,
     last_name: lName,
     user_profile_id: teacherId,
-    schoolId,
+    // schoolId,
   } = teacherData;
   const [jsonData, setJsonData] = useState([]);
   const [jsonCopyData, setJsonCopyData] = useState([]);
@@ -190,7 +205,11 @@ function AssignmentDetails() {
   const [teacherDownloadLink, setTeacherDownloadLink] = useState('');
   const [studentDownloadLink, setStudentDownloadLink] = useState('');
   const [remark, setRemark] = useState('');
+
   const [scromPages, setScromPages] = useState<ScromPage[]>([]);
+  const [singlePages, setSinglePages] = useState<ScromPage[]>([]);
+  const [copysinglePages, setCopySinglePages] = useState<ScromPage[]>([]);
+
   const [selectedScromPage, setSelectedScromPage] = useState<string>('');
   const [scromState, setScromState] = useState<any>();
   const [showSelectPageError, setshowSelectPageError] = useState(false);
@@ -285,6 +304,9 @@ function AssignmentDetails() {
     const columnsHeader2 = columnsHeader.map((ele, index) => {
       if (ele.component === 'Dropdown' && cIndex === index) {
         setJsonData(jsonCopyData.filter((page: any) => page.Pages === val));
+        setSinglePages(
+          copysinglePages.filter((page: any) => page.page_name === val)
+        );
         return { ...ele, selectedValue: val };
       }
       return ele;
@@ -349,11 +371,11 @@ function AssignmentDetails() {
     if (score !== null && !isNaN(score)) {
       if (score >= val.exceed1 && score <= val.exceed2) {
         // Exceeds
-        return { bg: '#D9FFC8', color: '#132E90 ' }[type];
+        return { bg: '#beccff', color: '#132E90 ' }[type];
       }
       if (score >= val.meet1 && score <= val.meet2) {
         /// Meets
-        return { bg: '#BFCDFD', color: '#6CA463' }[type];
+        return { bg: '#D9FFC8', color: '#6CA463' }[type];
       }
       if (score >= val.approching1 && score <= val.approching2) {
         // Approaching
@@ -369,7 +391,6 @@ function AssignmentDetails() {
   }
 
   function getPerformanceText(score: any) {
-    console.log(val, 'val');
     if (score >= val.exceed1 && score <= val.exceed2) {
       return 'Exceeds';
     }
@@ -405,24 +426,33 @@ function AssignmentDetails() {
       setTeacherDownloadLink(results?.assignment_files[0]?.files);
       setStudentDownloadLink(results?.student_assignment_files[0]?.files);
       let jsonRespData: any = [];
+
       res?.data?.response?.assignment_progress?.forEach((ele: any) => {
         if (ele.json_data && ele.json_data.length) {
           ele.json_data.forEach((element: any) => {
-            jsonRespData.push(element);
+            const obj: any = element;
+            // obj.lesson_id = ele?.lesson_id;
+            jsonRespData.push(obj);
+            // jsonRespData.push(ele?.lesson_id);
+            // console.log(element, '#element');
           });
         }
       });
+      // jsonRespData.push(res?.data?.response?.assignment_progress?.lesson_id);
+
       if (jsonRespData && jsonRespData.length !== 0) {
-        const pagesArray = jsonRespData.map((ele: any) => ({
-          label: ele.page_name,
-          value: ele.page_name,
-        }));
-        setAssignmentsPages(pagesArray);
+        // const pagesArray = jsonRespData.map((ele: any) => ({
+        //   label: ele.page_name,
+        //   value: ele.page_name,
+        // }));
+        // setAssignmentsPages(pagesArray);
+        // console.log(jsonRespData, '#jsonRespData');
         jsonRespData =
           jsonRespData && jsonRespData.length !== 0
             ? jsonRespData.map((ele: any) =>
                 createData(
                   ele.page_name,
+                  ele.page_id,
                   ele.score,
                   ele.unattempted_count,
                   ele.mistake_count,
@@ -435,24 +465,26 @@ function AssignmentDetails() {
             : [];
         setJsonData(jsonRespData);
         setJsonCopyData(jsonRespData);
-
+        // setSinglePages(jsonRespData);
         if (jsonRespData && jsonRespData.length !== 0) {
           setCsvData(jsonRespData.map((ele: any) => createExcellData(ele)));
         }
 
-        const columnsHeader2 = columnsHeader.map((ele) => {
-          if (ele.component === 'Dropdown') {
-            return { ...ele, dataArray: pagesArray };
-          }
-          return ele;
-        });
-        setColumns(columnsHeader2);
-        setColumnsCopy(columnsHeader2);
+        // const columnsHeader2 = columnsHeader.map((ele) => {
+        //   if (ele.component === 'Dropdown') {
+        //     return { ...ele, dataArray: pagesArray };
+        //   }
+        //   return ele;
+        // });
+        // setColumns(columnsHeader2);
+        // setColumnsCopy(columnsHeader2);
       }
-      const scromPagesTemp: ScromPage[] = [];
+
+      const tempArray: any = [];
+      const pagesList: any = [];
       if (res?.data?.response?.chapters) {
-        const assignmentMainList = res?.data?.response;
-        console.log('assignmentMainList', assignmentMainList);
+        // const assignmentMainList = res?.data?.response;
+
         res?.data?.response?.chapters?.forEach((chapter: any) => {
           chapter?.lessons?.forEach((lesson: any) => {
             const pageNumberArray: string[] = [];
@@ -467,55 +499,102 @@ function AssignmentDetails() {
               }) => {
                 pageNumberArray.push(page_number);
                 pageNameArray.push(name);
+
+                pagesList.push({
+                  label: `${lesson.unit_name} - ${name}`,
+                  value: `${lesson.unit_name}`,
+                });
+
+                jsonRespData.forEach((ele: any) => {
+                  if (
+                    ele?.scormDataView.urlLessonId === lesson?.unit_id &&
+                    ele?.Pages === name
+                  ) {
+                    const tempObj = ele;
+                    tempObj.page_name = `${lesson.unit_name} - ${ele.Pages}`;
+                    tempArray.push(tempObj);
+                  }
+                });
               }
             );
-            scromPagesTemp.push({
-              label: `${lesson.unit_name}`,
-              value: `${lesson.unit_name}`,
-              pageName: JSON.stringify(pageNameArray),
-              pageNumber: pageNumberArray.join(','),
-              chapter_id: chapter.chapter_id,
-              chapterMainId: chapter.id,
-              chapter_name: chapter?.chapter_name.substring(0, 50),
-              lessonId: lesson.id,
-              urlLessonId: lesson.unit_id,
-              lessonUnitName: lesson.unit_name,
-              courseId: assignmentMainList.course_id,
-              course_table_id: assignmentMainList.course_table_id,
-              assignmentId: assignmentMainList.id,
-              contentUrl: lesson.content_url,
-              moduleName: 'assignment',
+
+            const pagesArray = singlePages.map((ele: any) => ({
+              label: ele.page_name,
+              value: ele.page_name,
+            }));
+
+            const columnsHeader2 = columnsHeader.map((ele) => {
+              if (ele.component === 'Dropdown') {
+                return { ...ele, dataArray: pagesArray };
+              }
+              return ele;
             });
-            if (lesson?.pages.length === 0) {
-              scromPagesTemp.push({
-                label: `${lesson.unit_name}`,
-                value: `${lesson.unit_name}`,
-                pageName: `${lesson.unit_name}`,
-                pageNumber: '-1',
-                chapter_id: chapter.chapter_id,
-                chapterMainId: chapter.id,
-                chapter_name: chapter?.chapter_name.substring(0, 50),
-                lessonId: lesson.id,
-                urlLessonId: lesson.unit_id,
-                lessonUnitName: lesson.unit_name,
-                courseId: assignmentMainList.course_id,
-                course_table_id: assignmentMainList.course_table_id,
-                assignmentId: assignmentMainList.id,
-                contentUrl: lesson.content_url,
-                moduleName: 'assignment',
-              });
-            }
+
+            setColumns(columnsHeader2);
+            setColumnsCopy(columnsHeader2);
+            // setAssignmentsPages(pagesList);
+            // scromPagesTemp.push({
+            //   label: `${lesson.unit_name}`,
+            //   value: `${lesson.unit_name}`,
+            //   pageName: JSON.stringify(pageNameArray),
+            //   pageNumber: pageNumberArray.join(','),
+            //   chapter_id: chapter.chapter_id,
+            //   chapterMainId: chapter.id,
+            //   chapter_name: chapter?.chapter_name.substring(0, 50),
+            //   lessonId: lesson.id,
+            //   urlLessonId: lesson.unit_id,
+            //   lessonUnitName: lesson.unit_name,
+            //   courseId: assignmentMainList.course_id,
+            //   course_table_id: assignmentMainList.course_table_id,
+            //   assignmentId: assignmentMainList.id,
+            //   contentUrl: lesson.content_url,
+            //   moduleName: 'assignment',
+            // });
+            // if (lesson?.pages.length === 0) {
+            //   scromPagesTemp.push({
+            //     label: `${lesson.unit_name} - `,
+            //     value: `${lesson.unit_name}`,
+            //     pageName: `${lesson.unit_name}`,
+            //     pageNumber: '-1',
+            //     chapter_id: chapter.chapter_id,
+            //     chapterMainId: chapter.id,
+            //     chapter_name: chapter?.chapter_name.substring(0, 50),
+            //     lessonId: lesson.id,
+            //     urlLessonId: lesson.unit_id,
+            //     lessonUnitName: lesson.unit_name,
+            //     courseId: assignmentMainList.course_id,
+            //     course_table_id: assignmentMainList.course_table_id,
+            //     assignmentId: assignmentMainList.id,
+            //     contentUrl: lesson.content_url,
+            //     moduleName: 'assignment',
+            //   });
+            // }
           });
         });
-        scromPagesTemp.sort((a, b) =>
-          a.label > b.label ? 1 : b.label > a.label ? -1 : 0
-        );
-        setScromPages([
-          { label: 'Select', value: 'Select', id: null },
-          ...scromPagesTemp,
-        ]);
-        console.log(scromPagesTemp);
+
+        // scromPagesTemp.sort((a, b) =>
+        //   a.label > b.label ? 1 : b.label > a.label ? -1 : 0
+        // );
+
+        // console.log(scromPagesTemp);
       }
+
+      setSinglePages(tempArray);
+      setCopySinglePages(tempArray);
+
+      const pagesListprev: any = [];
+      tempArray.forEach((ele: any) => {
+        pagesListprev.push({
+          label: ele.page_name,
+          value: ele.page_name,
+          ...ele,
+        });
+      });
+
+      setScromPages([
+        { label: 'Select', value: 'Select', id: null },
+        ...pagesListprev,
+      ]);
     },
     enabled: !!assignReportId,
     onError: ({ response }: any) => {},
@@ -623,7 +702,7 @@ function AssignmentDetails() {
     if (selectedScromPage === '' || scromState?.id === null) {
       setshowSelectPageError(true);
     } else {
-      navigatToPreview(scromState);
+      navigatToPreview(scromState.scormDataView);
     }
   };
 
@@ -811,7 +890,7 @@ function AssignmentDetails() {
           <div className="flex-1" />
           <div className="flex">
             <div className="relative">
-              <Dropdown
+              {/* <Dropdown
                 dataArray={assignmentPages}
                 onChangeHandler={(val) => {
                   setSelectedScromPage(val);
@@ -828,8 +907,8 @@ function AssignmentDetails() {
                 title="Select Page"
                 sxClass={{ width: '206px', marginRight: '5px' }}
                 displayEmpty={false}
-              />
-              {/* <Dropdown
+              /> */}
+              <Dropdown
                 dataArray={scromPages}
                 onChangeHandler={(val) => {
                   setSelectedScromPage(val);
@@ -845,7 +924,7 @@ function AssignmentDetails() {
                 title="Select Page"
                 sxClass={{ width: '206px', marginRight: '5px' }}
                 displayEmpty={false}
-              /> */}
+              />
               {showSelectPageError ? (
                 <div className="absolute text-red-500 text-xs whitespace-nowrap">
                   Please select pages from dropdown
@@ -857,6 +936,7 @@ function AssignmentDetails() {
             </div>
           </div>
         </div>
+
         <div ref={componentRef}>
           <div className="flex flex-col bg-white p-4 mt-5 md:flex-row">
             <div className="flex flex-col grow md:flex-row ">
@@ -888,12 +968,12 @@ function AssignmentDetails() {
               <div className="grow md:border-r md:border-r-gray-300 md:ml-4">
                 <div className="mb-5">
                   <div className="font-bold"> Lesson Name </div>
-                  {/* <div className="truncate w-[170px]"> */}{' '}
-                  {assignmentData?.chapters?.map(
-                    (ele: any) => `${ele.chapter_name} `
-                  )}{' '}
-                  {/* </div> */}
-                  {/* <div> - </div> */}
+                  {/* {assignmentData?.lesson_name} */}
+                  <ul>
+                    {assignmentData?.lesson_name
+                      ?.split(',')
+                      .map((ele: any) => <li className="mb-2">- {ele}</li>)}
+                  </ul>
                 </div>
                 <div className="mb-5">
                   <div className="font-bold">
@@ -912,22 +992,20 @@ function AssignmentDetails() {
                 >
                   <div className="font-bold"> Start Date </div>
                   <div>
-                    {' '}
                     {assignmentData &&
                       moment(
                         assignmentData?.start_date?.replace('Z', '')
-                      )?.format('DD-MM-YYYY')}{' '}
+                      )?.format('DD-MM-YYYY')}
                   </div>
                 </div>
 
                 <div className="ml-6">
                   <div className="font-bold"> End Date </div>
                   <div>
-                    {' '}
                     {assignmentData &&
                       moment(
                         assignmentData?.end_date?.replace('Z', '')
-                      )?.format('DD-MM-YYYY')}{' '}
+                      )?.format('DD-MM-YYYY')}
                   </div>
                 </div>
               </div>
@@ -974,16 +1052,18 @@ function AssignmentDetails() {
               ) : null}
             </div>
           </div>
+
           <div className="wrapperBorder mt-8">
             <Wrapper>
               <SimpleTableDx
-                rows={jsonData}
+                rows={singlePages}
                 columns={columnsHeader}
                 onChangeHandler={(val: string, cIndex: number) => {
                   changeColumnsHeader(val, cIndex);
                 }}
                 handleClearClick={() => {
                   setJsonData(jsonCopyData);
+                  setSinglePages(copysinglePages);
                   setColumns(columns);
                 }}
                 fullHeight={fullHeight}

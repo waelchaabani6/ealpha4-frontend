@@ -306,11 +306,11 @@ function AssignmentDetails() {
     if (score !== null && !isNaN(score)) {
       if (score >= val.exceed1 && score <= val.exceed2) {
         // Exceeds
-        return { bg: '#D9FFC8', color: '#132E90 ' }[type];
+        return { bg: '#BECCFF', color: '#132E90 ' }[type]; // green
       }
       if (score >= val.meet1 && score <= val.meet2) {
         /// Meets
-        return { bg: '#BFCDFD', color: '#6CA463' }[type];
+        return { bg: '#d9ffc8', color: '#6CA463' }[type]; // blue
       }
       if (score >= val.approching1 && score <= val.approching2) {
         // Approaching
@@ -951,7 +951,8 @@ function AssignmentDetails() {
                           : `${assignmentData?.score}`}
                         /100) &nbsp;
                       </span>
-                      - {getPerformanceText(parseInt(assignmentData?.score))}
+                      -{' '}
+                      {getPerformanceText(parseInt(assignmentData?.score, 10))}
                     </div>
                   </div>
                 </div>

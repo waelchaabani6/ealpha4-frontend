@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable comma-dangle */
 /* eslint-disable react/jsx-one-expression-per-line */
 import React, { useState, useRef } from 'react';
@@ -24,6 +25,8 @@ import {
 import SimpleTableDx from '../../../components/SimpleTableDx/index';
 
 const printButton = () => <PrintIcon />;
+
+const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
 
 const dataArray = [
   { label: 'Page', value: 'Page' },
@@ -115,6 +118,18 @@ function AssessmentDetails() {
   const [bulkSelect, setBulkSelect] = useState<any>([]);
   const [playloadData, setPlayloadData] = useState<any | undefined>({});
   const [columnsHeader, setColumns] = useState(columns);
+  const [teacher, setTeacher] = useState('');
+
+  const [val, setValue] = useState({
+    Nmeet1: '',
+    Nmeet2: '',
+    exceed1: '',
+    exceed2: '',
+    meet1: '',
+    meet2: '',
+    approching1: '',
+    approching2: '',
+  });
 
   const score = 70;
 
@@ -179,12 +194,47 @@ function AssessmentDetails() {
       return { bg: '#FFF9BE', color: '#C7B551' }[type]; // Yello
     }
     if (scoreAch > 50 && scoreAch <= 70) {
-      return { bg: '#BFCDFD', color: '#132E90 ' }[type]; // blue
+      return { bg: '#d9ffc8', color: '#6CA463' }[type]; // green
     }
     if (scoreAch >= 70) {
-      return { bg: '#BECCFF', color: '#6CA463' }[type]; // green
+      return { bg: '#BECCFF', color: '#132E90' }[type]; // blue
     }
   }
+
+  // const { isLoading: performance, refetch: GetPerformance } = useGet({
+  //   baseURL: ReportURL,
+  //   url: `reports-service/performance_expectation/?user_id=${teacher}`,
+  //   onSuccess: (res: any) => {
+  //     const resp = res?.data?.response;
+  //     const body: any = [];
+  //     const fetchedRecords = resp?.slice(0, 4);
+  //     const meetObj = fetchedRecords?.find(
+  //       (obj: any) => obj.status === 'Meets'
+  //     );
+  //     const AppObj = fetchedRecords?.find(
+  //       (obj: any) => obj.status === 'Approaching'
+  //     );
+  //     const DMeetObj = fetchedRecords?.find(
+  //       (obj: any) => obj.status === 'Does Not Meet'
+  //     );
+  //     const ExceedsObj = fetchedRecords?.find(
+  //       (obj: any) => obj.status === 'Exceeds'
+  //     );
+  //     setValue((prevState: any) => ({
+  //       ...prevState,
+  //       meet1: meetObj?.from_value,
+  //       meet2: meetObj?.to_value,
+  //       exceed1: ExceedsObj?.from_value,
+  //       exceed2: ExceedsObj?.to_value,
+  //       approching1: AppObj?.from_value,
+  //       approching2: AppObj?.to_value,
+  //       Nmeet1: DMeetObj?.from_value,
+  //       Nmeet2: DMeetObj?.to_value,
+  //     }));
+  //   },
+  //   enabled: false,
+  //   retry: false,
+  // });
 
   return (
     <div>

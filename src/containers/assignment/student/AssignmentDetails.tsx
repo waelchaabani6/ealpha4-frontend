@@ -1,3 +1,8 @@
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable comma-dangle */
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable indent */
+/* eslint-disable consistent-return */
 /* eslint-disable operator-linebreak */
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link, useLocation, useParams } from 'react-router-dom';
@@ -251,11 +256,11 @@ function AssignmentDetails(): JSX.Element {
   function colorCode(score: any, type: string) {
     if (score >= val.exceed1 && score <= val.exceed2) {
       // Exceeds
-      return { bg: '#D9FFC8', color: '#132E90 ' }[type];
+      return { bg: '#BECCFF', color: '#132E90 ' }[type]; // green
     }
     if (score >= val.meet1 && score <= val.meet2) {
       /// Meets
-      return { bg: '#BFCDFD', color: '#6CA463' }[type];
+      return { bg: '#d9ffc8', color: '#6CA463' }[type]; // blue
     }
     if (score >= val.approching1 && score < val.approching2) {
       // Approaching
@@ -370,7 +375,6 @@ function AssignmentDetails(): JSX.Element {
       const resp = res?.data?.response;
       const body: any = [];
       const fetchedRecords = resp?.slice(0, 4);
-      console.log(fetchedRecords);
       const meetObj = fetchedRecords?.find(
         (obj: any) => obj.status === 'Meets'
       );
