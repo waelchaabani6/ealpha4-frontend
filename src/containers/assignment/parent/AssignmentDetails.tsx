@@ -7,10 +7,10 @@
 /* eslint-disable no-restricted-globals */
 /* eslint-disable react/jsx-one-expression-per-line */
 import routes from '@constants/routes';
-import EmailIcon from '@mui/icons-material/Email';
+// import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
 import { useGet } from '@shared/api/useApi';
-import Loader from '@shared/loader';
+// import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
 import toast from '@shared/toast';
@@ -23,6 +23,7 @@ import moment from 'moment';
 import SimpleTableDx from '../../../components/SimpleTableDx/index';
 import { TOOLBAR_LABELS } from '../../../constants/constants';
 import RouteLayout from '../../layout/routeLayout';
+import { ScromPage } from '@constants/types';
 
 const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
 const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
@@ -37,7 +38,7 @@ const dataArray = [
 ];
 
 interface Column {
-  id: 'Pages' | 'Score' | 'Unattempted' | 'Wrong' | 'Correct' | 'MyScore';
+  id: 'page_name' | 'Score' | 'Unattempted' | 'Wrong' | 'Correct' | 'MyScore';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -49,7 +50,7 @@ interface Column {
 // readonly Column[]
 const columns: Column[] = [
   {
-    id: 'Pages',
+    id: 'page_name',
     label: 'Page',
     minWidth: 170,
     align: 'right',
@@ -65,6 +66,7 @@ const columns: Column[] = [
 
 interface Data {
   Pages: string;
+  page_name: string;
   MyScore: number;
   Unattempted: number;
   Wrong: number;
@@ -75,6 +77,7 @@ interface Data {
 
 function createData(
   Pages: string,
+  page_name: string,
   Score: number,
   Unattempted: number,
   Wrong: number,
@@ -90,6 +93,7 @@ function createData(
   const scormDataView = scormData ? JSON.parse(scormData) : {};
   return {
     Pages,
+    page_name,
     Unattempted,
     Wrong,
     Correct,
@@ -110,6 +114,9 @@ function AssignmentDetails() {
   const [fullHeight, setFullHeight] = useState(false);
   const [teacher, setTeacher] = useState('');
 
+  const [singlePages, setSinglePages] = useState<ScromPage[]>([]);
+  const [copysinglePages, setCopySinglePages] = useState<ScromPage[]>([]);
+
   const [val, setValue] = useState({
     Nmeet1: '',
     Nmeet2: '',
@@ -129,9 +136,10 @@ function AssignmentDetails() {
   const changeColumnsHeader = (val: string, cIndex: number) => {
     const columnsHeader2 = columnsHeader.map((ele, index) => {
       if (ele.component === 'Dropdown' && cIndex === index) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        setJsonData(jsonCopyData.filter((page) => page.Pages === val));
+        setJsonData(jsonCopyData.filter((page: any) => page.Pages === val));
+        setSinglePages(
+          copysinglePages.filter((page: any) => page.page_name === val)
+        );
         return { ...ele, selectedValue: val };
       }
       return ele;
@@ -284,6 +292,7 @@ function AssignmentDetails() {
   function createExcellData(ele: any) {
     return [ele.Pages, ele.Correct, ele.Wrong, ele.Unattempted, ele.MyScore];
   }
+
   const { isLoading: childrenLoading, refetch: details } = useGet({
     baseURL,
     url: `assignments-service/assignment/student/${assignmentID}/report/`,
@@ -297,6 +306,7 @@ function AssignmentDetails() {
           });
         }
       });
+
       if (jsonRespData && jsonRespData.length !== 0) {
         const pagesArray = jsonRespData.map((ele: any) => ({
           label: ele.page_name,
@@ -307,6 +317,7 @@ function AssignmentDetails() {
             ? jsonRespData.map((ele: any) =>
                 // eslint-disable-next-line implicit-arrow-linebreak
                 createData(
+                  ele.page_name,
                   ele.page_name,
                   ele.score,
                   ele.unattendedCount,
@@ -324,14 +335,85 @@ function AssignmentDetails() {
           setCsvData(jsonRespData.map((ele: any) => createExcellData(ele)));
         }
 
-        const columnsHeader2 = columnsHeader.map((ele) => {
-          if (ele.component === 'Dropdown') {
-            return { ...ele, dataArray: pagesArray };
-          }
-          return ele;
-        });
-        setColumns(columnsHeader2);
+        // const columnsHeader2 = columnsHeader.map((ele) => {
+        //   if (ele.component === 'Dropdown') {
+        //     return { ...ele, dataArray: pagesArray };
+        //   }
+        //   return ele;
+        // });
+        // setColumns(columnsHeader2);
       }
+
+      const tempArray: any = [];
+      const pagesList: any = [];
+      if (res?.data?.response?.chapters) {
+        res?.data?.response?.chapters?.forEach((chapter: any) => {
+          chapter?.lessons?.forEach((lesson: any) => {
+            const pageNumberArray: string[] = [];
+            const pageNameArray: string[] = [];
+            if (lesson?.pages.length > 0) {
+              lesson?.pages?.forEach(
+                ({
+                  name,
+                  page_number,
+                }: {
+                  name: string;
+                  page_number: string;
+                }) => {
+                  pageNumberArray.push(page_number);
+                  pageNameArray.push(name);
+
+                  pagesList.push({
+                    label: `${lesson.unit_name} - ${name}`,
+                    value: `${lesson.unit_name}`,
+                  });
+
+                  jsonRespData.forEach((ele: any) => {
+                    const tempObj = ele;
+                    if (
+                      ele?.scormDataView.urlLessonId === lesson?.unit_id &&
+                      ele?.Pages === name
+                    ) {
+                      tempObj.page_name = `${lesson.unit_name} - ${ele.Pages}`;
+                      tempArray.push(tempObj);
+                    } else if (ele?.scormDataView.urlLessonId === undefined) {
+                      tempObj.page_name = `${ele.Pages}`;
+                      tempArray.push(tempObj);
+                    }
+                  });
+                }
+              );
+            }
+
+            const pagesArray = singlePages.map((ele: any) => ({
+              label: ele.page_name,
+              value: ele.page_name,
+            }));
+
+            const columnsHeader2 = columnsHeader.map((ele) => {
+              if (ele.component === 'Dropdown') {
+                return { ...ele, dataArray: pagesArray };
+              }
+              return ele;
+            });
+
+            setColumns(columnsHeader2);
+          });
+        });
+      }
+
+      setSinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
+      setCopySinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
+
+      const pagesListprev: any = [];
+      tempArray.forEach((ele: any) => {
+        pagesListprev.push({
+          label: ele.page_name,
+          value: ele.page_name,
+          ...ele,
+        });
+      });
+
       setAssignmentData(resp);
       setTeacher(resp?.teacher);
     },
@@ -480,7 +562,8 @@ function AssignmentDetails() {
         <div className="wrapperBorder mt-8" ref={componentRef}>
           <Wrapper>
             <SimpleTableDx
-              rows={jsonData}
+              // rows={jsonData}
+              rows={singlePages}
               columns={columnsHeader}
               onChangeHandler={(val: string, cIndex: number) => {
                 changeColumnsHeader(val, cIndex);

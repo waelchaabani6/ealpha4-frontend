@@ -20,10 +20,10 @@ import { CustomInput } from '@component/input';
 import routes from '@constants/routes';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
 import AttachIcon from '@mui/icons-material/AttachFile';
-import EmailIcon from '@mui/icons-material/Email';
+// import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
 import { useGet, usePatch } from '@shared/api/useApi';
-import Loader from '@shared/loader';
+// import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import { selectUser } from '@shared/store/userSlice';
 import toast from '@shared/toast';
@@ -40,6 +40,7 @@ import SimpleTableDx from '@component/SimpleTableDx';
 import DatePicker from '@component/datepicker';
 import UseGetProfile from '@utility/Hooks/UseGetProfile';
 import { useOnClickOutside } from '@shared/useOnClickOutside';
+import { ScromPage } from '@constants/types';
 
 const stateChange: any = {
   'Mark as Ongoing': 'Ongoing',
@@ -116,26 +117,6 @@ interface Data {
   scormDataView: any;
 }
 
-interface ScromPage {
-  label: string;
-  value: string;
-  pageName?: string;
-  pageNumber?: string;
-  chapter_id?: string;
-  chapterMainId?: string;
-  chapter_name?: string;
-  lessonUnitName?: string;
-  course_id?: string;
-  course_table_id?: number;
-  id?: string | null;
-  contentUrl?: string;
-  moduleName?: string;
-  lessonId?: string;
-  urlLessonId?: string;
-  courseId?: string;
-  assignmentId?: string;
-}
-
 function createData(
   Pages: string,
   PageId: string,
@@ -197,7 +178,7 @@ function AssignmentDetails() {
   } = teacherData;
   const [jsonData, setJsonData] = useState([]);
   const [jsonCopyData, setJsonCopyData] = useState([]);
-  const [assignmentPages, setAssignmentsPages] = useState([]);
+  // const [assignmentPages, setAssignmentsPages] = useState([]);
 
   const [AttachmentMenuVisible, setAttachmentMenuVisible] = useState(false);
   const [assignReportId, setAssignReportId] = useState('');
@@ -506,12 +487,15 @@ function AssignmentDetails() {
                 });
 
                 jsonRespData.forEach((ele: any) => {
+                  const tempObj = ele;
                   if (
                     ele?.scormDataView.urlLessonId === lesson?.unit_id &&
                     ele?.Pages === name
                   ) {
-                    const tempObj = ele;
                     tempObj.page_name = `${lesson.unit_name} - ${ele.Pages}`;
+                    tempArray.push(tempObj);
+                  } else if (ele?.scormDataView.urlLessonId === undefined) {
+                    tempObj.page_name = `${ele.Pages}`;
                     tempArray.push(tempObj);
                   }
                 });
