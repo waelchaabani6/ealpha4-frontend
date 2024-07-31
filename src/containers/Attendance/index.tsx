@@ -9,7 +9,7 @@ import {
   COMPONENTS,
   TOOLBAR_LABELS,
   RESULTS_PER_PAGE,
-  USER_TYPE
+  USER_TYPE,
 } from '@constants/constants';
 import Wrapper from '@shared/wrapper/Wrapper';
 import { RadioGroup, FormControlLabel, Radio } from '@mui/material';
@@ -23,7 +23,9 @@ import {
   currentUserAcademicDate,
   getNoOfPages,
   incrementDateByOne,
-  userRole, sortData, sortByName
+  userRole,
+  sortData,
+  sortByName,
 } from '@utility/utility';
 import DebounceInput from '@component/input/DebounceInput';
 import toast from '@shared/toast';
@@ -39,7 +41,7 @@ const TableColumns = [
     //   selector: 'id',
     //   showInHeader: true
     label: TABLE_LABELS?.SR_NO,
-    align: 'center'
+    align: 'center',
   },
   {
     label: 'Select',
@@ -49,11 +51,11 @@ const TableColumns = [
     showInHeader: true,
     sx: {
       display: 'flex',
-      alignItems: 'center'
+      alignItems: 'center',
     },
     cellSx: {
       // display: 'flex',
-      justifyContent: 'flex-start', 
+      justifyContent: 'flex-start',
       position: 'relative',
       left: '0px',
     },
@@ -63,21 +65,21 @@ const TableColumns = [
   {
     label: 'Student First Name',
     mapper: 'StudentFirstName',
-    isSort: false
+    isSort: false,
   },
   {
     label: 'Student Last Name',
-    mapper: 'StudentLastName'
+    mapper: 'StudentLastName',
   },
   {
     label: 'Grade',
-    mapper: 'Grade'
+    mapper: 'Grade',
   },
   {
     label: 'Status',
     mapper: 'Status',
-    align: 'center'
-  }
+    align: 'center',
+  },
 ];
 
 function Attendance() {
@@ -117,9 +119,9 @@ function Attendance() {
     url: `schools-service/school-branches/?limit=100&school_id=${
       schoolData?.id || branchData?.school_data?.id
     }`,
-    enabled: !!(schoolData?.id || branchData?.school_data?.id)
+    enabled: !!(schoolData?.id || branchData?.school_data?.id),
   });
-  const branchArr:[] = data1?.data?.response?.results?.sort(sortByName);
+  const branchArr: [] = data1?.data?.response?.results?.sort(sortByName);
 
   const { isLoading: subjectLoading, refetch: refetchSubjects } = useGet({
     baseURL: SchoolURL,
@@ -129,12 +131,13 @@ function Attendance() {
     enabled: false,
     onSuccess: (resp: any) => {
       const respData = resp?.data?.response;
-      const temp3: any = respData?.map((i: any) => ({
-        label: i?.name,
-        value: i?.id
-      })) || [];
+      const temp3: any =
+        respData?.map((i: any) => ({
+          label: i?.name,
+          value: i?.id,
+        })) || [];
       setCourses([...temp3]);
-    }
+    },
   });
 
   const { isLoading: subLoading, refetch: refectSubject } = useGet({
@@ -151,32 +154,55 @@ function Attendance() {
         return temp3;
       });
       setCourses([...temp3]);
-    }
+    },
   });
 
   useEffect(() => {
-    const isAdmin = [USER_TYPE.SCHOOL_ADMIN, USER_TYPE.BRANCH_ADMIN, USER_TYPE.SUPER_ADMIN].includes(usersRole?.name);
+    const isAdmin = [
+      USER_TYPE.SCHOOL_ADMIN,
+      USER_TYPE.BRANCH_ADMIN,
+      USER_TYPE.SUPER_ADMIN,
+    ].includes(usersRole?.name);
     if (selectedClass !== 'select' && isAdmin) {
       refetchSubjects();
-    } else if (selectedClass !== 'select' && usersRole?.name === USER_TYPE.TEACHER) {
+    } else if (
+      selectedClass !== 'select' &&
+      usersRole?.name === USER_TYPE.TEACHER
+    ) {
       refectSubject();
     }
   }, [selectedClass, selectedSubject]);
 
-  const branchName = useMemo(() => data1?.data?.response?.results.find((itm: any) => itm.id === selectedBranch || branchData?.id)?.name || branchData?.name, [selectedBranch, branchData]);
+  const branchName = useMemo(
+    () =>
+      data1?.data?.response?.results.find(
+        (itm: any) => itm.id === selectedBranch || branchData?.id
+      )?.name || branchData?.name,
+    [selectedBranch, branchData]
+  );
 
-  const { data: data2, isLoading: isLoading2 } = useGet({ baseURL: SchoolURL,
+  const { data: data2, isLoading: isLoading2 } = useGet({
+    baseURL: SchoolURL,
     url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id} ${branchData || selectedBranch !== 'select' ? `&branch_name=${branchName}` : ''}`,
-    enabled: !!(schoolData?.id || branchData?.school_data?.id) });
+    enabled: !!(schoolData?.id || branchData?.school_data?.id),
+  });
 
-  const formatSchoolClasses = data2?.data?.response?.results?.map((item: any) => ({
-    label: item.name,
-    value: item.id
-  })) || [];
+  const formatSchoolClasses =
+    data2?.data?.response?.results?.map((item: any) => ({
+      label: item.name,
+      value: item.id,
+    })) || [];
 
   formatSchoolClasses.sort(sortData);
 
-  const className = useMemo(() => (usersRole?.name === TEACHER ? TeacherClassesArray : formatSchoolClasses)?.find((itm: any) => itm.value === selectedClass)?.label, [selectedClass]);
+  const className = useMemo(
+    () =>
+      (usersRole?.name === TEACHER
+        ? TeacherClassesArray
+        : formatSchoolClasses
+      )?.find((itm: any) => itm.value === selectedClass)?.label,
+    [selectedClass]
+  );
 
   const subjectName = useMemo(() => {
     const tmp = courses?.find((item: any) => item?.value === selectedSubject);
@@ -195,17 +221,17 @@ function Attendance() {
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
     url: `${cleanedUrl}`,
     enabled: Boolean(
-      (selectedClass !== 'select'
-        && selectedSubject !== 'select'
-        && selectedDate)
-        || (selectedClass !== 'select'
-          && selectedSubject !== 'select'
-          && selectedDate
-          && selectedBranch !== 'select')
+      (selectedClass !== 'select' &&
+        selectedSubject !== 'select' &&
+        selectedDate) ||
+        (selectedClass !== 'select' &&
+          selectedSubject !== 'select' &&
+          selectedDate &&
+          selectedBranch !== 'select')
     ),
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.count);
-    }
+    },
   });
 
   const { isLoading: isLoading3, mutate } = usePost({
@@ -223,23 +249,26 @@ function Attendance() {
       setPresentLoader(false);
       setBulkSelect([]);
     },
-    onError: () => {
+    onError: (error: any) => {
       setAbsentLoader(false);
       setPresentLoader(false);
-    }
+      toast('error', error?.response?.data?.message);
+    },
   });
 
-  const { isLoading: loadClassesForTeacher, mutate: ClassesForTeacher } = usePost({
-    baseURL: SchoolURL,
-    url: `schools-service/school-classes/teacher/assigned-class`,
-    onSuccess: (resp: any) => {
-      const res = resp?.data?.response;
-      const formatArr = res?.map((ele: any) => ({ label: ele.name, value: ele.class_id }))
-          || [];
-      formatArr.sort(sortData);
-      setTeacherClassesArray(formatArr);
-    }
-  });
+  const { isLoading: loadClassesForTeacher, mutate: ClassesForTeacher } =
+    usePost({
+      baseURL: SchoolURL,
+      url: `schools-service/school-classes/teacher/assigned-class`,
+      onSuccess: (resp: any) => {
+        const res = resp?.data?.response;
+        const formatArr =
+          res?.map((ele: any) => ({ label: ele.name, value: ele.class_id })) ||
+          [];
+        formatArr.sort(sortData);
+        setTeacherClassesArray(formatArr);
+      },
+    });
 
   const ADMIN_TOOLBAR_MENU = [
     // {
@@ -265,13 +294,14 @@ function Attendance() {
           trigger={printButton}
           content={() => componentRef.current}
         />
-      )
-    }
+      ),
+    },
   ];
 
   const handleSelection = (params: any) => {
     setBulkSelect(params);
   };
+
   const handleOnchange = (id: number) => {
     const index = tmpTableData.findIndex((itm: any) => itm.id === id);
     if (index > -1) {
@@ -281,17 +311,17 @@ function Attendance() {
         ...tmpTableData.slice(0, index),
         {
           ...tmpTableData[index],
-          isPresent: newD
+          isPresent: newD,
         },
-        ...tmpTableData.slice(index + 1)
+        ...tmpTableData.slice(index + 1),
       ]);
       if (oldD !== newD) {
         setBulkSelect(
           Array.from(new Set([...bulkSelect, tmpTableData[index].id]))
         );
       } else {
-        setBulkSelect(
-          (prev: number[]) => prev?.filter((ids: number) => ids !== tmpTableData[index].id)
+        setBulkSelect((prev: number[]) =>
+          prev?.filter((ids: number) => ids !== tmpTableData[index].id)
         );
       }
     }
@@ -329,22 +359,23 @@ function Attendance() {
             />
           </RadioGroup>
         </div>
-      )
+      ),
     }));
     setTableData(bb || []);
   }, [tmpTableData]);
 
   useEffect(() => {
     if (data) {
-      const aa = data?.data?.response?.result?.map((itm: any, index: number) => ({
-        id: itm?.id,
-        SR_NO: index + 1,
-        StudentFirstName: itm?.first_name,
-        StudentLastName: itm?.last_name,
-        Grade: itm?.class_name,
-        isChecked: false,
-        isPresent: itm?.is_present
-      })) || [];
+      const aa =
+        data?.data?.response?.result?.map((itm: any, index: number) => ({
+          id: itm?.id,
+          SR_NO: index + 1,
+          StudentFirstName: itm?.first_name,
+          StudentLastName: itm?.last_name,
+          Grade: itm?.class_name,
+          isChecked: false,
+          isPresent: itm?.is_present,
+        })) || [];
       setTmpTableData(aa);
     }
   }, [data]);
@@ -364,7 +395,7 @@ function Attendance() {
           school_class: selectedClass,
           subject: subjectName || '',
           present: idx?.isPresent,
-          present_on_date: formatSelectedDate
+          present_on_date: formatSelectedDate,
         } as any;
         if (branchId) {
           tmp.branch_id = branchId;
@@ -387,7 +418,7 @@ function Attendance() {
         school_class: selectedClass,
         subject: subjectName || '',
         present: flag,
-        present_on_date: formatSelectedDate
+        present_on_date: formatSelectedDate,
       } as any;
       if (branchId) {
         tmp.branch_id = branchId;
@@ -419,15 +450,16 @@ function Attendance() {
     return targetDate;
   }, [schoolData, branchData]);
 
-  const CLASS_ARRAY = (usersRole?.name === TEACHER ? TeacherClassesArray : formatSchoolClasses)
-    || [];
+  const CLASS_ARRAY =
+    (usersRole?.name === TEACHER ? TeacherClassesArray : formatSchoolClasses) ||
+    [];
 
   const ClassArray = CLASS_ARRAY.sort(sortData);
 
   useEffect(() => {
     if (usersRole?.name === TEACHER && user?.user_profile_id) {
       ClassesForTeacher({
-        teacher_id: user?.user_profile_id
+        teacher_id: user?.user_profile_id,
       });
     }
   }, [usersRole, user]);
@@ -440,10 +472,10 @@ function Attendance() {
         subtitle={
           userRole().isSuperAdmin
             ? `School : ${
-              schoolData
-                ? schoolData?.school_name
-                : branchData?.school_data.school_name
-            }`
+                schoolData
+                  ? schoolData?.school_name
+                  : branchData?.school_data.school_name
+              }`
             : ''
         }
         subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ''}
@@ -465,8 +497,8 @@ function Attendance() {
                 { label: 'Select', value: 'select' },
                 ...(branchArr?.map((item: any) => ({
                   label: item.name,
-                  value: item.id
-                })) || [])
+                  value: item.id,
+                })) || []),
               ]}
               onChangeHandler={branchSelectHandler}
               sxClass={{ width: '100%' }}
@@ -477,7 +509,9 @@ function Attendance() {
             value={selectedClass}
             loading={loadClassesForTeacher}
             dataArray={[{ label: 'Select', value: 'select' }, ...ClassArray]}
-            onChangeHandler={(currentClass: number) => setSelectedClass(currentClass)}
+            onChangeHandler={(currentClass: number) =>
+              setSelectedClass(currentClass)
+            }
             sxClass={{ width: '100%' }}
           />
           <Dropdown
@@ -488,10 +522,12 @@ function Attendance() {
               { label: 'Select', value: 'select' },
               ...(SubjectData?.map((item: any) => ({
                 label: item.label,
-                value: item?.value
-              })) || [])
+                value: item?.value,
+              })) || []),
             ]}
-            onChangeHandler={(currentSubject: number) => setSelectedSubject(currentSubject)}
+            onChangeHandler={(currentSubject: number) =>
+              setSelectedSubject(currentSubject)
+            }
             sxClass={{ width: '100%' }}
           />
           <div className="pb-[5px]">
@@ -516,10 +552,10 @@ function Attendance() {
               type="button"
               loading={presentLoader}
               disabled={
-                absentLoader
-                || presentLoader
-                || isLoading
-                || tableData?.length < 1
+                absentLoader ||
+                presentLoader ||
+                isLoading ||
+                tableData?.length < 1
               }
               onClick={() => {
                 toggleAllHandler();
@@ -535,10 +571,10 @@ function Attendance() {
               type="button"
               loading={absentLoader}
               disabled={
-                absentLoader
-                || presentLoader
-                || isLoading
-                || tableData?.length < 1
+                absentLoader ||
+                presentLoader ||
+                isLoading ||
+                tableData?.length < 1
               }
               onClick={() => {
                 toggleAllHandler(false);

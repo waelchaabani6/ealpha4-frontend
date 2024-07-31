@@ -113,7 +113,7 @@ export default function StickyHeadTable({
                       style={{
                         minWidth: column.minWidth,
                         textAlign: 'center',
-                        backgroundColor: '#BECCFF',
+                        backgroundColor: '#E5F8E2',
                       }}
                     >
                       {column.label}
@@ -139,7 +139,7 @@ export default function StickyHeadTable({
                       ) => (
                         <TableCell
                           style={{ textAlign: 'center' }}
-                          className="relative w-4 h-4 bg-[#BECCFF]"
+                          className="relative w-4 h-4 bg-[#E5F8E2]"
                         >
                           {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
                           {isPrev && (
