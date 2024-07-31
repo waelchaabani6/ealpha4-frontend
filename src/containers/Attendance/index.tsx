@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import RouteLayout from '@layout/routeLayout';
 import Dropdown from '@component/dropdown/Dropdown';
 import DatePicker from '@component/datepicker';
