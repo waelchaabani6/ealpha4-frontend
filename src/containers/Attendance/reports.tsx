@@ -442,7 +442,7 @@ export default function () {
     <RouteLayout navBack={true}>
       <div className="flex h-full w-full flex-col">
         <HeaderMenus
-          title="Attendance 000"
+          title="Attendance"
           subtitle={
             userRole().isSuperAdmin
               ? `School : ${schoolData ? schoolData?.school_name : branchData?.school_data.school_name}`
