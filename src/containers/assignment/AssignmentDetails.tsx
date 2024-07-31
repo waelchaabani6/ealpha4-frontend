@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable curly */
 /* eslint-disable no-param-reassign */
@@ -109,6 +110,7 @@ const columns: Column[] = [
 
 interface Data {
   Pages: string;
+  page_name: string;
   PageId: string;
   MyScore: string;
   Unattempted: number;
@@ -120,6 +122,7 @@ interface Data {
 
 function createData(
   Pages: string,
+  page_name: string,
   PageId: string,
   Score: number,
   Unattempted: number,
@@ -136,6 +139,7 @@ function createData(
   const scormDataView = scormData ? JSON.parse(scormData) : {};
   return {
     Pages,
+    page_name,
     PageId,
     Unattempted,
     Wrong,
@@ -434,6 +438,7 @@ function AssignmentDetails() {
             ? jsonRespData.map((ele: any) =>
                 createData(
                   ele.page_name,
+                  ele.page_name,
                   ele.page_id,
                   ele.score,
                   ele.unattempted_count,
@@ -566,6 +571,7 @@ function AssignmentDetails() {
         // console.log(scromPagesTemp);
       }
 
+      console.log(jsonRespData, '#jsonRespData');
       setSinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
       setCopySinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
 

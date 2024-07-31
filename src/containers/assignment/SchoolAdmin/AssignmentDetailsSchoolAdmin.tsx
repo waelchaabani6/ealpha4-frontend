@@ -105,6 +105,7 @@ const columns: Column[] = [
 ];
 interface Data {
   Pages: string;
+  page_name: string;
   MyScore: string;
   Unattempted: number;
   Wrong: number;
@@ -115,6 +116,7 @@ interface Data {
 
 function createData(
   Pages: string,
+  page_name: string,
   Score: number,
   Unattempted: number,
   Wrong: number,
@@ -130,6 +132,7 @@ function createData(
   const scormDataView = scormData ? JSON.parse(scormData) : {};
   return {
     Pages,
+    page_name,
     Unattempted,
     Wrong,
     Correct,
@@ -543,6 +546,7 @@ function AssignmentDetails() {
           jsonRespData && jsonRespData.length !== 0
             ? jsonRespData.map((ele: any) =>
                 createData(
+                  ele.page_name,
                   ele.page_name,
                   ele.score,
                   ele.unattempted_count,

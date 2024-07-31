@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable comma-dangle */
 /* eslint-disable implicit-arrow-linebreak */
@@ -22,10 +23,10 @@ import Button from '@component/button/button';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@shared/store/userSlice';
 import { HEADERMENUS } from '@constants/constants';
+import { ScromPage } from '@constants/types';
 import RouteLayout from '../../layout/routeLayout';
 import { TABLE_LABELS, TOOLBAR_LABELS } from '../../../constants/constants';
 import SimpleTableDx from '../../../components/SimpleTableDx/index';
-import { ScromPage } from '@constants/types';
 
 const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
 
@@ -82,6 +83,7 @@ const columns: Column[] = [
 
 interface Data {
   Pages: string;
+  page_name: string;
   MyScore: string;
   Unattempted: number;
   Wrong: number;
@@ -92,6 +94,7 @@ interface Data {
 
 function createData(
   Pages: string,
+  page_name: string,
   Score: number,
   Unattempted: number,
   Wrong: number,
@@ -107,6 +110,7 @@ function createData(
   const scormDataView = scormData ? JSON.parse(scormData) : {};
   return {
     Pages,
+    page_name,
     Unattempted,
     Wrong,
     Correct,
@@ -328,6 +332,7 @@ function AssignmentDetails(): JSX.Element {
         jsonRespData && jsonRespData.length !== 0
           ? jsonRespData.map((ele: any) =>
               createData(
+                ele.page_name,
                 ele.page_name,
                 ele.score,
                 ele.unattempted_count,
