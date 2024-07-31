@@ -7,7 +7,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #beccff;
+  background-color: #e5f8e2;
 }
 
 .studentSchedular .rbc-header {
@@ -15,11 +15,11 @@
 }
 
 .studentSchedular .rbc-label.rbc-time-header-gutter {
-  background-color: #beccff;
+  background-color: #e5f8e2;
 }
 
 .studentSchedular .rbc-time-gutter.rbc-time-column .rbc-timeslot-group {
-  background-color: #beccff;
+  background-color: #e5f8e2;
   /* margin-top: 10px; */
 }
 

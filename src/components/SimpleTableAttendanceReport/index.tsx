@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -7,6 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { NumberedPagination } from '@component/pagination/CustomPagination';
 import { ReactComponent as VectorLeft } from '@images/VectorLeft.svg';
 import { ReactComponent as VectorRight } from '@images/VectorRight.svg';
@@ -56,6 +58,24 @@ export default function StickyHeadTable({
   const newLocal = 'AttendanceReport';
   const showCheckBox = (ele: any) => {
     switch (ele) {
+      case 'Absent':
+        return sortBy !== 'Absent' ? (
+          <div className="h-5 w-5 grid place-items-center relative">
+            <HighlightOffIcon
+            // disableRipple={true}
+            // checked={false}
+            // color="warning"
+            // sx={{
+            //   cursor: 'default',
+            //   position: 'absolute',
+            //   top: '-10.5px',
+            //   left: '-10.5px',
+            // }}
+            />
+          </div>
+        ) : (
+          '-'
+        );
       case 'Checked':
         return sortBy !== 'Absent' ? (
           <div className="h-5 w-5 grid place-items-center relative">
@@ -113,7 +133,7 @@ export default function StickyHeadTable({
                       style={{
                         minWidth: column.minWidth,
                         textAlign: 'center',
-                        backgroundColor: '#BECCFF',
+                        backgroundColor: '#E5F8E2',
                       }}
                     >
                       {column.label}
@@ -139,7 +159,7 @@ export default function StickyHeadTable({
                       ) => (
                         <TableCell
                           style={{ textAlign: 'center' }}
-                          className="relative w-4 h-4 bg-[#BECCFF]"
+                          className="relative w-4 h-4 bg-[#E5F8E2]"
                         >
                           {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
                           {isPrev && (

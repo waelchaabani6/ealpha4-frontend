@@ -210,10 +210,10 @@ function GradeSmallCard({
         }
       >
         <span
-          className={`${!renderComponent() ? 'h-[60px] w-32 bg-[#BECCFF] flex justify-center items-center relative left-[-2px] rounded-xl' : 'h-full w-[92px]'}`}
+          className={`${!renderComponent() ? 'h-[60px] w-32 bg-[#E5F8E2] flex justify-center items-center relative left-[-2px] rounded-xl' : 'h-full w-[92px]'}`}
         >
           {!renderComponent() && (
-            <span className="absolute top-[21px] right-0 transform translate-x-1/2 -translate-y-1/2 rotate-45 w-3 h-3 bg-[#BECCFF] border-r border-t" />
+            <span className="absolute top-[21px] right-0 transform translate-x-1/2 -translate-y-1/2 rotate-45 w-3 h-3 bg-[#E5F8E2] border-r border-t" />
           )}
           <img
             src={
