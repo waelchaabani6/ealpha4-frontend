@@ -25,6 +25,7 @@ import { HEADERMENUS } from '@constants/constants';
 import RouteLayout from '../../layout/routeLayout';
 import { TABLE_LABELS, TOOLBAR_LABELS } from '../../../constants/constants';
 import SimpleTableDx from '../../../components/SimpleTableDx/index';
+import { ScromPage } from '@constants/types';
 
 const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
 
@@ -37,10 +38,16 @@ const stateChange: any = {
 const printButton = () => <PrintIcon />;
 const dataArray: dataType[] = [];
 
-const csvSubHeaders = ['Pages', 'Score', 'Unattempted', 'Incorrect', 'Correct'];
+const csvSubHeaders = [
+  'page_name',
+  'Score',
+  'Unattempted',
+  'Incorrect',
+  'Correct',
+];
 interface Column {
   id:
-    | 'Pages'
+    | 'page_name'
     | 'Score'
     | 'Errors'
     | 'Mistake'
@@ -59,7 +66,7 @@ interface Column {
 // readonly Column[]
 const columns: Column[] = [
   {
-    id: 'Pages',
+    id: 'page_name',
     label: 'Page',
     minWidth: 170,
     align: 'right',
@@ -119,7 +126,7 @@ function AssignmentDetails(): JSX.Element {
   const { state: locationState } = useLocation();
 
   const [csvData, setCsvData] = useState<[]>([]);
-  const [bulkSelect, setBulkSelect] = useState<any>([]);
+  // const [bulkSelect, setBulkSelect] = useState<any>([]);
   const [playloadData, setPlayloadData] = useState<any | undefined>({});
   const [columnsHeader, setColumns] = useState(columns);
   const [assignmentData, setAssignmentData] = useState<any>({});
@@ -132,13 +139,17 @@ function AssignmentDetails(): JSX.Element {
   const { first_name: fName, last_name: lName } = useSelector(selectUser);
   const [jsonData, setJsonData] = useState([]);
   const [jsonCopyData, setJsonCopyData] = useState([]);
-  const [AttachmentMenuVisible, setAttachmentMenuVisible] = useState(false);
+  // const [AttachmentMenuVisible, setAttachmentMenuVisible] = useState(false);
   const location = useLocation();
   const score = 80;
   const componentRef = useRef(null);
   const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
   const [fullHeight, setFullHeight] = useState(false);
   const [teacher, setTeacher] = useState('');
+
+  const [singlePages, setSinglePages] = useState<ScromPage[]>([]);
+  const [copysinglePages, setCopySinglePages] = useState<ScromPage[]>([]);
+
   const [val, setValue] = React.useState({
     Nmeet1: '',
     Nmeet2: '',
@@ -178,9 +189,10 @@ function AssignmentDetails(): JSX.Element {
   const changeColumnsHeader = (val: string, cIndex: number) => {
     const columnsHeader2 = columnsHeader.map((ele, index) => {
       if (ele.component === 'Dropdown' && cIndex === index) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        setJsonData(jsonCopyData.filter((page) => page.Pages === val));
+        setJsonData(jsonCopyData.filter((page: any) => page.Pages === val));
+        setSinglePages(
+          copysinglePages.filter((page: any) => page.page_name === val)
+        );
         return { ...ele, selectedValue: val };
       }
       return ele;
@@ -305,13 +317,13 @@ function AssignmentDetails(): JSX.Element {
           });
         }
       });
-      const pagesArray =
-        jsonRespData && jsonRespData.length !== 0
-          ? jsonRespData.map((ele: any) => ({
-              label: ele.page_name,
-              value: ele.page_name,
-            }))
-          : [];
+      // const pagesArray =
+      //   jsonRespData && jsonRespData.length !== 0
+      //     ? jsonRespData.map((ele: any) => ({
+      //         label: ele.page_name,
+      //         value: ele.page_name,
+      //       }))
+      //     : [];
       jsonRespData =
         jsonRespData && jsonRespData.length !== 0
           ? jsonRespData.map((ele: any) =>
@@ -333,6 +345,125 @@ function AssignmentDetails(): JSX.Element {
       if (jsonRespData && jsonRespData.length !== 0) {
         setCsvData(jsonRespData.map((ele: any) => createExcellData(ele)));
       }
+
+      const tempArray: any = [];
+      const pagesList: any = [];
+      if (res?.data?.response?.chapters) {
+        // const assignmentMainList = res?.data?.response;
+
+        res?.data?.response?.chapters?.forEach((chapter: any) => {
+          chapter?.lessons?.forEach((lesson: any) => {
+            const pageNumberArray: string[] = [];
+            const pageNameArray: string[] = [];
+            lesson?.pages?.forEach(
+              ({
+                name,
+                page_number,
+              }: {
+                name: string;
+                page_number: string;
+              }) => {
+                pageNumberArray.push(page_number);
+                pageNameArray.push(name);
+
+                pagesList.push({
+                  label: `${lesson.unit_name} - ${name}`,
+                  value: `${lesson.unit_name}`,
+                });
+
+                jsonRespData.forEach((ele: any) => {
+                  const tempObj = ele;
+                  if (
+                    ele?.scormDataView.urlLessonId === lesson?.unit_id &&
+                    ele?.Pages === name
+                  ) {
+                    tempObj.page_name = `${lesson.unit_name} - ${ele.Pages}`;
+                    tempArray.push(tempObj);
+                  } else if (ele?.scormDataView.urlLessonId === undefined) {
+                    tempObj.page_name = `${ele.Pages}`;
+                    tempArray.push(tempObj);
+                  }
+                });
+              }
+            );
+
+            const pagesArray = singlePages.map((ele: any) => ({
+              label: ele.page_name,
+              value: ele.page_name,
+            }));
+
+            const columnsHeader2 = columnsHeader.map((ele) => {
+              if (ele.component === 'Dropdown') {
+                return { ...ele, dataArray: pagesArray };
+              }
+              return ele;
+            });
+
+            setColumns(columnsHeader2);
+            // setColumnsCopy(columnsHeader2);
+            // setAssignmentsPages(pagesList);
+            // scromPagesTemp.push({
+            //   label: `${lesson.unit_name}`,
+            //   value: `${lesson.unit_name}`,
+            //   pageName: JSON.stringify(pageNameArray),
+            //   pageNumber: pageNumberArray.join(','),
+            //   chapter_id: chapter.chapter_id,
+            //   chapterMainId: chapter.id,
+            //   chapter_name: chapter?.chapter_name.substring(0, 50),
+            //   lessonId: lesson.id,
+            //   urlLessonId: lesson.unit_id,
+            //   lessonUnitName: lesson.unit_name,
+            //   courseId: assignmentMainList.course_id,
+            //   course_table_id: assignmentMainList.course_table_id,
+            //   assignmentId: assignmentMainList.id,
+            //   contentUrl: lesson.content_url,
+            //   moduleName: 'assignment',
+            // });
+            // if (lesson?.pages.length === 0) {
+            //   scromPagesTemp.push({
+            //     label: `${lesson.unit_name} - `,
+            //     value: `${lesson.unit_name}`,
+            //     pageName: `${lesson.unit_name}`,
+            //     pageNumber: '-1',
+            //     chapter_id: chapter.chapter_id,
+            //     chapterMainId: chapter.id,
+            //     chapter_name: chapter?.chapter_name.substring(0, 50),
+            //     lessonId: lesson.id,
+            //     urlLessonId: lesson.unit_id,
+            //     lessonUnitName: lesson.unit_name,
+            //     courseId: assignmentMainList.course_id,
+            //     course_table_id: assignmentMainList.course_table_id,
+            //     assignmentId: assignmentMainList.id,
+            //     contentUrl: lesson.content_url,
+            //     moduleName: 'assignment',
+            //   });
+            // }
+          });
+        });
+
+        // scromPagesTemp.sort((a, b) =>
+        //   a.label > b.label ? 1 : b.label > a.label ? -1 : 0
+        // );
+
+        // console.log(scromPagesTemp);
+      }
+
+      setSinglePages(tempArray);
+      setCopySinglePages(tempArray);
+
+      const pagesListprev: any = [];
+      tempArray.forEach((ele: any) => {
+        pagesListprev.push({
+          label: ele.page_name,
+          value: ele.page_name,
+          ...ele,
+        });
+      });
+
+      const pagesArray = singlePages.map((ele: any) => ({
+        label: ele.page_name,
+        value: ele.page_name,
+      }));
 
       const columnsHeader2 = columnsHeader.map((ele) => {
         if (ele.component === 'Dropdown') {
@@ -452,6 +583,7 @@ function AssignmentDetails(): JSX.Element {
                 <span className="mx-2 text-left">{`Exceeds (Score: ${val.exceed1}% - ${val.exceed2}%)`}</span>
               </div>
             </div>
+
             <div className="flex flex-col bg-white p-4 md:flex-row">
               <div className="flex flex-col grow md:flex-row ">
                 <div className="grow flex flex-col">
@@ -543,13 +675,15 @@ function AssignmentDetails(): JSX.Element {
           <div className="wrapperBorder mt-8">
             <Wrapper>
               <SimpleTableDx
-                rows={jsonData}
+                rows={singlePages}
+                // rows={jsonData}
                 columns={columnsHeader}
                 onChangeHandler={(val: string, cIndex: number) => {
                   changeColumnsHeader(val, cIndex);
                 }}
                 handleClearClick={() => {
                   setJsonData(jsonCopyData);
+                  setSinglePages(copysinglePages);
                   setColumns(columns);
                 }}
                 fullHeight={fullHeight}
