@@ -58,7 +58,7 @@ const csvSubHeaders = [
 ];
 // Here -->
 interface Column {
-  id: 'Pages' | 'Score' | 'Unattempted' | 'Wrong' | 'Correct';
+  id: 'page_name' | 'Score' | 'Unattempted' | 'Wrong' | 'Correct';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -70,7 +70,7 @@ interface Column {
 // readonly Column[]
 const columns: Column[] = [
   {
-    id: 'Pages',
+    id: 'page_name',
     label: 'Page',
     minWidth: 170,
     align: 'right',
@@ -86,6 +86,7 @@ const columns: Column[] = [
 
 interface Data {
   Pages: string;
+  page_name: string;
   Score: string;
   Unattempted: number;
   Wrong: number;
@@ -94,18 +95,19 @@ interface Data {
 
 function createData(
   Pages: string,
+  page_name: string,
   Score: string,
   Unattempted: number,
   Wrong: number,
   Correct: number
 ): Data {
-  return { Pages, Score, Unattempted, Wrong, Correct };
+  return { Pages, page_name, Score, Unattempted, Wrong, Correct };
 }
 
 const rows = [
-  createData('Page1', '30%', 1, 1, 1),
-  createData('Page2', '10%', 1, 1, 1),
-  createData('Page3', '70%', 1, 1, 1),
+  createData('Page1', 'Page1', '30%', 1, 1, 1),
+  createData('Page2', 'Page2', '10%', 1, 1, 1),
+  createData('Page3', 'Page3', '70%', 1, 1, 1),
 ];
 
 function AssessmentDetails() {

@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable curly */
 /* eslint-disable no-param-reassign */
@@ -109,6 +110,7 @@ const columns: Column[] = [
 
 interface Data {
   Pages: string;
+  page_name: string;
   PageId: string;
   MyScore: string;
   Unattempted: number;
@@ -120,6 +122,7 @@ interface Data {
 
 function createData(
   Pages: string,
+  page_name: string,
   PageId: string,
   Score: number,
   Unattempted: number,
@@ -136,6 +139,7 @@ function createData(
   const scormDataView = scormData ? JSON.parse(scormData) : {};
   return {
     Pages,
+    page_name,
     PageId,
     Unattempted,
     Wrong,
@@ -434,6 +438,7 @@ function AssignmentDetails() {
             ? jsonRespData.map((ele: any) =>
                 createData(
                   ele.page_name,
+                  ele.page_name,
                   ele.page_id,
                   ele.score,
                   ele.unattempted_count,
@@ -471,37 +476,39 @@ function AssignmentDetails() {
           chapter?.lessons?.forEach((lesson: any) => {
             const pageNumberArray: string[] = [];
             const pageNameArray: string[] = [];
-            lesson?.pages?.forEach(
-              ({
-                name,
-                page_number,
-              }: {
-                name: string;
-                page_number: string;
-              }) => {
-                pageNumberArray.push(page_number);
-                pageNameArray.push(name);
+            if (lesson?.pages.length > 0) {
+              lesson?.pages?.forEach(
+                ({
+                  name,
+                  page_number,
+                }: {
+                  name: string;
+                  page_number: string;
+                }) => {
+                  pageNumberArray.push(page_number);
+                  pageNameArray.push(name);
 
-                pagesList.push({
-                  label: `${lesson.unit_name} - ${name}`,
-                  value: `${lesson.unit_name}`,
-                });
+                  pagesList.push({
+                    label: `${lesson.unit_name} - ${name}`,
+                    value: `${lesson.unit_name}`,
+                  });
 
-                jsonRespData.forEach((ele: any) => {
-                  const tempObj = ele;
-                  if (
-                    ele?.scormDataView.urlLessonId === lesson?.unit_id &&
-                    ele?.Pages === name
-                  ) {
-                    tempObj.page_name = `${lesson.unit_name} - ${ele.Pages}`;
-                    tempArray.push(tempObj);
-                  } else if (ele?.scormDataView.urlLessonId === undefined) {
-                    tempObj.page_name = `${ele.Pages}`;
-                    tempArray.push(tempObj);
-                  }
-                });
-              }
-            );
+                  jsonRespData.forEach((ele: any) => {
+                    const tempObj = ele;
+                    if (
+                      ele?.scormDataView.urlLessonId === lesson?.unit_id &&
+                      ele?.Pages === name
+                    ) {
+                      tempObj.page_name = `${lesson.unit_name} - ${ele.Pages}`;
+                      tempArray.push(tempObj);
+                    } else if (ele?.scormDataView.urlLessonId === undefined) {
+                      tempObj.page_name = `${ele.Pages}`;
+                      tempArray.push(tempObj);
+                    }
+                  });
+                }
+              );
+            }
 
             const pagesArray = singlePages.map((ele: any) => ({
               label: ele.page_name,
@@ -564,8 +571,9 @@ function AssignmentDetails() {
         // console.log(scromPagesTemp);
       }
 
-      setSinglePages(tempArray);
-      setCopySinglePages(tempArray);
+      console.log(jsonRespData, '#jsonRespData');
+      setSinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
+      setCopySinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
 
       const pagesListprev: any = [];
       tempArray.forEach((ele: any) => {

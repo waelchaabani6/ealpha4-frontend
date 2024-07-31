@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable comma-dangle */
 /* eslint-disable implicit-arrow-linebreak */
@@ -22,10 +23,10 @@ import Button from '@component/button/button';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@shared/store/userSlice';
 import { HEADERMENUS } from '@constants/constants';
+import { ScromPage } from '@constants/types';
 import RouteLayout from '../../layout/routeLayout';
 import { TABLE_LABELS, TOOLBAR_LABELS } from '../../../constants/constants';
 import SimpleTableDx from '../../../components/SimpleTableDx/index';
-import { ScromPage } from '@constants/types';
 
 const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
 
@@ -82,6 +83,7 @@ const columns: Column[] = [
 
 interface Data {
   Pages: string;
+  page_name: string;
   MyScore: string;
   Unattempted: number;
   Wrong: number;
@@ -92,6 +94,7 @@ interface Data {
 
 function createData(
   Pages: string,
+  page_name: string,
   Score: number,
   Unattempted: number,
   Wrong: number,
@@ -107,6 +110,7 @@ function createData(
   const scormDataView = scormData ? JSON.parse(scormData) : {};
   return {
     Pages,
+    page_name,
     Unattempted,
     Wrong,
     Correct,
@@ -329,6 +333,7 @@ function AssignmentDetails(): JSX.Element {
           ? jsonRespData.map((ele: any) =>
               createData(
                 ele.page_name,
+                ele.page_name,
                 ele.score,
                 ele.unattempted_count,
                 ele.mistake_count,
@@ -355,37 +360,39 @@ function AssignmentDetails(): JSX.Element {
           chapter?.lessons?.forEach((lesson: any) => {
             const pageNumberArray: string[] = [];
             const pageNameArray: string[] = [];
-            lesson?.pages?.forEach(
-              ({
-                name,
-                page_number,
-              }: {
-                name: string;
-                page_number: string;
-              }) => {
-                pageNumberArray.push(page_number);
-                pageNameArray.push(name);
+            if (lesson?.pages.length > 0) {
+              lesson?.pages?.forEach(
+                ({
+                  name,
+                  page_number,
+                }: {
+                  name: string;
+                  page_number: string;
+                }) => {
+                  pageNumberArray.push(page_number);
+                  pageNameArray.push(name);
 
-                pagesList.push({
-                  label: `${lesson.unit_name} - ${name}`,
-                  value: `${lesson.unit_name}`,
-                });
+                  pagesList.push({
+                    label: `${lesson.unit_name} - ${name}`,
+                    value: `${lesson.unit_name}`,
+                  });
 
-                jsonRespData.forEach((ele: any) => {
-                  const tempObj = ele;
-                  if (
-                    ele?.scormDataView.urlLessonId === lesson?.unit_id &&
-                    ele?.Pages === name
-                  ) {
-                    tempObj.page_name = `${lesson.unit_name} - ${ele.Pages}`;
-                    tempArray.push(tempObj);
-                  } else if (ele?.scormDataView.urlLessonId === undefined) {
-                    tempObj.page_name = `${ele.Pages}`;
-                    tempArray.push(tempObj);
-                  }
-                });
-              }
-            );
+                  jsonRespData.forEach((ele: any) => {
+                    const tempObj = ele;
+                    if (
+                      ele?.scormDataView.urlLessonId === lesson?.unit_id &&
+                      ele?.Pages === name
+                    ) {
+                      tempObj.page_name = `${lesson.unit_name} - ${ele.Pages}`;
+                      tempArray.push(tempObj);
+                    } else if (ele?.scormDataView.urlLessonId === undefined) {
+                      tempObj.page_name = `${ele.Pages}`;
+                      tempArray.push(tempObj);
+                    }
+                  });
+                }
+              );
+            }
 
             const pagesArray = singlePages.map((ele: any) => ({
               label: ele.page_name,
@@ -448,8 +455,8 @@ function AssignmentDetails(): JSX.Element {
         // console.log(scromPagesTemp);
       }
 
-      setSinglePages(tempArray);
-      setCopySinglePages(tempArray);
+      setSinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
+      setCopySinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
 
       const pagesListprev: any = [];
       tempArray.forEach((ele: any) => {
