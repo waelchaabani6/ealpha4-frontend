@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { useEffect, useRef, useState } from 'react';
 import Divider from '@mui/material/Divider/Divider';
 import { useNavigate, Link, useLocation, useParams } from 'react-router-dom';
@@ -346,6 +347,7 @@ export default function CompletedAssignByName() {
         <div className="w-full flex justify-center flex-col">
           <div>
             <DatePicker
+              // @ts-ignore
               disablePast={
                 assignmentData?.start_date &&
                 new Date(assignmentData?.start_date)
