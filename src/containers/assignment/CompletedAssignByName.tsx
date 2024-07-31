@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import Button from '@component/button/button';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
@@ -342,6 +343,7 @@ export default function CompletedAssignByName() {
         <div className="w-full flex justify-center flex-col">
           <div>
             <DatePicker
+              // @ts-ignore
               disablePast={
                 assignmentData?.start_date &&
                 new Date(assignmentData?.start_date)

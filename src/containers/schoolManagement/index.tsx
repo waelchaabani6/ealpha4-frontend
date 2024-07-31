@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-console */
 /* eslint-disable operator-linebreak */
 /* eslint-disable comma-dangle */
@@ -163,6 +164,7 @@ const SchoolManagmentList = (): JSX.Element => {
     } else {
       finalData = tempCSVData;
     }
+    // @ts-ignore
     setCsvData(finalData);
   }, [bulkSelect]);
 

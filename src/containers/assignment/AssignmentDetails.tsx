@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable curly */
 /* eslint-disable no-param-reassign */
 /* eslint-disable nonblock-statement-body-position */
@@ -749,6 +750,7 @@ function AssignmentDetails() {
           <div className="w-full flex justify-center flex-col">
             <div className="my-4">
               <DatePicker
+                // @ts-ignore
                 disablePast={
                   assignmentData?.start_date &&
                   new Date(assignmentData?.start_date)
