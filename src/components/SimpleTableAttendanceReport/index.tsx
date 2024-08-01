@@ -1,3 +1,7 @@
+/* eslint-disable indent */
+/* eslint-disable no-confusing-arrow */
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable comma-dangle */
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
@@ -15,7 +19,7 @@ import { ReactComponent as VectorRight } from '@images/VectorRight.svg';
 import { ReactComponent as Cancel } from '@images/cancel.svg';
 import Dropdown from '@component/dropdown/Dropdown';
 import { RESULTS_PER_PAGE } from '@constants/constants';
-import { LinearProgress } from '@mui/material';
+import { LinearProgress, Tooltip } from '@mui/material';
 
 type StickyHeadTableProps = {
   rows: Array<any>;
@@ -58,47 +62,33 @@ export default function StickyHeadTable({
   const newLocal = 'AttendanceReport';
   const showCheckBox = (ele: any) => {
     switch (ele) {
-      case 'Absent':
-        return sortBy !== 'Absent' ? (
-          <div className="h-5 w-5 grid place-items-center relative">
-            <HighlightOffIcon
-            // disableRipple={true}
-            // checked={false}
-            // color="warning"
-            // sx={{
-            //   cursor: 'default',
-            //   position: 'absolute',
-            //   top: '-10.5px',
-            //   left: '-10.5px',
-            // }}
-            />
-          </div>
-        ) : (
-          '-'
-        );
       case 'Checked':
         return sortBy !== 'Absent' ? (
-          <div className="h-5 w-5 grid place-items-center relative">
-            <Checkbox
-              disableRipple={true}
-              checked={true}
-              color="success"
-              sx={{
-                cursor: 'default',
-                position: 'absolute',
-                top: '-10.5px',
-                left: '-10.5px',
-              }}
-            />
-          </div>
+          <Tooltip title="Present">
+            <div className="h-5 w-5 grid place-items-center relative">
+              <Checkbox
+                disableRipple={true}
+                checked={true}
+                color="success"
+                sx={{
+                  cursor: 'default',
+                  position: 'absolute',
+                  top: '-10.5px',
+                  left: '-10.5px',
+                }}
+              />
+            </div>
+          </Tooltip>
         ) : (
           '-'
         );
       case 'UnChecked':
         return sortBy !== 'Present' ? (
-          <div className="bg-red-500 flex justify-center items-center h-5 w-5 rounded">
-            <Cancel />
-          </div>
+          <Tooltip title="Attendance Not marked">
+            <div className="h-full w-full grid place-items-center ">
+              <div className="h-5 w-5 rounded-full bg-[#D2D2D2] " />
+            </div>
+          </Tooltip>
         ) : (
           '-'
         );
@@ -107,6 +97,18 @@ export default function StickyHeadTable({
           <div className="flex justify-center items-center font-bold rounded">
             Holiday
           </div>
+        ) : (
+          '-'
+        );
+      case 'Absent':
+        return sortBy !== 'Absent' ? (
+          <Tooltip title="Absent">
+            <div className="grid place-items-center">
+              <div className="bg-red-500 flex justify-center items-center h-5 w-5 rounded">
+                <Cancel />
+              </div>
+            </div>
+          </Tooltip>
         ) : (
           '-'
         );
@@ -231,7 +233,7 @@ export default function StickyHeadTable({
                           ) => (
                             <TableCell
                               style={
-                                ele === 'Weekend'
+                                ele === 'Weekend' || ele === 'HoliDay'
                                   ? {
                                       backgroundColor: '#D2D2D2',
                                       textAlign: 'center',
@@ -245,6 +247,7 @@ export default function StickyHeadTable({
                           )
                         );
                       }
+
                       return (
                         <TableCell
                           key={column.id}
