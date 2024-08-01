@@ -118,6 +118,7 @@ interface Data {
   Correct: number;
   pageNumber: string;
   scormDataView: any;
+  total_pages: number;
 }
 
 function createData(
@@ -130,12 +131,14 @@ function createData(
   Correct: number,
   maxScore: number,
   pageNumber: string,
-  scormData: any
+  scormData: any,
+  total_pages: number
 ): Data {
   const MyScore: any =
     Score === 0
       ? `0%`
-      : `${parseFloat(((Number(Correct) * 100) / Number(maxScore)).toFixed(2))}%`;
+      : // : `${parseFloat(((Number(Correct) * 100) / Number(maxScore)).toFixed(2))}%`;
+        `${parseFloat(((Number(Correct / total_pages) * 100) / Number(maxScore)).toFixed(2))}%`;
   const scormDataView = scormData ? JSON.parse(scormData) : {};
   return {
     Pages,
@@ -147,6 +150,7 @@ function createData(
     MyScore,
     pageNumber,
     scormDataView,
+    total_pages,
   };
 }
 
@@ -415,6 +419,7 @@ function AssignmentDetails() {
 
       res?.data?.response?.assignment_progress?.forEach((ele: any) => {
         if (ele.json_data && ele.json_data.length) {
+          console.log(ele.json_data);
           ele.json_data.forEach((element: any) => {
             const obj: any = element;
             // obj.lesson_id = ele?.lesson_id;
@@ -446,7 +451,8 @@ function AssignmentDetails() {
                   ele.absolute_score,
                   ele.max_score,
                   ele?.page_number,
-                  ele?.scormData
+                  ele?.scormData,
+                  jsonRespData.length
                 )
               )
             : [];
