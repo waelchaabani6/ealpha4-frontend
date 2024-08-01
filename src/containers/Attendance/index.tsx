@@ -1,3 +1,5 @@
+/* eslint-disable operator-linebreak */
+/* eslint-disable indent */
 /* eslint-disable comma-dangle */
 import RouteLayout from '@layout/routeLayout';
 import Dropdown from '@component/dropdown/Dropdown';
