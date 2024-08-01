@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-curly-newline */
 /* eslint-disable operator-linebreak */
 /* eslint-disable comma-dangle */
 /* eslint-disable implicit-arrow-linebreak */
@@ -12,14 +13,12 @@ import { useGet, usePost } from '@shared/api/useApi';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import {
   RESULTS_PER_PAGE,
-  TABLE_LABELS,
   TOOLBAR_LABELS,
   USER_TYPE,
 } from '@constants/constants';
 import ReactToPrint from 'react-to-print';
 import PrintIcon from '@mui/icons-material/Print';
 import {
-  incrementDateByOne,
   getNoOfPages,
   userRole,
   currentUserAcademicDate,
@@ -87,45 +86,46 @@ function formatData(data: any, page: number, subject: string | undefined) {
               )
               ?.map((itm: any) => {
                 const dt = new Date(itm.present_on_date).getDate();
+
                 if (headerDates.indexOf(dt) < 0) {
                   headerDates.push(dt);
                 }
-                console.log(itm.present, '## present /');
-                return itm.present === null
-                  ? 'Absent'
-                  : itm.present
-                    ? 'Checked'
-                    : itm.is_weekend
-                      ? 'Weekend'
-                      : itm.is_holiday
-                        ? 'HoliDay'
-                        : 'UnChecked';
+
+                return itm.present
+                  ? 'Checked'
+                  : itm.is_weekend
+                    ? 'Weekend'
+                    : itm.is_holiday
+                      ? 'HoliDay'
+                      : itm.present === null
+                        ? 'UnChecked'
+                        : 'Absent';
               }) || [],
           subject: key,
         };
         cData.push(tmp);
       });
     } else {
-      console.log(item.attendence_recors.results, '## results');
       const tmp = {
         sr_no: (page - 1) * 10 + index + 1,
         TotalPresent: item.total_present,
         TotalAbsent: item.total_absent,
         AttendanceReport: item.attendence_recors.results.map((itm: any) => {
           const dt = new Date(itm.present_on_date).getDate();
+
           if (headerDates.indexOf(dt) < 0) {
             headerDates.push(dt);
           }
-          console.log(itm.present, '## present');
-          return itm.present === null
-            ? 'Absent'
-            : itm.present
-              ? 'Checked'
-              : itm.is_weekend
-                ? 'Weekend'
-                : itm.is_holiday
-                  ? 'HoliDay'
-                  : 'UnChecked';
+
+          return itm.present
+            ? 'Checked'
+            : itm.is_weekend
+              ? 'Weekend'
+              : itm.is_holiday
+                ? 'HoliDay'
+                : itm.present === null
+                  ? 'UnChecked'
+                  : 'Absent';
         }),
         StudentFirstname: item.first_name,
         StudentLastname: item.last_name,
@@ -133,6 +133,7 @@ function formatData(data: any, page: number, subject: string | undefined) {
       cData.push(tmp);
     }
   });
+
   return { cData, headerDates, isNext, isPrev };
 }
 
@@ -160,7 +161,6 @@ export default function () {
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
   const {
     role,
-    schoolId,
     branchId,
     user_profile_id: userId,
     class_name: userClassName,
