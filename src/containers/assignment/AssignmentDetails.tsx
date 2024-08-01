@@ -582,13 +582,23 @@ function AssignmentDetails() {
       setCopySinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
 
       const pagesListprev: any = [];
-      tempArray.forEach((ele: any) => {
-        pagesListprev.push({
-          label: ele.page_name,
-          value: ele.page_name,
-          ...ele,
+      if (tempArray.length !== 0) {
+        tempArray.forEach((ele: any) => {
+          pagesListprev.push({
+            label: ele.page_name,
+            value: ele.page_name,
+            ...ele,
+          });
         });
-      });
+      } else {
+        jsonRespData.forEach((ele: any) => {
+          pagesListprev.push({
+            label: ele.page_name,
+            value: ele.page_name,
+            ...ele,
+          });
+        });
+      }
 
       setScromPages([
         { label: 'Select', value: 'Select', id: null },
