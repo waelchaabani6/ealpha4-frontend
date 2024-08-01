@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-curly-newline */
 /* eslint-disable no-shadow */
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable comma-dangle */
@@ -90,6 +91,7 @@ interface Data {
   Correct: number;
   pageNumber: string;
   scormDataView: any;
+  total_pages: number;
 }
 
 function createData(
@@ -101,12 +103,14 @@ function createData(
   Correct: number,
   maxScore: number,
   pageNumber: string,
-  scormData: any
+  scormData: any,
+  total_pages: number
 ): Data {
   const MyScore: any =
     Score === 0
       ? `0%`
-      : `${parseFloat(((Number(Correct) * 100) / Number(maxScore)).toFixed(2))}%`;
+      : // : `${parseFloat(((Number(Correct) * 100) / Number(maxScore)).toFixed(2))}%`;
+        `${parseFloat(((Number(Correct / total_pages) * 100) / Number(maxScore)).toFixed(2))}%`;
   const scormDataView = scormData ? JSON.parse(scormData) : {};
   return {
     Pages,
@@ -117,6 +121,7 @@ function createData(
     MyScore,
     pageNumber,
     scormDataView,
+    total_pages,
   };
 }
 function createExcellData(ele: any) {
@@ -340,7 +345,8 @@ function AssignmentDetails(): JSX.Element {
                 ele.absolute_score,
                 ele.max_score,
                 ele?.page_number,
-                ele?.scormData
+                ele?.scormData,
+                jsonRespData.length
               )
             )
           : [];

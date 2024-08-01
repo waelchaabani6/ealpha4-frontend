@@ -20,10 +20,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import moment from 'moment';
+import { ScromPage } from '@constants/types';
 import SimpleTableDx from '../../../components/SimpleTableDx/index';
 import { TOOLBAR_LABELS } from '../../../constants/constants';
 import RouteLayout from '../../layout/routeLayout';
-import { ScromPage } from '@constants/types';
 
 const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
 const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
@@ -73,6 +73,7 @@ interface Data {
   Correct: number;
   pageNumber: string;
   scormDataView: any;
+  total_pages: number;
 }
 
 function createData(
@@ -84,12 +85,14 @@ function createData(
   Correct: number,
   maxScore: number,
   pageNumber: string,
-  scormData: any
+  scormData: any,
+  total_pages: number
 ): Data {
   const MyScore: any =
     Score === 0
       ? `0%`
-      : `${parseFloat(((Number(Correct) * 100) / Number(maxScore)).toFixed(2))}%`;
+      : // : `${parseFloat(((Number(Correct) * 100) / Number(maxScore)).toFixed(2))}%`;
+        `${parseFloat(((Number(Correct / total_pages) * 100) / Number(maxScore)).toFixed(2))}%`;
   const scormDataView = scormData ? JSON.parse(scormData) : {};
   return {
     Pages,
@@ -100,6 +103,7 @@ function createData(
     MyScore,
     pageNumber,
     scormDataView,
+    total_pages,
   };
 }
 
@@ -325,7 +329,8 @@ function AssignmentDetails() {
                   ele.absolute_score,
                   ele.max_score,
                   ele?.page_number,
-                  ele?.scormData
+                  ele?.scormData,
+                  jsonRespData.length
                 )
               )
             : [];

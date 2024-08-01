@@ -548,7 +548,7 @@ function AssignmentDetails() {
                 createData(
                   ele.page_name,
                   ele.page_name,
-                  ele.score,
+                  ele.score / jsonRespData.length,
                   ele.unattempted_count,
                   ele.mistake_count,
                   ele.absolute_score,
