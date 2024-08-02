@@ -284,11 +284,11 @@ function AssignmentDetails(): JSX.Element {
       /// Meets
       return { bg: '#d9ffc8', color: '#6CA463' }[type]; // blue
     }
-    if (score >= val.approching1 && score < val.approching2) {
+    if (score >= val.approching1 && score <= val.approching2) {
       // Approaching
       return { bg: '#FFF9BE', color: '#C7B551' }[type];
     }
-    if (score >= val.Nmeet1 && score < val.Nmeet2) {
+    if (score >= val.Nmeet1 && score <= val.Nmeet2) {
       // Does not Meet
       return { bg: '#FCD4C6', color: '#E36B6B' }[type];
     }
