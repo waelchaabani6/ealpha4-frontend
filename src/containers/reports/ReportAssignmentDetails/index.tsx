@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import ButtonToggle from '@component/ToggleButton/ToggleButton';
 import { IconButton } from '@component/button/button';
 import DatePicker from '@component/datepicker';
@@ -298,7 +299,7 @@ export default function Index() {
               return {
                 ...row,
                 PerformanceExpectation: (
-                  <div className="bg-[#D9FFC8] p-4">
+                  <div className="bg-[#BECCFF] p-4">
                     {row?.PerformanceExpectation}
                   </div>
                 ),
@@ -318,7 +319,7 @@ export default function Index() {
               return {
                 ...row,
                 PerformanceExpectation: (
-                  <div className="bg-[#BECCFF] p-4">
+                  <div className="bg-[#d9ffc8] p-4">
                     {row?.PerformanceExpectation}
                   </div>
                 ),

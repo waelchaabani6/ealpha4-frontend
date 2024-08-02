@@ -181,10 +181,10 @@ function AssessmentDetails() {
       return { bg: '#FFF9BE', color: '#C7B551' }[type]; // Yello
     }
     if (scoreAch > 50 && scoreAch <= 70) {
-      return { bg: '#d9ffc8', color: '#6CA463' }[type]; // blue
+      return { bg: '#beccff', color: '#132E90 ' }[type]; // green
     }
     if (scoreAch >= 70) {
-      return { bg: '#beccff', color: '#132E90 ' }[type]; // green
+      return { bg: '#d9ffc8', color: '#6CA463' }[type]; // blue
     }
   }
 

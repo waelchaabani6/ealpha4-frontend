@@ -278,11 +278,11 @@ function AssignmentDetails(): JSX.Element {
   function colorCode(score: any, type: string) {
     if (score >= val.exceed1 && score <= val.exceed2) {
       // Exceeds
-      return { bg: '#BECCFF', color: '#132E90 ' }[type]; // green
+      return { bg: '#d9ffc8', color: '#6CA463' }[type]; // blue
     }
     if (score >= val.meet1 && score <= val.meet2) {
       /// Meets
-      return { bg: '#d9ffc8', color: '#6CA463' }[type]; // blue
+      return { bg: '#BECCFF', color: '#132E90 ' }[type]; // green
     }
     if (score >= val.approching1 && score <= val.approching2) {
       // Approaching
@@ -292,19 +292,20 @@ function AssignmentDetails(): JSX.Element {
       // Does not Meet
       return { bg: '#FCD4C6', color: '#E36B6B' }[type];
     }
+    return { bg: '#e5e7eb', color: '#E36B6B' }[type];
   }
 
   function getPerformanceText(score: any) {
     if (score >= val.exceed1 && score <= val.exceed2) {
       return 'Exceeds';
     }
-    if (score >= val.meet1 && score < val.meet2) {
+    if (score >= val.meet1 && score <= val.meet2) {
       return 'Meets';
     }
-    if (score >= val.approching1 && score < val.approching2) {
+    if (score >= val.approching1 && score <= val.approching2) {
       return 'Approaching';
     }
-    if (score >= val.Nmeet1 && score < val.Nmeet2) {
+    if (score >= val.Nmeet1 && score <= val.Nmeet2) {
       return 'Does not Meet';
     }
   }
