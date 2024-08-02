@@ -1,3 +1,7 @@
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable operator-linebreak */
+/* eslint-disable no-confusing-arrow */
+/* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable comma-dangle */
 import ButtonToggle from '@component/ToggleButton/ToggleButton';
 import { IconButton } from '@component/button/button';
@@ -351,7 +355,7 @@ export default function Index() {
             return {
               ...row,
               performance_status: (
-                <div className="bg-[#D9FFC8] p-4">
+                <div className="bg-[#BECCFF] p-4">
                   {row?.performance_status}
                 </div>
               ),
@@ -371,7 +375,7 @@ export default function Index() {
             return {
               ...row,
               performance_status: (
-                <div className="bg-[#BECCFF] p-4">
+                <div className="bg-[#d9ffc8] p-4">
                   {row?.performance_status}
                 </div>
               ),
