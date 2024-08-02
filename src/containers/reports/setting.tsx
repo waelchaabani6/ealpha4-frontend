@@ -225,7 +225,7 @@ const Setting = (props: Props) => {
                 </TableHead>
                 <TableBody>
                   <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                    <TableCell key="1" align="left" className="bg-[#BECCFF]">
+                    <TableCell key="1" align="left" className="bg-[#d9ffc8]">
                       Exceeds
                     </TableCell>
                     <TableCell key="2" align="center">
@@ -252,13 +252,14 @@ const Setting = (props: Props) => {
                           value={val.exceed2}
                           onChange={handleChange}
                         />
-                      </div>{' '}
+                      </div>
                     </TableCell>
                   </TableRow>
                   <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                    <TableCell key="1" align="left" className="bg-[#D9FFC8]">
+                    <TableCell key="1" align="left" className="bg-[#BECCFF]">
                       Meets
                     </TableCell>
+
                     <TableCell key="2" align="center">
                       <div className="flex items-center justify-center">
                         <TextField
