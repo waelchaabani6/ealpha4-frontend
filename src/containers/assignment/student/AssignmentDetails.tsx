@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable react/jsx-curly-newline */
 /* eslint-disable no-shadow */
 /* eslint-disable react/jsx-one-expression-per-line */
@@ -352,6 +353,7 @@ function AssignmentDetails(): JSX.Element {
           : [];
       setJsonData(jsonRespData);
       setJsonCopyData(jsonRespData);
+      console.log('jsonRespData', jsonRespData);
 
       if (jsonRespData && jsonRespData.length !== 0) {
         setCsvData(jsonRespData.map((ele: any) => createExcellData(ele)));
@@ -465,13 +467,23 @@ function AssignmentDetails(): JSX.Element {
       setCopySinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
 
       const pagesListprev: any = [];
-      tempArray.forEach((ele: any) => {
-        pagesListprev.push({
-          label: ele.page_name,
-          value: ele.page_name,
-          ...ele,
+      if (tempArray.length !== 0) {
+        tempArray.forEach((ele: any) => {
+          pagesListprev.push({
+            label: ele.page_name,
+            value: ele.page_name,
+            ...ele,
+          });
         });
-      });
+      } else {
+        jsonRespData.forEach((ele: any) => {
+          pagesListprev.push({
+            label: ele.page_name,
+            value: ele.page_name,
+            ...ele,
+          });
+        });
+      }
 
       const pagesArray = singlePages.map((ele: any) => ({
         label: ele.page_name,
