@@ -71,42 +71,86 @@ function formatData(data: any, page: number, subject: string | undefined) {
       }
     }
     if (userRole().isStudent) {
-      const ob = item?.attendence_recors?.results;
-      Object.keys(ob)?.forEach((key: string, index2: number) => {
-        console.log(ob[key]);
-        const tmp = {
-          sr_no: (page - 1) * 10 + index2 + 1,
-          TotalPresent: ob[key].present_count,
-          TotalAbsent: ob[key].absent_count,
-          AttendanceReport: [],
-          // AttendanceReport:
-          //   ob[key].records
-          //     .sort(
-          //       (a: any, b: any) =>
-          //         new Date(a.present_on_date).getTime() -
-          //         new Date(b.present_on_date).getTime()
-          //     )
-          //     ?.map((itm: any) => {
-          //       const dt = new Date(itm.present_on_date).getDate();
+      // const ob = item?.attendence_recors?.results;
 
-          //       if (headerDates.indexOf(dt) < 0) {
-          //         headerDates.push(dt);
-          //       }
+      // Object.keys(ob)?.forEach((key: string, index2: number) => {
+      //   const tmp = {
+      //     sr_no: (page - 1) * 10 + index2 + 1,
+      //     // TotalPresent: ob[key].present_count,
+      //     TotalPresent: item.total_absent,
+      //     // TotalAbsent: ob[key].absent_count,
+      //     TotalAbsent: item.total_present,
+      //     AttendanceReport: item.attendence_recors.results.map((itm: any) => {
+      //       const dt = new Date(itm.present_on_date).getDate();
 
-          //       return itm.present
-          //         ? 'Checked'
-          //         : itm.is_weekend
-          //           ? 'Weekend'
-          //           : itm.is_holiday
-          //             ? 'HoliDay'
-          //             : itm.present === null
-          //               ? 'UnChecked'
-          //               : 'Absent';
-          //     }) || [],
-          subject: key,
-        };
-        cData.push(tmp);
-      });
+      //       if (headerDates.indexOf(dt) < 0) {
+      //         headerDates.push(dt);
+      //       }
+
+      //       return itm.present
+      //         ? 'Checked'
+      //         : itm.is_weekend
+      //           ? 'Weekend'
+      //           : itm.is_holiday
+      //             ? 'HoliDay'
+      //             : itm.present === null
+      //               ? 'UnChecked'
+      //               : 'Absent';
+      //     }),
+      //     // AttendanceReport:
+      //     //   ob[key].records
+      //     //     .sort(
+      //     //       (a: any, b: any) =>
+      //     //         new Date(a.present_on_date).getTime() -
+      //     //         new Date(b.present_on_date).getTime()
+      //     //     )
+      //     //     ?.map((itm: any) => {
+      //     //       const dt = new Date(itm.present_on_date).getDate();
+
+      //     //       if (headerDates.indexOf(dt) < 0) {
+      //     //         headerDates.push(dt);
+      //     //       }
+
+      //     //       return itm.present
+      //     //         ? 'Checked'
+      //     //         : itm.is_weekend
+      //     //           ? 'Weekend'
+      //     //           : itm.is_holiday
+      //     //             ? 'HoliDay'
+      //     //             : itm.present === null
+      //     //               ? 'UnChecked'
+      //     //               : 'Absent';
+      //     //     }) || [],
+      //     // subject: key,
+      //     subject,
+      //   };
+      //   cData.push(tmp);
+      // });
+
+      const tmp = {
+        sr_no: (page - 1) * 10 + index + 1,
+        TotalPresent: item.total_present,
+        TotalAbsent: item.total_absent,
+        AttendanceReport: item.attendence_recors.results.map((itm: any) => {
+          const dt = new Date(itm.present_on_date).getDate();
+
+          if (headerDates.indexOf(dt) < 0) {
+            headerDates.push(dt);
+          }
+
+          return itm.present
+            ? 'Checked'
+            : itm.is_weekend
+              ? 'Weekend'
+              : itm.is_holiday
+                ? 'HoliDay'
+                : itm.present === null
+                  ? 'UnChecked'
+                  : 'Absent';
+        }),
+        subject,
+      } as any;
+      cData.push(tmp);
     } else {
       const tmp = {
         sr_no: (page - 1) * 10 + index + 1,
