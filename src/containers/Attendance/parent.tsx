@@ -104,7 +104,9 @@ function formatData(data: any, page: number, subject: string) {
               ? 'Weekend'
               : itm.is_holiday
                 ? 'HoliDay'
-                : 'UnChecked';
+                : itm.present === null
+                  ? 'UnChecked'
+                  : 'Absent';
         }),
         subject: item?.SubjectName,
       } as any;
