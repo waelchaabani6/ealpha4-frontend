@@ -20,14 +20,16 @@ export default function HowToUse() {
       video: [
         { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_1-Browser_Login.mp4', name: 'Student Login' },
         { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_2-Browser_Dashboard.mp4', name: 'Student Dashboard' },
-        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_3-Completing_Assignments.mp4', name: 'Completing Assignments' }
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_3-Completing_Assignments.mp4', name: 'Completing Assignments' },
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_4_Completing_Assessments.mp4', name: 'Completing Assessments'}
       ]
     },
     {
       title: 'A Guide to eAlpha for Students Using the App',
       video: [
         { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_APP_Tutorial_1-Login.mp4', name: 'Student Login' },
-        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_APP_Tutorial_2-The_Dashboard.mp4', name: 'Student Dashboard' }
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_APP_Tutorial_2-The_Dashboard.mp4', name: 'Student Dashboard' },
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student%20_APP_Tutorial_3_Assignments.mp4', name: 'Student Assignments'}
       ]
     },
 /*    {
@@ -62,7 +64,8 @@ export default function HowToUse() {
       title: 'Science',
       video: [
         { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_5_My_Courses_Science.mp4', name: 'Teacher Tutorial My Courses Science' },
-        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_6_Science_Teacher_Resources.mp4', name: 'Teacher Tutorial Science Teacher Resources' }
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_6_Science_Teacher_Resources.mp4', name: 'Teacher Tutorial Science Teacher Resources' },
+        { url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_Science_SB_PB_Ancillaries.mp4', name: 'Teacher Tutorial Science SB PB Ancillaries'}
       ]
     },
     {
