@@ -57,6 +57,9 @@ def configs(branch){
                 "development": [
                     "helmvalues":"values-development.yaml",
                     "namespace":"development"],
+                "master": [
+                    "helmvalues":"values-production.yaml",
+                    "namespace":"production"],
             ]
         env.helmvalues=environments."${branch}"."helmvalues"
         env.namespace=environments."${branch}"."namespace"
