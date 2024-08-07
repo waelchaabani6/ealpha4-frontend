@@ -114,7 +114,7 @@ export default function PreviewMyAssessmentQuestions() {
       navBack={true}
     >
       <div className="py-3">
-        <PageTitle title={`vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ${pageData?.data?.assessment_name || ''}`} />
+        <PageTitle title={`${pageData?.data?.assessment_name || ''}`} />
       </div>
       <div className="mt-5 w-full overflow-auto rounded-md h-max border bg-white p-4">
         {
