@@ -435,14 +435,14 @@ function AssignmentDetails() {
     onError: () => {},
   });
 
-  const Status = () => {
-    if (assignmentData?.score <= 60) {
+  const Status = (score: any) => {
+    if (score >= val.Nmeet1 && score <= val.Nmeet2) {
       setPassignStatus('Does Not Meet');
-    } else if (assignmentData?.score > 60 && assignmentData?.score < 70) {
+    } else if (score >= val.approching1 && score <= val.approching2) {
       setPassignStatus('Approching');
-    } else if (assignmentData?.score >= 70 && assignmentData?.score <= 80) {
+    } else if (score >= val.meet1 && score <= val.meet2) {
       setPassignStatus('Meets');
-    } else if (assignmentData?.score >= 80) {
+    } else if (score >= val.exceed1 && score <= val.exceed2) {
       setPassignStatus('Exceeds');
     }
   };
@@ -452,7 +452,7 @@ function AssignmentDetails() {
   }, [assignmentData]);
 
   useEffect(() => {
-    Status();
+    Status(assignmentData?.score);
   }, [assignmentData]);
 
   useEffect(() => {
