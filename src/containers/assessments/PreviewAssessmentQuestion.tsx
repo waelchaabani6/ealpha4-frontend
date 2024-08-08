@@ -8,6 +8,7 @@ import PageTitle from '@shared/pageTitle';
 import RouteLayout from '../layout/routeLayout';
 
 export default function PreviewMyAssessmentQuestions() {
+  
   const location = useLocation();
   const navigate = useNavigate();
   const userData = useSelector((state: any) => state?.user);
@@ -22,6 +23,28 @@ export default function PreviewMyAssessmentQuestions() {
   const ref = useRef<HTMLIFrameElement | null>(null);
   const userRole = useSelector((state: any) => state?.user?.role);
 
+
+  useEffect(() => {
+    setConfig();
+  }, []);
+
+  useEffect(() => {
+    if (ref.current) {
+      setConfig();
+    }
+  }, [iframeUrl]);
+  useEffect(() => {
+    // Function to generate a unique query parameter
+    const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
+
+    // URL of the iframe source
+    let baseUrl = '';
+
+    if (userRole?.name === 'Teacher') baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${location.state?.obeasses_id}`;
+    else if (userRole?.name === 'Student') baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${location.state?.obeasses_id}`;
+    // Set the iframe URL with the cache buster parameter
+    setIframeUrl(baseUrl + generateCacheBuster());
+  }, [location.state?.obeasses_id]);
   const { isRefetching: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/get_activity_before_assign/${LID}/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}`,
@@ -53,16 +76,6 @@ export default function PreviewMyAssessmentQuestions() {
   if (LearnosityObjLoad) {
     return (<Loader />);
   }
-
-  useEffect(() => {
-    setConfig();
-  }, []);
-
-  useEffect(() => {
-    if (ref.current) {
-      setConfig();
-    }
-  }, [iframeUrl]);
 
   const setConfig = () => {
     const user = userData;
@@ -96,18 +109,6 @@ export default function PreviewMyAssessmentQuestions() {
       });
   };
 
-  useEffect(() => {
-    // Function to generate a unique query parameter
-    const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
-
-    // URL of the iframe source
-    let baseUrl = '';
-
-    if (userRole?.name === 'Teacher') baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${location.state?.obeasses_id}`;
-    else if (userRole?.name === 'Student') baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${location.state?.obeasses_id}`;
-    // Set the iframe URL with the cache buster parameter
-    setIframeUrl(baseUrl + generateCacheBuster());
-  }, [location.state?.obeasses_id]);
 
   return (
     <RouteLayout
