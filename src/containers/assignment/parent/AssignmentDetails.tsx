@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable react/jsx-curly-newline */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable operator-linebreak */
@@ -435,25 +436,52 @@ function AssignmentDetails() {
     onError: () => {},
   });
 
-  const Status = (score: any) => {
-    if (score >= val.Nmeet1 && score <= val.Nmeet2) {
-      setPassignStatus('Does Not Meet');
-    } else if (score >= val.approching1 && score <= val.approching2) {
-      setPassignStatus('Approching');
-    } else if (score >= val.meet1 && score <= val.meet2) {
-      setPassignStatus('Meets');
-    } else if (score >= val.exceed1 && score <= val.exceed2) {
-      setPassignStatus('Exceeds');
+  // const Status = () => {
+  //   if (
+  //     assignmentData?.score >= val.Nmeet1 &&
+  //     assignmentData?.score <= val.Nmeet2
+  //   ) {
+  //     setPassignStatus('Does Not Meet');
+  //   } else if (
+  //     assignmentData?.score >= val.approching1 &&
+  //     assignmentData?.score <= val.approching2
+  //   ) {
+  //     setPassignStatus('Approching');
+  //   } else if (
+  //     assignmentData?.score >= val.meet1 &&
+  //     assignmentData?.score <= val.meet2
+  //   ) {
+  //     setPassignStatus('Meets');
+  //   } else if (
+  //     assignmentData?.score >= val.exceed1 &&
+  //     assignmentData?.score <= val.exceed2
+  //   ) {
+  //     setPassignStatus('Exceeds');
+  //   }
+  // };
+
+  function getPerformanceText(score: any) {
+    if (score >= val.exceed1 && score <= val.exceed2) {
+      return 'Exceeds';
     }
-  };
+    if (score >= val.meet1 && score <= val.meet2) {
+      return 'Meets';
+    }
+    if (score >= val.approching1 && score <= val.approching2) {
+      return 'Approaching';
+    }
+    if (score >= val.Nmeet1 && score <= val.Nmeet2) {
+      return 'Does not Meet';
+    }
+  }
 
   useEffect(() => {
     details();
   }, [assignmentData]);
 
-  useEffect(() => {
-    Status(assignmentData?.score);
-  }, [assignmentData]);
+  // useEffect(() => {
+  //   Status();
+  // }, [assignmentData]);
 
   useEffect(() => {
     if (teacher) {
@@ -535,7 +563,7 @@ function AssignmentDetails() {
                     {assignmentData?.score !== null ? assignmentData?.score : 0}
                     %
                   </span>
-                  - {passingStatus || 'Does Not Meet'}
+                  - {getPerformanceText(assignmentData?.score)}
                 </div>
               </div>
             </div>
