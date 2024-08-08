@@ -128,7 +128,7 @@ export default function AssignedAssessments() {
     const getGrade = CLASS_ARRAY.find((i: any) => Number(i?.value) === Number(values?.select_grade));
 
     const res = await getConfigAssessments(values?.assignment_name, '', getGrade?.value);
-    const obeasses_id = res?.data?.data?.item?.id;
+    const obeasses_id = await res?.data?.data?.item?.id;
 
     const payload = {
       assessment_name: values?.assignment_name,

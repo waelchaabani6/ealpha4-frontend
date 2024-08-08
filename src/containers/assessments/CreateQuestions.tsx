@@ -9,6 +9,40 @@ import { toast } from 'react-toastify';
 import RouteLayout from '../layout/routeLayout';
 
 export default function CreateQuestions() {
+  useEffect(() => {
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      iframeRef.current.contentWindow.postMessage({ type: 'clearConfig' }, '*');
+    }
+    const handleMessage = (event: { data: { type: any; payload: any } }) => {
+      const { type, payload } = event.data;
+      if (type === 'SUCCESS') {
+        sync();
+        toast.success(payload);
+        // Function to generate a unique query parameter
+        const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
+
+        // URL of the iframe source
+        const baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/create-assessments`;
+
+        // Set the iframe URL with the cache buster parameter
+        setIframeUrl(baseUrl + generateCacheBuster());
+        navigate(`/${schoolName}/assessments/my-assessments`);
+      } else {
+        toast.error(payload);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+
+  
+  const navigate = useNavigate();
+ 
   const userData = useSelector((state: any) => state?.user);
   const { LID, schoolName } = useParams();
   const [pageData, setpageData] = useState<any>({});
@@ -57,37 +91,6 @@ export default function CreateQuestions() {
     url: `assessments-service/fetch-created-assessment-from-learnosity/?user_id=${userData?.userId}&domain_name=${window?.location?.hostname}&assessment_name=${pageData?.data?.assessment_name || ''}`,
     enabled: false
   });
-
-  useEffect(() => {
-    if (iframeRef.current && iframeRef.current.contentWindow) {
-      iframeRef.current.contentWindow.postMessage({ type: 'clearConfig' }, '*');
-    }
-    const handleMessage = (event: { data: { type: any; payload: any } }) => {
-      const { type, payload } = event.data;
-      if (type === 'SUCCESS') {
-        sync();
-        toast.success(payload);
-        // Function to generate a unique query parameter
-        const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
-
-        // URL of the iframe source
-        const baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/create-assessments`;
-
-        // Set the iframe URL with the cache buster parameter
-        setIframeUrl(baseUrl + generateCacheBuster());
-      } else {
-        toast.error(payload);
-      }
-    };
-
-    window.addEventListener('message', handleMessage);
-
-    // Cleanup the event listener on component unmount
-    return () => {
-      window.removeEventListener('message', handleMessage);
-    };
-  }, []);
-
   useEffect(() => {
     if (status === 'ready' && LID && userData?.user_ting) {
       fetchLearnosityObj();
@@ -97,6 +100,7 @@ export default function CreateQuestions() {
   if (LearnosityObjLoad) {
     return (<Loader />);
   }
+
   return (
     <RouteLayout navBack={true} path={`/${schoolName}/assessments/my-assessments`}>
       <div className="w-full overflow-auto rounded-md h-max border bg-white p-4 mt-4">
