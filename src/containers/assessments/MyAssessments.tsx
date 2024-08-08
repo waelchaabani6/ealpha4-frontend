@@ -2,7 +2,7 @@ import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import Dropdown from '@component/dropdown/Dropdown';
 import { useNavigate, Link, useLocation, useParams } from 'react-router-dom';
 import CustomPagination from '@component/pagination/CustomPagination';
-import {COMPONENTS, TABLE_LABELS, ASSESSMENT_TYPE, USER_TYPE, RESULTS_PER_PAGE} from '@constants/constants';
+import { COMPONENTS, TABLE_LABELS, ASSESSMENT_TYPE, USER_TYPE, RESULTS_PER_PAGE } from '@constants/constants';
 import RouteLayout from '@layout/routeLayout';
 import { selectSchoolData } from '@shared/store/schoolSlice';
 import PageTitle from '@shared/pageTitle';
@@ -94,10 +94,12 @@ export default function MyAssessments() {
   };
 
   const actionHandler = (data: any, handlername: string) => {
+    const obeasses_id = data?.obeasses_id;
+
     if (handlername === 'delete') {
       deleteHandler(data);
     } else if (handlername === 'view') {
-      navigate(`/${schoolName}/assessments/preview_myassessment_question/${data?.id}`, { state: { page, path: `/${schoolName}/assessments/my-assessments` } });
+      navigate(`/${schoolName}/assessments/preview_myassessment_question/${data?.id}`, { state: { page, obeasses_id, path: `/${schoolName}/assessments/my-assessments` } });
     }
   };
 
