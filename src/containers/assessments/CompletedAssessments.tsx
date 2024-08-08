@@ -28,7 +28,7 @@ import {
   COMPONENTS,
   TABLE_LABELS,
   TOOLBAR_LABELS,
-  USER_TYPE,
+  USER_TYPE
 } from '../../constants/constants';
 import CustomPagination from '../../components/pagination/CustomPagination';
 import Wrapper from '../../shared/wrapper/Wrapper';
@@ -38,8 +38,8 @@ const printButton = () => <PrintIcon />;
 const ALL: Array<any> = [
   {
     label: 'Select',
-    value: 'Select',
-  },
+    value: 'Select'
+  }
 ];
 
 export default function CompletedAssessments() {
@@ -49,31 +49,31 @@ export default function CompletedAssessments() {
   const CompletedTableColumns = [
     {
       label: 'First Name',
-      mapper: 'first_name',
+      mapper: 'first_name'
     },
     {
       label: 'Last Name',
-      mapper: 'last_name',
+      mapper: 'last_name'
     },
     {
       label: 'Class',
-      mapper: 'class_name',
-    },
+      mapper: 'class_name'
+    }
   ];
 
   const PendingTableColumns = [
     {
       label: 'First Name',
-      mapper: 'first_name',
+      mapper: 'first_name'
     },
     {
       label: 'Last Name',
-      mapper: 'last_name',
+      mapper: 'last_name'
     },
     {
       label: 'Class',
-      mapper: 'class_name',
-    },
+      mapper: 'class_name'
+    }
   ];
 
   const headers = [
@@ -82,7 +82,7 @@ export default function CompletedAssessments() {
     TABLE_LABELS?.CLASS_STUDENTS,
     TABLE_LABELS?.START_DATE,
     TABLE_LABELS?.END_DATE,
-    TABLE_LABELS?.SCORE,
+    TABLE_LABELS?.SCORE
   ];
 
   const [csvData, setCsvData] = useState<[]>([]);
@@ -92,40 +92,40 @@ export default function CompletedAssessments() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center',
+      align: 'center'
     },
     {
       label: TABLE_LABELS?.ASSESSMENT_NAME,
       mapper: 'assessment_name',
-      isSort: true,
+      isSort: true
     },
     {
       label: TABLE_LABELS?.COURSES,
       isSort: true,
-      mapper: 'subject_name',
+      mapper: 'subject_name'
     },
     {
       label: TABLE_LABELS?.CLASS_STUDENTS,
       align: 'center',
-      mapper: 'class_or_student',
+      mapper: 'class_or_student'
     },
     {
       label: TABLE_LABELS?.START_DATE,
       isSort: true,
       mapper: 'start_date',
-      format: 'DD-MM-YYYY',
+      format: 'DD-MM-YYYY'
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
       isSort: true,
       mapper: 'submission_date',
-      format: 'DD-MM-YYYY',
+      format: 'DD-MM-YYYY'
     },
     {
       label: TABLE_LABELS?.SCORE_AVG,
       isSort: true,
-      mapper: 'score',
-    },
+      mapper: 'score'
+    }
   ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
@@ -177,15 +177,13 @@ export default function CompletedAssessments() {
     if (handlername === 'delete') {
       deleteHandler(data);
     } else if (handlername === 'view') {
-      window.location.replace(
-        `preview_myassessment_question/${data?.assessment_id}`
-      );
+      window.location.replace(`preview_myassessment_question/${data?.assessment_id}`);
     }
   };
 
   const deleteHandler = (row: any) => {
     setPlayloadData({
-      id: row?.assessment_id,
+      id: row?.assessment_id
     });
     setAdminDeleteDialog(true);
   };
@@ -206,63 +204,40 @@ export default function CompletedAssessments() {
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
-  const ordering = orderBy ? (order === 'asc' ? orderBy : `-${orderBy}`) : '';
-  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
-    useGet({
-      baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-      url: `assessments-service/completed-assign-assessment-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&page=${page}&page_size=${rowsPerPage}&ordering=${ordering}&search=${searchString}&start_date=${fromDate ? moment(fromDate).format('YYYY-MM-DD') : ''}&submission_date=${toDate ? moment(toDate).format('YYYY-MM-DD') : ''}&user_id=${user?.userId}${selectedGrade && selectedGrade !== 'Select' ? `&class_name=${selectedGrade}` : ''}${currentCourse && currentCourse !== 'Select' ? `&course_name=${currentCourse}` : ''}`,
-      onSuccess: (res: any) => {
-        const accData = res?.data?.response;
-        const respData = accData?.results;
-        setTotalDataCount(accData.count);
-        const schoolNameInURL = decodeURIComponent(
-          location.pathname.split('/')[1]
-        );
-        const body: any = [];
-        const newTableData = respData?.map((item: any) => {
-          body.push([
-            item?.assessment_name,
-            item?.subject_name,
-            `${item.class_name}(${item?.student_count})`,
-            item?.start_date,
-            item?.submission_date,
-            item?.score,
-          ]);
-          // const link = `/${schoolNameInURL}/assessments/assigned/assessment-report/${item?.assessment_id}?assessment=${item?.assessment_name}`;
-          const joinedClasses = Array.isArray(item.class_name)
-            ? item.class_name?.filter((j: any) => j).join(', ')
-            : item.class_name;
-          const link2 = `/${schoolNameInURL}/assessments/assigned/completed_assessments/completed_assessment_student_list/${item?.assessment_id}?assessment=${item?.assessment_name}&class=${joinedClasses}&start_date=${item.start_date}&end_date=${item.submission_date}`;
-          const temp = {
-            ...item,
-            assessment_name: (
-              <Link
-                state={{
-                  page,
-                  path: `/${schoolName}/assessments/assigned/completed_assessments`,
-                }}
-                to={link2}
-              >
-                <span className="text-accent underline cursor-pointer text-xs font-medium">
-                  {item.assessment_name}
-                </span>
-              </Link>
-            ),
-            class_or_student: (
-              <span
-                role="presentation"
-                className="text-accent underline cursor-pointer text-xs font-medium"
-                onClick={() => handleDataPopup(item)}
-              >{`${joinedClasses}(${item?.student_count})`}</span>
-            ),
-            is_printed: item?.is_printed ? 'Printed' : 'Online',
-          };
-          return temp;
-        });
-        setCsvData(body);
-        setTableData(newTableData);
-      },
-    });
+  const ordering = orderBy ? order === 'asc' ? orderBy : `-${orderBy}` : '';
+  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } = useGet({
+    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+    url: `assessments-service/completed-assign-assessment-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&start_date=${fromDate ? moment(fromDate).format('YYYY-MM-DD') : ''}&submission_date=${toDate ? moment(toDate).format('YYYY-MM-DD') : ''}&user_id=${user?.userId}`,
+    onSuccess: (res: any) => {
+      const accData = res?.data?.response;
+      const respData = accData?.results;
+      setTotalDataCount(accData.count);
+      const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
+      const body: any = [];
+      const newTableData = respData?.map((item: any) => {
+        body.push([
+          item?.assessment_name,
+          item?.subject_name,
+          `${item.class_name}(${item?.student_count})`,
+          item?.start_date,
+          item?.submission_date,
+          item?.score
+        ]);
+        // const link = `/${schoolNameInURL}/assessments/assigned/assessment-report/${item?.assessment_id}?assessment=${item?.assessment_name}`;
+        const joinedClasses = Array.isArray(item.class_name) ? (item.class_name)?.filter((j: any) => j).join(', ') : item.class_name;
+        const link2 = `/${schoolNameInURL}/assessments/assigned/completed_assessments/completed_assessment_student_list/${item?.assessment_id}?assessment=${item?.assessment_name}&class=${joinedClasses}&start_date=${item.start_date}&end_date=${item.submission_date}`;
+        const temp = {
+          ...item,
+          assessment_name: <Link state={{ page, path: `/${schoolName}/assessments/assigned/completed_assessments` }} to={link2}><span className="text-accent underline cursor-pointer text-xs font-medium">{item.assessment_name}</span></Link>,
+          class_or_student: <span role="presentation" className="text-accent underline cursor-pointer text-xs font-medium" onClick={() => handleDataPopup(item)}>{`${joinedClasses}(${item?.student_count})`}</span>,
+          is_printed: (item?.is_printed) ? 'Printed' : 'Online'
+        };
+        return temp;
+      });
+      setCsvData(body);
+      setTableData(newTableData);
+    }
+  });
 
   // Delete Admin
   const { isLoading: loadingDelete, mutate: mutateDelete } = useDelete({
@@ -274,15 +249,11 @@ export default function CompletedAssessments() {
     },
     onError: ({ response }: any) => {
       toast('error', response?.statusText || 'Error');
-    },
+    }
   });
 
   // Toolbar Email
-  const {
-    isLoading: emailLoaded,
-    isRefetching: refetchEmail,
-    refetch: fetchEmailApi,
-  } = useGet({
+  const { isLoading: emailLoaded, isRefetching: refetchEmail, refetch: fetchEmailApi } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/assign-assessment-list/pdf-download/?user_id=${user?.userId}`,
     onSuccess: (response: any) => {
@@ -291,7 +262,7 @@ export default function CompletedAssessments() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
     },
-    enabled: false,
+    enabled: false
   });
 
   // ----------------------------------------END API---------------------
@@ -312,33 +283,20 @@ export default function CompletedAssessments() {
         >
           <Share />
         </CSVLink>
-      ),
+      )
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: (
-        <ReactToPrint
-          trigger={printButton}
-          content={() => componentRef.current}
-        />
-      ),
-    },
+      icon: <ReactToPrint
+        trigger={printButton}
+        content={() => componentRef.current}
+      />
+    }
   ];
 
   useEffect(() => {
     fetchAssignedAssignments();
-  }, [
-    rowsPerPage,
-    page,
-    pageSize,
-    orderBy,
-    order,
-    searchString,
-    toDate,
-    fromDate,
-    currentCourse,
-    selectedGrade,
-  ]);
+  }, [rowsPerPage, page, orderBy, order, searchString, toDate, fromDate]);
 
   useEffect(() => {
     if (location?.state?.page) {
@@ -354,58 +312,49 @@ export default function CompletedAssessments() {
 
   const { isLoading: loadCourses, data: Courses } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/assigned_courses/${user?.userId}/details`,
+    url: `course-code-service/courses/assigned_courses/${user?.userId}/details`
   });
-  const filteredCourses =
-    Courses?.data?.response
-      ?.filter((i: any) => i?.short_name)
-      ?.map((ele: any) => ({ label: ele.short_name, value: ele.short_name })) ||
-    [];
+  const filteredCourses = Courses?.data?.response
+    ?.filter((i: any) => i?.short_name)
+    ?.map((ele: any) => ({ label: ele.short_name, value: ele.short_name }))
+    || [];
   const { isLoading: loadClassesForSchool, data: ClassesForSchool } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
     url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}&branch_name=${branchData?.name || ''}`,
     enabled: !!(
-      (userRole?.name === SCHOOL_ADMIN && schoolData?.id) ||
-      userRole?.name === BRANCH_ADMIN ||
-      branchData?.school_id?.id
-    ),
+      (userRole?.name === SCHOOL_ADMIN && schoolData?.id)
+      || userRole?.name === BRANCH_ADMIN
+      || branchData?.school_id?.id
+    )
   });
-  const formatSchoolClasses =
-    ClassesForSchool?.data?.response?.results?.map((ele: any) => ({
-      label: ele.name,
-      value: ele.name,
-    })) || [];
-  const CLASS_ARRAY =
-    (userRole?.name === TEACHER ? TeacherClassesArray : formatSchoolClasses) ||
-    [];
+  const formatSchoolClasses = ClassesForSchool?.data?.response?.results?.map((ele: any) => ({
+    label: ele.name,
+    value: ele.name
+  })) || [];
+  const CLASS_ARRAY = (userRole?.name === TEACHER ? TeacherClassesArray : formatSchoolClasses)
+    || [];
 
-  const { isLoading: loadClassesForTeacher, mutate: ClassesForTeacher } =
-    usePost({
-      baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-      url: `schools-service/school-classes/teacher/assigned-class`,
-      onSuccess: (resp: any) => {
-        const res = resp?.data?.response;
-        const formatArr =
-          res?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
-        setTeacherClassesArray(formatArr);
-      },
-    });
+  const { isLoading: loadClassesForTeacher, mutate: ClassesForTeacher } = usePost({
+    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+    url: `schools-service/school-classes/teacher/assigned-class`,
+    onSuccess: (resp: any) => {
+      const res = resp?.data?.response;
+      const formatArr = res?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
+      setTeacherClassesArray(formatArr);
+    }
+  });
 
   useEffect(() => {
     if (userRole?.name === TEACHER && user?.user_profile_id) {
       ClassesForTeacher({
-        teacher_id: user?.user_profile_id,
+        teacher_id: user?.user_profile_id
       });
     }
   }, [userRole, user]);
 
   return (
     <RouteLayout>
-      <HeaderMenus
-        title="Completed Assessments"
-        menuArray={ADMIN_TOOLBAR_MENU}
-        handleToolbarAction={handleToolbarAction}
-      />
+      <HeaderMenus title="Completed Assessments" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <div className="pt-[30px]">
