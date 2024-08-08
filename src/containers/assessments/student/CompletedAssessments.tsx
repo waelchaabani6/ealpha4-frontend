@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import Button from '@component/button/button';
 import DatePicker from '@component/datepicker';
@@ -84,7 +85,7 @@ export default function CompletedAssessments() {
     {
       label: TABLE_LABELS?.TEACHERS,
       mapper: 'teacher',
-      isSort: true,
+      // isSort: true,
     },
     {
       label: TABLE_LABELS?.START_DATE,

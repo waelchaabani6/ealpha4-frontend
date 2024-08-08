@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import DatePicker from '@component/datepicker';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
@@ -117,7 +118,7 @@ export default function Index() {
     },
     {
       label: TABLE_LABELS?.STATUS,
-      isSort: true,
+      // isSort: true,
       mapper: 'State',
     },
     {
