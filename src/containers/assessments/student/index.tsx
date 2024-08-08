@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import Button from '@component/button/button';
 import DatePicker from '@component/datepicker';
@@ -65,7 +66,7 @@ export default function Index() {
     },
     {
       label: TABLE_LABELS?.TEACHERS,
-      isSort: true,
+      // isSort: true,
       mapper: 'teacher',
     },
     {
@@ -74,12 +75,12 @@ export default function Index() {
     },
     {
       label: TABLE_LABELS?.STATUS,
-      isSort: true,
+      // isSort: true,
       mapper: 'status',
     },
     {
       label: TABLE_LABELS?.START_DATE,
-      isSort: true,
+      // isSort: true,
       mapper: 'start_date',
       format: 'DD-MM-YYYY',
     },

@@ -117,7 +117,7 @@ export default function CompletedAssessments() {
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
-      isSort: true,
+      // isSort: true,
       mapper: 'submission_date',
       format: 'DD-MM-YYYY',
     },

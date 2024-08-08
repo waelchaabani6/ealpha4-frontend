@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import DatePicker from '@component/datepicker';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
@@ -142,13 +143,13 @@ export default function AssignedAssessments() {
     },
     {
       label: TABLE_LABELS?.END_DATE,
-      isSort: true,
+      // isSort: true,
       mapper: 'submission_date',
       format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_LABELS?.TYPE,
-      isSort: true,
+      // isSort: true,
       mapper: 'is_printed',
     },
     {
