@@ -54,7 +54,9 @@ export default function AssignAssessment() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const navState = location?.state?.navState;
+  // eslint-disable-next-line no-unsafe-optional-chaining
+  const { obassess, navState } = location?.state;
+
   const [currentCategory, setCurrentCategory] = useState(CATEGORY_LIST[0]?.value);
   const [boxData, setBoxData] = useState<any>([]);
   const [selectedData, setSelectedData] = useState<any>([]);
@@ -196,18 +198,37 @@ export default function AssignAssessment() {
       toast('error', 'Please select any Class/Student/Groups from checkbox');
       return false;
     }
-    let payload: any = {
-      category_name: currentCategory,
-      is_printed: !!searchParams.get('type'),
-      start_date: moment(values?.start_date).format('YYYY-MM-DD'),
-      submission_date: moment(values?.end_date).format('YYYY-MM-DD'),
-      duration: Number(values?.duration) * 60,
-      assessment_id: aid,
-      school_id: schoolData?.id || branchData?.school_data?.id,
-      comments: values?.comments,
-      created_by: userData?.userId,
-      updated_by: userData?.userId
-    };
+    let payload: any;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    if (obassess) {
+      payload = {
+        category_name: currentCategory,
+        is_printed: !!searchParams.get('type'),
+        start_date: moment(values?.start_date).format('YYYY-MM-DD'),
+        submission_date: moment(values?.end_date).format('YYYY-MM-DD'),
+        duration: Number(values?.duration) * 60,
+        obeasses_id: aid,
+        school_id: schoolData?.id || branchData?.school_data?.id,
+        comments: values?.comments,
+        created_by: userData.userId,
+        updated_by: userData.userId
+
+      };
+    } else {
+      payload = {
+        category_name: currentCategory,
+        is_printed: !!searchParams.get('type'),
+        start_date: moment(values?.start_date).format('YYYY-MM-DD'),
+        submission_date: moment(values?.end_date).format('YYYY-MM-DD'),
+        duration: Number(values?.duration) * 60,
+        assessment_id: aid,
+        school_id: schoolData?.id || branchData?.school_data?.id,
+        comments: values?.comments,
+        created_by: userData.userId,
+        updated_by: userData.userId
+      };
+    }
     if (currentCategory === CATEGORY_LIST[0].value) {
       const filteredClasses = boxData.filter((i: any) => selectedData.includes(i?.value))?.map((ele: any) => ({ id: ele.value, class_name: ele.label }));
 

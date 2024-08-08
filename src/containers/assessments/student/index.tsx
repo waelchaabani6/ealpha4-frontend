@@ -24,7 +24,7 @@ import CustomPagination from '../../../components/pagination/CustomPagination';
 import {
   RESULTS_PER_PAGE,
   TABLE_LABELS,
-  TOOLBAR_LABELS,
+  TOOLBAR_LABELS
 } from '../../../constants/constants';
 import Wrapper from '../../../shared/wrapper/Wrapper';
 import RouteLayout from '../../layout/routeLayout';
@@ -43,7 +43,7 @@ export default function Index() {
     TABLE_LABELS?.TEACHERS,
     TABLE_LABELS?.STATUS,
     TABLE_LABELS?.START_DATE,
-    TABLE_LABELS?.DUE_DATE,
+    TABLE_LABELS?.DUE_DATE
   ];
 
   const [csvData, setCsvData] = useState<[]>([]);
@@ -52,49 +52,49 @@ export default function Index() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center',
+      align: 'center'
     },
     {
       label: TABLE_LABELS?.ASSESSMENT_NAME,
       mapper: 'assessment_name',
-      isSort: true,
+      isSort: true
     },
     {
       label: TABLE_LABELS?.COURSES,
       isSort: true,
-      mapper: 'subject_name',
+      mapper: 'subject_name'
     },
     {
       label: TABLE_LABELS?.TEACHERS,
-      // isSort: true,
-      mapper: 'teacher',
+      isSort: true,
+      mapper: 'teacher'
     },
     {
       label: TABLE_LABELS?.COMMENTS,
-      mapper: 'comments',
+      mapper: 'comments'
     },
     {
       label: TABLE_LABELS?.STATUS,
-      // isSort: true,
-      mapper: 'status',
+      isSort: true,
+      mapper: 'status'
     },
     {
       label: TABLE_LABELS?.START_DATE,
       // isSort: true,
       mapper: 'start_date',
-      format: 'DD-MM-YYYY',
+      format: 'DD-MM-YYYY'
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
       align: 'center',
       mapper: 'submission_date',
-      format: 'DD-MM-YYYY',
+      format: 'DD-MM-YYYY'
     },
     {
       label: TABLE_LABELS?.ACTION,
       align: 'center',
-      mapper: 'action',
-    },
+      mapper: 'action'
+    }
   ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
@@ -124,8 +124,14 @@ export default function Index() {
   };
 
   const handleButtonClick = (data: any) => {
+    const totalSeconds = data?.duration;
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const duration = minutes;
+
+    const obeasses_id = data?.obeasses_id;
     navigate(`perform-assessment/${data?.assessment_id}`, {
-      state: { page, path: `/${schoolName}/assessments` },
+      state: { page, obeasses_id, duration, path: `/${schoolName}/assessments` }
     });
   };
 
@@ -173,67 +179,64 @@ export default function Index() {
   // ----------------------------------------API-------------------------
   // Get Assessment List
   const ordering = orderBy ? (order === 'asc' ? orderBy : `-${orderBy}`) : '';
-  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
-    useGet({
-      baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-      url: `assessments-service/assign-assessment-student-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&start_date=${fromDate ? moment(fromDate).format('YYYY-MM-DD') : ''}&submission_date=${toDate ? moment(toDate).format('YYYY-MM-DD') : ''}&student_id=${user?.user_profile_id}&domain_name=${window?.location?.hostname}`,
-      onSuccess: (res: any) => {
-        const accData = res?.data?.response;
-        const respData = accData?.results;
-        setTotalDataCount(accData.count);
-        const body: any = [];
-        const newTableData = respData?.map((item: any) => {
-          body.push([
-            item?.assessment_name,
-            item?.subject_name,
-            item?.teacher,
-            item?.status,
-            item?.start_date,
-            item?.submission_date,
-          ]);
-          console.log('Yet to start', item?.assessment_status);
-          let buttonRender =
-            item?.assessment_status === 'Yet to start'
-              ? 'Start'
-              : item?.assessment_status === 'Completed'
-                ? 'Completed'
-                : item?.assessment_status === 'In Progress'
-                  ? 'In Progress'
-                  : 'Incomplete';
-          if (
-            new Date(item?.submission_date) <
-              new Date(new Date().setHours(0, 0, 0, 0)) &&
-            item?.assessment_status === 'Yet to start'
-          ) {
-            buttonRender = 'Incomplete';
-          }
-          const temp = {
-            ...item,
-            action: (
-              <Button
-                disabled={
-                  item?.assessment_status === 'Completed' ||
-                  new Date(item?.submission_date) <
-                    new Date(new Date().setHours(0, 0, 0, 0))
+  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } = useGet({
+    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+    url: `assessments-service/assign-assessment-student-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&start_date=${fromDate ? moment(fromDate).format('YYYY-MM-DD') : ''}&submission_date=${toDate ? moment(toDate).format('YYYY-MM-DD') : ''}&student_id=${user?.user_profile_id}&domain_name=${window?.location?.hostname}`,
+    onSuccess: (res: any) => {
+      const accData = res?.data?.response;
+      const respData = accData?.results;
+      setTotalDataCount(accData.count);
+      const body: any = [];
+      const newTableData = respData?.map((item: any) => {
+        body.push([
+          item?.assessment_name,
+          item?.subject_name,
+          item?.teacher,
+          item?.status,
+          item?.start_date,
+          item?.submission_date
+        ]);
+        let buttonRender = item?.assessment_status === 'Yet to start'
+          ? 'Start'
+          : item?.assessment_status === 'Completed'
+            ? 'Completed'
+            : item?.assessment_status === 'In Progress'
+              ? 'In Progress'
+              : 'Incomplete';
+        if (
+          new Date(item?.submission_date)
+              < new Date(new Date().setHours(0, 0, 0, 0))
+            && item?.assessment_status === 'Yet to start'
+        ) {
+          buttonRender = 'Incomplete';
+        }
+        const temp = {
+          ...item,
+          action: (
+            <Button
+              disabled={
+                  item?.assessment_status === 'Completed'
+                  || new Date(item?.submission_date)
+                    < new Date(new Date().setHours(0, 0, 0, 0))
                 }
-                onClick={() => handleButtonClick(item)}
-              >
-                {buttonRender}
-              </Button>
-            ),
-          };
-          return temp;
-        });
-        setCsvData(body);
-        setTableData(newTableData);
-      },
-    });
+              onClick={() => handleButtonClick(item)}
+            >
+              {buttonRender}
+            </Button>
+          )
+        };
+        return temp;
+      });
+      setCsvData(body);
+      setTableData(newTableData);
+    }
+  });
 
   // Toolbar Email
   const {
     isLoading: emailLoaded,
     refetch: fetchEmailApi,
-    isRefetching: refetchEmail,
+    isRefetching: refetchEmail
   } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/assign-assessment-student-email/pdf-download/?student_id=${user?.user_profile_id}`,
@@ -246,7 +249,7 @@ export default function Index() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
     },
-    enabled: false,
+    enabled: false
   });
 
   // ----------------------------------------END API---------------------
@@ -267,7 +270,7 @@ export default function Index() {
         >
           <Share />
         </CSVLink>
-      ),
+      )
     },
     {
       title: TOOLBAR_LABELS.PRINT,
@@ -276,8 +279,8 @@ export default function Index() {
           trigger={printButton}
           content={() => componentRef.current}
         />
-      ),
-    },
+      )
+    }
   ];
 
   useEffect(() => {
@@ -290,7 +293,7 @@ export default function Index() {
     order,
     searchString,
     toDate,
-    fromDate,
+    fromDate
   ]);
 
   useEffect(() => {
@@ -351,6 +354,7 @@ export default function Index() {
             sxClass={{ width: '206px', marginRight: '5px' }}
           />
           <div className="flex gap-2 justify-center items-center h-[36px]">
+            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
             <span
               tabIndex={0}
               title="Clear dates"
