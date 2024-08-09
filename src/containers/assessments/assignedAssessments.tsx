@@ -48,6 +48,7 @@ interface Assessment {
   incomplete: any[]; // Use proper typing here based on your actual data structure
   is_printed: string;
   score: number;
+  obeasses_id: string;
   student_details: any[]; // Use proper typing here based on your actual data structure
   class_or_student: any; // Use proper typing here based on your actual data structure
 }
@@ -255,11 +256,12 @@ export default function AssignedAssessments() {
           item?.submission_date,
           (item?.is_printed) ? 'Printed' : 'Online'
         ]);
-        const link = `/${schoolNameInURL}/assessments/assigned/assessment-report/${item?.assessment_id}?assessment=${item?.assessment_name}`;
+        const obeasses_id = item?.obeasses_id;
+        const link = `/${schoolName}/assessments/preview_myassessment_question/${item?.assessment_id}`;
         const joinedClasses = Array.isArray(item.class_name) ? (item.class_name)?.filter((j: any) => j).join(', ') : item.class_name;
         const temp = {
           ...item,
-          assessment_name: <Link state={{ page, path: `/${schoolName}/assessments/assigned` }} to={link}><span className="text-accent underline cursor-pointer text-xs font-medium">{item.assessment_name}</span></Link>,
+          assessment_name: <Link state={{ page, obeasses_id, path: `/${schoolName}/assessments/assigned` }} to={link} ><span className="text-accent underline cursor-pointer text-xs font-medium">{item.assessment_name}</span></Link>,
           class_or_student: <span role="presentation" className="text-accent underline cursor-pointer text-xs font-medium" onClick={() => handleDataPopup(item)}>{`${joinedClasses}(${item?.student_count})`}</span>,
           is_printed: (item?.is_printed) ? 'Printed' : 'Online'
         };
