@@ -16,7 +16,7 @@ export default function CreateQuestions() {
     const handleMessage = (event: { data: { type: any; payload: any } }) => {
       const { type, payload } = event.data;
       if (type === 'SUCCESS') {
-        sync();
+        // sync();
         toast.success(payload);
         // Function to generate a unique query parameter
         const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
@@ -51,55 +51,55 @@ export default function CreateQuestions() {
   const [iframeUrl, setIframeUrl] = useState('');
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  const status = useScript(`https://authorapi.learnosity.com/?v2023.1.LTS`, {
-    removeOnUnmount: false
-  });
+  // const status = useScript(`https://authorapi.learnosity.com/?v2023.1.LTS`, {
+  //   removeOnUnmount: false
+  // });
 
   const userRole = useSelector((state: any) => state?.user?.role);
 
-  const { isLoading: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/create-question-for-assessment/${LID}/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}`,
-    onSuccess: (res: any) => {
-      const resp = res?.data?.response;
-      setpageData(resp);
-      const callbacks = {
-        errorListener(e: any) {
-          setError(e.msg || '');
-        }
-      };
-      setTimeout(() => {
-        const obj = (window as any)?.LearnosityAuthor?.init(resp?.learnosity_object, callbacks);
-        // Old working code. Commented because it's not working anymore.
-        // obj?.on('save:success', () => {
-        //   console.log('save:success -->');
-        //   sync();
-        // });
-        obj?.on('save:activity:success', () => {
-          sync();
-        });
-      }, 1000);
-    },
-    onError: ({ response }: any) => {
-      setError(response?.data?.message || response?.statusText || '');
-    },
-    enabled: false
-  });
+  // const { isLoading: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
+  //   baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+  //   url: `assessments-service/create-question-for-assessment/${LID}/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}`,
+  //   onSuccess: (res: any) => {
+  //     const resp = res?.data?.response;
+  //     setpageData(resp);
+  //     const callbacks = {
+  //       errorListener(e: any) {
+  //         setError(e.msg || '');
+  //       }
+  //     };
+  //     setTimeout(() => {
+  //       const obj = (window as any)?.LearnosityAuthor?.init(resp?.learnosity_object, callbacks);
+  //       // Old working code. Commented because it's not working anymore.
+  //       // obj?.on('save:success', () => {
+  //       //   console.log('save:success -->');
+  //       //   sync();
+  //       // });
+  //       obj?.on('save:activity:success', () => {
+  //         sync();
+  //       });
+  //     }, 1000);
+  //   },
+  //   onError: ({ response }: any) => {
+  //     setError(response?.data?.message || response?.statusText || '');
+  //   },
+  //   enabled: false
+  // });
 
-  const { isLoading: loadSync, refetch: sync } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/fetch-created-assessment-from-learnosity/?user_id=${userData?.userId}&domain_name=${window?.location?.hostname}&assessment_name=${pageData?.data?.assessment_name || ''}`,
-    enabled: false
-  });
-  useEffect(() => {
-    if (status === 'ready' && LID && userData?.user_ting) {
-      fetchLearnosityObj();
-    }
-  }, [status, LID, userData]);
+  // const { isLoading: loadSync, refetch: sync } = useGet({
+  //   baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+  //   url: `assessments-service/fetch-created-assessment-from-learnosity/?user_id=${userData?.userId}&domain_name=${window?.location?.hostname}&assessment_name=${pageData?.data?.assessment_name || ''}`,
+  //   enabled: false
+  // });
+  // useEffect(() => {
+  //   if (status === 'ready' && LID && userData?.user_ting) {
+  //     fetchLearnosityObj();
+  //   }
+  // }, [status, LID, userData]);
 
-  if (LearnosityObjLoad) {
-    return (<Loader />);
-  }
+  // if (LearnosityObjLoad) {
+  //   return (<Loader />);
+  // }
 
   return (
     <RouteLayout navBack={true} path={`/${schoolName}/assessments/my-assessments`}>

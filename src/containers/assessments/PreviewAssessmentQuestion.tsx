@@ -17,9 +17,9 @@ export default function PreviewMyAssessmentQuestions() {
   const [pageData, setPageData] = useState<any>({});
   const [error, setError] = useState<any>('');
   const [iframeUrl, setIframeUrl] = useState('');
-  const status = useScript(`https://items.learnosity.com/?v2021.2.LTS/`, {
-    removeOnUnmount: false
-  });
+  // const status = useScript(`https://items.learnosity.com/?v2021.2.LTS/`, {
+  //   removeOnUnmount: false
+  // });
   const ref = useRef<HTMLIFrameElement | null>(null);
   const userRole = useSelector((state: any) => state?.user?.role);
 
@@ -45,37 +45,37 @@ export default function PreviewMyAssessmentQuestions() {
     // Set the iframe URL with the cache buster parameter
     setIframeUrl(baseUrl + generateCacheBuster());
   }, [location.state?.obeasses_id]);
-  const { isRefetching: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/get_activity_before_assign/${LID}/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}`,
-    onSuccess: (res: any) => {
-      const resp = res?.data?.response;
-      setPageData(resp);
-      const callbacks = {
-        errorListener(e: any) {
-          setError(e.msg || '');
-        }
-      };
-      if (resp?.learnosity_obj?.request?.items?.length) {
-        setitemsData(resp?.data?.assessment_items);
-        (window as any)?.LearnosityItems?.init(resp?.learnosity_obj, callbacks);
-      }
-    },
-    onError: ({ response }: any) => {
-      setError(response?.data?.message || response?.statusText || '');
-    },
-    enabled: false
-  });
+  // const { isRefetching: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
+  //   baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+  //   url: `assessments-service/get_activity_before_assign/${LID}/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}`,
+  //   onSuccess: (res: any) => {
+  //     const resp = res?.data?.response;
+  //     setPageData(resp);
+  //     const callbacks = {
+  //       errorListener(e: any) {
+  //         setError(e.msg || '');
+  //       }
+  //     };
+  //     if (resp?.learnosity_obj?.request?.items?.length) {
+  //       setitemsData(resp?.data?.assessment_items);
+  //       (window as any)?.LearnosityItems?.init(resp?.learnosity_obj, callbacks);
+  //     }
+  //   },
+  //   onError: ({ response }: any) => {
+  //     setError(response?.data?.message || response?.statusText || '');
+  //   },
+  //   enabled: false
+  // });
 
-  useEffect(() => {
-    if (status === 'ready' && LID && userData?.user_ting) {
-      fetchLearnosityObj();
-    }
-  }, [status, LID, userData]);
+  // useEffect(() => {
+  //   if (status === 'ready' && LID && userData?.user_ting) {
+  //     fetchLearnosityObj();
+  //   }
+  // }, [status, LID, userData]);
 
-  if (LearnosityObjLoad) {
-    return (<Loader />);
-  }
+  // if (LearnosityObjLoad) {
+  //   return (<Loader />);
+  // }
 
   const setConfig = () => {
     const user = userData;
@@ -118,7 +118,7 @@ export default function PreviewMyAssessmentQuestions() {
         <PageTitle title={`${pageData?.data?.assessment_name || ''}`} />
       </div>
       <div className="mt-5 w-full overflow-auto rounded-md h-max border bg-white p-4">
-        {
+        {/* {
               (!location.state?.obeasses_id && itemsData) && itemsData?.map((item: any, index: number) => (
                 <div key={index}>
                   <span className="learnosity-item" data-reference={item} />
@@ -136,7 +136,7 @@ export default function PreviewMyAssessmentQuestions() {
                 }
             </div>
           )
-        }
+        } */}
         <div style={{ width: '100%', height: '100vh' }}>
           {(!!location.state?.obeasses_id && userRole?.name === 'Teacher') && <iframe ref={ref} src={iframeUrl} title="External Content" width="100%" height="90%" />}
           {(!!location.state?.obeasses_id && userRole?.name === 'Student') && <iframe ref={ref} src={iframeUrl} title="External Content" width="100%" height="90%" />}

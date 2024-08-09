@@ -20,9 +20,9 @@ export default function SingleReportAssessment() {
   const [iframeUrl, setIframeUrl] = useState('');
   const ref = useRef<HTMLIFrameElement | null>(null);
 
-  const status = useScript(`https://reports.learnosity.com/?v2021.2.LTS`, {
-    removeOnUnmount: false
-  });
+  // const status = useScript(`https://reports.learnosity.com/?v2021.2.LTS`, {
+  //   removeOnUnmount: false
+  // });
 
   const { isLoading: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
@@ -93,11 +93,11 @@ export default function SingleReportAssessment() {
     }
   }, [iframeUrl]);
 
-  useEffect(() => {
-    if (status === 'ready' && aid && searchParams.get('user')) {
-      fetchLearnosityObj();
-    }
-  }, [status, aid, searchParams]);
+  // useEffect(() => {
+  //   if (status === 'ready' && aid && searchParams.get('user')) {
+  //     fetchLearnosityObj();
+  //   }
+  // }, [status, aid, searchParams]);
 
   useEffect(() => {
     const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
@@ -115,7 +115,7 @@ export default function SingleReportAssessment() {
 
   const details = pageData?.data?.[0];
 
-  if (LearnosityObjLoad) return <Loader />;
+  // if (LearnosityObjLoad) return <Loader />;
 
   return (
     <RouteLayout>
@@ -193,12 +193,12 @@ export default function SingleReportAssessment() {
                 </div>
               </div>
             </div>
-            <span className="learnosity-report" id="lastscore-list-item" />
-            <span className="learnosity-report" id="response-analysis" />
+            {/* <span className="learnosity-report" id="lastscore-list-item" />
+            <span className="learnosity-report" id="response-analysis" /> */}
           </div>
         ) : (
-          <div className="mt-5 h-max w-full rounded-md border bg-white p-4">
-            {error ? <h2>{`${error}`}</h2> : 'Loading...'}
+          <div /*className="mt-5 h-max w-full rounded-md border bg-white p-4"*/>
+            {/* {error ? <h2>{`${error}`}</h2> : 'Loading...'} */}
           </div>
         )
       )}

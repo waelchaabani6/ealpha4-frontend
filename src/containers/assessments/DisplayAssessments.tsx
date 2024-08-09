@@ -43,9 +43,9 @@ export default function DisplayAssessment() {
   const user = useSelector((state: any) => state?.user);
   const userRole = useSelector((state: any) => state?.user?.role);
 
-  const status = useScript(`https://items.learnosity.com/?v2021.2.LTS`, {
-    removeOnUnmount: false
-  });
+  // const status = useScript(`https://items.learnosity.com/?v2021.2.LTS`, {
+  //   removeOnUnmount: false
+  // });
 
   const { isLoading: loadSync, refetch: sync } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
@@ -56,25 +56,25 @@ export default function DisplayAssessment() {
   const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
   const schoolNameInURL = `${window?.location?.origin}/${schoolName}/assessments`;
 
-  const { isRefetching: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/assign_assessment/${aid}/?user_ting=${userData?.user_ting}&redirect_url=${schoolNameInURL}&domain_name=${window?.location?.hostname}`,
-    onSuccess: (res: any) => {
-      const resp = res?.data?.response;
-      setPageData(resp);
-      const callbacks = {
-        errorListener(e: any) {
-          setError(e.msg || '');
-        }
-      };
-      const obj = (window as any)?.LearnosityItems?.init(resp?.learnosity_obj, callbacks);
-      obj?.on('test:finished:submit', () => {
-        setApiRes(res?.data?.response);
-      });
-    },
-    onError: () => {},
-    enabled: false
-  });
+  // const { isRefetching: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
+  //   baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+  //   url: `assessments-service/assign_assessment/${aid}/?user_ting=${userData?.user_ting}&redirect_url=${schoolNameInURL}&domain_name=${window?.location?.hostname}`,
+  //   onSuccess: (res: any) => {
+  //     const resp = res?.data?.response;
+  //     setPageData(resp);
+  //     const callbacks = {
+  //       errorListener(e: any) {
+  //         setError(e.msg || '');
+  //       }
+  //     };
+  //     const obj = (window as any)?.LearnosityItems?.init(resp?.learnosity_obj, callbacks);
+  //     obj?.on('test:finished:submit', () => {
+  //       setApiRes(res?.data?.response);
+  //     });
+  //   },
+  //   onError: () => {},
+  //   enabled: false
+  // });
 
   useEffect(() => {
     if (apiRes?.data?.assessment_ting) {
@@ -82,11 +82,11 @@ export default function DisplayAssessment() {
     }
   }, [apiRes?.data?.assessment_ting]);
 
-  useEffect(() => {
-    if (status === 'ready' && aid && userData?.user_ting) {
-      fetchLearnosityObj();
-    }
-  }, [status, aid, userData]);
+  // useEffect(() => {
+  //   if (status === 'ready' && aid && userData?.user_ting) {
+  //     fetchLearnosityObj();
+  //   }
+  // }, [status, aid, userData]);
 
   useEffect(() => {
     const setConfig = () => {
@@ -128,8 +128,8 @@ export default function DisplayAssessment() {
       if (type === 'SUCCESS') {
         sync();
         toast.success(payload);
-        navigate(`/${schoolName}/assessments`);
-        window.location.reload();
+        navigate(`/${schoolName}/assessments/completed-assessments`);
+        // window.location.reload();
       } else {
         toast.error(payload);
       }
@@ -155,9 +155,9 @@ export default function DisplayAssessment() {
     setIframeUrl(baseUrl + generateCacheBuster());
   }, [obeasses_id]);
 
-  if (LearnosityObjLoad) {
-    return <Loader />;
-  }
+  // if (LearnosityObjLoad) {
+  //   return <Loader />;
+  // }
 
   return (
     <RouteLayout navBack={true}>
