@@ -6,7 +6,7 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
   hosts:
-    - host: www.ealpha.net
+    - host: www.ealpha4.com
       paths:
         - path: /
           pathType: ImplementationSpecific
@@ -22,8 +22,8 @@ resources:
     memory: 250Mi
 
 autoscaling:
-  enabled: false
-  minReplicas: 1
+  enabled: true
+  minReplicas: 2
   maxReplicas: 4
   targetCPUUtilizationPercentage: 700
   targetMemoryUtilizationPercentage: 240
