@@ -56,25 +56,7 @@ export default function DisplayAssessment() {
   const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
   const schoolNameInURL = `${window?.location?.origin}/${schoolName}/assessments`;
 
-  // const { isRefetching: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
-  //   baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-  //   url: `assessments-service/assign_assessment/${aid}/?user_ting=${userData?.user_ting}&redirect_url=${schoolNameInURL}&domain_name=${window?.location?.hostname}`,
-  //   onSuccess: (res: any) => {
-  //     const resp = res?.data?.response;
-  //     setPageData(resp);
-  //     const callbacks = {
-  //       errorListener(e: any) {
-  //         setError(e.msg || '');
-  //       }
-  //     };
-  //     const obj = (window as any)?.LearnosityItems?.init(resp?.learnosity_obj, callbacks);
-  //     obj?.on('test:finished:submit', () => {
-  //       setApiRes(res?.data?.response);
-  //     });
-  //   },
-  //   onError: () => {},
-  //   enabled: false
-  // });
+
 
   useEffect(() => {
     if (apiRes?.data?.assessment_ting) {
