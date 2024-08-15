@@ -155,9 +155,6 @@ export default function DisplayAssessment() {
     setIframeUrl(baseUrl + generateCacheBuster());
   }, [obeasses_id]);
 
-  // if (LearnosityObjLoad) {
-  //   return <Loader />;
-  // }
 
   return (
     <RouteLayout navBack={true}>
