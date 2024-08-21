@@ -3,6 +3,7 @@ import React from 'react';
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 import LayoutTwo from '@layout/appLayout/layoutTwo';
 import publicRoutes from '@routes/publicRoutes';
+import ObeAssessments from '@containers/assessments/ObeAssessments';
 import AuthPathHandler from '../helper';
 import myGroupRoutes from './myGroupRoutes';
 
@@ -82,6 +83,10 @@ export default createBrowserRouter([
               {
                 index: true,
                 element: <Assessments />
+              },
+              {
+                path: 'obe-assessments',
+                element: <ObeAssessments />
               },
               {
                 path: 'assign/:aid',
