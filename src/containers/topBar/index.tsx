@@ -40,7 +40,8 @@ export default function Index() {
           path={`/${schoolName}/assessments`}
           dropdown={true}
           childs={[
-            { label: 'Alpha Assessments', path: 'assessments' },
+            /* { label: 'Alpha Assessments', path: 'assessments' }, */
+            { label: 'OBE Assessments', path: 'assessments/obe-assessments' },
             { label: 'My Assessments', path: 'assessments/my-assessments' },
             { label: 'Create Assessment', path: 'assessments/create-new-assessment' },
             { label: 'Assigned Assessments', path: 'assessments/assigned' },
