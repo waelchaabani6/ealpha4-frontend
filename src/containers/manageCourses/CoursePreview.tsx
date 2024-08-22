@@ -11,8 +11,6 @@ import { selectUser } from '@shared/store/userSlice';
 import RouteLayout from '@layout/routeLayout';
 import Loader from '@shared/loader';
 import { useLocation, useNavigate } from 'react-router-dom';
-import moment from 'moment';
-import CoursesFilter from './CourseFilters';
 
 const CoursePreview = () => {
   const ref = useRef<HTMLIFrameElement | null>(null);

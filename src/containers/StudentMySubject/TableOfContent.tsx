@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-curly-newline */
 /* eslint-disable operator-linebreak */
 /* eslint-disable comma-dangle */
 /* eslint-disable implicit-arrow-linebreak */
@@ -111,9 +112,6 @@ function Volume() {
         <PageTitle title={courseFullNameDetails?.name} />
 
         <CoursesFilter
-          state={location?.state}
-          setVolumeDetails={undefined}
-          name={courseFullNameDetails?.name}
           shortName={courseFullNameDetails?.short_name}
           grade={courseFullNameDetails?.grade}
         />

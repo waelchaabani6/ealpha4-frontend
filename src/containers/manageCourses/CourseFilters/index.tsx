@@ -11,17 +11,11 @@ import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
-const CoursesFilter = ({
-  state,
-  setVolumeDetails,
-  name,
-  grade,
-  shortName,
-}: any) => {
+const CoursesFilter = ({ grade, shortName }: any) => {
   const { control, watch, setValue } = useForm({});
 
-  const { schoolName = '', courseId = '' } = useParams();
-  const params = useParams();
+  const { courseId = '' } = useParams();
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -29,9 +23,6 @@ const CoursesFilter = ({
 
   const [allVolumeDetails, setAllVolumeDetails] = useState<any>(null);
   const [allVolumeDetailsArray, setAllVolumeDetailsArray] = useState<any>(null);
-
-  const [componentDetails, setComponentDetails] = useState<any>([]);
-  const [currentComponent, setCurrentComponent] = useState<any>({});
 
   const [gradesDetails, setGradesDetails] = useState<any>([]);
   const [currentGradeName, setCurrentGradeName] = useState<any>('');
@@ -109,23 +100,6 @@ const CoursesFilter = ({
     enabled: false,
   });
 
-  // useEffect(() => {
-  //   if (name && grade) {
-  //     componetsFetch();
-  //   }
-  // }, [name, grade]);
-
-  // Set Default values of select boxes
-  // useEffect(() => {
-  //   if (state?.components) {
-  //     const currentVal = componentDetails?.find(
-  //       (obj: any) => obj?.label === state?.components
-  //     );
-  //     setCurrentComponent(currentVal);
-  //     setValue('select_component', currentVal?.value);
-  //   }
-  // }, [state?.components, componentDetails]);
-
   useEffect(() => {
     if (shortName) {
       const currentVal = courseList?.find(
@@ -154,40 +128,17 @@ const CoursesFilter = ({
     setCurrentCourseName(shortName);
   }, [shortName]);
 
-  // useEffect(() => {
-  //   if (courseId) {
-  //     console.log('courseId', courseId);
-  //     setValue('select_book', courseId);
-  //   }
-  // }, [courseId]);
-
   const handleCourseChange = (e: any) => {
     const selectedCourse = e.target.value;
     setValue('select_course', selectedCourse);
+    setValue('select_grade', '');
+    setValue('select_book', '');
 
     const currentVal = courseList?.find(
       (obj: any) => obj?.value === selectedCourse
     );
 
     setCurrentCourseName(currentVal.label.split('-')[0]);
-
-    // navigate(
-    //   `/${schoolName}/MySubject/${currentVal?.label}/${watch(
-    //     'select_grade'
-    //   )}/${courseId ?? 'course'}?type=course`,
-    //   {
-    //     state: {
-    //       volume: state?.volume,
-    //       courses_id: state?.courses_id,
-    //       volume_id: courseId,
-    //       course_name: currentVal?.name,
-    //       grade,
-    //       components: state?.components,
-    //       component_id: state?.component_id,
-    //       grade_id: watch('select_grade'),
-    //     },
-    //   }
-    // );
   };
 
   const handleGradeChange = (e: any) => {
@@ -207,24 +158,6 @@ const CoursesFilter = ({
 
   // Fetch volumes based on grade
   useEffect(() => {
-    // setVolumeDetails(null);
-    // navigate(
-    //   `/${schoolName}/MySubject/${name}/${watch(
-    //     'select_grade'
-    //   )}/${courseId ?? 'course'}?type=course`,
-    //   {
-    //     state: {
-    //       volume: state?.volume,
-    //       courses_id: state?.courses_id,
-    //       volume_id: courseId,
-    //       course_name: name,
-    //       grade,
-    //       components: currentComponent?.label,
-    //       component_id: currentComponent?.value,
-    //       grade_id: watch('select_grade'),
-    //     },
-    //   }
-    // );
     if (currentCourseName && currentGradeName) {
       componetsFetch();
     }
@@ -247,19 +180,6 @@ const CoursesFilter = ({
       );
 
       setValue('select_book', currentVol?.value);
-      // setValue('select_course', currentVol.value);
-      // navigate(`/${schoolName}/course-preview`, {
-      //   state: {
-      //     volume: state.volume,
-      //     courses_id: state.courses_id,
-      //     volume_id: courseId,
-      //     course_name: name,
-      //     grade,
-      //     components: state.components,
-      //     component_id: state.component_id,
-      //     grade_id: watch('select_grade'),
-      //   },
-      // });
     }
   }, [courseId, allVolumeDetailsArray]);
 
@@ -315,6 +235,7 @@ const CoursesFilter = ({
     getAllcoursesDetails(categoriesData);
   }, [categoriesData]);
 
+  // Navigate to a new course content
   useEffect(() => {
     if (currentCourseId) {
       const schoolNameInURL = decodeURIComponent(

@@ -183,8 +183,7 @@ function SmallCard({ ind, shortName, courseContents, image, logo }: Props) {
                       navigate(`${redirectUrl}/${innerEle?.courses_id}`);
                     }}
                   >
-                    {' '}
-                    {innerEle?.volume}{' '}
+                    {innerEle?.volume}
                   </div>
                 ))}
               </div>
