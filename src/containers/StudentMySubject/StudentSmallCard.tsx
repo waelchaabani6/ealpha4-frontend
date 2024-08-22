@@ -1,3 +1,6 @@
+/* eslint-disable react/jsx-curly-newline */
+/* eslint-disable no-confusing-arrow */
+/* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable comma-dangle */
 import * as React from 'react';
 import { useEffect, useState, useRef } from 'react';
@@ -180,8 +183,7 @@ function SmallCard({ ind, shortName, courseContents, image, logo }: Props) {
                       navigate(`${redirectUrl}/${innerEle?.courses_id}`);
                     }}
                   >
-                    {' '}
-                    {innerEle?.volume}{' '}
+                    {innerEle?.volume}
                   </div>
                 ))}
               </div>

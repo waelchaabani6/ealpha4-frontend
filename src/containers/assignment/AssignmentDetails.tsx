@@ -495,7 +495,7 @@ function AssignmentDetails() {
                   pageNameArray.push(name);
 
                   pagesList.push({
-                    label: `${lesson.unit_name} - ${name}`,
+                    label: `${lesson.unit_name}`,
                     value: `${lesson.unit_name}`,
                   });
 
