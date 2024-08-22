@@ -9,7 +9,7 @@ import { sortData } from '@utility/utility';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 const CoursesFilter = ({
   state,
@@ -23,6 +23,7 @@ const CoursesFilter = ({
   const { schoolName = '', courseId = '' } = useParams();
   const params = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { userId: userID } = useSelector(selectUser);
 
@@ -231,11 +232,11 @@ const CoursesFilter = ({
 
   // Get course id from selected volume data array
   useEffect(() => {
-    const currentVol = allVolumeDetailsArray?.find(
-      (obj: any) => obj?.volume_id === watch('select_book')
+    const currentVol = allVolumeDetails?.find(
+      (obj: any) => obj?.value === watch('select_book')
     );
 
-    setCourseId(currentVol?.courses_id);
+    setCourseId(currentVol?.id);
   }, [allVolumeDetails, watch('select_book')]);
 
   // Redirect to new course page based on course id
@@ -313,6 +314,16 @@ const CoursesFilter = ({
   useEffect(() => {
     getAllcoursesDetails(categoriesData);
   }, [categoriesData]);
+
+  useEffect(() => {
+    if (currentCourseId) {
+      const schoolNameInURL = decodeURIComponent(
+        location.pathname.split('/')[1]
+      );
+
+      navigate(`/${schoolNameInURL}/MySubject/${currentCourseId}`);
+    }
+  }, [currentCourseId]);
 
   return (
     <div className="flex gap-8 lg:flex-nowrap flex-wrap bg-white p-4 rounded-lg mt-4  w-full m-auto">
