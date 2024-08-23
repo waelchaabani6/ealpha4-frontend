@@ -1,3 +1,6 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable indent */
+/* eslint-disable operator-linebreak */
 import Logo2 from '@images/logo2.svg';
 import { usePost } from '@shared/api/useApi';
 import { useState, useEffect, useRef } from 'react';
@@ -8,7 +11,6 @@ import { selectUser } from '@shared/store/userSlice';
 import RouteLayout from '@layout/routeLayout';
 import Loader from '@shared/loader';
 import { useLocation, useNavigate } from 'react-router-dom';
-import moment from 'moment';
 
 const CoursePreview = () => {
   const ref = useRef<HTMLIFrameElement | null>(null);
@@ -16,7 +18,13 @@ const CoursePreview = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [resizeContent, setResizeContent] = useState([900, 1000]);
-  const { schoolId, role, user_profile_id: userID, branchId, userId } = useSelector(selectUser);
+  const {
+    schoolId,
+    role,
+    user_profile_id: userID,
+    branchId,
+    userId,
+  } = useSelector(selectUser);
   const navigate = useNavigate();
   const location = useLocation();
   const { state: locationState } = useLocation();
@@ -25,8 +33,17 @@ const CoursePreview = () => {
 
   const navigatToAssign = () => {
     const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
-    const { grade, grade_id, components, component_id, volume, volume_id, course_name, courses_id } = locationState.assignButton;
-    window.location.href = (`/${schoolNameInURL}/assignment/create-assignment/${courses_id}/chapter_${locationState.chapterIndex}_lesson_${locationState.lessonIndex}${locationState?.pageIndex !== undefined && locationState?.pageIndex !== -1 ? `_page_${locationState?.pageIndex}` : ''}/${course_name}/${grade_id}/${grade}/${component_id}/${components}/${volume_id}/${volume}`);
+    const {
+      grade,
+      grade_id,
+      components,
+      component_id,
+      volume,
+      volume_id,
+      course_name,
+      courses_id,
+    } = locationState.assignButton;
+    window.location.href = `/${schoolNameInURL}/assignment/create-assignment/${courses_id}/chapter_${locationState.chapterIndex}_lesson_${locationState.lessonIndex}${locationState?.pageIndex !== undefined && locationState?.pageIndex !== -1 ? `_page_${locationState?.pageIndex}` : ''}/${course_name}/${grade_id}/${grade}/${component_id}/${components}/${volume_id}/${volume}`;
   };
 
   const handleFullScreenClick = () => {
@@ -78,28 +95,36 @@ const CoursePreview = () => {
   const { isLoading: isLoadingMyCourse, mutate: mutateMyCourse } = usePost({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
     url: 'course-code-service/courses/course-progress/',
-    onSuccess: ({ data: { response: { data } } }: any) => {
+    onSuccess: ({
+      data: {
+        response: { data },
+      },
+    }: any) => {
       toast('success', 'Data stored successfully');
       navigate(-1);
     },
     onError: ({ response }: any) => {
       const errorText = response?.data?.message;
       toast('error', errorText);
-    }
+    },
   });
 
   // API call for saving the Course Score
   const { isLoading: isLoadingAssignment, mutate: mutateAssignment } = usePost({
     baseURL: import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL,
     url: 'assignments-service/assignments/progress-save/',
-    onSuccess: ({ data: { response: { data } } }: any) => {
+    onSuccess: ({
+      data: {
+        response: { data },
+      },
+    }: any) => {
       toast('success', 'Data stored successfully');
       navigate(-1);
     },
     onError: ({ response }: any) => {
       const errorText = response?.data?.message;
       toast('error', errorText);
-    }
+    },
   });
 
   const isValidJson = (data: any) => {
@@ -138,7 +163,7 @@ const CoursePreview = () => {
             user_role: `${role?.name}`,
             user_id: `${userID}`,
             branch_id: `${branchId}`,
-            json_data: JSON.parse(event?.data)?.json_data
+            json_data: JSON.parse(event?.data)?.json_data,
           };
         } else {
           objMyCourse = {
@@ -151,7 +176,7 @@ const CoursePreview = () => {
             school_id: `${schoolId}`,
             user_role: `${role?.name}`,
             user_id: `${userID}`,
-            json_data: JSON.parse(event?.data)?.json_data
+            json_data: JSON.parse(event?.data)?.json_data,
           };
         }
         mutateMyCourse(objMyCourse);
@@ -161,7 +186,7 @@ const CoursePreview = () => {
           text_data: JSON.parse(event?.data)?.course_data,
           json_data: JSON.parse(event?.data)?.json_data,
           lesson_id: `${locationState?.urlLessonId}`,
-          chapter_id: `${locationState?.chapterMainId}`
+          chapter_id: `${locationState?.chapterMainId}`,
           // page_number: `${locationState?.pageNumber}`
         };
         mutateAssignment(objAssignment);
@@ -187,7 +212,7 @@ const CoursePreview = () => {
         pageNumber: `${locationState?.pageNumber}`,
         pageName: `${locationState?.pageName}`,
         scormData: JSON.stringify(locationState),
-        userToken: token
+        userToken: token,
       };
     } else if (locationState?.moduleName === 'mycourse') {
       obj = {
@@ -199,12 +224,12 @@ const CoursePreview = () => {
         baseUrl: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
         moduleName: `${locationState?.moduleName}`,
         pageNumber: `${locationState?.pageNumber}`,
-        userToken: token
+        userToken: token,
       };
     } else if (locationState?.pageNumber) {
       obj = {
         user_id: `${userID}`,
-        pageNumber: `${locationState?.pageNumber}`
+        pageNumber: `${locationState?.pageNumber}`,
       };
     }
     const iframe = document.querySelector('iframe');
@@ -234,54 +259,102 @@ const CoursePreview = () => {
   };
 
   return (
-    <RouteLayout navBack={true} state={{ prevPage: location.state?.identifire }} path={location?.state?.identifire ? location?.state?.identifire : ``}>
+    <RouteLayout
+      navBack={true}
+      state={{ prevPage: location.state?.identifire }}
+      path={location?.state?.identifire ? location?.state?.identifire : ``}
+    >
       <div className="previewWrapper pt-2">
         <div id="learnosity_assess" />
-        {
-          role?.name !== USER_TYPE.SUPER_ADMIN && role?.name !== USER_TYPE.SCHOOL_ADMIN && role?.name !== USER_TYPE.TEACHER ? (
-            <div className="header">
-              <div className="grow">
-                {locationState?.isDueDatedExceeded ? (
-                  <button className="c_button_1" type="button" onClick={navigateBack}>
-                    Exit
-                  </button>
-                ) : (
-                  <button className="c_button_1" type="button" onClick={onSaveAndExitHandler}>
-                    Save & Exit
-                  </button>
-                )}
-              </div>
-              <button className="c_button_1" type="button" onClick={handleFullScreenClick}>
+        {role?.name !== USER_TYPE.SUPER_ADMIN &&
+        role?.name !== USER_TYPE.SCHOOL_ADMIN &&
+        role?.name !== USER_TYPE.TEACHER ? (
+          <div className="header">
+            <div className="grow">
+              {locationState?.isDueDatedExceeded ? (
+                <button
+                  className="c_button_1"
+                  type="button"
+                  onClick={navigateBack}
+                >
+                  Exit
+                </button>
+              ) : (
+                <button
+                  className="c_button_1"
+                  type="button"
+                  onClick={onSaveAndExitHandler}
+                >
+                  Save & Exit
+                </button>
+              )}
+            </div>
+            <button
+              className="c_button_1"
+              type="button"
+              onClick={handleFullScreenClick}
+            >
+              Full Screen
+            </button>
+            <button className="c_button_1" type="button" onClick={handlePrint}>
+              Print
+            </button>
+          </div>
+        ) : (
+          <div className="header flexn justify-between">
+            <div className="flex justify-start">
+              {(role?.name !== USER_TYPE.SCHOOL_ADMIN ||
+                role?.name !== USER_TYPE.TEACHER) &&
+              locationState?.assignButton ? (
+                <button
+                  className="c_button_1"
+                  type="button"
+                  onClick={navigatToAssign}
+                >
+                  Assign
+                </button>
+              ) : (
+                ''
+              )}
+            </div>
+            <div className="flex justify-end">
+              <button
+                className="c_button_1"
+                type="button"
+                onClick={handleFullScreenClick}
+              >
                 Full Screen
               </button>
-              <button className="c_button_1" type="button" onClick={handlePrint}>
+              <button
+                className="c_button_1 ml-2"
+                type="button"
+                onClick={handlePrint}
+              >
                 Print
               </button>
             </div>
-          ) : (
-            <div className="header flexn justify-between">
-              <div className="flex justify-start">
-                {(role?.name !== USER_TYPE.SCHOOL_ADMIN || role?.name !== USER_TYPE.TEACHER) && locationState?.assignButton ? <button className="c_button_1" type="button" onClick={navigatToAssign}>Assign</button> : ''}
-              </div>
-              <div className="flex justify-end">
-                <button className="c_button_1" type="button" onClick={handleFullScreenClick}>
-                  Full Screen
-                </button>
-                <button className="c_button_1 ml-2" type="button" onClick={handlePrint}>
-                  Print
-                </button>
-              </div>
-            </div>
-          )
-        }
+          </div>
+        )}
         <div className="body">
-          <div style={{ display: isLoading ? 'block' : 'none', width: '900px', height: '1000px' }}>
+          <div
+            style={{
+              display: isLoading ? 'block' : 'none',
+              width: '900px',
+              height: '1000px',
+            }}
+          >
             <div className="h-full relative">
               <Loader />
             </div>
           </div>
           <div style={{ display: showIframe ? 'block' : 'none' }}>
-            <iframe ref={ref} title="Course" src={`${locationState?.contentUrl}?user_id=${userId}&role=${role?.name}`} width={resizeContent[0]} height={resizeContent[1]} />
+            <iframe
+              ref={ref}
+              title="Course"
+              src={`${locationState?.contentUrl}?user_id=${userId}&role=${role?.name}`}
+              width={resizeContent[0]}
+              height={resizeContent[1]}
+            />
           </div>
         </div>
         <div className="footer justify-between">
