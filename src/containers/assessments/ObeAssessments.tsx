@@ -386,7 +386,7 @@ export default function ObeAssessments() {
     <RouteLayout navBack={true}>
       <div className="flex flex-col mb-4">
         <div className="h-max py-4">
-          <PageTitle title="Obe Assessments" />
+          <PageTitle title="Assessments" />
         </div>
         <div className="flex justify-between flex-col md:flex-row items-center gap-y-4 md:gap-y-0">
           <div className="flex flex-col md:flex-row items-center gap-4">
