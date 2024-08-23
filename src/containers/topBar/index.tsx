@@ -1,3 +1,6 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable indent */
+/* eslint-disable operator-linebreak */
 /* eslint-disable react/jsx-indent-props */
 import React from 'react';
 import { USER_TYPE } from '@constants/constants';
@@ -8,7 +11,9 @@ import TopBarLinks from './topBarLinks';
 
 export default function Index() {
   const { schoolName } = useParams();
-  const { role: { name: role } } = useSelector(selectUser);
+  const {
+    role: { name: role },
+  } = useSelector(selectUser);
   let { assessment_count, assignment_count } = useSelector(selectUser);
 
   if (assessment_count === 0) {
@@ -28,11 +33,19 @@ export default function Index() {
           dropdown={true}
           childs={[
             { label: 'Assigned Assessments', path: 'assessments' },
-            { label: 'Completed Assessments', path: 'assessments/completed-assessments' }
+            {
+              label: 'Completed Assessments',
+              path: 'assessments/completed-assessments',
+            },
           ]}
         />
       );
-    } if (role === USER_TYPE.SCHOOL_ADMIN || role === USER_TYPE.BRANCH_ADMIN || role === USER_TYPE.TEACHER) {
+    }
+    if (
+      role === USER_TYPE.SCHOOL_ADMIN ||
+      role === USER_TYPE.BRANCH_ADMIN ||
+      role === USER_TYPE.TEACHER
+    ) {
       return (
         <TopBarLinks
           title="Assessments"
@@ -41,11 +54,15 @@ export default function Index() {
           dropdown={true}
           childs={[
             /* { label: 'Alpha Assessments', path: 'assessments' }, */
-            { label: 'Obe Assessments', path: 'assessments/obe-assessments' },
+            { label: 'Assessments', path: 'assessments/obe-assessments' },
+
             // { label: 'My Assessments', path: 'assessments/my-assessments' },
             // { label: 'Create Assessment', path: 'assessments/create-new-assessment' },
             { label: 'Assigned Assessments', path: 'assessments/assigned' },
-            { label: 'Completed Assessments', path: 'assessments/assigned/completed_assessments' }
+            {
+              label: 'Completed Assessments',
+              path: 'assessments/assigned/completed_assessments',
+            },
           ]}
         />
       );
@@ -61,24 +78,17 @@ export default function Index() {
 
   return (
     <div className="bg-gray-100 h-[60px] w-full flex items-center justify-start lg:justify-center overflow-x-auto">
-      <TopBarLinks
-        title="Dashboard"
-        path={`/${schoolName}/dashboard`}
-      />
-      {
-        !(role === USER_TYPE.PARENTS)
-          ? <TopBarLinks
-            title="My Courses"
-            path={`/${schoolName}/MySubject`}
-          /> : ''
-      }
-      {
-        !(role === USER_TYPE.PARENTS || role === USER_TYPE.STUDENT)
-          ? <TopBarLinks
-            title="My Groups"
-            path={`/${schoolName}/my-group`}
-          /> : ''
-      }
+      <TopBarLinks title="Dashboard" path={`/${schoolName}/dashboard`} />
+      {!(role === USER_TYPE.PARENTS) ? (
+        <TopBarLinks title="My Courses" path={`/${schoolName}/MySubject`} />
+      ) : (
+        ''
+      )}
+      {!(role === USER_TYPE.PARENTS || role === USER_TYPE.STUDENT) ? (
+        <TopBarLinks title="My Groups" path={`/${schoolName}/my-group`} />
+      ) : (
+        ''
+      )}
       {/* <TopBarLinks
         title="Connections"
         path={`/${schoolName}/connections`}
@@ -88,38 +98,69 @@ export default function Index() {
         notificationCount={assignment_count}
         path={`/${schoolName}/assignment`}
         dropdown={true}
-        childs={role === USER_TYPE.PARENTS ? [] : role === USER_TYPE.STUDENT ? [
-          { label: 'Assigned Assignments', path: 'assignment' },
-          { label: 'Completed Assignments', path: 'assignment/completed-assignments' }
-        ] : [
-          { label: 'View Assignments', path: 'assignment' },
-          { label: 'Create Assignment', path: 'assignment/create-assignment' },
-          { label: 'Completed Assignments', path: 'assignment/completed-assignments' }
-        ]}
+        childs={
+          role === USER_TYPE.PARENTS
+            ? []
+            : role === USER_TYPE.STUDENT
+              ? [
+                  { label: 'Assigned Assignments', path: 'assignment' },
+                  {
+                    label: 'Completed Assignments',
+                    path: 'assignment/completed-assignments',
+                  },
+                ]
+              : [
+                  { label: 'View Assignments', path: 'assignment' },
+                  {
+                    label: 'Create Assignment',
+                    path: 'assignment/create-assignment',
+                  },
+                  {
+                    label: 'Completed Assignments',
+                    path: 'assignment/completed-assignments',
+                  },
+                ]
+        }
       />
-      {
-        renderAssessment()
-      }
-      {
-        (role === USER_TYPE.SCHOOL_ADMIN || role === USER_TYPE.BRANCH_ADMIN || role === USER_TYPE.TEACHER)
-          ? <TopBarLinks
-            title="Reports"
-            dropdown={true}
-            childs={role === USER_TYPE.SCHOOL_ADMIN || role === USER_TYPE.BRANCH_ADMIN ? [
-              { label: 'Report - Assignments', path: 'reports' },
-              { label: 'Reports Program Usage', path: 'reports/program-usage-reports' },
-              { label: 'Usage Reports Teacher/Student', path: 'reports/usage-for-teacher' },
-              { label: 'Report - Usage - Teacher 1', path: 'reports/teacher-program-usage' },
-              { label: 'Report - Usage - Teacher 2', path: 'reports/teacher-reports' }
+      {renderAssessment()}
+      {role === USER_TYPE.SCHOOL_ADMIN ||
+      role === USER_TYPE.BRANCH_ADMIN ||
+      role === USER_TYPE.TEACHER ? (
+        <TopBarLinks
+          title="Reports"
+          dropdown={true}
+          childs={
+            role === USER_TYPE.SCHOOL_ADMIN || role === USER_TYPE.BRANCH_ADMIN
+              ? [
+                  { label: 'Report - Assignments', path: 'reports' },
+                  {
+                    label: 'Reports Program Usage',
+                    path: 'reports/program-usage-reports',
+                  },
+                  {
+                    label: 'Usage Reports Teacher/Student',
+                    path: 'reports/usage-for-teacher',
+                  },
+                  {
+                    label: 'Report - Usage - Teacher 1',
+                    path: 'reports/teacher-program-usage',
+                  },
+                  {
+                    label: 'Report - Usage - Teacher 2',
+                    path: 'reports/teacher-reports',
+                  },
 
-              // will be enable when functionality come
-              // { label: 'Standard Report - Class', path: 'reports' },
-              // { label: 'Standard Report - Student', path: 'reports' }
-
-            ] : []}
-            path={`/${schoolName}/reports`}
-          /> : ''
-      }
+                  // will be enable when functionality come
+                  // { label: 'Standard Report - Class', path: 'reports' },
+                  // { label: 'Standard Report - Student', path: 'reports' }
+                ]
+              : []
+          }
+          path={`/${schoolName}/reports`}
+        />
+      ) : (
+        ''
+      )}
       <TopBarLinks
         title="school TimeTable"
         path={`/${schoolName}/time-table`}
@@ -129,10 +170,14 @@ export default function Index() {
         title="Attendance"
         path={`/${schoolName}/attandance`}
         dropdown={true}
-        childs={(role !== USER_TYPE.STUDENT && role !== USER_TYPE.PARENTS) ? [
-          { label: 'Mark Attendance', path: 'attandance/mark' },
-          { label: 'Attendance Reports', path: 'attandance/reports' }
-        ] : []}
+        childs={
+          role !== USER_TYPE.STUDENT && role !== USER_TYPE.PARENTS
+            ? [
+                { label: 'Mark Attendance', path: 'attandance/mark' },
+                { label: 'Attendance Reports', path: 'attandance/reports' },
+              ]
+            : []
+        }
       />
     </div>
   );

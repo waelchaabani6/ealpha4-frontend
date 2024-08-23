@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import Button from '@component/button/button';
 import Dropdown from '@component/dropdown/Dropdown';
