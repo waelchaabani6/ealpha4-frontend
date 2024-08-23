@@ -53,6 +53,7 @@ export default function Index() {
           path={`/${schoolName}/assessments`}
           dropdown={true}
           childs={[
+            { label: 'Assessments', path: 'assessments' },
             { label: 'Assigned Assessments', path: 'assessments/assigned' },
             {
               label: 'Completed Assessments',
