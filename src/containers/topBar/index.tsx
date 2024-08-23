@@ -55,6 +55,7 @@ export default function Index() {
           childs={[
             /* { label: 'Alpha Assessments', path: 'assessments' }, */
             { label: 'Assessments', path: 'assessments/obe-assessments' },
+
             // { label: 'My Assessments', path: 'assessments/my-assessments' },
             // { label: 'Create Assessment', path: 'assessments/create-new-assessment' },
             { label: 'Assigned Assessments', path: 'assessments/assigned' },
