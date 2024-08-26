@@ -7,6 +7,7 @@ import CustomPagination from '@component/pagination/CustomPagination';
 import {
   ASSESSMENT_TYPE,
   COMPONENTS,
+  RESULTS_PER_PAGE,
   TABLE_LABELS,
 } from '@constants/constants';
 import RouteLayout from '@layout/routeLayout';
@@ -102,17 +103,20 @@ export default function ObeAssessments() {
   );
   const [playloadData, setPlayloadData] = useState<any | undefined>({});
   const [totalDataCount, setTotalDataCount] = useState(0);
-  const [page, setPage] = useState(1);
-  const [rowsPerPage] = useState(10);
+
   const [order, setOrder] = useState<any>('desc');
   const [orderBy, setOrderBy] = useState<any>('assessment_name');
-  const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
+  // const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const location = useLocation();
   const usersRole = useSelector((state: any) => state?.user?.role);
 
   const [fillCourses, setFillCourses] = useState<any>([]);
   const [fillGrades, setFillGrades] = useState<any>([]);
   const [fillTags, setFillTags] = useState<any>([]);
+
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
+  const [page, setPage] = useState(1);
 
   const handlePagination = (currPage: any) => {
     if (currPage) setPage(currPage);
@@ -172,6 +176,11 @@ export default function ObeAssessments() {
   const obeassessUrl = import.meta.env.VITE_APP_OBEASSESS_SDK_URL;
 
   let filteredCourses;
+
+  const handlePerPage = (e: any) => {
+    setPage(1);
+    setRowsPerPage(e);
+  };
 
   const getAllCourses = () => {
     const requestOptions = {
@@ -280,7 +289,7 @@ export default function ObeAssessments() {
     const getTagName = fillTags.filter((x: any) => x.value === selectedTag);
 
     fetch(
-      `${obeassessUrl}assessment/?grade=${getGradeName[0]?.label}&subject=${getCourseName[0]?.label}&tags=${getTagName[0]?.label}&per_page=${rowsPerPage}&page=${page}`,
+      `${obeassessUrl}assessment/?grade=${getGradeName[0]?.label}&subject=${getCourseName[0]?.label}&tags=${getTagName[0]?.label || ''}&per_page=${rowsPerPage}&page=${page}`,
       requestOptions
     )
       .then((response) => response.json())
@@ -386,14 +395,21 @@ export default function ObeAssessments() {
                 Assigned Assessments
               </Link>
             </div> */}
+
+            <Dropdown
+              title="Result Of Pages"
+              value={rowsPerPage}
+              dataArray={RESULTS_PER_PAGE}
+              onChangeHandler={handlePerPage}
+            />
           </div>
-          <div className="flex gap-[5px]">
+          {/* <div className="flex gap-[5px]">
             <CustomPagination
               totalPages={noOfpages}
               paginateHandler={handlePagination}
               currentPage={page}
             />
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="wrapperBorder">
@@ -403,6 +419,7 @@ export default function ObeAssessments() {
               maxHeight={580}
               tableData={tableData}
               headerRows={TableColumns}
+              setPage={setPage}
               totalPages={noOfpages}
               paginateHandler={handlePagination}
               currentPage={page}
@@ -413,7 +430,6 @@ export default function ObeAssessments() {
               setOrder={setOrder}
               actionHandler={actionHandler}
               isLoading={loadingDelete} // assignmentLoading || loadSync ||
-              setPage={setPage}
             />
           ) : (
             <p className="text-lg text-center italic">Please Select Grade</p>
