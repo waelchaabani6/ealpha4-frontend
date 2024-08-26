@@ -250,11 +250,11 @@ export default function ObeAssessments() {
       (x: any) => x.value === currentCourse
     );
     const getGradeName = fillGrades.filter(
-      (x: any) => x.value === currentCourse
+      (x: any) => x.value === selectedGrade
     );
 
     fetch(
-      `${obeassessUrl}tag/?subject=${getCourseName[0]?.label || ''}&grade=${getGradeName[0]?.label || ''}`,
+      `${obeassessUrl}tag/?grade=${getGradeName[0]?.label}&subject=${getCourseName[0]?.label}`,
       requestOptions
     )
       .then((response) => response.json())
@@ -286,6 +286,7 @@ export default function ObeAssessments() {
     const getGradeName = fillGrades.filter(
       (x: any) => x.value === selectedGrade
     );
+
     const getTagName = fillTags.filter((x: any) => x.value === selectedTag);
 
     fetch(
@@ -349,7 +350,7 @@ export default function ObeAssessments() {
       getAllGrades();
     }
 
-    if (currentCourse && selectedGrade) {
+    if (currentCourse && selectedGrade !== ALL[0].value) {
       getAllTags();
     }
   }, [currentCourse, selectedGrade]);
