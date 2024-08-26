@@ -2,7 +2,12 @@ import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import Button from '@component/button/button';
 import Dropdown from '@component/dropdown/Dropdown';
 import CustomPagination from '@component/pagination/CustomPagination';
-import { ASSESSMENT_TYPE, COMPONENTS, RESULTS_PER_PAGE, TABLE_LABELS } from '@constants/constants';
+import {
+  ASSESSMENT_TYPE,
+  COMPONENTS,
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+} from '@constants/constants';
 import RouteLayout from '@layout/routeLayout';
 import DeletePopup from '@shared/DeletePopup';
 import { useDelete, useGet } from '@shared/api/useApi';
@@ -21,37 +26,40 @@ export default function Index() {
   const ALL: Array<any> = [
     {
       label: 'Select',
-      value: 'Select'
-    }
+      value: 'Select',
+    },
   ];
 
   const handleNavigate = (data: any, type: string) => {
     const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
     const navState = {
-      assignType: type === 'printed' ? 'print-assessment' : ''
+      assignType: type === 'printed' ? 'print-assessment' : '',
     };
-    navigate(`/${schoolNameInURL}/assessments/assign/${data?.assessment_id}?name=${data?.assessment_name}${type === 'printed' ? '&type=print-assessment' : ''}`, { state: { navState, page, path: `/${schoolName}/assessments` } });
+    navigate(
+      `/${schoolNameInURL}/assessments/assign/${data?.assessment_id}?name=${data?.assessment_name}${type === 'printed' ? '&type=print-assessment' : ''}`,
+      { state: { navState, page, path: `/${schoolName}/assessments` } }
+    );
   };
 
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.ASSESSMENT_NAME,
       mapper: 'assessment_name',
-      isSort: true
+      isSort: true,
     },
     {
       label: 'Online',
       mapper: 'online',
-      align: 'center'
+      align: 'center',
     },
     {
       label: 'Printed',
       mapper: 'printed',
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.ACTION,
@@ -59,13 +67,13 @@ export default function Index() {
       align: 'center',
       bodyAlign: 'right',
       component: COMPONENTS?.view,
-      showInHeader: false
+      showInHeader: false,
     },
     {
       bodyAlign: 'left',
       component: COMPONENTS?.delete,
-      showInHeader: false
-    }
+      showInHeader: false,
+    },
   ];
   const [tableData, setTableData] = useState<any>([]);
   const [adminDeleteDialog, setAdminDeleteDialog] = useState(false);
@@ -73,7 +81,9 @@ export default function Index() {
   const [currentCourse, setCurrentCourse] = useState(ALL[0].value);
   const [selectedGrade, setselectedGrade] = useState(ALL[0].value);
   const [selectedCategory, setselectedCategory] = useState(ALL[0].value);
-  const [assessmentType, setassessmentType] = useState(ASSESSMENT_TYPE[0]?.value);
+  const [assessmentType, setassessmentType] = useState(
+    ASSESSMENT_TYPE[0]?.value
+  );
   const [playloadData, setPlayloadData] = useState<any | undefined>({});
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -92,13 +102,15 @@ export default function Index() {
     if (handlername === 'delete') {
       deleteHandler(data);
     } else if (handlername === 'view') {
-      navigate(`preview_question/${data?.id}`, { state: { page, path: `/${schoolName}/assessments` } });
+      navigate(`preview_question/${data?.id}`, {
+        state: { page, path: `/${schoolName}/assessments` },
+      });
     }
   };
 
   const deleteHandler = (row: any) => {
     setPlayloadData({
-      id: row?.id
+      id: row?.id,
     });
     setAdminDeleteDialog(true);
   };
@@ -119,39 +131,60 @@ export default function Index() {
     },
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
-    }
+    },
   });
 
   // Get Courses
   const { isLoading: loadCourses, data: Courses } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/alpha-assessment/courses/`
+    url: `assessments-service/alpha-assessment/courses/`,
   });
-  const filteredCourses = Courses?.data?.map((ele: any) => ({ label: ele.name, value: ele.id })) || [];
+  const filteredCourses =
+    Courses?.data?.map((ele: any) => ({ label: ele.name, value: ele.id })) ||
+    [];
 
   // Get Grades
-  const { isLoading: loadGrades, isRefetching: refetchingGrades, data: Grades } = useGet({
+  const {
+    isLoading: loadGrades,
+    isRefetching: refetchingGrades,
+    data: Grades,
+  } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/alpha-assessment/grades/?course_id=${currentCourse}`,
-    enabled: currentCourse !== ALL[0].value
+    enabled: currentCourse !== ALL[0].value,
   });
 
-  let filteredGrades = Grades?.data?.response?.map((ele: any) => ({ label: ele.name, value: ele.id })) || [];
+  let filteredGrades =
+    Grades?.data?.response?.map((ele: any) => ({
+      label: ele.name,
+      value: ele.id,
+    })) || [];
 
   // Get Categories
-  const { isLoading: loadCategories, isRefetching: refetchingCategories, data: Categories } = useGet({
+  const {
+    isLoading: loadCategories,
+    isRefetching: refetchingCategories,
+    data: Categories,
+  } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/alpha-assessment/categories/?grade_id=${selectedGrade}`,
-    enabled: selectedGrade !== ALL[0].value
+    enabled: selectedGrade !== ALL[0].value,
   });
 
-  const categoryArrays = Categories?.data?.response?.map((ele: any) => ({ label: ele.name, value: ele.id })) || [];
+  const categoryArrays =
+    Categories?.data?.response?.map((ele: any) => ({
+      label: ele.name,
+      value: ele.id,
+    })) || [];
 
   let CategoryArr = categoryArrays?.sort(sortData);
 
   // Get Assessment List
   const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
-  const assmentFilter = assessmentType === ASSESSMENT_TYPE[0].value ? '' : (assessmentType !== ASSESSMENT_TYPE[1].value);
+  const assmentFilter =
+    assessmentType === ASSESSMENT_TYPE[0].value
+      ? ''
+      : assessmentType !== ASSESSMENT_TYPE[1].value;
   const { isLoading: assignmentLoading, refetch: fetchAssignments } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/alpha-assessment/activities/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&alpha_course=${currentCourse !== ALL[0].value ? currentCourse : ''}&grade_id=${selectedGrade !== ALL[0].value ? selectedGrade : ''}&is_paperscorer_type=${assmentFilter}&category_id=${selectedCategory !== ALL[0].value ? selectedCategory : ''}&user_id=${user?.userId}`,
@@ -162,20 +195,28 @@ export default function Index() {
       const newTableData = respData?.map((item: any) => {
         const temp = {
           ...item,
-          online: <Button onClick={() => handleNavigate(item, 'online')}>Assign</Button>,
-          printed: (item?.is_paperscorer_type) ? <Button onClick={() => handleNavigate(item, 'printed')}>Assign</Button> : null
+          online: (
+            <Button onClick={() => handleNavigate(item, 'online')}>
+              Assign
+            </Button>
+          ),
+          printed: item?.is_paperscorer_type ? (
+            <Button onClick={() => handleNavigate(item, 'printed')}>
+              Assign
+            </Button>
+          ) : null,
         };
         return temp;
       });
       setTotalDataCount(accData.count);
       setTableData(newTableData);
     },
-    enabled: false
+    enabled: false,
   });
   const { isLoading: loadSync, refetch: sync } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/fetch-activity-from-learnosity/?user_id=${user?.userId}&domain_name=${window?.location?.hostname}`,
-    enabled: false
+    enabled: false,
   });
   // ------------------END API's-----------------------------------------------
   useEffect(() => {
@@ -217,7 +258,15 @@ export default function Index() {
     if (selectedGrade !== ALL[0].value) {
       fetchAssignments();
     }
-  }, [rowsPerPage, page, orderBy, order, selectedGrade, assessmentType, selectedCategory]);
+  }, [
+    rowsPerPage,
+    page,
+    orderBy,
+    order,
+    selectedGrade,
+    assessmentType,
+    selectedCategory,
+  ]);
 
   const handlePerPage = (e: any) => {
     setRowsPerPage(e);
@@ -279,10 +328,16 @@ export default function Index() {
               sxClass={{ width: '206px' }}
             />
             <div className="pt-4 md:pt-8 h-full flex items-center">
-              <Link to={`${location?.pathname}/my-assessments`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
+              <Link
+                to={`${location?.pathname}/my-assessments`}
+                className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent"
+              >
                 My Assessments
               </Link>
-              <Link to={`${location?.pathname}/assigned`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
+              <Link
+                to={`${location?.pathname}/assigned`}
+                className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent"
+              >
                 Assigned Assessments
               </Link>
             </div>
@@ -298,30 +353,26 @@ export default function Index() {
       </div>
       <div className="wrapperBorder">
         <Wrapper>
-          {
-            selectedGrade !== ALL[0].value
-              ? (
-                <AdvanceTable
-                  maxHeight={580}
-                  tableData={tableData}
-                  headerRows={TableColumns}
-                  totalPages={noOfpages}
-                  paginateHandler={handlePagination}
-                  currentPage={page}
-                  rowsPerPage={rowsPerPage}
-                  orderBy={orderBy}
-                  setOrderBy={setOrderBy}
-                  order={order}
-                  setOrder={setOrder}
-                  actionHandler={actionHandler}
-                  isLoading={assignmentLoading || loadSync || loadingDelete}
-                  setPage={setPage}
-                />
-              )
-              : (
-                <p className="text-lg text-center italic">Please Select Grade</p>
-              )
-          }
+          {selectedGrade !== ALL[0].value ? (
+            <AdvanceTable
+              maxHeight={580}
+              tableData={tableData}
+              headerRows={TableColumns}
+              totalPages={noOfpages}
+              paginateHandler={handlePagination}
+              currentPage={page}
+              rowsPerPage={rowsPerPage}
+              orderBy={orderBy}
+              setOrderBy={setOrderBy}
+              order={order}
+              setOrder={setOrder}
+              actionHandler={actionHandler}
+              isLoading={assignmentLoading || loadSync || loadingDelete}
+              setPage={setPage}
+            />
+          ) : (
+            <p className="text-lg text-center italic">Please Select Grade</p>
+          )}
         </Wrapper>
       </div>
       {/* Delete Assignment */}
