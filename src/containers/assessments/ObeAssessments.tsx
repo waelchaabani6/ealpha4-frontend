@@ -1,3 +1,4 @@
+/* eslint-disable operator-linebreak */
 /* eslint-disable comma-dangle */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import Button from '@component/button/button';
@@ -6,6 +7,7 @@ import CustomPagination from '@component/pagination/CustomPagination';
 import {
   ASSESSMENT_TYPE,
   COMPONENTS,
+  RESULTS_PER_PAGE,
   TABLE_LABELS,
 } from '@constants/constants';
 import RouteLayout from '@layout/routeLayout';
@@ -94,21 +96,27 @@ export default function ObeAssessments() {
 
   const [currentCourse, setCurrentCourse] = useState(ALL[0].value);
   const [selectedGrade, setselectedGrade] = useState(ALL[0].value);
+  const [selectedTag, setselectedTag] = useState(ALL[0].value);
   const [selectedCategory, setselectedCategory] = useState(ALL[0].value);
   const [assessmentType, setassessmentType] = useState(
     ASSESSMENT_TYPE[0]?.value
   );
   const [playloadData, setPlayloadData] = useState<any | undefined>({});
   const [totalDataCount, setTotalDataCount] = useState(0);
-  const [page, setPage] = useState(1);
-  const [rowsPerPage] = useState(10);
+
   const [order, setOrder] = useState<any>('desc');
   const [orderBy, setOrderBy] = useState<any>('assessment_name');
-  const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
+  // const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const location = useLocation();
   const usersRole = useSelector((state: any) => state?.user?.role);
+
   const [fillCourses, setFillCourses] = useState<any>([]);
   const [fillGrades, setFillGrades] = useState<any>([]);
+  const [fillTags, setFillTags] = useState<any>([]);
+
+  const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
+  const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
+  const [page, setPage] = useState(1);
 
   const handlePagination = (currPage: any) => {
     if (currPage) setPage(currPage);
@@ -159,15 +167,20 @@ export default function ObeAssessments() {
   });
 
   // Get Courses
-  const { isLoading: loadCourses, data: Courses } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/alpha-assessment/courses/`,
-  });
+  // const { isLoading: loadCourses, data: Courses } = useGet({
+  //   baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+  //   url: `assessments-service/alpha-assessment/courses/`,
+  // });
 
   const OBESASS_API_KEY = import.meta.env.VITE_OBESASS_API_KEY;
   const obeassessUrl = import.meta.env.VITE_APP_OBEASSESS_SDK_URL;
 
   let filteredCourses;
+
+  const handlePerPage = (e: any) => {
+    setPage(1);
+    setRowsPerPage(e);
+  };
 
   const getAllCourses = () => {
     const requestOptions = {
@@ -223,89 +236,40 @@ export default function ObeAssessments() {
       .catch((error) => console.log('error', error));
   };
 
-  // Get Grades
-  /*  const { isLoading: loadGrades, isRefetching: refetchingGrades, data: Grades } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/alpha-assessment/grades/?course_id=${currentCourse}`,
-    enabled: currentCourse !== ALL[0].value
-  });
+  const getAllTags = () => {
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        'X-Authorization': OBESASS_API_KEY,
+        User: user?.userId,
+        Role: usersRole?.name,
+      },
+    };
 
-  let filteredGrades = Grades?.data?.response?.map((ele: any) => ({ label: ele.name, value: ele.id })) || []; */
+    const getCourseName = fillCourses.filter(
+      (x: any) => x.value === currentCourse
+    );
+    const getGradeName = fillGrades.filter(
+      (x: any) => x.value === selectedGrade
+    );
 
-  // Get Categories
-  /*  const { isLoading: loadCategories, isRefetching: refetchingCategories, data: Categories } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/alpha-assessment/categories/?grade_id=${selectedGrade}`,
-    enabled: selectedGrade !== ALL[0].value
-  });
-
-  const categoryArrays = Categories?.data?.response?.map((ele: any) => ({ label: ele.name, value: ele.id })) || [];
-
-  const CategoryArr = categoryArrays?.sort(sortData); */
-
-  // Get Assessment List
-  /*  const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
-  const assmentFilter = assessmentType === ASSESSMENT_TYPE[0].value ? '' : (assessmentType !== ASSESSMENT_TYPE[1].value);
-  const { isLoading: assignmentLoading, refetch: fetchAssignments } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/alpha-assessment/activities/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&alpha_course=${currentCourse !== ALL[0].value ? currentCourse : ''}&grade_id=${selectedGrade !== ALL[0].value ? selectedGrade : ''}&is_paperscorer_type=${assmentFilter}&category_id=${selectedCategory !== ALL[0].value ? selectedCategory : ''}&user_id=${user?.userId}`,
-    onSuccess: (res: any) => {
-      const accData = res?.data?.response;
-      const respData = accData?.results;
-
-      const newTableData = respData?.map((item: any) => {
-        const temp = {
-          ...item,
-          online: <Button onClick={() => handleNavigate(item, 'online')}>Assign</Button>,
-          printed: (item?.is_paperscorer_type) ? <Button onClick={() => handleNavigate(item, 'printed')}>Assign</Button> : null
-        };
-        return temp;
-      });
-      setTotalDataCount(accData.count);
-      setTableData(newTableData);
-    },
-    enabled: false
-  });
-  const { isLoading: loadSync, refetch: sync } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/fetch-activity-from-learnosity/?user_id=${user?.userId}&domain_name=${window?.location?.hostname}`,
-    enabled: false
-  }); */
-  // ------------------END API's-----------------------------------------------
-  /*  useEffect(() => {
-    if (currentCourse === ALL[0].value) {
-      filteredGrades = ALL;
-      setselectedGrade(ALL[0].value);
-
-      CategoryArr = ALL;
-      setselectedCategory(ALL[0].value);
-    }
-    if (selectedGrade === ALL[0].value) {
-      CategoryArr = ALL;
-      setselectedCategory(ALL[0].value);
-    }
-  }, [currentCourse, selectedGrade, selectedCategory]);
-
-  useEffect(() => {
-    if (selectedGrade !== ALL[0].value) {
-      CategoryArr = ALL;
-      setselectedCategory(ALL[0].value);
-    }
-  }, [selectedGrade]);
-
-  useEffect(() => {
-    if (currentCourse !== ALL[0].value) {
-      filteredGrades = ALL;
-      setselectedGrade(ALL[0].value);
-
-      CategoryArr = ALL;
-      setselectedCategory(ALL[0].value);
-    }
-  }, [currentCourse]); */
-
-  // useEffect(() => {
-  //   sync();
-  // }, []);
+    fetch(
+      `${obeassessUrl}tag/?grade=${getGradeName[0]?.label}&subject=${getCourseName[0]?.label}`,
+      requestOptions
+    )
+      .then((response) => response.json())
+      .then((result) => {
+        // eslint-disable-next-line no-shadow
+        const filteredTags =
+          result?.data?.map((ele: any) => ({
+            label: ele.name,
+            value: ele.id,
+          })) || [];
+        setFillTags(filteredTags);
+      })
+      // eslint-disable-next-line no-console
+      .catch((error) => console.log('error', error));
+  };
 
   const fetchAssignments = () => {
     const requestOptions = {
@@ -322,18 +286,23 @@ export default function ObeAssessments() {
     const getGradeName = fillGrades.filter(
       (x: any) => x.value === selectedGrade
     );
+
+    const getTagName = fillTags.filter((x: any) => x.value === selectedTag);
+
     fetch(
-      `${obeassessUrl}assessment/?grade=${getGradeName[0]?.label}&subject=${getCourseName[0]?.label}`,
+      `${obeassessUrl}assessment/?grade=${getGradeName[0]?.label}&subject=${getCourseName[0]?.label}&tags=${getTagName[0]?.label || ''}&per_page=${rowsPerPage}&page=${page}`,
       requestOptions
     )
       .then((response) => response.json())
       .then((res) => {
+        setTotalDataCount(res?.pagination?.total);
+
         const accData = res?.data;
         const newTableData = accData?.map((item: any) => {
-          const schoolNameInURL = decodeURIComponent(
-            location.pathname.split('/')[1]
-          );
-          const link = `/${schoolNameInURL}/assessments/assigned/assessment-report/${item?.code}?assessment=${item?.name}`;
+          // const schoolNameInURL = decodeURIComponent(
+          //   location.pathname.split('/')[1]
+          // );
+          // const link = `/${schoolNameInURL}/assessments/assigned/assessment-report/${item?.code}?assessment=${item?.name}`;
 
           const temp = {
             ...item,
@@ -355,7 +324,6 @@ export default function ObeAssessments() {
           return temp;
         });
 
-        setTotalDataCount(accData.count);
         setTableData(newTableData);
       })
       // eslint-disable-next-line no-console
@@ -372,6 +340,7 @@ export default function ObeAssessments() {
     orderBy,
     order,
     selectedGrade,
+    selectedTag,
     assessmentType,
     selectedCategory,
   ]);
@@ -381,6 +350,10 @@ export default function ObeAssessments() {
     if (currentCourse) {
       getAllGrades();
     }
+
+    if (currentCourse && selectedGrade !== ALL[0].value) {
+      getAllTags();
+    }
   }, [currentCourse, selectedGrade]);
 
   return (
@@ -389,6 +362,7 @@ export default function ObeAssessments() {
         <div className="h-max py-4">
           <PageTitle title="Assessments" />
         </div>
+
         <div className="flex justify-between flex-col md:flex-row items-center gap-y-4 md:gap-y-0">
           <div className="flex flex-col md:flex-row items-center gap-4">
             <Dropdown
@@ -399,29 +373,32 @@ export default function ObeAssessments() {
                 setCurrentCourse(d);
                 setPage(1);
               }}
-              loading={loadCourses}
             />
             <Dropdown
               title="Select Grade"
               value={selectedGrade}
               dataArray={[...ALL, ...fillGrades]}
-              onChangeHandler={(d: any) => setselectedGrade(d)}
-              // loading={loadGrades || refetchingGrades}
+              onChangeHandler={(d: any) => {
+                setselectedGrade(d);
+                setPage(1);
+              }}
             />
-            {/*            <div className="pt-4 md:pt-8 h-full flex items-center">
-              <Link to={`/my-assessments`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
-                My Assessments
-              </Link>
-              <Link to={`${location?.pathname}/assigned`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
-                Assigned Assessments
-              </Link>
-            </div> */}
-          </div>
-          <div className="flex gap-[5px]">
-            <CustomPagination
-              totalPages={noOfpages}
-              paginateHandler={handlePagination}
-              currentPage={page}
+
+            <Dropdown
+              title="Select Category"
+              value={selectedTag}
+              dataArray={[...ALL, ...fillTags]}
+              onChangeHandler={(d: any) => {
+                setselectedTag(d);
+                setPage(1);
+              }}
+            />
+
+            <Dropdown
+              title="Result Of Pages"
+              value={rowsPerPage}
+              dataArray={RESULTS_PER_PAGE}
+              onChangeHandler={handlePerPage}
             />
           </div>
         </div>
@@ -433,6 +410,7 @@ export default function ObeAssessments() {
               maxHeight={580}
               tableData={tableData}
               headerRows={TableColumns}
+              setPage={setPage}
               totalPages={noOfpages}
               paginateHandler={handlePagination}
               currentPage={page}
@@ -443,7 +421,6 @@ export default function ObeAssessments() {
               setOrder={setOrder}
               actionHandler={actionHandler}
               isLoading={loadingDelete} // assignmentLoading || loadSync ||
-              setPage={setPage}
             />
           ) : (
             <p className="text-lg text-center italic">Please Select Grade</p>

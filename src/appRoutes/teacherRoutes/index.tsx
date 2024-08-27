@@ -5,6 +5,7 @@ import { Navigate, createBrowserRouter } from 'react-router-dom';
 import LayoutTwo from '@layout/appLayout/layoutTwo';
 import publicRoutes from '@routes/publicRoutes';
 import ObeAssessments from '@containers/assessments/ObeAssessments';
+import GoogleClassroom from '@containers/googleClassroom';
 import AuthPathHandler from '../helper';
 import myGroupRoutes from './myGroupRoutes';
 
@@ -295,6 +296,7 @@ export default createBrowserRouter([
           { path: 'coming-soon', element: <ComingSoon /> },
           { path: 'static-page-preview', element: <StaticPagePreview /> },
           { path: 'course-preview', element: <CoursePreview /> },
+          { path: 'google-classroom', element: <GoogleClassroom /> },
         ],
       },
       { path: '*', element: <NotFound /> },
