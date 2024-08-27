@@ -185,63 +185,6 @@ export default function SchoolAdminDashboard() {
     setAnchorEl(null);
   };
 
-  // // @ts-ignore
-  // const { signIn, signOut, profile, client } = useGapi({
-  //   apiKey: API_KEY,
-  //   scope: SCOPES,
-  //   clientId: CLIENT_ID,
-  //   script_url: 'https://apis.google.com/js/api.js',
-  //   discoveryDocs: [DISCOVERY_DOC],
-  // });
-
-  // useEffect(() => {
-  //   if (profile?.auth?.access_token) {
-  //     setToken(profile?.auth?.access_token);
-  //     toast('success', 'You are logged in with google');
-  //   } else {
-  //     setToken(null);
-  //     toast('error', 'You are logged out from google account');
-  //   }
-  // }, [profile]);
-
-  // useEffect(() => {
-  //   console.log(client, 'client');
-  //   listCourses();
-  // }, [client, profile]);
-
-  // /**
-  //  * Print the names of the first 10 courses the user has access to. If
-  //  * no courses are found an appropriate message is printed.
-  //  */
-  // async function listCourses() {
-  //   let response;
-  //   try {
-  //     response = await client.classroom.courses.list({
-  //       pageSize: 10,
-  //     });
-  //   } catch (err: any) {
-  //     if (document.getElementById('content'))
-  //       // document.getElementById('content').innerText = err.message;
-  //       // Todo: show error message
-  //       return;
-  //   }
-
-  //   const courses = response.result.courses;
-
-  //   setClassroomData(courses);
-
-  //   if (!courses || courses.length == 0) {
-  //     return;
-  //   }
-  // }
-
-  // const handleSignout = () => {
-  //   signOut().then(() => {
-  //     console.log(profile);
-  //     console.log('User signed out.');
-  //   });
-  // };
-
   /**
    * Print the names of the first 10 courses the user has access to. If
    * no courses are found an appropriate message is printed.
