@@ -378,25 +378,21 @@ export default function ObeAssessments() {
               title="Select Grade"
               value={selectedGrade}
               dataArray={[...ALL, ...fillGrades]}
-              onChangeHandler={(d: any) => setselectedGrade(d)}
-              // loading={loadGrades || refetchingGrades}
+              onChangeHandler={(d: any) => {
+                setselectedGrade(d);
+                setPage(1);
+              }}
             />
 
             <Dropdown
               title="Select Tag"
               value={selectedTag}
               dataArray={[...ALL, ...fillTags]}
-              onChangeHandler={(d: any) => setselectedTag(d)}
+              onChangeHandler={(d: any) => {
+                setselectedTag(d);
+                setPage(1);
+              }}
             />
-
-            {/*            <div className="pt-4 md:pt-8 h-full flex items-center">
-              <Link to={`/my-assessments`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
-                My Assessments
-              </Link>
-              <Link to={`${location?.pathname}/assigned`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
-                Assigned Assessments
-              </Link>
-            </div> */}
 
             <Dropdown
               title="Result Of Pages"
@@ -405,13 +401,6 @@ export default function ObeAssessments() {
               onChangeHandler={handlePerPage}
             />
           </div>
-          {/* <div className="flex gap-[5px]">
-            <CustomPagination
-              totalPages={noOfpages}
-              paginateHandler={handlePagination}
-              currentPage={page}
-            />
-          </div> */}
         </div>
       </div>
       <div className="wrapperBorder">
