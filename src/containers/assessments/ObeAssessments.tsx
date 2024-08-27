@@ -114,7 +114,7 @@ export default function ObeAssessments() {
   const [fillGrades, setFillGrades] = useState<any>([]);
   const [fillTags, setFillTags] = useState<any>([]);
 
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const [page, setPage] = useState(1);
 
@@ -295,6 +295,8 @@ export default function ObeAssessments() {
     )
       .then((response) => response.json())
       .then((res) => {
+        setTotalDataCount(res?.pagination?.total);
+
         const accData = res?.data;
         const newTableData = accData?.map((item: any) => {
           // const schoolNameInURL = decodeURIComponent(
@@ -322,7 +324,6 @@ export default function ObeAssessments() {
           return temp;
         });
 
-        setTotalDataCount(accData.count);
         setTableData(newTableData);
       })
       // eslint-disable-next-line no-console
