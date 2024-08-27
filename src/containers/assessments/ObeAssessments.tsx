@@ -385,7 +385,7 @@ export default function ObeAssessments() {
             />
 
             <Dropdown
-              title="Select Tag"
+              title="Select Category"
               value={selectedTag}
               dataArray={[...ALL, ...fillTags]}
               onChangeHandler={(d: any) => {
