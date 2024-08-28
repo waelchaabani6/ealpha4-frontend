@@ -38,10 +38,6 @@ import CustomizedDialogs from '@component/dialog/CustomDialog';
 import { DISCOVERY_DOC } from '@constants/constants';
 import GoogleClassroomList from '../GoogleClassroomList';
 
-const API_KEY = import.meta.env.VITE_APP_GOOGLE_CLASSROOM_KEY;
-const CLIENT_ID = import.meta.env.VITE_APP_GOOGLE_CLASSROOM_CLIENT_ID;
-const SCOPES = 'https://www.googleapis.com/auth/classroom.courses.readonly';
-
 function TeacherIconContainer() {
   const {
     role: { name: role },
@@ -53,9 +49,9 @@ function TeacherIconContainer() {
     null
   );
   const [openClassroomPopup, setopenClassroomPopup] = useState<boolean>(false);
-  const [classroomData, setClassroomData] = useState<any>({});
-  const [googleToken, setGoogleToken] = useState<any>(null);
-  const [clientToken, setClientToken] = useState<any>(null);
+  // const [classroomData, setClassroomData] = useState<any>({});
+  // const [googleToken, setGoogleToken] = useState<any>(null);
+  // const [clientToken, setClientToken] = useState<any>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -114,7 +110,8 @@ function TeacherIconContainer() {
     },
     {
       text: 'Google Classroom',
-      action: handleClick,
+      // action: handleClick,
+      link: `/${schoolName}/google-classroom`,
       img: <GoogleClass />,
     },
     {
@@ -135,106 +132,6 @@ function TeacherIconContainer() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  /**
-   * Print the names of the first 10 courses the user has access to. If
-   * no courses are found an appropriate message is printed.
-   */
-  async function listCourses() {
-    console.log('list courses called');
-    let response;
-    try {
-      // @ts-expect-error
-      response = await window.gapi.client.classroom.courses.list({
-        pageSize: 10,
-      });
-    } catch (err: any) {
-      if (document.getElementById('content'))
-        // Todo: show error message
-        return;
-    }
-
-    const courses = response.result.courses;
-    setClassroomData(courses);
-
-    if (!courses || courses.length == 0) {
-      return;
-    }
-  }
-
-  /**
-   * Callback after api.js is loaded.
-   */
-  function gapiLoaded() {
-    gapi.load('client', initializeGapiClient);
-  }
-
-  /**
-   * Callback after the API client is loaded. Loads the
-   * discovery doc to initialize the API.
-   */
-  async function initializeGapiClient() {
-    await gapi.client.init({
-      apiKey: API_KEY,
-      discoveryDocs: [DISCOVERY_DOC],
-    });
-  }
-
-  /**
-   * Callback after Google Identity Services are loaded.
-   */
-  function gisLoaded() {
-    // @ts-ignore
-    const tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: CLIENT_ID,
-      scope: SCOPES,
-      callback: '', // defined later
-    });
-    setClientToken(tokenClient);
-  }
-
-  /**
-   *  Sign in the user upon button click.
-   */
-  function handleAuthClick() {
-    clientToken.callback = async (resp: any) => {
-      if (resp.error !== undefined) {
-        throw resp;
-      }
-
-      setGoogleToken(gapi.client.getToken());
-      await listCourses();
-    };
-
-    if (gapi.client.getToken() === null) {
-      // Prompt the user to select a Google Account and ask for consent to share their data
-      // when establishing a new session.
-      clientToken.requestAccessToken({ prompt: 'consent' });
-    } else {
-      // Skip display of account chooser and consent dialog for an existing session.
-      clientToken.requestAccessToken({ prompt: '' });
-    }
-  }
-
-  /**
-   *  Sign out the user upon button click.
-   */
-  function handleSignoutClick() {
-    const token = gapi.client.getToken();
-    console.log(token);
-
-    if (token !== null) {
-      // @ts-ignore
-      google.accounts.oauth2.revoke(token.access_token);
-      gapi.client.setToken(null);
-      setGoogleToken(null);
-    }
-  }
-
-  useEffect(() => {
-    gapiLoaded();
-    gisLoaded();
-  }, [API_KEY, CLIENT_ID, SCOPES]);
 
   return (
     <div className="sm-container mb-7">
@@ -292,7 +189,7 @@ function TeacherIconContainer() {
           horizontal: 'left',
         }}
       >
-        <div className="px-5 py-2 rounded-md border-2 border-[#4A9D2D]">
+        {/* <div className="px-5 py-2 rounded-md border-2 border-[#4A9D2D]">
           {googleToken ? (
             <>
               <button
@@ -320,16 +217,16 @@ function TeacherIconContainer() {
               Sign in
             </button>
           )}
-        </div>
+        </div> */}
       </Popover>
-      <CustomizedDialogs
+      {/* <CustomizedDialogs
         title="Classroom Navigation"
         open={openClassroomPopup}
         setOpen={setopenClassroomPopup}
         onclose={() => setopenClassroomPopup(false)}
       >
         <GoogleClassroomList data={classroomData} />
-      </CustomizedDialogs>
+      </CustomizedDialogs> */}
     </div>
   );
 }
