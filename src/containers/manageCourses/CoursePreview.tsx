@@ -11,6 +11,7 @@ import { selectUser } from '@shared/store/userSlice';
 import RouteLayout from '@layout/routeLayout';
 import Loader from '@shared/loader';
 import { useLocation, useNavigate } from 'react-router-dom';
+import CoursesFilter from './CourseFilters';
 
 const CoursePreview = () => {
   const ref = useRef<HTMLIFrameElement | null>(null);
@@ -258,12 +259,18 @@ const CoursePreview = () => {
     navigate(-1);
   };
 
+  console.log('##locationState', locationState);
   return (
     <RouteLayout
       navBack={true}
       state={{ prevPage: location.state?.identifire }}
       path={location?.state?.identifire ? location?.state?.identifire : ``}
     >
+      <CoursesFilter
+        shortName={locationState?.shortName}
+        grade={locationState?.grade}
+      />
+
       <div className="previewWrapper pt-2">
         <div id="learnosity_assess" />
         {role?.name !== USER_TYPE.SUPER_ADMIN &&

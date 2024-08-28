@@ -1,3 +1,4 @@
+/* eslint-disable arrow-body-style */
 /* eslint-disable no-else-return */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable curly */
@@ -168,7 +169,8 @@ export default function SchoolAdminDashboard() {
     },
     {
       text: 'Google Classroom',
-      action: handleClick,
+      // action: handleClick,
+      link: `/${schoolName}/google-classroom`,
       img: <GoogleClass />,
     },
     {
@@ -292,46 +294,52 @@ export default function SchoolAdminDashboard() {
         <HeaderMenus title="School Admin" />
         <div className="card-container">
           {cards.map((i: any, key: number) => {
-            if (i?.action) {
-              return (
-                <div key={i?.text} className="cards">
-                  {i?.img}
-                  <div className="flex items-baseline gap-3">
-                    <span>{i?.text}</span>
+            // if (i?.action) {
+            //   return (
+            //     <div key={i?.text} className="cards">
+            //       {i?.img}
+            //       <div className="flex items-baseline gap-3">
+            //         <span>{i?.text}</span>
 
-                    <button onClick={i?.action}>
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <circle cx="8" cy="8" r="8" fill="#51A12C" />
-                        <path
-                          d="M3.47818 8.3479L11.826 8.3479"
-                          stroke="white"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                        <path
-                          d="M7.65201 4.17456L7.65201 11.8267"
-                          stroke="white"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              );
-            } else
-              return (
-                <Link key={i?.text} to={i?.link} className="cards">
-                  {i?.img}
-                  <span>{i?.text}</span>
-                </Link>
-              );
+            //         <button onClick={i?.action}>
+            //           <svg
+            //             width="16"
+            //             height="16"
+            //             viewBox="0 0 16 16"
+            //             fill="none"
+            //             xmlns="http://www.w3.org/2000/svg"
+            //           >
+            //             <circle cx="8" cy="8" r="8" fill="#51A12C" />
+            //             <path
+            //               d="M3.47818 8.3479L11.826 8.3479"
+            //               stroke="white"
+            //               strokeWidth="2"
+            //               strokeLinecap="round"
+            //             />
+            //             <path
+            //               d="M7.65201 4.17456L7.65201 11.8267"
+            //               stroke="white"
+            //               strokeWidth="2"
+            //               strokeLinecap="round"
+            //             />
+            //           </svg>
+            //         </button>
+            //       </div>
+            //     </div>
+            //   );
+            // } else
+            //   return (
+            //     <Link key={i?.text} to={i?.link} className="cards">
+            //       {i?.img}
+            //       <span>{i?.text}</span>
+            //     </Link>
+            //   );
+            return (
+              <Link key={i?.text} to={i?.link} className="cards">
+                {i?.img}
+                <span>{i?.text}</span>
+              </Link>
+            );
           })}
         </div>
       </div>
