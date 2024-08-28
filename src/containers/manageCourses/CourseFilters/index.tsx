@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-console */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable comma-dangle */
@@ -10,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { USER_TYPE } from '@constants/constants';
 
 const CoursesFilter = ({ grade, shortName }: any) => {
   const { control, watch, setValue } = useForm({});
@@ -20,7 +23,7 @@ const CoursesFilter = ({ grade, shortName }: any) => {
   const location = useLocation();
   const { state: locationState } = useLocation();
 
-  const { userId: userID } = useSelector(selectUser);
+  const { role, userId: userID } = useSelector(selectUser);
 
   const [allVolumeDetails, setAllVolumeDetails] = useState<any>(null);
   const [allVolumeDetailsArray, setAllVolumeDetailsArray] = useState<any>(null);
@@ -165,12 +168,20 @@ const CoursesFilter = ({ grade, shortName }: any) => {
 
     const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
 
-    navigate(`/${schoolNameInURL}/MySubject/${currentVol?.id}`, {
-      state: {
-        ...locationState,
-        courseId: currentVol?.id,
-      },
-    });
+    role?.name === USER_TYPE.STUDENT
+      ? navigate(`/${schoolNameInURL}/MySubject/${currentVol?.id}`, {
+          state: {
+            ...locationState,
+            courseId: currentVol?.id,
+          },
+        })
+      : handleClick(currentVol?.id);
+    // navigate(`/${schoolNameInURL}/MySubject/${currentVol?.id}`, {
+    //   state: {
+    //     ...locationState,
+    //     courseId: currentVol?.id,
+    //   },
+    // });
   };
 
   // Fetch volumes based on grade
@@ -186,7 +197,7 @@ const CoursesFilter = ({ grade, shortName }: any) => {
       const currentVol = allVolumeDetails?.find(
         (obj: any) => obj?.id === Number(locationState?.courseId)
       );
-
+      console.log('course id', allVolumeDetails);
       setValue('select_book', currentVol?.value);
     }
   }, [locationState?.courseId, allVolumeDetailsArray]);
@@ -242,6 +253,20 @@ const CoursesFilter = ({ grade, shortName }: any) => {
   useEffect(() => {
     getAllcoursesDetails(categoriesData);
   }, [categoriesData]);
+
+  const handleClick = (vol: number) => {
+    const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
+    navigate(
+      `/${schoolNameInURL}/MySubject/${shortName}/${currentGradeName}/${vol}`,
+      {
+        state: {
+          ...locationState,
+          courseId: vol,
+          shortName,
+        },
+      }
+    );
+  };
 
   return (
     <div className="flex justify-start gap-8 lg:flex-nowrap flex-wrap bg-white p-4 rounded-lg mt-4 max-w-[1030px] w-full m-auto">

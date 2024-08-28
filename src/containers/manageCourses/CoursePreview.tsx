@@ -259,6 +259,7 @@ const CoursePreview = () => {
     navigate(-1);
   };
 
+  console.log('##locationState', locationState);
   return (
     <RouteLayout
       navBack={true}
@@ -269,6 +270,7 @@ const CoursePreview = () => {
         shortName={locationState?.shortName}
         grade={locationState?.grade}
       />
+
       <div className="previewWrapper pt-2">
         <div id="learnosity_assess" />
         {role?.name !== USER_TYPE.SUPER_ADMIN &&

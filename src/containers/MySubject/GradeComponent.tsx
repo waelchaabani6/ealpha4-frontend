@@ -1,3 +1,5 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable implicit-arrow-linebreak */
 import RouteLayout from '@layout/routeLayout';
 import PageTitle from '@shared/pageTitle';
 import Tabs from '@component/tab/Tabs';
@@ -25,8 +27,8 @@ function GradeComponent() {
         setGradesDetails(respData);
       }
     },
-    onError: () => { },
-    enabled: false
+    onError: () => {},
+    enabled: false,
   });
 
   useEffect(() => {
@@ -35,10 +37,27 @@ function GradeComponent() {
     }
   }, [name]);
 
-  const tabList = useMemo(() => gradesDetails?.map((item: any) => ({ title: item.grade, component: <GradeCard shortName={name} gradeName={item.grade} courseID={item.courses_id} image={item?.icon_file} logo={item?.icon_link} /> })), [gradesDetails]);
+  const tabList = useMemo(
+    () =>
+      gradesDetails?.map((item: any) => ({
+        title: item.grade,
+        component: (
+          <GradeCard
+            shortName={name}
+            gradeName={item.grade}
+            courseID={item.courses_id}
+            image={item?.icon_file}
+            logo={item?.icon_link}
+          />
+        ),
+      })),
+    [gradesDetails]
+  );
 
   useEffect(() => {
-    const matchingIndex = tabList.map((ele: any) => ele.title).indexOf(decodeURIComponent(grade));
+    const matchingIndex = tabList
+      .map((ele: any) => ele.title)
+      .indexOf(decodeURIComponent(grade));
     setIndex(matchingIndex === -1 ? 0 : matchingIndex);
   }, [tabList]);
 
@@ -47,9 +66,14 @@ function GradeComponent() {
       <div className="h-max w-full flex items-center py-4">
         <PageTitle title={name} />
       </div>
-      {
-        tabList?.length > 0 && <Tabs currentTab={matchIndex} tabs={tabList} transparent={!true} border={true} />
-      }
+      {tabList?.length > 0 && (
+        <Tabs
+          currentTab={matchIndex}
+          tabs={tabList}
+          transparent={!true}
+          border={true}
+        />
+      )}
     </RouteLayout>
   );
 }
