@@ -30,7 +30,6 @@ const GoogleClassroom = () => {
    * no courses are found an appropriate message is printed.
    */
   async function listCourses() {
-    console.log('list courses called');
     setLoading(true);
     let response;
 
@@ -47,10 +46,6 @@ const GoogleClassroom = () => {
 
     const courses = response?.result?.courses;
     setClassroomData(courses);
-
-    // if (!courses || courses.length == 0) {
-    //   return;
-    // }
   }
 
   /**
@@ -92,13 +87,6 @@ const GoogleClassroom = () => {
       if (resp.error !== undefined) {
         throw resp;
       }
-
-      // setGoogleToken(gapi.client.getToken());
-      // localStorage.setItem(
-      //   'GoogleAccessToken',
-      //   gapi.client.getToken().access_token
-      // );
-      // await listCourses();
     };
 
     if (gapi.client.getToken() === null) {
@@ -122,7 +110,7 @@ const GoogleClassroom = () => {
       google.accounts.oauth2.revoke(token.access_token);
       gapi.client.setToken(null);
       setGoogleToken(null);
-      // localStorage.removeItem('GoogleAccessToken');
+      setClassroomData([]);
     }
   }
 
@@ -155,18 +143,12 @@ const GoogleClassroom = () => {
   };
 
   useEffect(() => {
-    // const isloggedIn = localStorage.getItem('GoogleAccessToken');
-    // console.log(gapi.client.getToken());
-
     if (googleToken) {
       listCourses();
     }
-    // console.log('test', googleToken);
-    // googleToken && console.log(googleToken, 'googleToken');
   }, [googleToken]);
 
   useEffect(() => {
-    // console.log(gapi.client.getToken());
     setGoogleToken(gapi?.client?.getToken());
   }, [gapi?.client?.getToken()]);
 
