@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 /* eslint-disable react/button-has-type */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable comma-dangle */
@@ -8,6 +9,8 @@ import { DISCOVERY_DOC } from '@constants/constants';
 import GoogleClassroomList from '@containers/dashboard/GoogleClassroomList';
 import RouteLayout from '@layout/routeLayout';
 import CloudSyncIcon from '@mui/icons-material/CloudSync';
+import LogoutIcon from '@mui/icons-material/Logout';
+import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import { useEffect, useState } from 'react';
 
@@ -20,31 +23,29 @@ const GoogleClassroom = () => {
   const [classroomData, setClassroomData] = useState<any>({});
   const [googleToken, setGoogleToken] = useState<any>(null);
   const [clientToken, setClientToken] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
   /**
    * Print the names of the first 10 courses the user has access to. If
    * no courses are found an appropriate message is printed.
    */
   async function listCourses() {
-    console.log('list courses called');
+    setLoading(true);
     let response;
+
     try {
       // @ts-expect-error
       response = await window.gapi.client.classroom.courses.list({
         pageSize: 10,
       });
     } catch (err: any) {
-      //   if (document.getElementById('content'))
-      //     // Todo: show error message
-      //     return;
+      console.log('#Error', err);
+    } finally {
+      setLoading(false);
     }
 
-    const courses = response.result.courses;
+    const courses = response?.result?.courses;
     setClassroomData(courses);
-
-    // if (!courses || courses.length == 0) {
-    //   return;
-    // }
   }
 
   /**
@@ -86,13 +87,6 @@ const GoogleClassroom = () => {
       if (resp.error !== undefined) {
         throw resp;
       }
-
-      // setGoogleToken(gapi.client.getToken());
-      localStorage.setItem(
-        'GoogleAccessToken',
-        gapi.client.getToken().access_token
-      );
-      await listCourses();
     };
 
     if (gapi.client.getToken() === null) {
@@ -110,14 +104,13 @@ const GoogleClassroom = () => {
    */
   function handleSignoutClick() {
     const token = gapi.client.getToken();
-    console.log(token);
 
     if (token !== null) {
       // @ts-ignore
       google.accounts.oauth2.revoke(token.access_token);
       gapi.client.setToken(null);
       setGoogleToken(null);
-      localStorage.removeItem('GoogleAccessToken');
+      setClassroomData([]);
     }
   }
 
@@ -126,16 +119,19 @@ const GoogleClassroom = () => {
     gisLoaded();
   }, [API_KEY, CLIENT_ID, SCOPES]);
 
-  const ADMIN_TOOLBAR_MENU = [
-    {
-      title: 'Sign in and sync',
-      icon: <CloudSyncIcon />,
-    },
-    {
-      title: 'Sign out',
-      icon: <CloudSyncIcon />,
-    },
-  ];
+  const ADMIN_TOOLBAR_MENU = googleToken
+    ? [
+        {
+          title: 'Sign out',
+          icon: <LogoutIcon />,
+        },
+      ]
+    : [
+        {
+          title: 'Sign in and sync',
+          icon: <CloudSyncIcon />,
+        },
+      ];
 
   const handleToolbarAction = async (title: string) => {
     if (title === 'Sign in and sync') {
@@ -147,15 +143,14 @@ const GoogleClassroom = () => {
   };
 
   useEffect(() => {
-    const isloggedIn = localStorage.getItem('GoogleAccessToken');
-
-    if (isloggedIn) {
-      console.log('here in useEffect');
+    if (googleToken) {
       listCourses();
     }
-    // console.log('test', googleToken);
-    // googleToken && console.log(googleToken, 'googleToken');
-  }, []);
+  }, [googleToken]);
+
+  useEffect(() => {
+    setGoogleToken(gapi?.client?.getToken());
+  }, [gapi?.client?.getToken()]);
 
   return (
     <RouteLayout>
@@ -164,8 +159,11 @@ const GoogleClassroom = () => {
         menuArray={ADMIN_TOOLBAR_MENU}
         handleToolbarAction={handleToolbarAction}
       />
-      <div>
-        {/* <div className="px-5 py-2 rounded-md border-2 border-[#4A9D2D]">
+      {loading ? (
+        <Loader />
+      ) : (
+        <div>
+          {/* <div className="px-5 py-2 rounded-md border-2 border-[#4A9D2D]">
           {googleToken ? (
             <>
               <button
@@ -194,8 +192,9 @@ const GoogleClassroom = () => {
             </button>
           )}
         </div> */}
-        <GoogleClassroomList data={classroomData} />
-      </div>
+          <GoogleClassroomList data={classroomData} />
+        </div>
+      )}
     </RouteLayout>
   );
 };
