@@ -6,6 +6,9 @@ import LayoutTwo from '@layout/appLayout/layoutTwo';
 import publicRoutes from '@routes/publicRoutes';
 import ObeAssessments from '@containers/assessments/ObeAssessments';
 import GoogleClassroom from '@containers/googleClassroom';
+
+import PreviewMyAssessmentQuestionsLearnosity from '@containers/assessments/PreviewAssessmentQuestionLearnosity';
+
 import AuthPathHandler from '../helper';
 import myGroupRoutes from './myGroupRoutes';
 
@@ -75,6 +78,9 @@ const AssignmentQuestionStudent = React.lazy(
 );
 const CreateQuestions = React.lazy(
   () => import('@containers/assessments/CreateQuestions')
+);
+const CreateQuestionsLearnosity = React.lazy(
+  () => import('@containers/assessments/CreateQuestionsLearnosity')
 );
 const PreviewQuestions = React.lazy(
   () => import('@containers/assessments/PreviewQuestions')
@@ -176,8 +182,12 @@ export default createBrowserRouter([
                 element: <CreateAssessment />,
               },
               {
-                path: 'create-new-assessment/create/:LID',
+                path: 'create-new-assessment-obe/create/:LID',
                 element: <CreateQuestions />,
+              },
+              {
+                path: 'create-new-assessment/create/:LID',
+                element: <CreateQuestionsLearnosity />,
               },
               {
                 path: 'preview_question/:LID',
@@ -185,6 +195,10 @@ export default createBrowserRouter([
               },
               {
                 path: 'preview_myassessment_question/:LID',
+                element: <PreviewMyAssessmentQuestionsLearnosity />,
+              },
+              {
+                path: 'preview_myassessment_question-obe/:LID',
                 element: <PreviewMyAssessmentQuestions />,
               },
               {
