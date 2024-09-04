@@ -48,6 +48,9 @@ const DisplayAssessment = React.lazy(
 const AssessmentsReport = React.lazy(
   () => import('@containers/assessments/student/StudentQuickReport')
 );
+const AssessmentsReportLearnosity = React.lazy(
+  () => import('@containers/assessments/student/StudentQuickReportLearnosity')
+);
 const AssessmentDataLoad = React.lazy(
   () => import('@containers/assessments/AssessmentDataLoad')
 );
@@ -114,6 +117,10 @@ export default createBrowserRouter([
               },
               {
                 path: 'assigned/assessment-report/:aid',
+                element: <AssessmentsReportLearnosity />,
+              },
+              {
+                path: 'assigned/assessment-report-obe/:aid',
                 element: <AssessmentsReport />,
               },
             ],
