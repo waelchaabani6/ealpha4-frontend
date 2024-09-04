@@ -1,32 +1,64 @@
+/* eslint-disable comma-dangle */
 import NotFound from '@shared/notFound';
 import React from 'react';
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 import LayoutTwo from '@layout/appLayout/layoutTwo';
 import publicRoutes from '@routes/publicRoutes';
+import DisplayAssessmentLearnosity from '@containers/assessments/DisplayAssessmentslreanosity';
 import AuthPathHandler from '../helper';
 
-const StundentDashboard = React.lazy(() => import('@containers/dashboard/studentDashboard'));
+const StundentDashboard = React.lazy(
+  () => import('@containers/dashboard/studentDashboard')
+);
 const Profile = React.lazy(() => import('@containers/profile'));
 const Assignment = React.lazy(() => import('@containers/assignment/student'));
-const CompletedAssignment = React.lazy(() => import('@containers/assignment/student/CompletedAssignment'));
+const CompletedAssignment = React.lazy(
+  () => import('@containers/assignment/student/CompletedAssignment')
+);
 const Assessments = React.lazy(() => import('@containers/assessments/student'));
-const CompletedAssessment = React.lazy(() => import('@containers/assessments/student/CompletedAssessments'));
-const AssessmentDetails = React.lazy(() => import('@containers/assessments/student/AssessmentDetails'));
-const AssignmentDetails = React.lazy(() => import('@containers/assignment/student/AssignmentDetails'));
-const TimeTable = React.lazy(() => import('@containers/timeTable/StudentTimetable'));
+const CompletedAssessment = React.lazy(
+  () => import('@containers/assessments/student/CompletedAssessments')
+);
+const AssessmentDetails = React.lazy(
+  () => import('@containers/assessments/student/AssessmentDetails')
+);
+const AssignmentDetails = React.lazy(
+  () => import('@containers/assignment/student/AssignmentDetails')
+);
+const TimeTable = React.lazy(
+  () => import('@containers/timeTable/StudentTimetable')
+);
 const MySubject = React.lazy(() => import('@containers/StudentMySubject'));
-const TableOfContent = React.lazy(() => import('@containers/StudentMySubject/TableOfContent'));
+const TableOfContent = React.lazy(
+  () => import('@containers/StudentMySubject/TableOfContent')
+);
 // const AttendanceReports = React.lazy(() => import('@containers/Attendance/reports'));
-const AttendanceReports = React.lazy(() => import('@containers/Attendance/reports'));
-const CoursePreview = React.lazy(() => import('@containers/manageCourses/CoursePreview'));
-const CompletedAssignbyname = React.lazy(() => import('@containers/assignment/CompletedAssignByName'));
-const DisplayAssessment = React.lazy(() => import('@containers/assessments/DisplayAssessments'));
-const AssessmentsReport = React.lazy(() => import('@containers/assessments/student/StudentQuickReport'));
-const AssessmentDataLoad = React.lazy(() => import('@containers/assessments/AssessmentDataLoad'));
+const AttendanceReports = React.lazy(
+  () => import('@containers/Attendance/reports')
+);
+const CoursePreview = React.lazy(
+  () => import('@containers/manageCourses/CoursePreview')
+);
+const CompletedAssignbyname = React.lazy(
+  () => import('@containers/assignment/CompletedAssignByName')
+);
+const DisplayAssessment = React.lazy(
+  () => import('@containers/assessments/DisplayAssessments')
+);
+const AssessmentsReport = React.lazy(
+  () => import('@containers/assessments/student/StudentQuickReport')
+);
+const AssessmentDataLoad = React.lazy(
+  () => import('@containers/assessments/AssessmentDataLoad')
+);
 const ComingSoon = React.lazy(() => import('@shared/ComingSoon'));
-const StaticPagePreview = React.lazy(() => import('@containers/MySubject/StaticPagePreview'));
+const StaticPagePreview = React.lazy(
+  () => import('@containers/MySubject/StaticPagePreview')
+);
 const DigitalLibrary = React.lazy(() => import('@containers/DigitalLibrary'));
-const DigitalLibFileDir = React.lazy(() => import('@containers/DigitalLibrary/DigitalLibFileDir'));
+const DigitalLibFileDir = React.lazy(
+  () => import('@containers/DigitalLibrary/DigitalLibFileDir')
+);
 
 export default createBrowserRouter([
   {
@@ -42,16 +74,19 @@ export default createBrowserRouter([
           { index: true, element: <Navigate to="dashboard" /> },
           { path: 'dashboard', element: <StundentDashboard /> },
           { path: 'profile', element: <Profile /> },
-          { path: 'course-preview/:courseID/:chapterID/:lessonID/:urlCourseID/:urlLessonID', element: <CoursePreview /> },
+          {
+            path: 'course-preview/:courseID/:chapterID/:lessonID/:urlCourseID/:urlLessonID',
+            element: <CoursePreview />,
+          },
           {
             path: 'MySubject',
             children: [
               { index: true, element: <MySubject /> },
               {
                 path: ':courseId',
-                element: <TableOfContent />
-              }
-            ]
+                element: <TableOfContent />,
+              },
+            ],
           },
           {
             path: 'assessments',
@@ -59,41 +94,51 @@ export default createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <Assessments />
+                element: <Assessments />,
               },
               {
                 path: 'completed-assessments',
-                element: <CompletedAssessment />
+                element: <CompletedAssessment />,
               },
               {
                 path: 'assessment-details/:assessmetName',
-                element: <AssessmentDetails />
+                element: <AssessmentDetails />,
               },
               {
                 path: 'perform-assessment/:aid',
-                element: <DisplayAssessment />
+                element: <DisplayAssessmentLearnosity />,
+              },
+              {
+                path: 'perform-assessment-obe/:aid',
+                element: <DisplayAssessment />,
               },
               {
                 path: 'assigned/assessment-report/:aid',
-                element: <AssessmentsReport />
-              }
-            ]
+                element: <AssessmentsReport />,
+              },
+            ],
           },
           {
             path: 'time-table',
-            element: <TimeTable />
+            element: <TimeTable />,
           },
           {
             path: 'assignment',
             children: [
               { index: true, element: <Assignment /> },
-              { path: 'completed-assignments', element: <CompletedAssignment /> },
-              { path: 'assignment-details/:assignId/:assignedStudentsList/:isFromComplete', element: <AssignmentDetails /> }
-            ]
+              {
+                path: 'completed-assignments',
+                element: <CompletedAssignment />,
+              },
+              {
+                path: 'assignment-details/:assignId/:assignedStudentsList/:isFromComplete',
+                element: <AssignmentDetails />,
+              },
+            ],
           },
           {
             path: 'attandance',
-            element: <AttendanceReports />
+            element: <AttendanceReports />,
           },
           { path: 'reports', element: <ComingSoon /> },
           { path: 'static-page-preview', element: <StaticPagePreview /> },
@@ -103,13 +148,13 @@ export default createBrowserRouter([
             children: [
               { index: true, element: <DigitalLibrary /> },
               { path: ':folderName', element: <DigitalLibFileDir /> },
-              { path: ':folderName/:folderId', element: <DigitalLibFileDir /> }
-            ]
+              { path: ':folderName/:folderId', element: <DigitalLibFileDir /> },
+            ],
           },
-          { path: 'coming-soon', element: <ComingSoon /> }
-        ]
-      }
-    ]
+          { path: 'coming-soon', element: <ComingSoon /> },
+        ],
+      },
+    ],
   },
-  { path: '*', element: <NotFound /> }
+  { path: '*', element: <NotFound /> },
 ]);

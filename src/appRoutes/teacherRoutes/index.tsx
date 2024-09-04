@@ -151,12 +151,12 @@ export default createBrowserRouter([
             children: [
               {
                 index: true,
+                element: <Assessments />,
+              },
+              {
+                path: 'assessments-obe',
                 element: <ObeAssessments />,
               },
-              // {
-              //   path: 'obe-assessments',
-              //   element: <ObeAssessments />,
-              // },
               {
                 path: 'assign/:aid',
                 element: <AssignAssessment />,
