@@ -54,6 +54,11 @@ export default function Index() {
           dropdown={true}
           childs={[
             { label: 'Assessments', path: 'assessments' },
+            {
+              label: 'Create Assessment',
+              path: 'assessments/create-new-assessment',
+            },
+            { label: 'My Assessments', path: 'assessments/my-assessments' },
             { label: 'Assigned Assessments', path: 'assessments/assigned' },
             {
               label: 'Completed Assessments',
