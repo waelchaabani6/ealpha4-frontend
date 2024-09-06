@@ -8,6 +8,13 @@ import ObeAssessments from '@containers/assessments/ObeAssessments';
 import GoogleClassroom from '@containers/googleClassroom';
 import AuthPathHandler from '../helper';
 import myGroupRoutes from './myGroupRoutes';
+import OBE_CompletedAssessments from '@containers/assessments/OBE_CompletedAssessments';
+import OBE_StudentCompletedAssessmentList from '@containers/assessments/OBE_StudentCompletedAssessmentList';
+import OBE_SingleReportAssessment from '@containers/assessments/OBE_StudentReportAssessment';
+import OBE_PreviewMyAssessmentQuestions from '@containers/assessments/OBE_PreviewAssessmentQuestion';
+import OBE_ObeAssessments from '@containers/assessments/OBE_ObeAssessments';
+import OBE_AssignAssessment from '@containers/assessments/OBE_assignAssessment';
+import OBE_AssignedAssessments from '@containers/assessments/OBE_assignedAssessments';
 
 const TeacherDashboard = React.lazy(
   () => import('@containers/dashboard/teacherDashboard')
@@ -206,6 +213,47 @@ export default createBrowserRouter([
               {
                 path: 'assigned/completed_assessments/completed_assessment_student_list/student_report/:aid',
                 element: <StudentReportAssessment />,
+              },
+            ],
+          },
+          {
+            path: 'obe-assessments',
+            element: <AssessmentDataLoad />,
+            children: [
+              {
+                index: true,
+                element: <OBE_ObeAssessments />,
+              },
+
+              {
+                path: 'assign/:aid',
+                element: <OBE_AssignAssessment />,
+              },
+
+
+              {
+                path: 'assigned',
+                element: <OBE_AssignedAssessments />,
+              },
+
+ 
+              {
+                path: 'preview_myassessment_question/:LID',
+                element: <OBE_PreviewMyAssessmentQuestions />,
+              },
+ 
+  
+              {
+                path: 'assigned/completed_assessments',
+                element: <OBE_CompletedAssessments />,
+              },
+              {
+                path: 'assigned/completed_assessments/completed_assessment_student_list/:aid',
+                element: <OBE_StudentCompletedAssessmentList />,
+              },
+              {
+                path: 'assigned/completed_assessments/completed_assessment_student_list/student_report/:aid',
+                element: <OBE_SingleReportAssessment />,
               },
             ],
           },

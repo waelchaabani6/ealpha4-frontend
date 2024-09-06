@@ -4,6 +4,11 @@ import { Navigate, createBrowserRouter } from 'react-router-dom';
 import LayoutTwo from '@layout/appLayout/layoutTwo';
 import publicRoutes from '@routes/publicRoutes';
 import AuthPathHandler from '../helper';
+import OBE_CompletedAssessments from '@containers/assessments/student/OBE_CompletedAssessments';
+import OBE_DisplayAssessment from '@containers/assessments/OBE_DisplayAssessments';
+import OBE_AssessmentReprot from '@containers/assessments/OBE_assessmentReprot';
+import OBE_Index from '@containers/assessments/student/OBE_index';
+import OBE_StudentQuickReport from '@containers/assessments/student/OBE_StudentQuickReport';
 
 const StundentDashboard = React.lazy(() => import('@containers/dashboard/studentDashboard'));
 const Profile = React.lazy(() => import('@containers/profile'));
@@ -76,6 +81,29 @@ export default createBrowserRouter([
               {
                 path: 'assigned/assessment-report/:aid',
                 element: <AssessmentsReport />
+              }
+            ]
+          },
+          {
+            path: 'obe-assessments',
+            element: <AssessmentDataLoad />,
+            children: [
+              {
+                index: true,
+                element: <OBE_Index />
+              },
+              {
+                path: 'completed-assessments',
+                element: <OBE_CompletedAssessments />
+              },
+    
+              {
+                path: 'perform-assessment/:aid',
+                element: <OBE_DisplayAssessment />
+              },
+              {
+                path: 'assigned/assessment-report/:aid',
+                element: <OBE_StudentQuickReport />
               }
             ]
           },
