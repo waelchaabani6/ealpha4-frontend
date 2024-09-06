@@ -15,31 +15,35 @@ export default function PreviewQuestions() {
   const [pageData, setPageData] = useState<any>({});
   const [error, setError] = useState<any>('');
   const location = useLocation();
-  const status = useScript(`https://items.learnosity.com/?v2021.2.LTS/`, {
-    removeOnUnmount: false
+  const status = useScript(`https://items.learnosity.com/?v2023.1.LTS/`, {
+    removeOnUnmount: false,
   });
 
-  const { isRefetching: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/alpha-assessment/preview/${LID}/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}`,
-    onSuccess: (res: any) => {
-      const resp = res?.data?.response;
-      setPageData(resp);
-      const callbacks = {
-        errorListener(e: any) {
-          setError(e.msg || '');
+  const { isRefetching: LearnosityObjLoad, refetch: fetchLearnosityObj } =
+    useGet({
+      baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+      url: `assessments-service/alpha-assessment/preview/${LID}/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}`,
+      onSuccess: (res: any) => {
+        const resp = res?.data?.response;
+        setPageData(resp);
+        const callbacks = {
+          errorListener(e: any) {
+            setError(e.msg || '');
+          },
+        };
+        if (resp?.learnosity_obj?.request?.items?.length) {
+          setitemsData(resp?.data);
+          (window as any)?.LearnosityItems?.init(
+            resp?.learnosity_obj,
+            callbacks
+          );
         }
-      };
-      if (resp?.learnosity_obj?.request?.items?.length) {
-        setitemsData(resp?.data);
-        (window as any)?.LearnosityItems?.init(resp?.learnosity_obj, callbacks);
-      }
-    },
-    onError: ({ response }: any) => {
-      setError(response?.data?.message || response?.statusText || '');
-    },
-    enabled: false
-  });
+      },
+      onError: ({ response }: any) => {
+        setError(response?.data?.message || response?.statusText || '');
+      },
+      enabled: false,
+    });
 
   useEffect(() => {
     if (status === 'ready' && LID && userData?.user_ting) {
@@ -48,37 +52,29 @@ export default function PreviewQuestions() {
   }, [status, LID, userData]);
 
   if (LearnosityObjLoad) {
-    return (<Loader />);
+    return <Loader />;
   }
 
   return (
-    <RouteLayout
-      navBack={true}
-    >
+    <RouteLayout navBack={true}>
       <div className="py-3">
         <PageTitle title={`${pageData?.data?.assessment_name || ''}`} />
       </div>
       <div className="mt-5 w-full overflow-auto rounded-md h-max border bg-white p-4">
-        {
-          itemsData && itemsData?.map((item: any, index: number) => (
+        {itemsData &&
+          itemsData?.map((item: any, index: number) => (
             <div key={index}>
               <span className="learnosity-item" data-reference={item?.name} />
               <hr className="assign-heading-hr" />
             </div>
-          ))
-        }
-        {
-          itemsData && itemsData?.length ? <div id="learnosity_inline" /> : (
-            <div className="mt-5 h-max w-full rounded-md border bg-white p-4">
-              {
-                error
-                  ? <h2>{`${error}`}</h2>
-                  : 'Loading...'
-              }
-            </div>
-          )
-        }
-
+          ))}
+        {itemsData && itemsData?.length ? (
+          <div id="learnosity_inline" />
+        ) : (
+          <div className="mt-5 h-max w-full rounded-md border bg-white p-4">
+            {error ? <h2>{`${error}`}</h2> : 'Loading...'}
+          </div>
+        )}
       </div>
     </RouteLayout>
   );
