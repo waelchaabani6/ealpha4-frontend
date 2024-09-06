@@ -48,13 +48,13 @@ export default function DisplayAssessmentLearnosity() {
   // const user = useSelector((state: any) => state?.user);
   // const userRole = useSelector((state: any) => state?.user?.role);
 
-  const status = useScript(`https://items.learnosity.com/?v2021.2.LTS`, {
+  const status = useScript(`https://items.learnosity.com/?v2023.1.LTS`, {
     removeOnUnmount: false,
   });
 
   const { isLoading: loadSync, refetch: sync } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&obeasses_id=${obeasses_id}&assessment_id=${aid}`,
+    url: `assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&assessment_ting=${apiRes?.data?.assessment_ting}&assessment_id=${aid}`,
     enabled: false,
   });
 
