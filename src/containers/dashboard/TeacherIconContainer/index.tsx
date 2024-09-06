@@ -108,12 +108,12 @@ function TeacherIconContainer() {
       link: `/${schoolName}/reports`,
       img: <ICReport />,
     },
-    {
-      text: 'Google Classroom',
-      // action: handleClick,
-      link: `/${schoolName}/google-classroom`,
-      img: <GoogleClass />,
-    },
+    // {
+    //   text: 'Google Classroom',
+    //   // action: handleClick,
+    //   link: `/${schoolName}/google-classroom`,
+    //   img: <GoogleClass />,
+    // },
     {
       text: 'Grade Book',
       link: `/${schoolName}/grade-book`,

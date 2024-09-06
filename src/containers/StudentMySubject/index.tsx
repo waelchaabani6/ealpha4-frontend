@@ -1,15 +1,14 @@
+/* eslint-disable operator-linebreak */
 /* eslint-disable no-confusing-arrow */
 /* eslint-disable implicit-arrow-linebreak */
 import RouteLayout from '@layout/routeLayout';
 import PageTitle from '@shared/pageTitle';
-import Dropdown from '@component/dropdown/Dropdown';
 import DebounceInput from '@component/input/DebounceInput';
 import Loader from '@shared/loader';
 import { useGet, api } from '@shared/api/useApi';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@shared/store/userSlice';
 import { useEffect, useState } from 'react';
-import AutoComplete from '@component/autoComplete/autoComplete';
 import SmallCard from './StudentSmallCard';
 
 function MySubject() {
@@ -43,23 +42,29 @@ function MySubject() {
         )
         .then((courses: any) => ({ category: items.content, courses }))
     );
-    Promise.allSettled(resultAPIs).then((res: any) => {
-      setIsLoading(false);
-      if (res?.length) {
-        console.log('object', res);
-        const courseByCategoryDict: { [key: string]: [] } = {};
-        res?.forEach((element: any) => {
-          courseByCategoryDict[element?.value?.category] =
-            element?.value?.courses?.data?.response;
-        });
-        setCourseDetails(courseByCategoryDict);
-      }
-    });
+    Promise.allSettled(resultAPIs)
+      .then((res: any) => {
+        if (res?.length) {
+          const courseByCategoryDict: { [key: string]: [] } = {};
+          res?.forEach((element: any) => {
+            courseByCategoryDict[element?.value?.category] =
+              element?.value?.courses?.data?.response;
+          });
+          setCourseDetails(courseByCategoryDict);
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   useEffect(() => {
-    getAllcoursesDetails(categoriesData);
-  }, [categoriesData]);
+    if (data) {
+      if (Object.keys(data?.data?.response).length) {
+        getAllcoursesDetails(categoriesData);
+      }
+    }
+  }, [categoriesData, data]);
 
   const conditionSatisfied = Object.keys(courseDetails).some(
     (category: any) => courseDetails[category].length > 0
@@ -75,7 +80,7 @@ function MySubject() {
             loading={isLoading}
           />
         </div>
-        {!categoriesLoading ? (
+        {!categoriesLoading && !isLoading ? (
           Object.keys(courseDetails).length > 0 && conditionSatisfied ? (
             Object.keys(courseDetails)?.map((category: any, i: any) =>
               courseDetails[category].length > 0 ? (

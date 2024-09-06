@@ -55,7 +55,7 @@ export default function GoogleClassroomList({ data }: any) {
   ];
 
   React.useEffect(() => {
-    console.log('object', data);
+    // console.log('object', data);
     setTableData(data);
   }, [data]);
 
@@ -78,12 +78,17 @@ export default function GoogleClassroomList({ data }: any) {
     }
 
     data?.map((i: any) => {
-      const dt = {
-        name: i.name,
-        school_id: schoolData.id,
-        class_source: 'google_classroom',
-      };
-      mutateAddClass(dt);
+      let dt = {};
+      const obj = bulkSelect.find((bid: any) => i?.id === bid);
+      if (obj) {
+        dt = {
+          name: i.name,
+          school_id: schoolData.id,
+          class_source: 'google_classroom',
+        };
+        mutateAddClass(dt);
+      }
+
       return true;
     });
 
