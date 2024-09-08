@@ -8,7 +8,6 @@ import PageTitle from '@shared/pageTitle';
 import RouteLayout from '../layout/routeLayout';
 
 export default function PreviewMyAssessmentQuestions() {
-  
   const location = useLocation();
   const navigate = useNavigate();
   const userData = useSelector((state: any) => state?.user);
@@ -17,12 +16,11 @@ export default function PreviewMyAssessmentQuestions() {
   const [pageData, setPageData] = useState<any>({});
   const [error, setError] = useState<any>('');
   const [iframeUrl, setIframeUrl] = useState('');
-  // const status = useScript(`https://items.learnosity.com/?v2021.2.LTS/`, {
+  // const status = useScript(`https://items.learnosity.com/?v2023.1.LTS/`, {
   //   removeOnUnmount: false
   // });
   const ref = useRef<HTMLIFrameElement | null>(null);
   const userRole = useSelector((state: any) => state?.user?.role);
-
 
   useEffect(() => {
     setConfig();
@@ -40,8 +38,10 @@ export default function PreviewMyAssessmentQuestions() {
     // URL of the iframe source
     let baseUrl = '';
 
-    if (userRole?.name === 'Teacher') baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${location.state?.obeasses_id}`;
-    else if (userRole?.name === 'Student') baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${location.state?.obeasses_id}`;
+    if (userRole?.name === 'Teacher')
+      baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${location.state?.obeasses_id}`;
+    else if (userRole?.name === 'Student')
+      baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${location.state?.obeasses_id}`;
     // Set the iframe URL with the cache buster parameter
     setIframeUrl(baseUrl + generateCacheBuster());
   }, [location.state?.obeasses_id]);
@@ -83,19 +83,21 @@ export default function PreviewMyAssessmentQuestions() {
       apiKey: `${import.meta.env.VITE_APP_SDK}`,
       user: `${user?.first_name} ${user?.last_name}`,
       user_ting: userData?.user_ting,
-      role: user?.role?.name
+      role: user?.role?.name,
     };
 
     if (ref.current && ref.current.contentWindow) {
       ref.current.contentWindow.postMessage({ type: 'setConfig', config }, '*');
-    } else { /* empty */ }
+    } else {
+      /* empty */
+    }
 
     fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(config)
+      body: JSON.stringify(config),
     })
       .then((response) => {
         if (!response.ok) {
@@ -103,17 +105,12 @@ export default function PreviewMyAssessmentQuestions() {
         }
         return response.json();
       })
-      .then((data) => {
-      })
-      .catch((e) => {
-      });
+      .then((data) => {})
+      .catch((e) => {});
   };
 
-
   return (
-    <RouteLayout
-      navBack={true}
-    >
+    <RouteLayout navBack={true}>
       <div className="py-3">
         <PageTitle title={`${pageData?.data?.assessment_name || ''}`} />
       </div>
@@ -138,10 +135,25 @@ export default function PreviewMyAssessmentQuestions() {
           )
         } */}
         <div style={{ width: '100%', height: '100vh' }}>
-          {(!!location.state?.obeasses_id && userRole?.name === 'Teacher') && <iframe ref={ref} src={iframeUrl} title="External Content" width="100%" height="90%" />}
-          {(!!location.state?.obeasses_id && userRole?.name === 'Student') && <iframe ref={ref} src={iframeUrl} title="External Content" width="100%" height="90%" />}
+          {!!location.state?.obeasses_id && userRole?.name === 'Teacher' && (
+            <iframe
+              ref={ref}
+              src={iframeUrl}
+              title="External Content"
+              width="100%"
+              height="90%"
+            />
+          )}
+          {!!location.state?.obeasses_id && userRole?.name === 'Student' && (
+            <iframe
+              ref={ref}
+              src={iframeUrl}
+              title="External Content"
+              width="100%"
+              height="90%"
+            />
+          )}
         </div>
-
       </div>
     </RouteLayout>
   );
