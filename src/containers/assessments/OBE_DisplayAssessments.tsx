@@ -110,7 +110,8 @@ export default function OBE_DisplayAssessment() {
       if (type === 'SUCCESS') {
         sync();
         toast.success(payload);
-        navigate(`/${schoolName}/obe-assessments/completed-assessments`);
+        setTimeout(()=> {navigate(`/${schoolName}/obe-assessments/completed-assessments`);},1000);
+        
         // window.location.reload();
       } else {
         toast.error(payload);
