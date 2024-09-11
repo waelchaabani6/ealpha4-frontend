@@ -9,6 +9,7 @@ import { useGet } from '@shared/api/useApi';
 import Loader from '@shared/loader';
 import PageTitle from '@shared/pageTitle';
 import useScript from '@utility/Hooks/UseScript';
+import axios from 'axios';
 
 interface UserData {
   user_ting: string;
@@ -42,21 +43,37 @@ export default function DisplayAssessmentLearnosity() {
   const [apiRes, setApiRes] = useState<ApiResponse>({});
   const [pageData, setPageData] = useState<PageData>({});
   const [error, setError] = useState<string>('');
+  const [count, setCount] = useState(0);
   // const [isLoading, setIsLoading] = useState(false);
   // const [iframeUrl, setIframeUrl] = useState('');
 
   // const user = useSelector((state: any) => state?.user);
   // const userRole = useSelector((state: any) => state?.user?.role);
 
+  // console.log('api res =', apiRes)
+
   const status = useScript(`https://items.learnosity.com/?v2023.1.LTS`, {
     removeOnUnmount: false,
   });
 
+  // console.log("window location hostname =", window.location.hostname)
+
   const { isLoading: loadSync, refetch: sync } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&assessment_ting=${apiRes?.data?.assessment_ting}&assessment_id=${aid}`,
+    url: `assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&assessment_ting=${apiRes?.data?.assessment_ting}&assessment_id=${aid}&my_name=hello_world`,
     enabled: false,
   });
+
+  const getAssessStatus = () =>{
+    let url = `${import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL}assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&assessment_ting=${apiRes?.data?.assessment_ting}&assessment_id=${aid}`;
+    // debugger;
+    axios.get(url).then(res => {
+      // debugger;
+      console.log("res =", res)
+      let resJson = res;
+      console.log("resJson =",resJson)
+    }).catch(e => console.log('[getAssessStatus ()] e ->', e))
+  }
 
   const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
   const schoolNameInURL = `${window?.location?.origin}/${schoolName}/assessments`;
@@ -67,9 +84,12 @@ export default function DisplayAssessmentLearnosity() {
       url: `assessments-service/assign_assessment/${aid}/?user_ting=${userData?.user_ting}&redirect_url=${schoolNameInURL}&domain_name=${window?.location?.hostname}`,
       onSuccess: (res: any) => {
         const resp = res?.data?.response;
+        // console.log('[DisplayAssessmentLearnosity.tsx] useGet() res =', res)
+        // console.log('[DisplayAssessmentLearnosity.tsx] useGet() resp =', resp)
         setPageData(resp);
         const callbacks = {
           errorListener(e: any) {
+            // console.log('e')
             setError(e.msg || '');
           },
         };
@@ -78,6 +98,7 @@ export default function DisplayAssessmentLearnosity() {
           callbacks
         );
         obj?.on('test:finished:submit', () => {
+          // console.log("test finished submit =", res.data.response)
           setApiRes(res?.data?.response);
         });
       },
@@ -86,10 +107,12 @@ export default function DisplayAssessmentLearnosity() {
     });
 
   useEffect(() => {
-    if (apiRes?.data?.assessment_ting) {
-      sync();
+    if (apiRes?.data?.assessment_ting && count < 1) {
+      // sync();
+      getAssessStatus()
+      setCount(count + 1);
     }
-  }, [apiRes?.data?.assessment_ting]);
+  }, [apiRes]);
 
   useEffect(() => {
     if (status === 'ready' && aid && userData?.user_ting) {
