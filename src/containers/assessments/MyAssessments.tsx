@@ -48,6 +48,11 @@ export default function MyAssessments() {
       isSort: true
     },
     {
+      label: TABLE_LABELS?.COURSES,
+      mapper: 'courses_name',
+      align: 'center'
+    },
+    {
       label: 'Online',
       mapper: 'online',
       align: 'center'
@@ -73,6 +78,8 @@ export default function MyAssessments() {
   ];
   const [tableData, setTableData] = useState<any>([]);
   const [adminDeleteDialog, setAdminDeleteDialog] = useState(false);
+
+  // console.log('tableData =', tableData)
 
   const [currentCourse, setCurrentCourse] = useState('Select');
   const [selectedGrade, setselectedGrade] = useState('Select');
@@ -129,11 +136,24 @@ export default function MyAssessments() {
     }
   });
 
+   // Get Courses
+  //  const { isLoading: loadCourses, data: Courses, refetch: getCourses } = useGet({
+  //   baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+  //   url: `assessments-service/alpha-assessment/courses/`,
+  // });
+  // const filteredCourses =
+  //   Courses?.data?.map((ele: any) => ({ label: ele.name, value: ele.id })) ||
+  //   [];
+
   const { isLoading: loadCourses, data: Courses } = useGet({
-    baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/assigned_courses/${user?.userId}/details/?all_courses=all`
+    // baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
+    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+    // url: `course-code-service/courses/assigned_courses/${user?.userId}/details/?all_courses=all`
+    url: `assessments-service/alpha-assessment/courses/`,
   });
-  const filteredCourses = Courses?.data?.response?.filter((i: any) => i?.name)?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
+
+  // const filteredCourses = Courses?.data?.response?.filter((i: any) => i?.name)?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
+  const filteredCourses = Courses?.data.filter((i: any) => i?.name)?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
 
   const { isLoading: loadCategories, data: Categories } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
@@ -247,7 +267,7 @@ export default function MyAssessments() {
               loading={loadCourses}
               sxClass={{ width: '206px', marginRight: '5px' }}
             />
-            <Dropdown
+            {/* <Dropdown
               title="Select Class"
               value={selectedGrade}
               dataArray={[...ALL, ...CLASS_ARRAY]}
@@ -257,7 +277,7 @@ export default function MyAssessments() {
               }}
               loading={loadClassesForTeacher || loadClassesForSchool}
               sxClass={{ width: '206px', marginRight: '5px' }}
-            />
+            /> */}
             <Dropdown
               title="Select Category"
               value={selectedCategory}
