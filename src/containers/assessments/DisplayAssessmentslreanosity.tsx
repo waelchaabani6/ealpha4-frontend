@@ -48,12 +48,16 @@ export default function DisplayAssessmentLearnosity() {
     removeOnUnmount: false,
   });
 
+
+
   // const { isLoading: loadSync, refetch: sync } = useGet({
   //   baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
   //   url: `assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&assessment_ting=${apiRes?.data?.assessment_ting}&assessment_id=${aid}&my_name=hello_world`,
   //   enabled: false,
   // });
 
+
+  
   const getAssessStatus = async () => {
     try {
       const url = `${import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL}assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&assessment_ting=${apiRes?.data?.assessment_ting}&assessment_id=${aid}`;
