@@ -171,6 +171,7 @@ export default function Index() {
     enabled: selectedGrade !== ALL[0].value,
   });
 
+
   const categoryArrays =
     Categories?.data?.response?.map((ele: any) => ({
       label: ele.name,
