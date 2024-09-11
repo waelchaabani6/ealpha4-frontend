@@ -311,13 +311,21 @@ export default function CompletedAssessments() {
   };
 
   const { isLoading: loadCourses, data: Courses } = useGet({
-    baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/assigned_courses/${user?.userId}/details`
+    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+    url: `assessments-service/alpha-assessment/courses/`,
   });
-  const filteredCourses = Courses?.data?.response
-    ?.filter((i: any) => i?.short_name)
-    ?.map((ele: any) => ({ label: ele.short_name, value: ele.short_name }))
-    || [];
+
+  const filteredCourses = Courses?.data.filter((i: any) => i?.name)?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
+
+
+  // const { isLoading: loadCourses, data: Courses } = useGet({
+  //   baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
+  //   url: `course-code-service/courses/assigned_courses/${user?.userId}/details`
+  // });
+  // const filteredCourses = Courses?.data?.response
+  //   ?.filter((i: any) => i?.short_name)
+  //   ?.map((ele: any) => ({ label: ele.short_name, value: ele.short_name }))
+  //   || [];
   const { isLoading: loadClassesForSchool, data: ClassesForSchool } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
     url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}&branch_name=${branchData?.name || ''}`,

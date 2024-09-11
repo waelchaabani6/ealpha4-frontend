@@ -36,6 +36,7 @@ export default function AssignedAssessments() {
   const { isLoading: LoadAssesment, mutate: mutateAssesment } = usePost({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/create-assessment/`,
+    // url: `assessments-service/create-assessment/assessment_name=${data.assessment_name}`,
     onSuccess: (response: any) => {
       const data = response?.data?.response;
       navigate(`create/${data?.id}`);
@@ -54,26 +55,35 @@ export default function AssignedAssessments() {
     }
   });
 
-  const { isLoading: loadCourses, refetch: getCourses } = useGet({
-    baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/assigned_courses/${user?.userId}/details`,
-    onSuccess: (response: any) => {
-      const data = response?.data?.response;
-      const arr: any = [];
-      data?.map((item: any) => {
-        arr.push(
-          {
-            label: item?.short_name,
-            value: item?.id
-          }
-        );
-        arr.sort(sortData);
-        return arr;
-      });
-      setcourseArray(arr);
-    },
-    enabled: false
+  // const { isLoading: loadCourses, refetch: getCourses } = useGet({
+  //   baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
+  //   url: `course-code-service/courses/assigned_courses/${user?.userId}/details`,
+  //   onSuccess: (response: any) => {
+  //     const data = response?.data?.response;
+  //     const arr: any = [];
+  //     data?.map((item: any) => {
+  //       arr.push(
+  //         {
+  //           label: item?.short_name,
+  //           value: item?.id
+  //         }
+  //       );
+  //       arr.sort(sortData);
+  //       return arr;
+  //     });
+  //     setcourseArray(arr);
+  //   },
+  //   enabled: false
+  // });
+
+  // Get Courses
+  const { isLoading: loadCourses, data: Courses, refetch: getCourses } = useGet({
+    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+    url: `assessments-service/alpha-assessment/courses/`,
   });
+  const filteredCourses =
+    Courses?.data?.map((ele: any) => ({ label: ele.name, value: ele.id })) ||
+    [];
 
   const { isLoading: loadClassesForSchool, data: ClassesForSchool } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
@@ -125,6 +135,7 @@ export default function AssignedAssessments() {
   CLASS_ARRAY.sort(sortData);
   const onSubmit = async (values: any) => {
     // const getCourse = courseArray.find((i: any) => Number(i?.value) === Number(values?.select_course));
+    const getCourse = filteredCourses.find((i: any) => Number(i?.value) === Number(values?.select_course));
     const getGrade = CLASS_ARRAY.find((i: any) => Number(i?.value) === Number(values?.select_grade));
 
     const res = await getConfigAssessments(values?.assignment_name, '', getGrade?.value);
@@ -132,10 +143,10 @@ export default function AssignedAssessments() {
 
     const payload = {
       assessment_name: values?.assignment_name,
-      // courses: getCourse?.value,
-      // courses_name: getCourse?.label,
-      grade: getGrade?.value,
-      grade_name: getGrade?.label,
+      courses: getCourse?.value,
+      courses_name: getCourse?.label,
+      // grade: getGrade?.value,
+      // grade_name: getGrade?.label,
       school_id: schoolData?.id || branchData?.school_data?.id || '',
       branch_id: branchData?.id || null,
       created_by: user.userId,
@@ -165,7 +176,7 @@ export default function AssignedAssessments() {
         <PageTitle title="Create Assessments" />
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-5 w-full overflow-auto rounded-md h-max border border-accent bg-white">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-y-3 md:gap-x-6 p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 md:gap-x-6 p-4">
           <Input control={control} name="assignment_name" label="Assessment Name" />
           <Select
             displayEmpty={true}
@@ -173,10 +184,11 @@ export default function AssignedAssessments() {
             control={control}
             name="select_course"
             label="Select Course"
-            dataArray={courseArray}
+            // dataArray={courseArray}
+            dataArray={filteredCourses}
             loading={loadCourses}
           />
-          <Select
+          {/* <Select
             displayEmpty={true}
             disablePlaceholderValue={true}
             control={control}
@@ -184,7 +196,7 @@ export default function AssignedAssessments() {
             label="Select Class"
             dataArray={CLASS_ARRAY}
             loading={loadClassesForTeacher || loadClassesForSchool}
-          />
+          /> */}
         </div>
         <div className="py-8 float-right space-x-5 px-5">
           <Button loading={LoadAssesment}>

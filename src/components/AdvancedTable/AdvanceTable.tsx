@@ -273,6 +273,8 @@ const AdvanceTable = forwardRef(
       return headerData?.label || 'No data';
     };
 
+    // console.log('table data =', tableData)
+
     return (
       <>
         {isLoading && <LinearProgress />}

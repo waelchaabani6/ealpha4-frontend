@@ -116,6 +116,8 @@ export default function AssignedAssessments() {
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
   const { user } = useSelector((state: any) => state);
 
+  // console.log('tabel data =', tableData)
+
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
@@ -127,8 +129,9 @@ export default function AssignedAssessments() {
       isSort: true
     },
     {
-      label: 'Courses',
-      isSort: true,
+      label: TABLE_LABELS.COURSES,
+      // isSort: true,
+      align: 'center',
       mapper: 'subject_name'
     },
     {
@@ -161,11 +164,16 @@ export default function AssignedAssessments() {
       component: COMPONENTS?.view,
       showInHeader: false
     },
+    // {
+    //   bodyAlign: 'center',
+    //   component: COMPONENTS?.,
+    //   showInHeader: false
+    // },
     {
       bodyAlign: 'left',
       component: COMPONENTS?.delete,
       showInHeader: false
-    }
+    },
   ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
@@ -235,12 +243,18 @@ export default function AssignedAssessments() {
     setFromDate('');
   };
 
+  // console.log('[Assigned assessments] selected grade =', selectedGrade)
+  
+
+
   // ----------------------------------------API-------------------------
   // Get Assessment List
   const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
   const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/get-assign-assessment-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&start_date=${fromDate ? moment(fromDate).format('YYYY-MM-DD') : ''}&submission_date=${toDate ? moment(toDate).format('YYYY-MM-DD') : ''}&user_id=${userData?.userId}&domain_name=${window?.location?.hostname}`,
+    url: `assessments-service/get-assign-assessment-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&course_name=${currentCourse !== ALL[0].value ? currentCourse : ''}&grade_name=${selectedGrade !== ALL[0].value ? selectedGrade : ''}&start_date=${fromDate ? moment(fromDate).format('YYYY-MM-DD') : ''}&submission_date=${toDate ? moment(toDate).format('YYYY-MM-DD') : ''}&user_id=${userData?.userId}&domain_name=${window?.location?.hostname}`,
+//    url: `assessments-service/alpha-assessment/activities/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&alpha_course=${currentCourse !== ALL[0].value ? currentCourse : ''}&grade_id=${selectedGrade !== ALL[0].value ? selectedGrade : ''}&is_paperscorer_type=${assmentFilter}&category_id=${selectedCategory !== ALL[0].value ? selectedCategory : ''}&user_id=${user?.userId}`,
+
     onSuccess: (res: any) => {
       const accData = res?.data?.response;
       const respData = accData?.results;
@@ -256,12 +270,32 @@ export default function AssignedAssessments() {
           item?.submission_date,
           (item?.is_printed) ? 'Printed' : 'Online'
         ]);
+      //   const assessmentName = data?.assessment_name?.props?.children?.props?.children || "";
+      // navigate(
+      //   `/${schoolName}/assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${assessmentName}`,
+      //   {
+      //     state: {
+      //       page,
+      //       obeasses_id,
+      //       path: `/${schoolName}/assessments/assigned`
+      //     }
+      //   }
+      // );
         const obeasses_id = item?.obeasses_id;
-        const link = `/${schoolName}/assessments/preview_myassessment_question/${item?.assessment_id}`;
+        // const link = `/${schoolName}/assessments/preview_myassessment_question/${item?.assessment_id}`;
+        const link = `/${schoolName}/assessments/assigned/assessment-report/${item?.assessment_id}?assessment=${item?.assessmentName}`;
         const joinedClasses = Array.isArray(item.class_name) ? (item.class_name)?.filter((j: any) => j).join(', ') : item.class_name;
         const temp = {
           ...item,
-          assessment_name: <Link state={{ page, obeasses_id, path: `/${schoolName}/assessments/assigned` }} to={link} ><span className="text-accent underline cursor-pointer text-xs font-medium">{item.assessment_name}</span></Link>,
+          assessment_name: <Link state={{ 
+            page, 
+            obeasses_id, 
+            path: `/${schoolName}/assessments/assigned` 
+          }} 
+            to={link} 
+            >
+              <span className="text-accent underline cursor-pointer text-xs font-medium">{item.assessment_name}</span>
+            </Link>,
           class_or_student: <span role="presentation" className="text-accent underline cursor-pointer text-xs font-medium" onClick={() => handleDataPopup(item)}>{`${joinedClasses}(${item?.student_count})`}</span>,
           is_printed: (item?.is_printed) ? 'Printed' : 'Online'
         };
@@ -342,13 +376,21 @@ export default function AssignedAssessments() {
   };
 
   const { isLoading: loadCourses, data: Courses } = useGet({
-    baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/assigned_courses/${user?.userId}/details`
+    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+    url: `assessments-service/alpha-assessment/courses/`,
   });
-  const filteredCourses = Courses?.data?.response
-    ?.filter((i: any) => i?.short_name)
-    ?.map((ele: any) => ({ label: ele.short_name, value: ele.short_name }))
-    || [];
+
+  const filteredCourses = Courses?.data.filter((i: any) => i?.name)?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
+
+
+  // const { isLoading: loadCourses, data: Courses } = useGet({
+  //   baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
+  //   url: `course-code-service/courses/assigned_courses/${user?.userId}/details`
+  // });
+  // const filteredCourses = Courses?.data?.response
+  //   ?.filter((i: any) => i?.short_name)
+  //   ?.map((ele: any) => ({ label: ele.short_name, value: ele.short_name }))
+  //   || [];
   const { isLoading: loadClassesForSchool, data: ClassesForSchool } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
     url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}&branch_name=${branchData?.name || ''}`,
@@ -399,6 +441,7 @@ export default function AssignedAssessments() {
           onChangeHandler={(d: any) => {
             setCurrentCourse(d);
             setPage(1);
+           
           }}
           sxClass={{ width: '206px' }}
           loading={loadCourses}
