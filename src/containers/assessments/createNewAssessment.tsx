@@ -36,6 +36,7 @@ export default function AssignedAssessments() {
   const { isLoading: LoadAssesment, mutate: mutateAssesment } = usePost({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/create-assessment/`,
+    // url: `assessments-service/create-assessment/assessment_name=${data.assessment_name}`,
     onSuccess: (response: any) => {
       const data = response?.data?.response;
       navigate(`create/${data?.id}`);
