@@ -128,6 +128,8 @@ export default function DisplayAssessment() {
   useEffect(() => {
     // Function to generate a unique query parameter
     const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
+    // event on learnosity to listen on 
+    // learnosity submit answer help.learnosity.com
 
     // URL of the iframe source
     let baseUrl = '';
