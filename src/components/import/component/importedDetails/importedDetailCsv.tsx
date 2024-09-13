@@ -5,12 +5,14 @@ import PageTitle from '@shared/pageTitle';
 import toast from '@shared/toast';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { json, useNavigate, useParams } from 'react-router-dom';
 
 const importedDetailCsv = () => {
   const { logId } = useParams();
   const navigate = useNavigate();
   const [logData, setLogData] = useState<any>({});
+
+  // console.log("logData =", logData)
 
   useEffect(() => {
     if (logId) {
@@ -106,42 +108,51 @@ const importedDetailCsv = () => {
         </div>
         <div className="m-5 border-b-2" />
         <h4 className="mx-5 mt-8 font-semibold">Logs</h4>
-        <div className="mx-2 mb-8 min-h-[20vh] border border-[#D2D2D2] -600m-1 rounded m-1 bg-[#F7F7F7]">
-          <div className="grid gap-4 grid-cols-2">
-            <div className="mx-5 mt-5 font-Montserrat">
-              <h4 className="font-semibold">Successful:</h4>
+        <div className="mx-2 mb-8 min-h-[20vh] -600m-1 rounded m-1 bg-[#F7F7F7]">
+          <div className="grid gap-4 grid-cols-2 text-center">
+            <div className="mx-5 mt-5 font-Montserrat border border-[#e6e7eb] rounded-sm">
+              <h4 className="font-semibold bg-[#e5f8e2] py-3">Successful</h4>
+              <div className="">
               {
-                logData?.csv_audit?.filter((i: any) => i?.log_status !== 'Failed')?.map((i: any) => (
-                  <p className="text-sm">
-                    {`
-                  ${i?.json_data?.first_name},${i?.json_data?.last_name},
-                  ${i?.json_data?.user_name},
-                  ${i?.json_data?.import_type || ''},
-                  ${i?.json_data?.relationship || ''}
-                  `}
+                logData?.csv_audit?.filter((i: any) => i?.log_status !== 'Failed')?.map((i: any, index:number) => (
+                  <p key={index} className="text-sm border-b border-[#e6e7eb] py-2">
+                  {[
+                    i?.json_data?.first_name,
+                    i?.json_data?.last_name,
+                    i?.json_data?.user_name,
+                    i?.json_data?.import_type,
+                    i?.json_data?.relationship
+                  ].filter(item => !!item).join(" ,")}
                   </p>
                 ))
               }
+              </div>
             </div>
-            <div className="mx-5 mt-5 font-Montserrat">
-              <h4 className="font-semibold">Unsuccessful:</h4>
+            <div className="mx-5 mt-5 font-Montserrat border border-[#e6e7eb] rounded-sm">
+              <div className="flex w-full">
+                <h4 className="font-semibold bg-[#e5f8e2] py-3 basis-1/2">Unsuccessful</h4>
+                <h4 className="font-semibold bg-[#e5f8e2] py-3 basis-1/2">Reason</h4>
+              </div>
               {
-                logData?.csv_audit?.filter((i: any) => i?.log_status === 'Failed')?.map((i: any) => (
-                  <p className="text-sm">
-                    {`
-                  ${i?.json_data?.first_name},
-                  ${i?.json_data?.last_name},
-                  ${i?.json_data?.user_name},
-                  ${i?.json_data?.import_type || ''},
-                  ${i?.json_data?.relationship || ''}
-                  ${i?.error_data ? `${i?.error_data}` : ''}
-                  `}
-                  </p>
+                logData?.csv_audit?.filter((i: any) => i?.log_status === 'Failed')?.map((i: any, index: number) => (
+                  <div key={index} className="flex w-full">
+                    <p className="text-sm border-b border-[#e6e7eb] py-2 basis-1/2">
+                    {[
+                      i?.json_data?.first_name,
+                      i?.json_data?.last_name,
+                      i?.json_data?.user_name,
+                      i?.json_data?.import_type,
+                      i?.json_data?.relationship
+                    ].filter(item => !!item).join(" ,")}
+                    </p>
+                    <p className="text-sm border-b border-[#e6e7eb] py-2 basis-1/2" >
+                      {i?.error_data ? i?.error_data : ''}
+                    </p>
+                  </div>
                 ))
               }
             </div>
           </div>
-
         </div>
       </div>
     </RouteLayout>

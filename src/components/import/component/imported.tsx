@@ -20,6 +20,8 @@ const Imported = (props: any) => {
   const [totalDataCount, setTotalDataCount] = useState(0);
   const navigate = useNavigate();
 
+  // console.log('table data =', tableData)
+
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
