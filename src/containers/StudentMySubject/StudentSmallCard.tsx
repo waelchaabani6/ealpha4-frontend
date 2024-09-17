@@ -13,6 +13,7 @@ import Loader from '@shared/loader';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import { ReactComponent as Book } from '@images/book.svg';
+import { border } from '@mui/system';
 
 type Props = {
   ind: number;
@@ -22,12 +23,33 @@ type Props = {
   logo: any;
 };
 
-const backgroundColor = [
-  'var(--light-accent)',
-  '#BECCFF',
-  '#FFF9BE',
-  '#FCD4C6',
-  '#B4DEFF',
+const componentsBackgroundColor = [
+  { component: 'Student Book', bgColor: '#E5F8E2', borderColor: '#6DC95F' },
+  { component: 'Practice Book', bgColor: '#BECCFF', borderColor: '#6A82D7' },
+  { component: 'Work Book', bgColor: '#FFF9BE', borderColor: '#ECDD4D' },
+  {
+    component: 'Teacher_Resources',
+    bgColor: '#FCD4C6',
+    borderColor: '#E66335',
+  },
+  { component: 'Ancillaries', bgColor: '#B4DEFF', borderColor: '#3D9AE4' },
+  { component: 'Alpha Clips', bgColor: '#FFD6A5', borderColor: '#FF9E4F' },
+  { component: 'Alpha Sims', bgColor: '#9BF6FF4A', borderColor: '#5DD7E3' },
+  {
+    component: 'Alpha Sims Student',
+    bgColor: '#BDB2FF4A',
+    borderColor: '#BDB2FF4A',
+  },
+  {
+    component: 'Student Sidekicks',
+    bgColor: '#366776',
+    borderColor: '#0DBDF3',
+  },
+  {
+    component: 'Student Editions',
+    bgColor: '#F5F7E1',
+    borderColor: '#E2F81F',
+  },
 ];
 
 function SmallCard({ ind, shortName, courseContents, image, logo }: Props) {
@@ -74,16 +96,23 @@ function SmallCard({ ind, shortName, courseContents, image, logo }: Props) {
       if (res?.length) {
         const componetsAndVolumes: any = [];
         res?.forEach((element: any, i: any) => {
-          componetsAndVolumes.push({
-            component: element?.value?.component,
-            bgColor: backgroundColor[i],
-            courseID: element?.value?.courses_id,
-            volumeData: Array.isArray(
-              element?.value?.volumeData?.data?.response
-            )
-              ? element?.value?.volumeData?.data?.response
-              : [],
-          });
+          if (element?.value?.component !== 'Assessments') {
+            componetsAndVolumes.push({
+              component: element?.value?.component,
+              bgColor: componentsBackgroundColor?.find(
+                (obj: any) => obj?.component === element?.value?.component
+              )?.bgColor,
+              borderColor: componentsBackgroundColor?.find(
+                (obj: any) => obj?.component === element?.value?.component
+              )?.borderColor,
+              courseID: element?.value?.courses_id,
+              volumeData: Array.isArray(
+                element?.value?.volumeData?.data?.response
+              )
+                ? element?.value?.volumeData?.data?.response
+                : [],
+            });
+          }
         });
         setComponetDetails(componetsAndVolumes);
       }
@@ -152,8 +181,10 @@ function SmallCard({ ind, shortName, courseContents, image, logo }: Props) {
             onMouseLeave={() => setIndex(-1)}
           >
             <AccordionSummary
+              className="border"
               sx={{
                 backgroundColor: ele?.bgColor,
+                borderColor: ele?.borderColor,
                 cursor: 'pointer',
               }}
               // expandIcon={<ExpandMoreIcon />}
@@ -166,8 +197,11 @@ function SmallCard({ ind, shortName, courseContents, image, logo }: Props) {
               }
             >
               <span
-                className="w-full text-[14px] text-center font-semibold"
-                style={{ backgroundColor: ele?.bgColor }}
+                className="w-full text-[14px] text-center font-semibold "
+                // style={{
+                //   backgroundColor: ele?.bgColor,
+                //   borderColor: ele?.borderColor,
+                // }}
               >
                 {ele?.component}
               </span>

@@ -18,7 +18,7 @@ interface UserData {
 
 interface ApiResponse {
   data?: {
-    assessment_ting?: boolean;
+    assessment_ting?: string;
     response?: any;
   };
 }
@@ -58,21 +58,16 @@ export default function DisplayAssessmentLearnosity() {
 
   // console.log("window location hostname =", window.location.hostname)
 
-  const { isLoading: loadSync, refetch: sync } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&assessment_ting=${apiRes?.data?.assessment_ting}&assessment_id=${aid}&my_name=hello_world`,
-    enabled: false,
-  });
+  // const { isLoading: loadSync, refetch: sync } = useGet({
+  //   baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+  //   url: `assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&assessment_ting=${apiRes?.data?.assessment_ting}&assessment_id=${aid}&my_name=hello_world`,
+  //   enabled: false,
+  // });
 
-  const getAssessStatus = () =>{
-    let url = `${import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL}assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&assessment_ting=${apiRes?.data?.assessment_ting}&assessment_id=${aid}`;
-    // debugger;
-    axios.get(url).then(res => {
-      // debugger;
-      console.log("res =", res)
-      let resJson = res;
-      console.log("resJson =",resJson)
-    }).catch(e => console.log('[getAssessStatus ()] e ->', e))
+  const getAssessStatus = (assessment_ting?: string) =>{
+    let assessmentTing = assessment_ting ? assessment_ting : apiRes?.data?.assessment_ting;
+    let url = `${import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL}assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&assessment_ting=${assessmentTing}&assessment_id=${aid}`;
+    axios.get(url).then(res => {}).catch(e => console.log('[getAssessStatus ()] e ->', e))
   }
 
   const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
@@ -94,8 +89,11 @@ export default function DisplayAssessmentLearnosity() {
           resp?.learnosity_obj,
           callbacks
         );
+        obj?.on('test:submit:success', function () {
+          setApiRes(res?.data?.response);
+          getAssessStatus(res?.data?.response.data?.assessment_ting);
+        });
         obj?.on('test:finished:submit', () => {
-          // console.log("test finished submit =", res.data.response)
           setApiRes(res?.data?.response);
         });
       },
@@ -103,13 +101,13 @@ export default function DisplayAssessmentLearnosity() {
       enabled: false,
     });
 
-  useEffect(() => {
-    if (apiRes?.data?.assessment_ting && count < 1) {
-      // sync();
-      getAssessStatus()
-      setCount(count + 1);
-    }
-  }, [apiRes]);
+  // useEffect(() => {
+  //   if (apiRes?.data?.assessment_ting && count < 1) {
+  //     // sync();
+  //     getAssessStatus(apiRes?.data?.assessment_ting.toString())
+  //     setCount(count + 1);
+  //   }
+  // }, [apiRes]);
 
   useEffect(() => {
     if (status === 'ready' && aid && userData?.user_ting) {
