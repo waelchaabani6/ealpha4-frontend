@@ -28,7 +28,7 @@ import {
   RESULTS_PER_PAGE,
   TABLE_LABELS,
   TOOLBAR_LABELS,
-  USER_TYPE
+  USER_TYPE,
 } from '../../constants/constants';
 import Wrapper from '../../shared/wrapper/Wrapper';
 import RouteLayout from '../layout/routeLayout';
@@ -62,38 +62,38 @@ export default function AssignedAssessments() {
   const CompletedTableColumns = [
     {
       label: 'First Name',
-      mapper: 'first_name'
+      mapper: 'first_name',
     },
     {
       label: 'Last Name',
-      mapper: 'last_name'
+      mapper: 'last_name',
     },
     {
       label: 'Class',
-      mapper: 'class_name'
-    }
+      mapper: 'class_name',
+    },
   ];
 
   const PendingTableColumns = [
     {
       label: 'First Name',
-      mapper: 'first_name'
+      mapper: 'first_name',
     },
     {
       label: 'Last Name',
-      mapper: 'last_name'
+      mapper: 'last_name',
     },
     {
       label: 'Class',
-      mapper: 'class_name'
-    }
+      mapper: 'class_name',
+    },
   ];
 
   const ALL: Array<any> = [
     {
       label: 'Select',
-      value: 'Select'
-    }
+      value: 'Select',
+    },
   ];
 
   const Csvheaders = [
@@ -102,7 +102,7 @@ export default function AssignedAssessments() {
     TABLE_LABELS?.CLASS_STUDENTS,
     TABLE_LABELS?.START_DATE,
     TABLE_LABELS?.END_DATE,
-    TABLE_LABELS?.TYPE
+    TABLE_LABELS?.TYPE,
   ];
 
   const [csvData, setCsvData] = useState<[]>([]);
@@ -121,40 +121,40 @@ export default function AssignedAssessments() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.ASSESSMENT_NAME,
       mapper: 'assessment_name',
-      isSort: true
+      isSort: true,
     },
     {
       label: TABLE_LABELS.COURSES,
       // isSort: true,
       align: 'center',
-      mapper: 'subject_name'
+      mapper: 'subject_name',
     },
     {
       label: TABLE_LABELS?.CLASS_STUDENTS,
       align: 'center',
-      mapper: 'class_or_student'
+      mapper: 'class_or_student',
     },
     {
       label: TABLE_LABELS?.START_DATE,
       isSort: true,
       mapper: 'start_date',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_LABELS?.END_DATE,
       // isSort: true,
       mapper: 'submission_date',
-      format: 'DD-MM-YYYY'
+      format: 'DD-MM-YYYY',
     },
     {
       label: TABLE_LABELS?.TYPE,
       isSort: true,
-      mapper: 'is_printed'
+      mapper: 'is_printed',
     },
     {
       label: TABLE_LABELS?.ACTION,
@@ -162,7 +162,7 @@ export default function AssignedAssessments() {
       align: 'center',
       bodyAlign: 'right',
       component: COMPONENTS?.view,
-      showInHeader: false
+      showInHeader: false,
     },
     // {
     //   bodyAlign: 'center',
@@ -172,7 +172,7 @@ export default function AssignedAssessments() {
     {
       bodyAlign: 'left',
       component: COMPONENTS?.delete,
-      showInHeader: false
+      showInHeader: false,
     },
   ];
 
@@ -218,13 +218,22 @@ export default function AssignedAssessments() {
     if (handlername === 'delete') {
       deleteHandler(data);
     } else if (handlername === 'view') {
-      navigate(`/${schoolName}/assessments/preview_myassessment_question/${data?.assessment_id}`, { state: { page, obeasses_id, path: `/${schoolName}/assessments/assigned` } });
+      navigate(
+        `/${schoolName}/assessments/preview_myassessment_question/${data?.assessment_id}`,
+        {
+          state: {
+            page,
+            obeasses_id,
+            path: `/${schoolName}/assessments/assigned`,
+          },
+        }
+      );
     }
   };
 
   const deleteHandler = (row: any) => {
     setPlayloadData({
-      id: (row?.assign_assessment_id || []).join(',')
+      id: (row?.assign_assessment_id || []).join(','),
     });
     setAdminDeleteDialog(true);
   };
@@ -244,67 +253,81 @@ export default function AssignedAssessments() {
   };
 
   // console.log('[Assigned assessments] selected grade =', selectedGrade)
-  
-
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
   const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
-  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } = useGet({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/get-assign-assessment-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&course_name=${currentCourse !== ALL[0].value ? currentCourse : ''}&grade_name=${selectedGrade !== ALL[0].value ? selectedGrade : ''}&start_date=${fromDate ? moment(fromDate).format('YYYY-MM-DD') : ''}&submission_date=${toDate ? moment(toDate).format('YYYY-MM-DD') : ''}&user_id=${userData?.userId}&domain_name=${window?.location?.hostname}`,
-//    url: `assessments-service/alpha-assessment/activities/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&alpha_course=${currentCourse !== ALL[0].value ? currentCourse : ''}&grade_id=${selectedGrade !== ALL[0].value ? selectedGrade : ''}&is_paperscorer_type=${assmentFilter}&category_id=${selectedCategory !== ALL[0].value ? selectedCategory : ''}&user_id=${user?.userId}`,
+  const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
+    useGet({
+      baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+      url: `assessments-service/get-assign-assessment-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&course_name=${currentCourse !== ALL[0].value ? currentCourse : ''}&grade_name=${selectedGrade !== ALL[0].value ? selectedGrade : ''}&start_date=${fromDate ? moment(fromDate).format('YYYY-MM-DD') : ''}&submission_date=${toDate ? moment(toDate).format('YYYY-MM-DD') : ''}&user_id=${userData?.userId}&domain_name=${window?.location?.hostname}`,
+      //    url: `assessments-service/alpha-assessment/activities/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&alpha_course=${currentCourse !== ALL[0].value ? currentCourse : ''}&grade_id=${selectedGrade !== ALL[0].value ? selectedGrade : ''}&is_paperscorer_type=${assmentFilter}&category_id=${selectedCategory !== ALL[0].value ? selectedCategory : ''}&user_id=${user?.userId}`,
 
-    onSuccess: (res: any) => {
-      const accData = res?.data?.response;
-      const respData = accData?.results;
-      setTotalDataCount(accData.count);
-      const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
-      const body: any = [];
-      const newTableData = respData?.map((item: any) => {
-        body.push([
-          item?.assessment_name,
-          item?.subject_name,
-          `${item.class_name}(${item?.student_count})`,
-          item?.start_date,
-          item?.submission_date,
-          (item?.is_printed) ? 'Printed' : 'Online'
-        ]);
-      //   const assessmentName = data?.assessment_name?.props?.children?.props?.children || "";
-      // navigate(
-      //   `/${schoolName}/assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${assessmentName}`,
-      //   {
-      //     state: {
-      //       page,
-      //       obeasses_id,
-      //       path: `/${schoolName}/assessments/assigned`
-      //     }
-      //   }
-      // );
-        const obeasses_id = item?.obeasses_id;
-        // const link = `/${schoolName}/assessments/preview_myassessment_question/${item?.assessment_id}`;
-        const link = `/${schoolName}/assessments/assigned/assessment-report/${item?.assessment_id}?assessment=${item?.assessmentName}`;
-        const joinedClasses = Array.isArray(item.class_name) ? (item.class_name)?.filter((j: any) => j).join(', ') : item.class_name;
-        const temp = {
-          ...item,
-          assessment_name: <Link state={{ 
-            page, 
-            obeasses_id, 
-            path: `/${schoolName}/assessments/assigned` 
-          }} 
-            to={link} 
-            >
-              <span className="text-accent underline cursor-pointer text-xs font-medium">{item.assessment_name}</span>
-            </Link>,
-          class_or_student: <span role="presentation" className="text-accent underline cursor-pointer text-xs font-medium" onClick={() => handleDataPopup(item)}>{`${joinedClasses}(${item?.student_count})`}</span>,
-          is_printed: (item?.is_printed) ? 'Printed' : 'Online'
-        };
-        return temp;
-      });
-      setCsvData(body);
-      setTableData(newTableData);
-    }
-  });
+      onSuccess: (res: any) => {
+        const accData = res?.data?.response;
+        const respData = accData?.results;
+        setTotalDataCount(accData.count);
+        const schoolNameInURL = decodeURIComponent(
+          location.pathname.split('/')[1]
+        );
+        const body: any = [];
+        const newTableData = respData?.map((item: any) => {
+          body.push([
+            item?.assessment_name,
+            item?.subject_name,
+            `${item.class_name}(${item?.student_count})`,
+            item?.start_date,
+            item?.submission_date,
+            item?.is_printed ? 'Printed' : 'Online',
+          ]);
+          //   const assessmentName = data?.assessment_name?.props?.children?.props?.children || "";
+          // navigate(
+          //   `/${schoolName}/assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${assessmentName}`,
+          //   {
+          //     state: {
+          //       page,
+          //       obeasses_id,
+          //       path: `/${schoolName}/assessments/assigned`
+          //     }
+          //   }
+          // );
+          const obeasses_id = item?.obeasses_id;
+          // const link = `/${schoolName}/assessments/preview_myassessment_question/${item?.assessment_id}`;
+          const link = `/${schoolName}/assessments/assigned/assessment-report/${item?.assessment_id}?assessment=${item?.assessmentName}`;
+          const joinedClasses = Array.isArray(item.class_name)
+            ? item.class_name?.filter((j: any) => j).join(', ')
+            : item.class_name;
+          const temp = {
+            ...item,
+            assessment_name: (
+              <Link
+                state={{
+                  page,
+                  obeasses_id,
+                  path: `/${schoolName}/assessments/assigned`,
+                }}
+                to={link}
+              >
+                <span className="text-accent underline cursor-pointer text-xs font-medium">
+                  {item.assessment_name}
+                </span>
+              </Link>
+            ),
+            class_or_student: (
+              <span
+                role="presentation"
+                className="text-accent underline cursor-pointer text-xs font-medium"
+                onClick={() => handleDataPopup(item)}
+              >{`${joinedClasses}(${item?.student_count})`}</span>
+            ),
+            is_printed: item?.is_printed ? 'Printed' : 'Online',
+          };
+          return temp;
+        });
+        setCsvData(body);
+        setTableData(newTableData);
+      },
+    });
 
   // Delete Admin
   const { isLoading: loadingDelete, mutate: mutateDelete } = useDelete({
@@ -316,20 +339,27 @@ export default function AssignedAssessments() {
     },
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
-    }
+    },
   });
 
   // Toolbar Email
-  const { isLoading: emailLoaded, refetch: fetchEmailApi, isRefetching: refetchEmail } = useGet({
+  const {
+    isLoading: emailLoaded,
+    refetch: fetchEmailApi,
+    isRefetching: refetchEmail,
+  } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/assign-assessment-teacher-email/pdf-download/?user_id=${userData?.userId}`,
     onSuccess: (response: any) => {
-      toast('success', 'Email sent successfully to you, please check your inbox');
+      toast(
+        'success',
+        'Email sent successfully to you, please check your inbox'
+      );
     },
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
     },
-    enabled: false
+    enabled: false,
   });
 
   // ----------------------------------------END API---------------------
@@ -350,15 +380,17 @@ export default function AssignedAssessments() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
   useEffect(() => {
@@ -380,8 +412,10 @@ export default function AssignedAssessments() {
     url: `assessments-service/alpha-assessment/courses/`,
   });
 
-  const filteredCourses = Courses?.data.filter((i: any) => i?.name)?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
-
+  const filteredCourses =
+    Courses?.data
+      .filter((i: any) => i?.name)
+      ?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
 
   // const { isLoading: loadCourses, data: Courses } = useGet({
   //   baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
@@ -395,39 +429,47 @@ export default function AssignedAssessments() {
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
     url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}&branch_name=${branchData?.name || ''}`,
     enabled: !!(
-      (userRole?.name === SCHOOL_ADMIN && schoolData?.id)
-      || userRole?.name === BRANCH_ADMIN
-      || branchData?.school_id?.id
-    )
+      (userRole?.name === SCHOOL_ADMIN && schoolData?.id) ||
+      userRole?.name === BRANCH_ADMIN ||
+      branchData?.school_id?.id
+    ),
   });
-  const formatSchoolClasses = ClassesForSchool?.data?.response?.results?.map((ele: any) => ({
-    label: ele.name,
-    value: ele.name
-  })) || [];
-  const CLASS_ARRAY = (userRole?.name === TEACHER ? TeacherClassesArray : formatSchoolClasses)
-    || [];
+  const formatSchoolClasses =
+    ClassesForSchool?.data?.response?.results?.map((ele: any) => ({
+      label: ele.name,
+      value: ele.name,
+    })) || [];
+  const CLASS_ARRAY =
+    (userRole?.name === TEACHER ? TeacherClassesArray : formatSchoolClasses) ||
+    [];
 
-  const { isLoading: loadClassesForTeacher, mutate: ClassesForTeacher } = usePost({
-    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/school-classes/teacher/assigned-class`,
-    onSuccess: (resp: any) => {
-      const res = resp?.data?.response;
-      const formatArr = res?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
-      setTeacherClassesArray(formatArr);
-    }
-  });
+  const { isLoading: loadClassesForTeacher, mutate: ClassesForTeacher } =
+    usePost({
+      baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+      url: `schools-service/school-classes/teacher/assigned-class`,
+      onSuccess: (resp: any) => {
+        const res = resp?.data?.response;
+        const formatArr =
+          res?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
+        setTeacherClassesArray(formatArr);
+      },
+    });
 
   useEffect(() => {
     if (userRole?.name === TEACHER && user?.user_profile_id) {
       ClassesForTeacher({
-        teacher_id: user?.user_profile_id
+        teacher_id: user?.user_profile_id,
       });
     }
   }, [userRole, user]);
 
   return (
     <RouteLayout>
-      <HeaderMenus title="Assigned Assessments" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+      <HeaderMenus
+        title="Assigned Assessments"
+        menuArray={ADMIN_TOOLBAR_MENU}
+        handleToolbarAction={handleToolbarAction}
+      />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <div className="pt-[30px]">
@@ -441,7 +483,6 @@ export default function AssignedAssessments() {
           onChangeHandler={(d: any) => {
             setCurrentCourse(d);
             setPage(1);
-           
           }}
           sxClass={{ width: '206px' }}
           loading={loadCourses}
