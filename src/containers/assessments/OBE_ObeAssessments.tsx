@@ -57,7 +57,7 @@ export default function OBE_ObeAssessments() {
     },
     {
       label: TABLE_LABELS?.ASSESSMENT_NAME,
-      mapper: 'assessment_name',
+      mapper: 'name',
       isSort: true,
     },
     {
@@ -104,8 +104,8 @@ export default function OBE_ObeAssessments() {
   const [playloadData, setPlayloadData] = useState<any | undefined>({});
   const [totalDataCount, setTotalDataCount] = useState(0);
 
-  const [order, setOrder] = useState<any>('desc');
-  const [orderBy, setOrderBy] = useState<any>('assessment_name');
+  const [order, setOrder] = useState<any>('asc');
+  const [orderBy, setOrderBy] = useState<any>('name');
   // const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const location = useLocation();
   const usersRole = useSelector((state: any) => state?.user?.role);
@@ -271,6 +271,9 @@ export default function OBE_ObeAssessments() {
       .catch((error) => console.log('error', error));
   };
 
+  // Get Assessment List
+  const sort_by = `${orderBy}` ?? 'name';
+  const directoon = order  ?? 'asc';
   const fetchAssignments = () => {
     const requestOptions = {
       method: 'GET',
@@ -290,7 +293,7 @@ export default function OBE_ObeAssessments() {
     const getTagName = fillTags.filter((x: any) => x.value === selectedTag);
 
     fetch(
-      `${obeassessUrl}assessment/?grade=${getGradeName[0]?.label}&subject=${getCourseName[0]?.label}&tags=${getTagName[0]?.label || ''}&per_page=${rowsPerPage}&page=${page}`,
+      `${obeassessUrl}assessment/?grade=${getGradeName[0]?.label}&subject=${getCourseName[0]?.label}&tags=${getTagName[0]?.label || ''}&per_page=${rowsPerPage}&page=${page}&sort_by=${sort_by}&order=${directoon}`,
       requestOptions
     )
       .then((response) => response.json())
