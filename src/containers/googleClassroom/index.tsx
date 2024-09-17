@@ -143,7 +143,9 @@ const GoogleClassroom = () => {
   };
 
   useEffect(() => {
+    console.log('watch token', googleToken);
     if (googleToken) {
+      console.log('has google token');
       listCourses();
     }
   }, [googleToken]);
@@ -151,6 +153,17 @@ const GoogleClassroom = () => {
   useEffect(() => {
     setGoogleToken(gapi?.client?.getToken());
   }, [gapi?.client?.getToken()]);
+
+  useEffect(() => {
+    const unloadCallback = (event) => {
+      event.preventDefault();
+      event.returnValue = '';
+      return '';
+    };
+
+    window.addEventListener('beforeunload', unloadCallback);
+    return () => window.removeEventListener('beforeunload', unloadCallback);
+  }, []);
 
   return (
     <RouteLayout>
