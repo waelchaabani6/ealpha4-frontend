@@ -1,3 +1,8 @@
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable operator-linebreak */
+/* eslint-disable comma-dangle */
+/* eslint-disable react/jsx-one-expression-per-line */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import DatePicker from '@component/datepicker';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
@@ -9,7 +14,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import Divider from '@mui/material/Divider/Divider';
-import { useGet, useDelete } from '@shared/api/useApi';
+import { useGet, useDelete, usePost } from '@shared/api/useApi';
 import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import PageTitle from '@shared/pageTitle';
@@ -24,17 +29,26 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import DeletePopup from '@shared/DeletePopup';
 import UseGetProfile from '@utility/Hooks/UseGetProfile';
+import { selectSchoolData } from '@shared/store/schoolSlice';
 import {
   COMPONENTS,
   RESULTS_PER_PAGE,
   TABLE_LABELS,
   TOOLBAR_LABELS,
+  USER_TYPE,
 } from '../../../constants/constants';
 import Wrapper from '../../../shared/wrapper/Wrapper';
 import RouteLayout from '../../layout/routeLayout';
 
 const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
 const printButton = () => <PrintIcon />;
+
+const ALL: Array<any> = [
+  {
+    label: 'All',
+    value: 'Select',
+  },
+];
 
 export default function Index() {
   const navigate = useNavigate();
@@ -86,6 +100,11 @@ export default function Index() {
   const [assignmentList, setAssignmentList] = useState<any>([]);
   const [StudentAssignmentData, setStudentAssignmentData] = useState<any>([]);
   const [adminDeleteDialog, setAdminDeleteDialog] = useState(false);
+
+  const [currentCourse, setCurrentCourse] = useState('Select');
+  const [selectedGrade, setselectedGrade] = useState('Select');
+
+  const { SCHOOL_ADMIN, BRANCH_ADMIN, TEACHER } = USER_TYPE;
 
   const TableColumns = [
     {
@@ -167,6 +186,12 @@ export default function Index() {
   const [allClasses, setClasses] = useState('');
   const [ClassesPopup, setClassesPopup] = useState(false);
   const [pageSize, setPageSize] = useState<any>(RESULTS_PER_PAGE?.[0]);
+
+  const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
+
+  const { user } = useSelector((state: any) => state);
+  const userRole = useSelector((state: any) => state?.user?.role);
+  const { schoolData, branchData } = useSelector(selectSchoolData);
 
   const {
     isRefetching: emailSendLoading,
@@ -420,7 +445,7 @@ export default function Index() {
     isRefetching,
   }: any = useGet({
     baseURL,
-    url: `assignments-service/assignment/list/?school_id=${schoolId}${branchId !== null ? `&branch_id=${branchId}` : ''}&offset=${(page - 1) * Number(rowsPerPage)}&user_id=${userId}&ordering=${ordering}&limit=10${searchVal !== '' ? `&search=${searchVal}` : ''}${selectedState !== 'All' && selectedState !== 'Select' ? `&status=${selectedState}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&end_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}&limit=${rowsPerPage}&all_assignments=all`,
+    url: `assignments-service/assignment/list/?school_id=${schoolId}${branchId !== null ? `&branch_id=${branchId}` : ''}&offset=${(page - 1) * Number(rowsPerPage)}&user_id=${userId}&ordering=${ordering}&limit=10${searchVal !== '' ? `&search=${searchVal}` : ''}${selectedState !== 'All' && selectedState !== 'Select' ? `&status=${selectedState}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&end_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}&limit=${rowsPerPage}&all_assignments=all${currentCourse && currentCourse !== 'Select' ? `&course_name=${currentCourse}` : ''}${selectedGrade && selectedGrade !== 'Select' ? `&class_name=${selectedGrade}` : ''}`,
     onSuccess: (res: any) => {
       const assignmentListData = res?.data?.response?.results;
       setAssignmentList(assignmentListData);
@@ -467,6 +492,8 @@ export default function Index() {
     orderBy,
     order,
     searchVal,
+    currentCourse,
+    selectedGrade,
   ]);
 
   const reset = () => {
@@ -497,6 +524,53 @@ export default function Index() {
     setRowsPerPage(e);
   };
 
+  const { isLoading: loadCourses, data: Courses } = useGet({
+    baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
+    url: `course-code-service/courses/assigned_courses/${user?.userId}/details`,
+  });
+  const filteredCourses =
+    Courses?.data?.response
+      ?.filter((i: any) => i?.short_name)
+      ?.map((ele: any) => ({ label: ele.short_name, value: ele.short_name })) ||
+    [];
+  const { isLoading: loadClassesForSchool, data: ClassesForSchool } = useGet({
+    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+    url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}&branch_name=${branchData?.name || ''}`,
+    enabled: !!(
+      (userRole?.name === SCHOOL_ADMIN && schoolData?.id) ||
+      userRole?.name === BRANCH_ADMIN ||
+      branchData?.school_id?.id
+    ),
+  });
+  const formatSchoolClasses =
+    ClassesForSchool?.data?.response?.results?.map((ele: any) => ({
+      label: ele.name,
+      value: ele.name,
+    })) || [];
+  const CLASS_ARRAY =
+    (userRole?.name === TEACHER ? TeacherClassesArray : formatSchoolClasses) ||
+    [];
+
+  const { isLoading: loadClassesForTeacher, mutate: ClassesForTeacher } =
+    usePost({
+      baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+      url: `schools-service/school-classes/teacher/assigned-class`,
+      onSuccess: (resp: any) => {
+        const res = resp?.data?.response;
+        const formatArr =
+          res?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
+        setTeacherClassesArray(formatArr);
+      },
+    });
+
+  useEffect(() => {
+    if (userRole?.name === TEACHER && user?.user_profile_id) {
+      ClassesForTeacher({
+        teacher_id: user?.user_profile_id,
+      });
+    }
+  }, [userRole, user]);
+
   return (
     <RouteLayout>
       <HeaderMenus
@@ -512,6 +586,30 @@ export default function Index() {
               loading={isLoading || isRefetching}
             />
           </div>
+
+          <Dropdown
+            title="Select Course"
+            value={currentCourse}
+            dataArray={[...ALL, ...filteredCourses]}
+            onChangeHandler={(d: any) => {
+              setCurrentCourse(d);
+              setPage(1);
+            }}
+            loading={loadCourses}
+            sxClass={{ width: '206px', marginRight: '5px' }}
+          />
+          <Dropdown
+            title="Select Class"
+            value={selectedGrade}
+            dataArray={[...ALL, ...CLASS_ARRAY]}
+            onChangeHandler={(d: any) => {
+              setselectedGrade(d);
+              setPage(1);
+            }}
+            loading={loadClassesForTeacher || loadClassesForSchool}
+            sxClass={{ width: '206px', marginRight: '5px' }}
+          />
+
           <div>
             <Dropdown
               title="Sort By: Status"
