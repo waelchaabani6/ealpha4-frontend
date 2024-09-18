@@ -587,7 +587,7 @@ export default function Index() {
             />
           </div>
 
-          <Dropdown
+          {/* <Dropdown
             title="Select Course"
             value={currentCourse}
             dataArray={[...ALL, ...filteredCourses]}
@@ -608,7 +608,7 @@ export default function Index() {
             }}
             loading={loadClassesForTeacher || loadClassesForSchool}
             sxClass={{ width: '206px', marginRight: '5px' }}
-          />
+          /> */}
 
           <div>
             <Dropdown

@@ -517,7 +517,7 @@ export default function CompletedAssignment() {
               loading={isLoading}
             />
           </div>
-          <Dropdown
+          {/* <Dropdown
             title="Select Course"
             value={currentCourse}
             dataArray={[...ALL, ...filteredCourses]}
@@ -538,7 +538,7 @@ export default function CompletedAssignment() {
             }}
             loading={loadClassesForTeacher || loadClassesForSchool}
             sxClass={{ width: '206px', marginRight: '5px' }}
-          />
+          /> */}
           <div>
             <DatePicker
               value={fromDate}
