@@ -253,6 +253,14 @@ export const TABLE_MANAGE_UPLOADFORM = {
   ACTION: 'Action',
 };
 
+export const TABLE_UPLOAD_RESULTS = {
+  SR_NO: 'Sr No.',
+  FULL_NAME: 'Full Name',
+  FIRST_NAME: 'First Name',
+  LAST_NAME: 'Last Name',
+  REASON: "Reason"
+};
+
 // MANAGE INTEGRATION & SUBSCRIPTIONS
 export const SELECT: Array<string> = [
   'Select',
