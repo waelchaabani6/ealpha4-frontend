@@ -6,7 +6,7 @@ const PrivacyPolicy = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://ealpha4.com/privacy-policy.html').then((resp) => resp.text());
+        const response = await fetch('https://www.development.ealpha.net/privacy-policy.html').then((resp) => resp.text());
         setHtmlContent(response);
       } catch (error: any) {
         toast('error', error || 'Error');
