@@ -1,3 +1,7 @@
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable operator-linebreak */
+/* eslint-disable comma-dangle */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import DatePicker from '@component/datepicker';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
@@ -8,7 +12,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import Divider from '@mui/material/Divider/Divider';
-import { useGet } from '@shared/api/useApi';
+import { useGet, usePost } from '@shared/api/useApi';
 import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import PageTitle from '@shared/pageTitle';
@@ -23,16 +27,25 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import DeletePopup from '@shared/DeletePopup';
 import Dropdown from '@component/dropdown/Dropdown';
+import { selectSchoolData } from '@shared/store/schoolSlice';
 import {
   RESULTS_PER_PAGE,
   TABLE_LABELS,
   TOOLBAR_LABELS,
+  USER_TYPE,
 } from '../../../constants/constants';
 import Wrapper from '../../../shared/wrapper/Wrapper';
 import RouteLayout from '../../layout/routeLayout';
 
 const printButton = () => <PrintIcon />;
 const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
+
+const ALL: Array<any> = [
+  {
+    label: 'Select',
+    value: 'Select',
+  },
+];
 
 export default function CompletedAssignment() {
   const navigate = useNavigate();
@@ -151,6 +164,16 @@ export default function CompletedAssignment() {
   const [searchVal, setSearchVal] = useState('');
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
 
+  const [currentCourse, setCurrentCourse] = useState(ALL[0].value);
+  const [selectedGrade, setselectedGrade] = useState(ALL[0].value);
+
+  const userRole = useSelector((state: any) => state?.user?.role);
+  const { SCHOOL_ADMIN, BRANCH_ADMIN, TEACHER } = USER_TYPE;
+  const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
+  const { user } = useSelector((state: any) => state);
+
+  const { schoolData, branchData } = useSelector(selectSchoolData);
+
   const componentRef = useRef(null);
   const completedAssignRef = useRef(null);
 
@@ -234,7 +257,7 @@ export default function CompletedAssignment() {
     isRefetching,
   }: any = useGet({
     baseURL,
-    url: `assignments-service/assignment/list/?school_id=${schoolId}${branchId !== null ? `&branch_id=${branchId}` : ''}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&user_id=${userId}${searchVal !== '' ? `&search=${searchVal}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&end_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}&all_assignments=Completed&limit=${rowsPerPage}`,
+    url: `assignments-service/assignment/list/?school_id=${schoolId}${branchId !== null ? `&branch_id=${branchId}` : ''}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&user_id=${userId}${searchVal !== '' ? `&search=${searchVal}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&end_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}${selectedGrade && selectedGrade !== 'Select' ? `&class_name=${selectedGrade}` : ''}${currentCourse && currentCourse !== 'Select' ? `&course_name=${currentCourse}` : ''}&all_assignments=Completed&limit=${rowsPerPage}`,
     onSuccess: (res: any) => {
       const assignmentListData = res?.data?.response?.results;
       setAssignmentList(assignmentListData);
@@ -404,6 +427,8 @@ export default function CompletedAssignment() {
     order,
     page,
     searchVal,
+    currentCourse,
+    selectedGrade,
   ]);
 
   const handleDialog = () => {
@@ -430,6 +455,53 @@ export default function CompletedAssignment() {
     setRowsPerPage(e);
   };
 
+  const { isLoading: loadCourses, data: Courses } = useGet({
+    baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
+    url: `course-code-service/courses/assigned_courses/${user?.userId}/details`,
+  });
+  const filteredCourses =
+    Courses?.data?.response
+      ?.filter((i: any) => i?.short_name)
+      ?.map((ele: any) => ({ label: ele.short_name, value: ele.short_name })) ||
+    [];
+  const { isLoading: loadClassesForSchool, data: ClassesForSchool } = useGet({
+    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+    url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}&branch_name=${branchData?.name || ''}`,
+    enabled: !!(
+      (userRole?.name === SCHOOL_ADMIN && schoolData?.id) ||
+      userRole?.name === BRANCH_ADMIN ||
+      branchData?.school_id?.id
+    ),
+  });
+  const formatSchoolClasses =
+    ClassesForSchool?.data?.response?.results?.map((ele: any) => ({
+      label: ele.name,
+      value: ele.name,
+    })) || [];
+  const CLASS_ARRAY =
+    (userRole?.name === TEACHER ? TeacherClassesArray : formatSchoolClasses) ||
+    [];
+
+  const { isLoading: loadClassesForTeacher, mutate: ClassesForTeacher } =
+    usePost({
+      baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+      url: `schools-service/school-classes/teacher/assigned-class`,
+      onSuccess: (resp: any) => {
+        const res = resp?.data?.response;
+        const formatArr =
+          res?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
+        setTeacherClassesArray(formatArr);
+      },
+    });
+
+  useEffect(() => {
+    if (userRole?.name === TEACHER && user?.user_profile_id) {
+      ClassesForTeacher({
+        teacher_id: user?.user_profile_id,
+      });
+    }
+  }, [userRole, user]);
+
   return (
     <RouteLayout>
       <HeaderMenus
@@ -445,7 +517,28 @@ export default function CompletedAssignment() {
               loading={isLoading}
             />
           </div>
-
+          <Dropdown
+            title="Select Course"
+            value={currentCourse}
+            dataArray={[...ALL, ...filteredCourses]}
+            onChangeHandler={(d: any) => {
+              setCurrentCourse(d);
+              setPage(1);
+            }}
+            sxClass={{ width: '206px' }}
+            loading={loadCourses}
+          />
+          <Dropdown
+            title="Select Class"
+            value={selectedGrade}
+            dataArray={[...ALL, ...CLASS_ARRAY]}
+            onChangeHandler={(d: any) => {
+              setselectedGrade(d);
+              setPage(1);
+            }}
+            loading={loadClassesForTeacher || loadClassesForSchool}
+            sxClass={{ width: '206px', marginRight: '5px' }}
+          />
           <div>
             <DatePicker
               value={fromDate}

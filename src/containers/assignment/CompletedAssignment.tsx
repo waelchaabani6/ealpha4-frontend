@@ -1,3 +1,6 @@
+/* eslint-disable operator-linebreak */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable comma-dangle */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import DatePicker from '@component/datepicker';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
