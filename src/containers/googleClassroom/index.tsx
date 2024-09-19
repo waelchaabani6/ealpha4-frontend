@@ -17,7 +17,17 @@ import { useEffect, useState } from 'react';
 /* eslint-disable no-console */
 const API_KEY = import.meta.env.VITE_APP_GOOGLE_CLASSROOM_KEY;
 const CLIENT_ID = import.meta.env.VITE_APP_GOOGLE_CLASSROOM_CLIENT_ID;
-const SCOPES = 'https://www.googleapis.com/auth/classroom.courses';
+const SCOPES = [
+  'https://www.googleapis.com/auth/classroom.courses',
+  'https://www.googleapis.com/auth/classroom.rosters',
+  'https://www.googleapis.com/auth/classroom.coursework.me',
+  'https://www.googleapis.com/auth/classroom.coursework.students',
+  'https://www.googleapis.com/auth/classroom.profile.emails'
+].join(' ');
+// NOTE: Ensure that the OAuth consent screen in the Google Cloud Console is properly configured
+// with the required permissions for Google Classroom API access. All requested scopes must be added
+// and approved in the OAuth consent screen, otherwise, the authentication process will fail with 
+// 'invalid_scope' errors. Visit https://console.cloud.google.com/apis/credentials/consent for setup.
 
 const GoogleClassroom = () => {
   const [classroomData, setClassroomData] = useState<any>({});
@@ -26,8 +36,7 @@ const GoogleClassroom = () => {
   const [loading, setLoading] = useState(false);
 
   /**
-   * Print the names of the first 10 courses the user has access to. If
-   * no courses are found an appropriate message is printed.
+   * Fetch courses, rosters, and coursework for the authenticated user.
    */
   async function listCourses() {
     setLoading(true);
@@ -35,17 +44,38 @@ const GoogleClassroom = () => {
 
     try {
       // @ts-expect-error
-      response = await window.gapi.client.classroom.courses.list({
+      response = await gapi.client.classroom.courses.list({
         pageSize: 10,
       });
+
+      const courses = response?.result?.courses;
+      setClassroomData(courses);
+
+      if (courses && courses.length > 0) {
+        for (const course of courses) {
+          // Fetch rosters (students and teachers) for each course
+          // @ts-expect-error
+          const roster = await gapi.client.classroom.courses.students.list({
+            courseId: course.id,
+          });
+          console.log('Roster:', roster);
+
+          // Fetch coursework for each course
+          // @ts-expect-error
+          const coursework = await gapi.client.classroom.courses.courseWork.list({
+            courseId: course.id,
+          });
+          console.log('Coursework:', coursework);
+        }
+      }
     } catch (err: any) {
       console.log('#Error', err);
     } finally {
       setLoading(false);
     }
 
-    const courses = response?.result?.courses;
-    setClassroomData(courses);
+    // const courses = response?.result?.courses;
+    // setClassroomData(courses);
   }
 
   /**
@@ -80,12 +110,16 @@ const GoogleClassroom = () => {
   }
 
   /**
-   *  Sign in the user upon button click.
+   * Sign in the user upon button click, handle token persistence.
    */
   function handleAuthClick() {
     clientToken.callback = async (resp: any) => {
       if (resp.error !== undefined) {
         throw resp;
+      } else {
+        // Store token and set token expiration handling
+        setGoogleToken(gapi.client.getToken());
+        localStorage.setItem('googleToken', JSON.stringify(gapi.client.getToken()));
       }
     };
 
@@ -100,7 +134,7 @@ const GoogleClassroom = () => {
   }
 
   /**
-   *  Sign out the user upon button click.
+   * Sign out the user upon button click, clear token.
    */
   function handleSignoutClick() {
     const token = gapi.client.getToken();
@@ -111,8 +145,20 @@ const GoogleClassroom = () => {
       gapi.client.setToken(null);
       setGoogleToken(null);
       setClassroomData([]);
+      localStorage.removeItem('googleToken');
     }
   }
+
+  /**
+   * Persist token from local storage on load.
+   */
+  useEffect(() => {
+    const savedToken = localStorage.getItem('googleToken');
+    if (savedToken) {
+      setGoogleToken(JSON.parse(savedToken));
+      gapi.client.setToken(JSON.parse(savedToken));
+    }
+  }, []);
 
   useEffect(() => {
     gapiLoaded();
@@ -150,20 +196,20 @@ const GoogleClassroom = () => {
     }
   }, [googleToken]);
 
-  useEffect(() => {
-    setGoogleToken(gapi?.client?.getToken());
-  }, [gapi?.client?.getToken()]);
+  // useEffect(() => {
+  //   setGoogleToken(gapi?.client?.getToken());
+  // }, [gapi?.client?.getToken()]);
 
-  useEffect(() => {
-    const unloadCallback = (event) => {
-      event.preventDefault();
-      event.returnValue = '';
-      return '';
-    };
+  // useEffect(() => {
+  //   const unloadCallback = (event) => {
+  //     event.preventDefault();
+  //     event.returnValue = '';
+  //     return '';
+  //   };
 
-    window.addEventListener('beforeunload', unloadCallback);
-    return () => window.removeEventListener('beforeunload', unloadCallback);
-  }, []);
+  //   window.addEventListener('beforeunload', unloadCallback);
+  //   return () => window.removeEventListener('beforeunload', unloadCallback);
+  // }, []);
 
   return (
     <RouteLayout>
