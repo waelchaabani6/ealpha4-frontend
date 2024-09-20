@@ -1,3 +1,5 @@
+/* eslint-disable operator-linebreak */
+/* eslint-disable comma-dangle */
 import Button from '@component/button/button';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
 import {
@@ -19,7 +21,6 @@ import { useSelector } from 'react-redux';
 type Props = {
   dialogOpen?: boolean;
   openModal: () => void;
-  // eslint-disable-next-line react/no-unused-prop-types
   closeModal: () => void;
 };
 
@@ -30,6 +31,8 @@ const Setting = (props: Props) => {
   const [val, setValue] = React.useState({
     Nmeet1: '',
     Nmeet2: '',
+    above1: '',
+    above2: '',
     exceed1: '',
     exceed2: '',
     meet1: '',
@@ -60,6 +63,13 @@ const Setting = (props: Props) => {
       updated_by: userData.userId,
     },
     {
+      from_value: val?.above1,
+      to_value: val?.above2,
+      status: 'Above',
+      created_by: userData.userId,
+      updated_by: userData.userId,
+    },
+    {
       from_value: val?.exceed1,
       to_value: val?.exceed2,
       status: 'Exceeds',
@@ -74,6 +84,7 @@ const Setting = (props: Props) => {
       updated_by: userData.userId,
     },
   ];
+
   const { mutate: UpdatePerformance } = usePatch({
     baseURL: ReportURL,
     url: `reports-service/update_performance_expectation/${userData.userId}/`,
@@ -84,6 +95,7 @@ const Setting = (props: Props) => {
       toast('error', response?.statusText || 'Error');
     },
   });
+
   const { isLoading, mutate: PerformanceData } = usePost({
     baseURL: ReportURL,
     url: `reports-service/create_performance_expectation/`,
@@ -94,6 +106,7 @@ const Setting = (props: Props) => {
       toast('error', response?.statusText || 'Error');
     },
   });
+
   const { isLoading: performance, refetch: GetPerformance } = useGet({
     baseURL: ReportURL,
     url: `reports-service/performance_expectation/?user_id=${userData.userId}`,
@@ -102,8 +115,12 @@ const Setting = (props: Props) => {
       const body: any = [];
       const fetchedRecords = resp?.slice(0, 4);
       setPerData(fetchedRecords);
+
       const meetObj = fetchedRecords?.find(
         (obj: any) => obj.status === 'Meets'
+      );
+      const aboveObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Above'
       );
       const AppObj = fetchedRecords?.find(
         (obj: any) => obj.status === 'Approaching'
@@ -114,10 +131,13 @@ const Setting = (props: Props) => {
       const ExceedsObj = fetchedRecords?.find(
         (obj: any) => obj.status === 'Exceeds'
       );
+
       setValue((prevState: any) => ({
         ...prevState,
         meet1: meetObj?.from_value,
         meet2: meetObj?.to_value,
+        above1: aboveObj?.from_value,
+        above2: aboveObj?.to_value,
         exceed1: ExceedsObj?.from_value,
         exceed2: ExceedsObj?.to_value,
         approching1: AppObj?.from_value,
@@ -129,10 +149,14 @@ const Setting = (props: Props) => {
     enabled: false,
     retry: false,
   });
+
   const Submit = () => {
     if (
       val?.Nmeet1 === '' ||
       val.Nmeet2 === '' ||
+      val.above1 === '' ||
+      val.above2 === '' ||
+      val.exceed2 === '' ||
       val.exceed1 === '' ||
       val.exceed2 === '' ||
       val.meet1 === '' ||
@@ -147,6 +171,8 @@ const Setting = (props: Props) => {
       setValue({
         Nmeet1: '',
         Nmeet2: '',
+        above1: '',
+        above2: '',
         exceed1: '',
         exceed2: '',
         meet1: '',
@@ -160,6 +186,8 @@ const Setting = (props: Props) => {
       setValue({
         Nmeet1: '',
         Nmeet2: '',
+        above1: '',
+        above2: '',
         exceed1: '',
         exceed2: '',
         meet1: '',
@@ -225,7 +253,7 @@ const Setting = (props: Props) => {
                 </TableHead>
                 <TableBody>
                   <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                    <TableCell key="1" align="left" className="bg-[#d9ffc8]">
+                    <TableCell key="1" align="left" className="bg-[#BECCFF]">
                       Exceeds
                     </TableCell>
                     <TableCell key="2" align="center">
@@ -256,7 +284,38 @@ const Setting = (props: Props) => {
                     </TableCell>
                   </TableRow>
                   <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                    <TableCell key="1" align="left" className="bg-[#BECCFF]">
+                    <TableCell key="1" align="left" className="bg-[#d9ffc8]">
+                      Above
+                    </TableCell>
+                    <TableCell key="2" align="center">
+                      <div className="flex items-center justify-center">
+                        <TextField
+                          placeholder="Enter Value"
+                          name="above1"
+                          type="number"
+                          // label="Enter your name"
+                          value={val.above1}
+                          onChange={handleChange}
+                          sx={{ width: '150px' }}
+                        />
+                      </div>
+                    </TableCell>
+                    <TableCell key="3" align="center">
+                      <div className="flex items-center justify-center">
+                        <TextField
+                          placeholder="Enter Value"
+                          type="number"
+                          sx={{ width: '150px' }}
+                          name="above2"
+                          // label="Enter your name"
+                          value={val.above2}
+                          onChange={handleChange}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+                    <TableCell key="1" align="left" className="bg-[#FFF9BE]">
                       Meets
                     </TableCell>
 
@@ -267,7 +326,6 @@ const Setting = (props: Props) => {
                           placeholder="Enter Value"
                           type="number"
                           name="meet1"
-                          // label="Enter your name"
                           value={val.meet1}
                           onChange={handleChange}
                         />
@@ -288,7 +346,7 @@ const Setting = (props: Props) => {
                     </TableCell>
                   </TableRow>
                   <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                    <TableCell key="1" align="left" className="bg-[#FFF9BE]">
+                    <TableCell key="1" align="left" className="bg-[#FFD6A5]">
                       Approaching
                     </TableCell>
                     <TableCell key="2" align="center">
@@ -298,12 +356,12 @@ const Setting = (props: Props) => {
                           type="number"
                           sx={{ width: '150px' }}
                           name="approching1"
-                          // label="Enter your name"
                           value={val.approching1}
                           onChange={handleChange}
                         />
                       </div>
                     </TableCell>
+
                     <TableCell key="3" align="center">
                       <div className="flex items-center justify-center">
                         <TextField
@@ -311,7 +369,6 @@ const Setting = (props: Props) => {
                           type="number"
                           sx={{ width: '150px' }}
                           name="approching2"
-                          // label="Enter your name"
                           value={val.approching2}
                           onChange={handleChange}
                         />
