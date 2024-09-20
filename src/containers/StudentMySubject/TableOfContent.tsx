@@ -151,7 +151,7 @@ function Volume() {
                     </div>
                   </AccordionSummary>
                   <AccordionDetails>
-                    <div>
+                    <div className="hover:bg-gray-100 transition-all duration-300 rounded-md">
                       {item?.visible_lessons?.map((ele: any, ind: any) => (
                         <div
                           key={ind}
