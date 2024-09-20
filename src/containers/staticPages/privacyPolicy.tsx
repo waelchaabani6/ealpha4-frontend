@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import toast from "@shared/toast";
 import Banner from "@images/staticPageImages/About-Us_Banner.jpg";
 import Header from "@containers/header";
+
+
+
 const PrivacyPolicy = () => {
   // const [htmlContent, setHtmlContent] = useState("");
   // useEffect(() => {
@@ -25,20 +26,17 @@ const PrivacyPolicy = () => {
       {/* eslint-disable-next-line react/no-danger */}
       {/* <div dangerouslySetInnerHTML={{ __html: htmlContent }} /> */}
       <div className="flex flex-col min-h-screen bg-white">
-        {/* Header Section */}
 
         <img
           src={Banner}
           alt="contact us"
-          className="h-24 mt-24 md:h-auto w-full"
+          className="h-24 md:h-auto w-full"
         />
 
-        {/* Title Section */}
         <div className="w-11/12  border-b pb-4 mb-6">
           <h2 className="text-3xl pl-10 pt-8 font-bold text-black">Privacy Policy</h2>
         </div>
 
-        {/* Content Section */}
         <div className="flex-1 overflow-y-auto px-20">
           <div className="mb-6">
             <h3 className="text-2xl font-semibold mb-4">
@@ -56,7 +54,6 @@ const PrivacyPolicy = () => {
             </p>
           </div>
 
-          {/* More Content Sections */}
           <div className="mb-6">
             <h3 className="text-2xl font-semibold mb-4">
               What do we use your information for?
@@ -142,8 +139,6 @@ const PrivacyPolicy = () => {
             </p>
           </div>
         </div>
-
-        {/* Footer Spacer */}
         <div className="h-16" />
       </div>
     </div>
