@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import Button from '@component/button/button';
@@ -7,10 +8,10 @@ import { CustomInput } from '@component/input';
 import DebounceInput from '@component/input/DebounceInput';
 import routes from '@constants/routes';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import EmailIcon from '@mui/icons-material/Email';
+// import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
 import { useGet, usePatch } from '@shared/api/useApi';
-import Loader from '@shared/loader';
+// import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import { selectUser } from '@shared/store/userSlice';
 import toast from '@shared/toast';
@@ -42,7 +43,7 @@ const stateChange: any = {
 export default function CompletedAssignByName() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { schoolName } = useParams();
+  // const { schoolName } = useParams();
   const {
     user_profile_id: teacherId,
     first_name: teacherFirstName,
@@ -64,7 +65,7 @@ export default function CompletedAssignByName() {
   const [csvData, setCsvData] = useState<[]>([]);
   const [tableData, setTableData] = useState<any>([]);
   const [tableDataCopy, setTableDataCopy] = useState<any>([]);
-  const [bulkSelect, setBulkSelect] = useState<any>([]);
+  // const [bulkSelect, setBulkSelect] = useState<any>([]);
   const [selectedId, setSelectedId] = useState({});
 
   const TableColumns = [
@@ -86,6 +87,11 @@ export default function CompletedAssignByName() {
       format: 'DD-MM-YYYY',
     },
     {
+      label: TABLE_LABELS?.DUE_DATE,
+      mapper: 'DueDate',
+      format: 'DD-MM-YYYY',
+    },
+    {
       label: TABLE_LABELS?.SCORE,
       align: 'center',
       mapper: 'score',
@@ -96,11 +102,11 @@ export default function CompletedAssignByName() {
   const [page, setPage] = useState(1);
   const [totalDataCount, setTotalDataCount] = useState(0);
 
-  const [playloadData, setPlayloadData] = useState<any | undefined>({});
+  // const [playloadData, setPlayloadData] = useState<any | undefined>({});
   const [order, setOrder] = useState<any>('desc');
   const [orderBy, setOrderBy] = useState<any>('created_at');
-  const [fromDate, setFromDate] = useState<any>();
-  const [toDate, setToDate] = useState<any>();
+  // const [fromDate, setFromDate] = useState<any>();
+  // const [toDate, setToDate] = useState<any>();
   const [remarkName, setRemark] = useState<any>('');
   const [markAssignment, setMarkAssignment] = useState<any>(false);
   const [modState, selectedModState] = useState<any>('');
@@ -139,7 +145,6 @@ export default function CompletedAssignByName() {
       setCsvData(csvEleData);
       if (accData.length) {
         setExtendedDeuData(new Date(accData[0]?.end_date));
-        console.log('isFromComplete', isFromComplete);
         accData = accData.map((ele: any) => {
           const schoolNameInURL = decodeURIComponent(
             location.pathname.split('/')[1]
