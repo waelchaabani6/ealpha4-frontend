@@ -212,6 +212,8 @@ function AssignmentDetails() {
     Nmeet2: '',
     exceed1: '',
     exceed2: '',
+    above1: '',
+    above2: '',
     meet1: '',
     meet2: '',
     approching1: '',
@@ -326,6 +328,9 @@ function AssignmentDetails() {
       const meetObj = fetchedRecords?.find(
         (obj: any) => obj.status === 'Meets'
       );
+      const aboveObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Above'
+      );
       const AppObj = fetchedRecords?.find(
         (obj: any) => obj.status === 'Approaching'
       );
@@ -335,10 +340,13 @@ function AssignmentDetails() {
       const ExceedsObj = fetchedRecords?.find(
         (obj: any) => obj.status === 'Exceeds'
       );
+
       setValue((prevState: any) => ({
         ...prevState,
         meet1: meetObj?.from_value,
         meet2: meetObj?.to_value,
+        above1: aboveObj?.from_value,
+        above2: aboveObj?.to_value,
         exceed1: ExceedsObj?.from_value,
         exceed2: ExceedsObj?.to_value,
         approching1: AppObj?.from_value,
@@ -361,28 +369,39 @@ function AssignmentDetails() {
     if (score !== null && !isNaN(score)) {
       if (score >= val.exceed1 && score <= val.exceed2) {
         // Exceeds
-        return { bg: '#d9ffc8', color: '#6CA463' }[type]; // blue
+        // return { bg: '#d9ffc8', color: '#6CA463' }[type]; // green
+        return { bg: '#BECCFF', color: '#132E90 ' }[type]; // blue
+      }
+      if (score >= val.above1 && score <= val.above2) {
+        /// Above
+        return { bg: '#d9ffc8', color: '#6CA463' }[type]; // green
       }
       if (score >= val.meet1 && score <= val.meet2) {
         /// Meets
-        return { bg: '#BECCFF', color: '#132E90 ' }[type]; // green
+        // return { bg: '#BECCFF', color: '#132E90 ' }[type]; // blue
+        return { bg: '#FFF9BE', color: '#C7B551' }[type]; // yellow
       }
       if (score >= val.approching1 && score <= val.approching2) {
         // Approaching
-        return { bg: '#FFF9BE', color: '#C7B551' }[type];
+        // return { bg: '#FFF9BE', color: '#C7B551' }[type]; // yellow
+        return { bg: '#FFD6A5', color: '#FF9E4F' }[type]; // orange
       }
       if (score >= val.Nmeet1 && score <= val.Nmeet2) {
         // Does not Meet
-        return { bg: '#FCD4C6', color: '#E36B6B' }[type];
+        // return { bg: '#FCD4C6', color: '#E36B6B' }[type];
+        return { bg: '#FFD6A5', color: '#FF9E4F' }[type]; // orange
       }
     } else {
-      return { bg: '#FCD4C6', color: '#E36B6B' }[type];
+      return { bg: '#FFD6A5', color: '#FF9E4F' }[type];
     }
   }
 
   function getPerformanceText(score: any) {
     if (score >= val.exceed1 && score <= val.exceed2) {
       return 'Exceeds';
+    }
+    if (score >= val.above1 && score <= val.above2) {
+      return 'Above';
     }
     if (score >= val.meet1 && score <= val.meet2) {
       return 'Meets';
