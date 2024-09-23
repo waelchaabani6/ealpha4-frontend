@@ -1,3 +1,7 @@
+/* eslint-disable react/jsx-curly-newline */
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable operator-linebreak */
+/* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import Button from '@component/button/button';
@@ -7,10 +11,10 @@ import { CustomInput } from '@component/input';
 import DebounceInput from '@component/input/DebounceInput';
 import routes from '@constants/routes';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import EmailIcon from '@mui/icons-material/Email';
+// import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
 import { useGet, usePatch } from '@shared/api/useApi';
-import Loader from '@shared/loader';
+// import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import { selectUser } from '@shared/store/userSlice';
 import toast from '@shared/toast';
@@ -24,6 +28,7 @@ import ReactToPrint from 'react-to-print';
 import UseGetProfile from '@utility/Hooks/UseGetProfile';
 import DatePicker from '@component/datepicker';
 import {
+  COMPONENTS,
   RESULTS_PER_PAGE,
   TABLE_LABELS,
   TOOLBAR_LABELS,
@@ -42,7 +47,7 @@ const stateChange: any = {
 export default function CompletedAssignByName() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { schoolName } = useParams();
+  // const { schoolName } = useParams();
   const {
     user_profile_id: teacherId,
     first_name: teacherFirstName,
@@ -64,13 +69,30 @@ export default function CompletedAssignByName() {
   const [csvData, setCsvData] = useState<[]>([]);
   const [tableData, setTableData] = useState<any>([]);
   const [tableDataCopy, setTableDataCopy] = useState<any>([]);
-  const [bulkSelect, setBulkSelect] = useState<any>([]);
+  // const [bulkSelect, setBulkSelect] = useState<any>([]);
   const [selectedId, setSelectedId] = useState({});
 
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
       align: 'center',
+    },
+    {
+      label: 'Select',
+      mapper: 'Select',
+      component: COMPONENTS?.checkbox,
+      selector: 'studentId',
+      showInHeader: true,
+      sx: {
+        display: 'flex',
+        alignItems: 'center',
+      },
+      cellSx: {
+        justifyContent: 'flex-start',
+        position: 'relative',
+        left: '0px',
+      },
+      elementClass: 'flex items-center',
     },
     {
       label: TABLE_LABELS?.STUDENT_NAME,
@@ -86,9 +108,26 @@ export default function CompletedAssignByName() {
       format: 'DD-MM-YYYY',
     },
     {
+      label: TABLE_LABELS?.DUE_DATE,
+      mapper: 'DueDate',
+      format: 'DD-MM-YYYY',
+    },
+    {
       label: TABLE_LABELS?.SCORE,
       align: 'center',
       mapper: 'score',
+    },
+    {
+      label: TABLE_LABELS?.REMARK,
+      align: 'center',
+      mapper: 'remark',
+    },
+    {
+      label: TABLE_LABELS?.ACTION,
+      align: 'center',
+      mapper: 'Action',
+      // component: COMPONENTS?.edit,
+      // showInHeader: false,
     },
   ];
 
@@ -96,16 +135,19 @@ export default function CompletedAssignByName() {
   const [page, setPage] = useState(1);
   const [totalDataCount, setTotalDataCount] = useState(0);
 
-  const [playloadData, setPlayloadData] = useState<any | undefined>({});
+  // const [playloadData, setPlayloadData] = useState<any | undefined>({});
   const [order, setOrder] = useState<any>('desc');
   const [orderBy, setOrderBy] = useState<any>('created_at');
-  const [fromDate, setFromDate] = useState<any>();
-  const [toDate, setToDate] = useState<any>();
+  // const [fromDate, setFromDate] = useState<any>();
+  // const [toDate, setToDate] = useState<any>();
   const [remarkName, setRemark] = useState<any>('');
   const [markAssignment, setMarkAssignment] = useState<any>(false);
   const [modState, selectedModState] = useState<any>('');
   const [assignmentData, setAssignmentData] = useState<any>({});
   const [searchVal, setSearchVal] = useState('');
+
+  const [bulkSelect, setBulkSelect] = useState<any>([]);
+  const [isBulk, setIsBulk] = useState(false);
 
   useEffect(() => {
     const locationData = location.pathname;
@@ -139,7 +181,6 @@ export default function CompletedAssignByName() {
       setCsvData(csvEleData);
       if (accData.length) {
         setExtendedDeuData(new Date(accData[0]?.end_date));
-        console.log('isFromComplete', isFromComplete);
         accData = accData.map((ele: any) => {
           const schoolNameInURL = decodeURIComponent(
             location.pathname.split('/')[1]
@@ -151,29 +192,25 @@ export default function CompletedAssignByName() {
             id: ele.id,
             StudentName: (
               <Link to={link}>
-                {' '}
                 <span
                   role="alert"
                   className="text-accent underline cursor-pointer font-medium"
                 >
-                  {' '}
-                  {ele.first_name} {ele.last_name}
-                </span>{' '}
+                  {ele.first_name}
+                  &nbsp;
+                  {ele.last_name}
+                </span>
               </Link>
             ),
             State: (
               <span
                 role="alert"
-                className={
-                  ele.state === 'Submitted'
-                    ? 'text-accent underline cursor-pointer'
-                    : 'underline cursor-pointer'
-                }
-                onClick={() => {
-                  setSelectedId(ele.id);
-                  setMarkAssignment(true);
-                  setErrorMsg('');
-                }}
+                className={ele.state === 'Submitted' ? 'text-accent' : ''}
+                // onClick={() => {
+                //   setSelectedId(ele.id);
+                //   setMarkAssignment(true);
+                //   setErrorMsg('');
+                // }}
               >
                 {ele.state}
               </span>
@@ -183,7 +220,22 @@ export default function CompletedAssignByName() {
             ),
             EndDate: moment(ele.end_date.replace('Z', '')).format('YYYY-MM-DD'),
             score: ele.score,
+            remark: ele.remark,
+            studentId: ele.student_id,
             searchString: `${ele.first_name} ${ele.last_name}`,
+            Action: (
+              <Button
+                onClick={() => {
+                  setSelectedId(ele.id);
+                  setMarkAssignment(true);
+                  setErrorMsg('');
+                  setRemark(ele?.remark);
+                  setIsBulk(false);
+                }}
+              >
+                Edit
+              </Button>
+            ),
           };
         });
       }
@@ -276,15 +328,31 @@ export default function CompletedAssignByName() {
     onError: ({ response }: any) => {},
   });
 
+  const { isLoading: updateBulkLoading, mutate: updateBulkStatus } = usePatch({
+    baseURL,
+    url: `assignments-service/assignments/bulk-update/${assignmentData.assignmentId}/`,
+    onSuccess: ({ response }: any) => {
+      setMarkAssignment(false);
+      fetchRecords();
+    },
+    onError: ({ response }: any) => {},
+  });
+
   const statusChange = () => {
     const selectedRec = tableData.find(
       (ele: { id: string }) => ele.id === selectedId
     );
     const passObj: any = { state: stateChange[modState] };
+
+    if (isBulk) {
+      passObj.students = bulkSelect;
+      passObj.due_date = moment(extendedDeuData).format('YYYY-MM-DD');
+    } else {
+      passObj.teacher_name = `${teacherFirstName} ${teacherLastName}`;
+      passObj.new_end_date = moment(extendedDeuData).format('YYYY-MM-DD');
+    }
     passObj.remark = remarkName;
-    passObj.teacher_name = `${teacherFirstName} ${teacherLastName}`;
     passObj.teacher_id = teacherId;
-    passObj.new_end_date = moment(extendedDeuData).format('YYYY-MM-DD');
     const userFd = new FormData();
     if (!passObj.state && selectedRec?.ogState) {
       passObj.state = selectedRec.ogState;
@@ -296,6 +364,8 @@ export default function CompletedAssignByName() {
     });
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
+
+    console.log(passObj, '#passObj');
     if (
       modState === 'Mark as Ongoing' &&
       extendedDeuData &&
@@ -303,7 +373,12 @@ export default function CompletedAssignByName() {
     ) {
       setErrorMsg('Due date should be greater than current date.');
     } else {
-      updateStatus(userFd);
+      if (isBulk) {
+        updateBulkStatus(userFd);
+      } else {
+        updateStatus(userFd);
+      }
+      // updateStatus(userFd);
       getUser();
       setRemark('');
       selectedModState('');
@@ -322,6 +397,31 @@ export default function CompletedAssignByName() {
     ? moment(extendedDeuData).format('DD-MM-YYYY')
     : '';
 
+  const handleSelectAllClick = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    data: any,
+    selector?: string
+  ): any => {
+    let newSchoolID: string | any[] = [];
+    newSchoolID = data.map((n: any) => n[selector || 'id']);
+
+    if (event) {
+      const newDat = [...bulkSelect, ...newSchoolID];
+      setBulkSelect([...new Set(newDat)]);
+    } else {
+      const filterArray = bulkSelect.filter(
+        (item: any): any => !newSchoolID.includes(item)
+      );
+      setBulkSelect([...new Set(filterArray)]);
+    }
+  };
+
+  const handleSelection = (params: any) => {
+    setBulkSelect(params);
+  };
+
+  console.log(bulkSelect, '#bulkSelect');
+
   return (
     <RouteLayout navBack={true}>
       <HeaderMenus
@@ -337,6 +437,7 @@ export default function CompletedAssignByName() {
         }}
         onclose={() => {
           setMarkAssignment(false);
+          setIsBulk(false);
         }}
         maxwidth="sm"
       >
@@ -386,10 +487,10 @@ export default function CompletedAssignByName() {
               displayEmpty={false}
             />
           </div>
+
           {ErrorMsg && (
             <div style={{ fontSize: '0.75rem' }} className=" text-red-400">
-              {' '}
-              {ErrorMsg}{' '}
+              {ErrorMsg}
             </div>
           )}
           <div className="relative mt-4 top-[-8px]">
@@ -415,35 +516,45 @@ export default function CompletedAssignByName() {
           </div>
         </div>
       </CustomizedDialogs>
+
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <DebounceInput onChange={(val) => setSearchVal(val)} />
           <div>
             <div className="text-sm"> From Date </div>
             <div className="border rounded border-gray-300 p-1 mt-3 text-sm w-32 h-8">
-              {' '}
               {assignmentData.fromData
                 ? moment(assignmentData.fromData).format('DD-MM-YYYY')
-                : ''}{' '}
+                : ''}
             </div>
           </div>
           <div>
             <div className="text-sm"> To Date </div>
             <div className="border rounded border-gray-300 p-1 mt-3 text-sm w-32 h-8">
-              {' '}
               {extendedDeuDataFormat ||
                 (assignmentData.toDate
                   ? moment(assignmentData.toDate).format('DD-MM-YYYY')
-                  : '')}{' '}
+                  : '')}
             </div>
           </div>
 
           <div>
             <div className="text-sm"> Class </div>
             <div className="border rounded border-gray-300 p-1 mt-3 text-sm  h-8 w-32">
-              {' '}
-              {assignmentData.grade || ``}{' '}
+              {assignmentData.grade || ``}
             </div>
+          </div>
+
+          <div className="flex justify-center mt-5">
+            <Button
+              onClick={() => {
+                setMarkAssignment(true);
+                setErrorMsg('');
+                setIsBulk(true);
+              }}
+            >
+              Bulk Update
+            </Button>
           </div>
         </div>
       </div>
@@ -458,6 +569,8 @@ export default function CompletedAssignByName() {
             currentPage={page}
             setPage={setPage}
             rowsPerPage={rowsPerPage}
+            bulkSelect={bulkSelect}
+            setBulkSelect={handleSelection}
             orderBy={orderBy}
             setOrderBy={setOrderBy}
             order={order}
