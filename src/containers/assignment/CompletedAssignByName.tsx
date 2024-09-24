@@ -109,7 +109,7 @@ export default function CompletedAssignByName() {
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
-      mapper: 'DueDate',
+      mapper: 'EndDate',
       format: 'DD-MM-YYYY',
     },
     {
@@ -187,6 +187,7 @@ export default function CompletedAssignByName() {
           );
 
           const link = `/${schoolNameInURL}/assignment/assignment-details/${ele.id}/${assignmentData.assignmentId}/${isFromComplete}`;
+
           return {
             ogState: ele.state,
             id: ele.id,
@@ -365,7 +366,6 @@ export default function CompletedAssignByName() {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
 
-    console.log(passObj, '#passObj');
     if (
       modState === 'Mark as Ongoing' &&
       extendedDeuData &&
@@ -421,6 +421,7 @@ export default function CompletedAssignByName() {
   };
 
   console.log(bulkSelect, '#bulkSelect');
+  console.log(tableData, '#tableData');
 
   return (
     <RouteLayout navBack={true}>
@@ -552,6 +553,7 @@ export default function CompletedAssignByName() {
                 setErrorMsg('');
                 setIsBulk(true);
               }}
+              disabled={!bulkSelect.length}
             >
               Bulk Update
             </Button>
