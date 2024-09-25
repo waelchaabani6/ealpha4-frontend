@@ -6,6 +6,7 @@ import { ReactComponent as Publishers } from '@images/AdminIcons/Ic_publishers.s
 import { ReactComponent as GlobalSetting } from '@images/AdminIcons/Ic_globesetting.svg';
 import { ReactComponent as ManageClasses } from '@images/smicons/Manage-classes.svg';
 import { ReactComponent as ConfigSetting } from '@images/AdminIcons/Ic_config-setting.svg';
+import { ReactComponent as ManageAdmin } from '@images/smicons/manageAdminn1.svg';
 
 import { Link } from 'react-router-dom';
 import { MANAGE_ADMIN } from '@constants/routes';
@@ -56,9 +57,15 @@ export default function Index() {
 
           <Link to="course-icons" className="cards">
             <ManageClasses />
+
             <span>Course Icons</span>
           </Link>
 
+          <Link to="manage-users" className="cards">
+            <ManageAdmin />
+
+            <span>Manage users</span>
+          </Link>
         </div>
       </div>
     </RouteLayout>
