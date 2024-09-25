@@ -12,7 +12,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import PageTitle from '@shared/pageTitle';
 import Wrapper from '@shared/wrapper/Wrapper';
 import { getNoOfPages } from '@utility/utility';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import Input from '@shared/form/Input';
@@ -21,6 +21,9 @@ import * as yup from 'yup';
 import Button from '@component/button/button';
 import toast from '@shared/toast';
 import { usePost } from '@shared/api/useApi';
+import CustomPagination from '@component/pagination/CustomPagination';
+import Dropdown from '@component/dropdown/Dropdown';
+import Loader from '@shared/loader';
 
 type FormInputTypes = {
   // user_name: any;
@@ -38,12 +41,31 @@ type FormInputTypes = {
 
 const userServicesBaseURL = import.meta.env.VITE_APP_USER_SERVICE_URL;
 
-export default function SearchResults({ searchData }: any) {
-  const [totalDataCount, setTotalDataCount] = useState(0);
-  const [page, setPage] = useState(1);
+type SearchResultsProps = {
+  searchData: any;
+  rowsPerPage: number;
+  page: number;
+  setPage: any;
+  totalDataCount: number;
+  setRowsPerPage: React.Dispatch<React.SetStateAction<number>>;
+  LogListLoading: boolean;
+  fetchUsers: any;
+};
+
+export default function SearchResults({
+  searchData,
+  rowsPerPage,
+  page,
+  setPage,
+  totalDataCount,
+  setRowsPerPage,
+  LogListLoading,
+  fetchUsers,
+}: SearchResultsProps) {
+  // const [page, setPage] = useState(1);
   const [order, setOrder] = useState<any>('desc');
   const [orderBy, setOrderBy] = useState<any>('assessment_name');
-  const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
+  // const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
 
   const [dialogOpen, setdialogOpen] = useState<boolean>(false);
   const [buttonOpenForm, setButtonOpenForm] = useState<boolean>(false);
@@ -58,10 +80,11 @@ export default function SearchResults({ searchData }: any) {
     {
       label: TABLE_LABELS?.SR_NO,
       align: 'center',
+      mapper: 'id',
     },
     {
       label: TABLE_LABELS?.USER_NAME,
-      mapper: 'username',
+      mapper: 'user_name',
       isSort: true,
     },
     {
@@ -94,6 +117,8 @@ export default function SearchResults({ searchData }: any) {
   const handlePagination = (currPage: any) => {
     if (currPage) setPage(currPage);
     else setPage(1);
+    console.log('pag');
+    // fetchUsers();
   };
 
   const actionHandler = (data: any, handlername: string) => {
@@ -152,27 +177,75 @@ export default function SearchResults({ searchData }: any) {
     },
   });
 
+  const handlePerPage = (e: any) => {
+    setPage(1);
+    setRowsPerPage(e);
+    // fetchUsers();
+  };
+
+  // console.log(searchData, 'searchData');
+
   return (
     <div className="w-full">
       <div className="bg-white rounded-md p-4">
         <p className="font-bold">Results</p>
-        <Wrapper>
-          <AdvanceTable
-            tableData={searchData}
-            headerRows={TableColumns}
+        <div className="flex gap-3 justify-end">
+          <Dropdown
+            title="Result Of Pages"
+            value={rowsPerPage}
+            dataArray={RESULTS_PER_PAGE}
+            onChangeHandler={handlePerPage}
+          />
+
+          {/* <CustomPagination
             totalPages={noOfpages}
             paginateHandler={handlePagination}
             currentPage={page}
-            rowsPerPage={rowsPerPage}
-            orderBy={orderBy}
-            setOrderBy={setOrderBy}
-            order={order}
-            setOrder={setOrder}
-            actionHandler={actionHandler}
-            // isLoading={assignmentLoading || loadSync || loadingDelete}
-            setPage={setPage}
-          />
-        </Wrapper>
+          /> */}
+        </div>
+        {LogListLoading ? (
+          <Loader />
+        ) : (
+          // useMemo(
+          //   () => (
+          //     <Wrapper>
+          //       <AdvanceTable
+          //         tableData={searchData}
+          //         headerRows={TableColumns}
+          //         totalPages={noOfpages}
+          //         paginateHandler={handlePagination}
+          //         currentPage={page}
+          //         rowsPerPage={rowsPerPage}
+          //         orderBy={orderBy}
+          //         setOrderBy={setOrderBy}
+          //         order={order}
+          //         setOrder={setOrder}
+          //         actionHandler={actionHandler}
+          //         // isLoading={assignmentLoading || loadSync || loadingDelete}
+          //         setPage={setPage}
+          //       />
+          //     </Wrapper>
+          //   ),
+          //   [searchData]
+          // )
+          <Wrapper>
+            <AdvanceTable
+              tableData={searchData}
+              headerRows={TableColumns}
+              totalPages={noOfpages}
+              paginateHandler={handlePagination}
+              currentPage={page}
+              rowsPerPage={rowsPerPage}
+              orderBy={orderBy}
+              setOrderBy={setOrderBy}
+              order={order}
+              setOrder={setOrder}
+              actionHandler={actionHandler}
+              // isLoading={assignmentLoading || loadSync || loadingDelete}
+              setPage={setPage}
+            />
+          </Wrapper>
+        )}
       </div>
 
       <CustomizedDialogs
