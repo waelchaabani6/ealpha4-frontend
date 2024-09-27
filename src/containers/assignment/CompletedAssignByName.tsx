@@ -345,8 +345,15 @@ export default function CompletedAssignByName() {
     );
     const passObj: any = { state: stateChange[modState] };
 
+    const studentIds = [];
+    bulkSelect.forEach((item: any) => {
+      studentIds.push(Number(item));
+    });
+
     if (isBulk) {
-      passObj.students = bulkSelect;
+      // passObj.students = bulkSelect;
+      // console.log(studentIds, 'studentIds');
+      passObj.students = studentIds;
       passObj.due_date = moment(extendedDeuData).format('YYYY-MM-DD');
     } else {
       passObj.teacher_name = `${teacherFirstName} ${teacherLastName}`;
@@ -355,6 +362,8 @@ export default function CompletedAssignByName() {
     passObj.remark = remarkName;
     passObj.teacher_id = teacherId;
     const userFd = new FormData();
+    // const userFd = {};
+
     if (!passObj.state && selectedRec?.ogState) {
       passObj.state = selectedRec.ogState;
     }
@@ -374,7 +383,8 @@ export default function CompletedAssignByName() {
       setErrorMsg('Due date should be greater than current date.');
     } else {
       if (isBulk) {
-        updateBulkStatus(userFd);
+        // updateBulkStatus(userFd);
+        updateBulkStatus(passObj);
       } else {
         updateStatus(userFd);
       }
@@ -420,8 +430,8 @@ export default function CompletedAssignByName() {
     setBulkSelect(params);
   };
 
-  console.log(bulkSelect, '#bulkSelect');
-  console.log(tableData, '#tableData');
+  // console.log(bulkSelect, '#bulkSelect');
+  // console.log(tableData, '#tableData');
 
   return (
     <RouteLayout navBack={true}>
