@@ -565,7 +565,7 @@ export default function CompletedAssignByName() {
               }}
               disabled={!bulkSelect.length}
             >
-              Bulk Update
+              Modify Status
             </Button>
           </div>
         </div>
