@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import RouteLayout from '@layout/routeLayout';
 import { useGet } from '@shared/api/useApi';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import { RESULTS_PER_PAGE } from '@constants/constants';
 
 import SearchUser from './SearchUser';
 import SearchResults from './SearchResults';
@@ -68,7 +67,6 @@ export default function manageUsers() {
           totalDataCount={totalDataCount}
           page={page}
           LogListLoading={LogListLoading}
-          fetchUsers={fetchUsers}
         />
       </div>
     </RouteLayout>
