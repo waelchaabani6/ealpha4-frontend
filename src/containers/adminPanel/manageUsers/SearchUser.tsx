@@ -37,7 +37,7 @@ export default function SearchUser({
   return (
     <div className="w-full">
       <div className="bg-white rounded-md p-4">
-        <div className="flex w-full justify-between">
+        <div className="flex w-full gap-x-5">
           <div className="max-w-xs">
             <DebounceInput
               onChange={(value: string) => setSearchVal(value)}

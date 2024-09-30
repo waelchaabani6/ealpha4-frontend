@@ -1,3 +1,4 @@
+/* eslint-disable operator-linebreak */
 /* eslint-disable comma-dangle */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
@@ -7,6 +8,7 @@ import {
   PASSWORD_REGEX_MESSAGE,
   RESULTS_PER_PAGE,
   TABLE_LABELS,
+  USER_ROLE,
 } from '@constants/constants';
 import { yupResolver } from '@hookform/resolvers/yup';
 import PageTitle from '@shared/pageTitle';
@@ -20,10 +22,11 @@ import Input from '@shared/form/Input';
 import * as yup from 'yup';
 import Button from '@component/button/button';
 import toast from '@shared/toast';
-import { usePost } from '@shared/api/useApi';
+import { usePatch, usePost } from '@shared/api/useApi';
 import CustomPagination from '@component/pagination/CustomPagination';
 import Dropdown from '@component/dropdown/Dropdown';
 import Loader from '@shared/loader';
+import { handleUserProfile, TableColumns } from './utils';
 
 type FormInputTypes = {
   // user_name: any;
@@ -39,7 +42,7 @@ type FormInputTypes = {
   // flag?: any;
 };
 
-const userServicesBaseURL = import.meta.env.VITE_APP_USER_SERVICE_URL;
+const userServiceBaseURL = import.meta.env.VITE_APP_USER_SERVICE_URL;
 
 type SearchResultsProps = {
   searchData: any;
@@ -71,40 +74,13 @@ export default function SearchResults({
   const [buttonOpenForm, setButtonOpenForm] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
 
+  const [userData, setUserData] = useState<any>({});
+  const [apiValue, setApiValue] = useState<any>('');
+
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
 
   const navigate = useNavigate();
   const { schoolName } = useParams();
-
-  const TableColumns = [
-    {
-      label: TABLE_LABELS?.SR_NO,
-      align: 'center',
-      mapper: 'id',
-    },
-    {
-      label: TABLE_LABELS?.USER_NAME,
-      mapper: 'user_name',
-      isSort: true,
-    },
-    {
-      label: TABLE_LABELS?.FIRST_NAME,
-      mapper: 'first_name',
-      isSort: true,
-    },
-    {
-      label: TABLE_LABELS?.LAST_NAME,
-      mapper: 'last_name',
-      isSort: true,
-    },
-    {
-      label: TABLE_LABELS?.ACTION,
-      mapper: 'Action',
-      align: 'center',
-      component: COMPONENTS?.view,
-      showInHeader: false,
-    },
-  ];
 
   const shape = {
     password: yup.string().when('password', {
@@ -117,65 +93,68 @@ export default function SearchResults({
   const handlePagination = (currPage: any) => {
     if (currPage) setPage(currPage);
     else setPage(1);
-    console.log('pag');
-    // fetchUsers();
   };
 
-  const actionHandler = (data: any, handlername: string) => {
-    if (handlername === 'edit') {
-      navigate(`preview_question/${data?.id}`, {
-        state: { page, path: `/${schoolName}/assessments` },
-      });
-    }
-  };
+  // const actionHandler = (data: any, handlername: string) => {
+  //   if (handlername === 'edit') {
+  //     navigate(`preview_question/${data?.id}`, {
+  //       state: { page, path: `/${schoolName}/assessments` },
+  //     });
+  //   }
+  // };
 
   const addSubAdminSchema = yup
     .object()
     .shape(shape, [['password', 'password']]);
 
-  const {
-    handleSubmit,
-    control,
-    setError,
-    reset,
-    clearErrors,
-    setValue,
-    watch,
-  } = useForm<FormInputTypes>({
-    resolver: yupResolver(addSubAdminSchema),
-    defaultValues: {
-      // flag: false,
-    },
-  });
+  const { handleSubmit, control, setError, reset, clearErrors, setValue } =
+    useForm<FormInputTypes>({
+      resolver: yupResolver(addSubAdminSchema),
+    });
 
   const onSubmit = (values: any) => {
-    // const updatedDetails = { ...values };
-    // delete updatedDetails.user_name;
-    // editMode
-    //   ? updatedDetails.password
-    //     ? updatedDetails.password
-    //     : delete updatedDetails.password
-    //   : null;
-    // editMode ? update(updatedDetails) : mutate(values);
+    updatedDetails.user_name = values?.user_name;
+    updatedDetails.password = values?.password;
+    console.log(updatedDetails, 'updatedDetails');
+    mutateUpdateUser(updatedDetails);
   };
 
-  const { isLoading, mutate } = usePost({
-    baseURL: userServicesBaseURL,
-    url: 'users-service/create-sub-admin/',
-    onSuccess: ({
-      data: {
-        response: { data },
-      },
-    }: any) => {
-      // !buttonOpenForm ? setdialogOpen(false) : setdialogOpen(true);
-      reset();
-      toast('success', 'Successfully Created');
-    },
-    onError: ({ response }: any) => {
-      toast('error', 'Error');
-      // handleErrorResponse(response?.data?.errors);
-    },
-  });
+  // const { isLoading, mutate } = usePost({
+  //   baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
+  //   url: 'users-service/password/changePassword/',
+  //   onSuccess: ({ data }: any) => {
+  //     toast('success', data?.message);
+  //     // localStorage.removeItem('user');
+  //     // localStorage.removeItem('token');
+  //     // localStorage.removeItem('rememberUser');
+  //     // dispatch(resetUser());
+  //     // navigate(navigateLink);
+  //   },
+  //   onError: (error: AxiosError) => {
+  //     console.log(error);
+  //     // toast('error', (error?.response?.data as any)?.message || error?.message);
+  //     // [
+  //     //   {
+  //     //     type: 'root.serverError',
+  //     //     name: 'old_password',
+  //     //     message: 'Invalid'
+  //     //   },
+  //     //   {
+  //     //     type: 'root.serverError',
+  //     //     name: 'new_password',
+  //     //     message: 'Invalid'
+  //     //   },
+  //     //   {
+  //     //     type: 'root.serverError',
+  //     //     name: 'confirm_password',
+  //     //     message: 'Invalid'
+  //     //   }
+  //     // ].forEach(({ name, type, message }) => (
+  //     //   setError(name as any, { type, message })
+  //     // )
+  //     // );
+  //   },
+  // });
 
   const handlePerPage = (e: any) => {
     setPage(1);
@@ -184,6 +163,37 @@ export default function SearchResults({
   };
 
   // console.log(searchData, 'searchData');
+
+  const viewHandler = (data: any, handlername: string) => {
+    setdialogOpen(true);
+    setValue('user_name', data?.user_name);
+    setUserData(data);
+
+    const apiUrl = handleUserProfile(data?.role_id, data);
+    console.log('api value', apiUrl);
+    console.log('userData', data);
+    setApiValue(apiUrl);
+  };
+
+  // Update Parent
+  const { isLoading: loadingUpdateUser, mutate: mutateUpdateUser } = usePatch({
+    baseURL: userServiceBaseURL,
+    url: apiValue,
+    onSuccess: (response: any) => {
+      toast('success', 'User Updated successfully');
+    },
+    onError: ({ response }: any) => {
+      toast(
+        'error',
+        response?.status === 400
+          ? 'User already exists'
+          : response?.statusText || 'Error'
+      );
+      //  handleErrorResponse(response?.data?.errors);
+    },
+  });
+
+  // ----------------------------------------------END API---------------------------------
 
   return (
     <div className="w-full">
@@ -196,38 +206,10 @@ export default function SearchResults({
             dataArray={RESULTS_PER_PAGE}
             onChangeHandler={handlePerPage}
           />
-
-          {/* <CustomPagination
-            totalPages={noOfpages}
-            paginateHandler={handlePagination}
-            currentPage={page}
-          /> */}
         </div>
         {LogListLoading ? (
           <Loader />
         ) : (
-          // useMemo(
-          //   () => (
-          //     <Wrapper>
-          //       <AdvanceTable
-          //         tableData={searchData}
-          //         headerRows={TableColumns}
-          //         totalPages={noOfpages}
-          //         paginateHandler={handlePagination}
-          //         currentPage={page}
-          //         rowsPerPage={rowsPerPage}
-          //         orderBy={orderBy}
-          //         setOrderBy={setOrderBy}
-          //         order={order}
-          //         setOrder={setOrder}
-          //         actionHandler={actionHandler}
-          //         // isLoading={assignmentLoading || loadSync || loadingDelete}
-          //         setPage={setPage}
-          //       />
-          //     </Wrapper>
-          //   ),
-          //   [searchData]
-          // )
           <Wrapper>
             <AdvanceTable
               tableData={searchData}
@@ -240,9 +222,8 @@ export default function SearchResults({
               setOrderBy={setOrderBy}
               order={order}
               setOrder={setOrder}
-              actionHandler={actionHandler}
-              // isLoading={assignmentLoading || loadSync || loadingDelete}
               setPage={setPage}
+              viewHandler={viewHandler}
             />
           </Wrapper>
         )}
@@ -271,7 +252,7 @@ export default function SearchResults({
               control={control}
               name="user_name"
               label="Username"
-              disabled={!!editMode}
+              disabled={true}
               sxClass={{
                 'input[type="text"]': {
                   textTransform: 'lowercase',
@@ -290,7 +271,7 @@ export default function SearchResults({
           </div>
 
           <div className="py-8 float-right space-x-5">
-            {!editMode && (
+            {/* {!editMode && (
               <Button
                 variant="outlined"
                 disabled={isLoading}
@@ -299,11 +280,11 @@ export default function SearchResults({
               >
                 Save and Add New
               </Button>
-            )}
+            )} */}
 
             <Button
-              // disabled={updateLoading}
-              // loading={updateLoading}
+              disabled={loadingUpdateUser}
+              loading={loadingUpdateUser}
               onClick={() => setButtonOpenForm(false)}
             >
               {editMode ? 'Update' : 'Rest'}

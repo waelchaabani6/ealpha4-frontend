@@ -31,8 +31,9 @@ export default function manageUsers() {
           body.push({
             user_name: item1?.user_name,
             first_name: item1?.profile.first_name,
-            id: item1?.id,
+            id: item1?.profile.id,
             last_name: item1?.profile.last_name,
+            role_id: item1?.role_id,
           });
           return body;
         });
@@ -45,7 +46,6 @@ export default function manageUsers() {
 
   useEffect(() => {
     searchData?.length && fetchUsers();
-    console.log('page', page);
   }, [page, rowsPerPage]);
 
   return (
