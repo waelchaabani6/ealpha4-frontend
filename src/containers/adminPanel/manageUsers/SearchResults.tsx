@@ -116,7 +116,6 @@ export default function SearchResults({
     const updatedDetails: any = {};
     updatedDetails.user_name = values?.user_name;
     updatedDetails.password = values?.password;
-    console.log(updatedDetails, 'updatedDetails');
     mutateUpdateUser(updatedDetails);
   };
 
@@ -171,8 +170,7 @@ export default function SearchResults({
     setUserData(data);
 
     const apiUrl = handleUserProfile(data?.role_id, data);
-    console.log('api value', apiUrl);
-    console.log('userData', data);
+
     setApiValue(apiUrl);
   };
 
