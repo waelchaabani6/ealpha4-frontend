@@ -224,15 +224,17 @@ export default function CompletedAssignByName() {
             EndDate: moment(ele.end_date.replace('Z', '')).format('YYYY-MM-DD'),
             score: ele.score,
             // remark: `${ele.remark.substring(0, 30)} ...`,
-            remark: (
+            remark: ele.remark ? (
               <p
                 className="underline cursor-pointer"
                 title="See full remark"
                 onClick={() => handleRemarkClick(ele.remark)}
               >
-                {ele.remark.substring(0, 30)}
+                {ele.remark?.substring(0, 30)}
                 ...
               </p>
+            ) : (
+              <p>-</p>
             ),
             remark_full: ele.remark,
             studentId: ele.student_id,
