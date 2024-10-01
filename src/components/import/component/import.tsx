@@ -1,22 +1,30 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable operator-linebreak */
 import PageTitle from '@shared/pageTitle';
 import FileSelect from '@component/fileUpload';
-import { useEffect, useRef, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useRef } from 'react';
 import { ReactComponent as Download } from '@images/importScv/rect823.svg';
 import { ReactComponent as Pointer } from '@images/importScv/Ellipse 546.svg';
-import { TOOLBAR_LABELS } from '@constants/constants';
 import { usePost } from '@shared/api/useApi';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from '@shared/toast';
 import { useSelector } from 'react-redux';
 import { selectSchoolData } from '@shared/store/schoolSlice';
-import NotFound from '@shared/notFound';
 import SimpleBackdrop from '@component/Backdrop';
-import { capitalizeFirstLetter } from '@utility/utility';
-import { IconButton } from '../../button/button';
 
-const data = ['CSV file only supported, should contain header line', 'Sequence data in the row : login, password, role, secondname, name, email, class, gender, birthdate', 'File has to be UTF-8 encoded', 'Username can not have special characters', 'Gender can be "Male" or "Female". Birth date have to be in format: MM-DD-YY'];
-export default function Import() {
+const data = [
+  'CSV file only supported, should contain header line',
+  'Sequence data in the row : login, password, role, secondname, name, email, class, gender, birthdate',
+  'File has to be UTF-8 encoded',
+  'Username can not have special characters',
+  'Gender can be "Male" or "Female". Birth date have to be in format: MM-DD-YY',
+];
+
+type ImportProps = {
+  setTab: React.Dispatch<React.SetStateAction<number>>;
+};
+
+export default function Import({ setTab }: ImportProps) {
   const navigate = useNavigate();
   const { id, branchId, userID, moduleName } = useParams();
   const { schoolData, branchData } = useSelector(selectSchoolData);
@@ -26,7 +34,7 @@ export default function Import() {
   const pageTitle = {
     teacher: TEACHER,
     student: STUDENT,
-    parent: PARENT
+    parent: PARENT,
   } as any;
   const imageRef = useRef<any>();
   // const { setValue, watch } = useFormContext();
@@ -37,14 +45,18 @@ export default function Import() {
       const documentFormData: any = new FormData();
       documentFormData.append('file_name', file);
       documentFormData.append('import_type', moduleName || '');
-      documentFormData.append('school_id', id || branchData?.school_data?.id || '');
+      documentFormData.append(
+        'school_id',
+        id || branchData?.school_data?.id || ''
+      );
       if (branchId) {
         documentFormData.append('branch_id', branchId || '');
       }
-      if (moduleName
-        && (moduleName === `${TEACHER.toLowerCase()}`
-          || moduleName === `${STUDENT.toLowerCase()}`
-          || moduleName === `${PARENT.toLowerCase()}`)
+      if (
+        moduleName &&
+        (moduleName === `${TEACHER.toLowerCase()}` ||
+          moduleName === `${STUDENT.toLowerCase()}` ||
+          moduleName === `${PARENT.toLowerCase()}`)
       ) {
         mutateImport(documentFormData);
       }
@@ -104,19 +116,21 @@ export default function Import() {
   // };
 
   // ---------------------API-------------
-  // Import CSV for Teacher
+  // Import CSV for Teacher, Student, Parent
   const { isLoading, mutate: mutateImport } = usePost({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
     url: `users-service/${moduleName}s/csv-upload`,
     onSuccess: (response: any) => {
       const res = response?.data?.message;
       toast('success', res);
+      setTab(1);
     },
     onError: ({ response }: any) => {
       toast('error', response?.statusText || 'Error');
-    }
+    },
   });
   // ---------------------END API--------------------------
+
   return (
     <div className="h-full w-full flex flex-col">
       {/* <a href="https://ealpha-dev.s3.amazonaws.com/sparky.jpg" download="image">link</a> */}
@@ -124,39 +138,40 @@ export default function Import() {
         <PageTitle title={pageTitle[moduleName || 'teacher']} />
         <div className="width-100% flex flex-row gap-5 mt-8">
           <div className="px-[100px] py-[10px] border-solid border-2 border-green-600 ">
-            <div className="flex justify-center max-w-full mt-5 cursor-pointer" role="presentation" onClick={() => downloadFile()}>
+            <div
+              className="flex justify-center max-w-full mt-5 cursor-pointer"
+              role="presentation"
+              onClick={() => downloadFile()}
+            >
               {/* <IconButton> */}
               <Download />
               {/* </IconButton> */}
             </div>
-            <small className="flex justify-center text-green-600">Download Sample Templates</small>
+            <small className="flex justify-center text-green-600">
+              Download Sample Templates
+            </small>
           </div>
 
           <div className="grow">
             {/* <h4 className="font-semibold">Upload Document</h4> */}
             <div className="">
-              <FileSelect
-                ref={imageRef}
-                onChange={onChange}
-              />
+              <FileSelect ref={imageRef} onChange={onChange} />
             </div>
           </div>
         </div>
+
         <div className="mt-8 p-5 border border-[#D2D2D2]-600  rounded m-1 bg-slate-100 mb-20 ">
           <h4 className="font-semibold my-5">Import Information </h4>
-          {
-            data.map((item, index) => (
-              <div className="flex flex-row font-sans" key={index}>
-                <span className="p-3"><Pointer /></span>
-                {' '}
-                <small className="p-1">{item}</small>
-              </div>
-            ))
-          }
+          {data.map((item, index) => (
+            <div className="flex flex-row font-sans" key={index}>
+              <span className="p-3">
+                <Pointer />
+              </span>
+              <small className="p-1">{item}</small>
+            </div>
+          ))}
         </div>
-        <SimpleBackdrop
-          open={isLoading}
-        />
+        <SimpleBackdrop open={isLoading} />
       </div>
     </div>
   );
