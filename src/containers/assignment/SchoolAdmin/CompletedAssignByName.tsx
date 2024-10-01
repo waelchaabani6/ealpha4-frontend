@@ -1,3 +1,6 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable operator-linebreak */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { useEffect, useRef, useState } from 'react';
 import Divider from '@mui/material/Divider/Divider';
@@ -393,8 +396,7 @@ export default function CompletedAssignByName() {
           </div>
           {ErrorMsg && (
             <div style={{ fontSize: '0.75rem' }} className="text-red-400">
-              {' '}
-              {ErrorMsg}{' '}
+              {ErrorMsg}
             </div>
           )}
           <div className="relative mt-4 top-[-8px]">
@@ -434,10 +436,9 @@ export default function CompletedAssignByName() {
           <div>
             <div className="text-sm"> From Date </div>
             <div className="border rounded border-gray-300 p-1 mt-3 text-sm w-32 h-8">
-              {' '}
               {assignmentData.fromData
                 ? moment(assignmentData.fromData).format('DD-MM-YYYY')
-                : ''}{' '}
+                : ''}
             </div>
           </div>
           <div>

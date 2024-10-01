@@ -148,6 +148,8 @@ export default function CompletedAssignByName() {
 
   const [bulkSelect, setBulkSelect] = useState<any>([]);
   const [isBulk, setIsBulk] = useState(false);
+  const [showRemark, setShowRemark] = useState(false);
+  const [fullRemark, setFullRemark] = useState('');
 
   useEffect(() => {
     const locationData = location.pathname;
@@ -221,7 +223,18 @@ export default function CompletedAssignByName() {
             ),
             EndDate: moment(ele.end_date.replace('Z', '')).format('YYYY-MM-DD'),
             score: ele.score,
-            remark: ele.remark,
+            // remark: `${ele.remark.substring(0, 30)} ...`,
+            remark: (
+              <p
+                className="underline cursor-pointer"
+                title="See full remark"
+                onClick={() => handleRemarkClick(ele.remark)}
+              >
+                {ele.remark.substring(0, 30)}
+                ...
+              </p>
+            ),
+            remark_full: ele.remark,
             studentId: ele.student_id,
             searchString: `${ele.first_name} ${ele.last_name}`,
             Action: (
@@ -247,6 +260,11 @@ export default function CompletedAssignByName() {
     onError: ({ response }: any) => {},
     enabled: false,
   });
+
+  const handleRemarkClick = (remark_full) => {
+    setFullRemark(remark_full);
+    setShowRemark(true);
+  };
 
   useEffect(() => {
     if (assignmentData.assignmentId !== undefined) {
@@ -351,8 +369,6 @@ export default function CompletedAssignByName() {
     });
 
     if (isBulk) {
-      // passObj.students = bulkSelect;
-      // console.log(studentIds, 'studentIds');
       passObj.students = studentIds;
       passObj.due_date = moment(extendedDeuData).format('YYYY-MM-DD');
     } else {
@@ -591,6 +607,20 @@ export default function CompletedAssignByName() {
           />
         </Wrapper>
       </div>
+
+      <CustomizedDialogs
+        title="Remark"
+        open={showRemark}
+        setOpen={() => {
+          setShowRemark(false);
+        }}
+        onclose={() => {
+          setShowRemark(false);
+        }}
+        maxwidth="sm"
+      >
+        <div className="w-full flex justify-center flex-col">{fullRemark}</div>
+      </CustomizedDialogs>
     </RouteLayout>
   );
 }
