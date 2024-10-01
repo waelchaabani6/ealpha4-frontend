@@ -29,7 +29,7 @@ import Loader from '@shared/loader';
 import { handleUserProfile, TableColumns } from './utils';
 
 type FormInputTypes = {
-  // user_name: any;
+  user_name: any;
   password?: any;
   // first_name: boolean;
   // last_name: string;
@@ -113,6 +113,7 @@ export default function SearchResults({
     });
 
   const onSubmit = (values: any) => {
+    const updatedDetails: any = {};
     updatedDetails.user_name = values?.user_name;
     updatedDetails.password = values?.password;
     console.log(updatedDetails, 'updatedDetails');
