@@ -3,43 +3,29 @@
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
 import {
-  COMPONENTS,
   PASSWORD_REGEX,
   PASSWORD_REGEX_MESSAGE,
   RESULTS_PER_PAGE,
-  TABLE_LABELS,
-  USER_ROLE,
 } from '@constants/constants';
 import { yupResolver } from '@hookform/resolvers/yup';
 import PageTitle from '@shared/pageTitle';
 import Wrapper from '@shared/wrapper/Wrapper';
 import { getNoOfPages } from '@utility/utility';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
 import Input from '@shared/form/Input';
 
 import * as yup from 'yup';
 import Button from '@component/button/button';
 import toast from '@shared/toast';
-import { usePatch, usePost } from '@shared/api/useApi';
-import CustomPagination from '@component/pagination/CustomPagination';
+import { usePost } from '@shared/api/useApi';
 import Dropdown from '@component/dropdown/Dropdown';
 import Loader from '@shared/loader';
-import { handleUserProfile, TableColumns } from './utils';
+import { TableColumns } from './utils';
 
 type FormInputTypes = {
-  user_name: any;
-  password?: any;
-  // first_name: boolean;
-  // last_name: string;
-  // email: string;
-  // phone_number: number;
-  // nationality?: any;
-  // region: any;
-  // admin_user?: any;
-  // gender?: any;
-  // flag?: any;
+  username: any;
+  confirm_password?: any;
 };
 
 const userServiceBaseURL = import.meta.env.VITE_APP_USER_SERVICE_URL;
@@ -52,7 +38,6 @@ type SearchResultsProps = {
   totalDataCount: number;
   setRowsPerPage: React.Dispatch<React.SetStateAction<number>>;
   LogListLoading: boolean;
-  fetchUsers: any;
 };
 
 export default function SearchResults({
@@ -63,27 +48,18 @@ export default function SearchResults({
   totalDataCount,
   setRowsPerPage,
   LogListLoading,
-  fetchUsers,
 }: SearchResultsProps) {
-  // const [page, setPage] = useState(1);
   const [order, setOrder] = useState<any>('desc');
   const [orderBy, setOrderBy] = useState<any>('assessment_name');
-  // const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
 
   const [dialogOpen, setdialogOpen] = useState<boolean>(false);
   const [buttonOpenForm, setButtonOpenForm] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
 
-  const [userData, setUserData] = useState<any>({});
-  const [apiValue, setApiValue] = useState<any>('');
-
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
 
-  const navigate = useNavigate();
-  const { schoolName } = useParams();
-
   const shape = {
-    password: yup.string().when('password', {
+    confirm_password: yup.string().when('confirm_password', {
       is: (val: any) => val?.length,
       then: yup.string().matches(PASSWORD_REGEX, PASSWORD_REGEX_MESSAGE),
       otherwise: yup.string().optional(),
@@ -95,91 +71,38 @@ export default function SearchResults({
     else setPage(1);
   };
 
-  // const actionHandler = (data: any, handlername: string) => {
-  //   if (handlername === 'edit') {
-  //     navigate(`preview_question/${data?.id}`, {
-  //       state: { page, path: `/${schoolName}/assessments` },
-  //     });
-  //   }
-  // };
-
   const addSubAdminSchema = yup
     .object()
-    .shape(shape, [['password', 'password']]);
+    .shape(shape, [['confirm_password', 'confirm_password']]);
 
-  const { handleSubmit, control, setError, reset, clearErrors, setValue } =
-    useForm<FormInputTypes>({
-      resolver: yupResolver(addSubAdminSchema),
-    });
+  const { handleSubmit, control, reset, setValue } = useForm<FormInputTypes>({
+    resolver: yupResolver(addSubAdminSchema),
+  });
 
   const onSubmit = (values: any) => {
     const updatedDetails: any = {};
-    updatedDetails.user_name = values?.user_name;
-    updatedDetails.password = values?.password;
+    updatedDetails.username = values?.username;
+    updatedDetails.confirm_password = values?.confirm_password;
     mutateUpdateUser(updatedDetails);
   };
-
-  // const { isLoading, mutate } = usePost({
-  //   baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
-  //   url: 'users-service/password/changePassword/',
-  //   onSuccess: ({ data }: any) => {
-  //     toast('success', data?.message);
-  //     // localStorage.removeItem('user');
-  //     // localStorage.removeItem('token');
-  //     // localStorage.removeItem('rememberUser');
-  //     // dispatch(resetUser());
-  //     // navigate(navigateLink);
-  //   },
-  //   onError: (error: AxiosError) => {
-  //     console.log(error);
-  //     // toast('error', (error?.response?.data as any)?.message || error?.message);
-  //     // [
-  //     //   {
-  //     //     type: 'root.serverError',
-  //     //     name: 'old_password',
-  //     //     message: 'Invalid'
-  //     //   },
-  //     //   {
-  //     //     type: 'root.serverError',
-  //     //     name: 'new_password',
-  //     //     message: 'Invalid'
-  //     //   },
-  //     //   {
-  //     //     type: 'root.serverError',
-  //     //     name: 'confirm_password',
-  //     //     message: 'Invalid'
-  //     //   }
-  //     // ].forEach(({ name, type, message }) => (
-  //     //   setError(name as any, { type, message })
-  //     // )
-  //     // );
-  //   },
-  // });
 
   const handlePerPage = (e: any) => {
     setPage(1);
     setRowsPerPage(e);
-    // fetchUsers();
   };
-
-  // console.log(searchData, 'searchData');
 
   const viewHandler = (data: any, handlername: string) => {
     setdialogOpen(true);
-    setValue('user_name', data?.user_name);
-    setUserData(data);
-
-    const apiUrl = handleUserProfile(data?.role_id, data);
-
-    setApiValue(apiUrl);
+    setValue('username', data?.user_name);
   };
 
   // Update Parent
-  const { isLoading: loadingUpdateUser, mutate: mutateUpdateUser } = usePatch({
+  const { isLoading: loadingUpdateUser, mutate: mutateUpdateUser } = usePost({
     baseURL: userServiceBaseURL,
-    url: apiValue,
+    url: 'users-service/reset-password/reset-user-password/',
     onSuccess: (response: any) => {
       toast('success', 'User Updated successfully');
+      setdialogOpen(false);
     },
     onError: ({ response }: any) => {
       toast(
@@ -188,7 +111,6 @@ export default function SearchResults({
           ? 'User already exists'
           : response?.statusText || 'Error'
       );
-      //  handleErrorResponse(response?.data?.errors);
     },
   });
 
@@ -249,7 +171,7 @@ export default function SearchResults({
             <Input
               required={true}
               control={control}
-              name="user_name"
+              name="username"
               label="Username"
               disabled={true}
               sxClass={{
@@ -262,7 +184,7 @@ export default function SearchResults({
             <Input
               required={true}
               control={control}
-              name="password"
+              name="confirm_password"
               type="password"
               label="Password"
               autoComplete="new-password"
@@ -270,17 +192,6 @@ export default function SearchResults({
           </div>
 
           <div className="py-8 float-right space-x-5">
-            {/* {!editMode && (
-              <Button
-                variant="outlined"
-                disabled={isLoading}
-                loading={isLoading}
-                onClick={() => setButtonOpenForm(true)}
-              >
-                Save and Add New
-              </Button>
-            )} */}
-
             <Button
               disabled={loadingUpdateUser}
               loading={loadingUpdateUser}
