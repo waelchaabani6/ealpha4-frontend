@@ -339,6 +339,7 @@ export default function CreateAssignment() {
     Object.keys(passObj).forEach((key: string) => {
       userFd.append(key, passObj[key]);
     });
+    // mutatePostAssinmentData(passObj);
     mutatePostAssinmentData(userFd);
   }
 

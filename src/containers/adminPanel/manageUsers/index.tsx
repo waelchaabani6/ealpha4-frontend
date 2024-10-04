@@ -57,6 +57,7 @@ export default function manageUsers() {
           searchVal={searchString}
           isLoading={false}
           fetchData={fetchUsers}
+          setPage={setPage}
         />
 
         <SearchResults

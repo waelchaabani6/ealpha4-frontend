@@ -197,7 +197,7 @@ export default function SearchResults({
               loading={loadingUpdateUser}
               onClick={() => setButtonOpenForm(false)}
             >
-              {editMode ? 'Update' : 'Rest'}
+              {editMode ? 'Update' : 'Reset'}
             </Button>
           </div>
         </form>

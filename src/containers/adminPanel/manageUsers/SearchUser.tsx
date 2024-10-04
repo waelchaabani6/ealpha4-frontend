@@ -2,13 +2,13 @@
 import Button from '@component/button/button';
 import DebounceInput from '@component/input/DebounceInput';
 import { useEffect, useState } from 'react';
-import { set } from 'react-hook-form';
 
 type SearchUserProps = {
   setSearchVal: any;
   isLoading: boolean;
   fetchData: any;
   searchVal: string;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export default function SearchUser({
@@ -16,16 +16,18 @@ export default function SearchUser({
   isLoading,
   fetchData,
   searchVal,
+  setPage,
 }: SearchUserProps) {
   const [error, setError] = useState('');
 
   const handleSearch = () => {
-    // if (setSearchVal.length < 2) {
-    //   setError('Data searched must be at least 2 characters');
-    // } else {
-    //   setError('');
-    // }
-    fetchData();
+    if (searchVal.length < 2) {
+      setError('Data searched must be at least 2 characters');
+    } else {
+      setError('');
+      setPage(1);
+      fetchData();
+    }
   };
 
   useEffect(() => {
