@@ -1,3 +1,8 @@
+/* eslint-disable react/jsx-curly-newline */
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable operator-linebreak */
+/* eslint-disable comma-dangle */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import ButtonToggle from '@component/ToggleButton/ToggleButton';
 import DatePicker from '@component/datepicker';
@@ -31,10 +36,133 @@ import { getNoOfPages, sortData } from '@utility/utility';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { CSVLink } from 'react-csv';
+import { selectUser } from '@shared/store/userSlice';
 import { useSelector } from 'react-redux';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import ProgramUsageOverview from '../BarChart/ProgramUsageOverview';
+import GraphView from './GraphView';
+import CustomizedDialogs from '@component/dialog/CustomDialog';
+import PageTitle from '@shared/pageTitle';
+
+const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
+
+// const Y_AXIS_RADIO_OPTIONS = [
+//   {
+//     label: 'Students',
+//     value: 'option1',
+//   },
+//   {
+//     label: 'Teachers',
+//     value: 'option2',
+//   },
+//   {
+//     label: 'Total Time - Students',
+//     value: 'option3',
+//   },
+//   {
+//     label: 'Total Time - Teachers',
+//     value: 'option4',
+//   },
+//   {
+//     label: 'Total Time - Student + Teachers',
+//     value: 'option5',
+//   },
+// ];
+
+// const X_AXIS_RADIO_OPTIONS = [
+//   {
+//     label: 'Class',
+//     value: 'class',
+//   },
+//   {
+//     label: 'Teacher',
+//     value: 'teacher',
+//   },
+// ];
+
+const csvSubHeaders = [
+  TABLE_LABELS?.SR_NO,
+  TABLE_LABELS?.PROGRAM,
+  TABLE_LABELS?.NO_OF_SCHOOL,
+  TABLE_LABELS?.TOTAL_CLASS,
+  TABLE_LABELS?.TOTAL_STUDENT,
+  TABLE_LABELS?.TOTAL_TEACHER,
+  TABLE_LABELS?.TOTAL_TIME_STUDENT,
+  TABLE_LABELS?.AVG_TIME_STUDENT,
+  TABLE_LABELS?.TOTAL_TIME_TEACHER,
+  TABLE_LABELS?.AVG_TIME_TEACHER,
+  TABLE_LABELS?.TOTAL_TIME_TEACH_STD,
+];
+
+const TableColumns: any = [
+  {
+    label: TABLE_LABELS?.SR_NO,
+    mapper: 'SR_NO',
+    align: 'center',
+  },
+  {
+    label: TABLE_LABELS?.PROGRAM,
+    mapper: 'Program',
+    align: 'center',
+  },
+  // {
+  //   label: TABLE_LABELS?.NO_OF_SCHOOL,
+  //   mapper: 'NoOfSchool',
+  //   align: 'center'
+  // },
+  {
+    label: TABLE_LABELS?.TOTAL_CLASS,
+    mapper: 'Class',
+    align: 'center',
+  },
+  {
+    label: TABLE_LABELS?.TOTAL_STUDENT,
+    align: 'center',
+    mapper: 'TotalStudent',
+  },
+  {
+    label: TABLE_LABELS?.TOTAL_TEACHER,
+    align: 'center',
+    mapper: 'TotalTeacher',
+  },
+  {
+    label: TABLE_LABELS?.TOTAL_TIME_STUDENT,
+    align: 'center',
+    mapper: 'TotalTimeStudent',
+  },
+  {
+    label: TABLE_LABELS?.AVG_TIME_STUDENT,
+    mapper: 'AvgTimeStudent',
+    align: 'center',
+  },
+  {
+    label: TABLE_LABELS?.TOTAL_TIME_TEACHER,
+    mapper: 'TotalTimeTeacher',
+    align: 'center',
+  },
+  {
+    label: TABLE_LABELS?.AVG_TIME_TEACHER,
+    mapper: 'AvgTimeTeacher',
+    align: 'center',
+  },
+  {
+    label: TABLE_LABELS?.TOTAL_TIME_TEACH_STD,
+    mapper: 'TotalTimeTeacherStd',
+    align: 'center',
+  },
+];
+
+const DialogTableColumns = [
+  {
+    label: 'First Name',
+    mapper: 'first_name',
+  },
+  {
+    label: 'Last Name',
+    mapper: 'last_name',
+  },
+];
 
 export default function Index() {
   const location = useLocation();
@@ -55,7 +183,7 @@ export default function Index() {
   const [totalRecords, setTotalRecords] = useState(0);
   const [fromDate, setFromDate] = useState<any>('');
   const [toDate, setToDate] = useState<any>('');
-  const [yaxis, setYaxis] = useState('option1');
+  // const [yaxis, setYaxis] = useState('option1');
   const [xaxis, setXaxis] = useState('class');
   const [selectedBranch, setselectedBranch] = useState('');
   const [BranchArray, setBranchArray] = useState<any>([]);
@@ -63,49 +191,21 @@ export default function Index() {
   const [tableData, setTableData] = useState<any>([]);
   const [barData, setBarData] = useState<(string | number)[]>([]);
   const [graph, setGraph] = useState('');
-  const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [popupData, setpopupData] = useState<any>({});
+  const [popupTitle, setPopupTitle] = useState('');
+
+  const { schoolId } = useSelector(selectUser);
+  const { schoolName } = useParams();
 
   const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || '';
   const BRANCH_ID = branchData?.school_data?.id || '';
 
   const noOfpages = getNoOfPages(totalRecords, rowsPerPage);
 
-  const Y_AXIS_RADIO_OPTIONS = [
-    {
-      label: 'Students',
-      value: 'option1',
-    },
-    {
-      label: 'Teachers',
-      value: 'option2',
-    },
-    {
-      label: 'Total Time - Students',
-      value: 'option3',
-    },
-    {
-      label: 'Total Time - Teachers',
-      value: 'option4',
-    },
-    {
-      label: 'Total Time - Student + Teachers',
-      value: 'option5',
-    },
-  ];
-  const filteredOptions = Y_AXIS_RADIO_OPTIONS.filter(
-    (option) => option.label !== 'Teachers'
-  );
-
-  const X_AXIS_RADIO_OPTIONS = [
-    {
-      label: 'Class',
-      value: 'class',
-    },
-    {
-      label: 'Teacher',
-      value: 'teacher',
-    },
-  ];
+  // const filteredOptions = Y_AXIS_RADIO_OPTIONS.filter(
+  //   (option) => option.label !== 'Teachers'
+  // );
 
   const {
     isRefetching: emailSendLoading,
@@ -124,19 +224,6 @@ export default function Index() {
     enabled: false,
   }) as any;
 
-  const csvSubHeaders = [
-    TABLE_LABELS?.SR_NO,
-    TABLE_LABELS?.PROGRAM,
-    TABLE_LABELS?.NO_OF_SCHOOL,
-    TABLE_LABELS?.TOTAL_CLASS,
-    TABLE_LABELS?.TOTAL_STUDENT,
-    TABLE_LABELS?.TOTAL_TEACHER,
-    TABLE_LABELS?.TOTAL_TIME_STUDENT,
-    TABLE_LABELS?.AVG_TIME_STUDENT,
-    TABLE_LABELS?.TOTAL_TIME_TEACHER,
-    TABLE_LABELS?.AVG_TIME_TEACHER,
-    TABLE_LABELS?.TOTAL_TIME_TEACH_STD,
-  ];
   const ADMIN_TOOLBAR_MENU = [
     // {
     //   title: TOOLBAR_LABELS.EMAIL,
@@ -165,80 +252,23 @@ export default function Index() {
       ),
     },
   ];
+
   const handleToolbarAction = async (title: string) => {
     if (title === TOOLBAR_LABELS.EMAIL) {
       handelSendEmail();
     }
   };
 
-  const TableColumns: any = [
-    {
-      label: TABLE_LABELS?.SR_NO,
-      mapper: 'SR_NO',
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.PROGRAM,
-      mapper: 'Program',
-      align: 'center',
-    },
-    // {
-    //   label: TABLE_LABELS?.NO_OF_SCHOOL,
-    //   mapper: 'NoOfSchool',
-    //   align: 'center'
-    // },
-    {
-      label: TABLE_LABELS?.TOTAL_CLASS,
-      mapper: 'Class',
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.TOTAL_STUDENT,
-      align: 'center',
-      mapper: 'TotalStudent',
-    },
-    {
-      label: TABLE_LABELS?.TOTAL_TEACHER,
-      align: 'center',
-      mapper: 'TotalTeacher',
-    },
-    {
-      label: TABLE_LABELS?.TOTAL_TIME_STUDENT,
-      align: 'center',
-      mapper: 'TotalTimeStudent',
-    },
-    {
-      label: TABLE_LABELS?.AVG_TIME_STUDENT,
-      mapper: 'AvgTimeStudent',
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.TOTAL_TIME_TEACHER,
-      mapper: 'TotalTimeTeacher',
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.AVG_TIME_TEACHER,
-      mapper: 'AvgTimeTeacher',
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.TOTAL_TIME_TEACH_STD,
-      mapper: 'TotalTimeTeacherStd',
-      align: 'center',
-    },
-  ];
-
   const handlePagination = (currPage: any) => {
     if (currPage) setPage(currPage);
     else setPage(1);
   };
-  const handleOptionChange = (event: any) => {
-    setYaxis(event.target.value);
-  };
-  const handleOptionXaxisChange = (event: any) => {
-    setXaxis(event.target.value);
-  };
+  // const handleOptionChange = (event: any) => {
+  //   setYaxis(event.target.value);
+  // };
+  // const handleOptionXaxisChange = (event: any) => {
+  //   setXaxis(event.target.value);
+  // };
   const branchid =
     selectedBranch !== 'All'
       ? BranchArray?.find((i: any) => i?.label === selectedBranch)?.id ||
@@ -267,9 +297,60 @@ export default function Index() {
                 </span>
               </Link>
             ),
-            Class: i.total_classes,
-            TotalStudent: i.total_students,
-            TotalTeacher: i.total_teachers,
+            Class: (
+              <Link
+                state={{ page }}
+                to={`/${schoolName}/dashboard/${schoolId}/manage-classes`}
+              >
+                <span className="text-accent underline cursor-pointer text-xs font-medium">
+                  {i.total_classes}
+                </span>
+              </Link>
+            ),
+            TotalStudent: (
+              <span
+                role="presentation"
+                className="text-accent underline cursor-pointer text-xs font-medium"
+                onClick={() => {
+                  setPopupTitle('Students List');
+                  handleDataPopup([
+                    {
+                      first_name: 'first_name',
+                      last_name: 'last_name',
+                    },
+                    {
+                      first_name: 'first_name 2',
+                      last_name: 'last_name 2',
+                    },
+                  ]);
+                }}
+              >
+                {i.total_teachers}
+              </span>
+            ),
+            // TotalStudent: i.total_students,
+            TotalTeacher: (
+              <span
+                role="presentation"
+                className="text-accent underline cursor-pointer text-xs font-medium"
+                onClick={() => {
+                  setPopupTitle('Teachers List');
+                  handleDataPopup([
+                    {
+                      first_name: 'first_name',
+                      last_name: 'last_name',
+                    },
+                    {
+                      first_name: 'first_name 2',
+                      last_name: 'last_name 2',
+                    },
+                  ]);
+                }}
+              >
+                {i.total_teachers}
+              </span>
+            ),
+            // TotalTeacher: i.total_teachers,
             TotalTimeStudent: i.total_time_students,
             AvgTimeStudent: i.average_time_students,
             TotalTimeTeacher: i.total_time_teacher,
@@ -329,6 +410,7 @@ export default function Index() {
             totalDay2 = 0;
             totalDays3 = 0;
           }
+
           body.push({
             ...ele,
             total_time_students: totalDays1,
@@ -342,6 +424,7 @@ export default function Index() {
     onError: ({ response }: any) => {},
     enabled: false,
   });
+
   const handelSendEmail = () => {
     sendEmail();
   };
@@ -351,6 +434,7 @@ export default function Index() {
     setToDate('');
     // setselectedBranch('');
   };
+
   const { isLoading: schoolLoading, refetch: fetchBranches } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
     url: `schools-service/school-branches/?limit=100&school_id=${SCHOOL_ID}`,
@@ -411,9 +495,19 @@ export default function Index() {
       setPage(location?.state?.page);
     }
   }, []);
+
   const handlePerPage = (e: any) => {
     setPage(page);
     setRowsPerPage(e);
+  };
+
+  const handleDataPopup = (data: any) => {
+    setDialogOpen(true);
+    setpopupData(data);
+  };
+
+  const handleDialog = () => {
+    setDialogOpen(false);
   };
 
   return (
@@ -498,6 +592,7 @@ export default function Index() {
           <ButtonToggle view={view} setView={setView} />
         </div>
       </div>
+
       {/* Table Section */}
       {view === 'default' ? (
         <div className="wrapperBorder mt-3" ref={componentRef}>
@@ -514,95 +609,26 @@ export default function Index() {
           </Wrapper>
         </div>
       ) : (
-        <>
-          <div ref={componentRef}>
-            <div className="wrapperBorder mt-3">
-              <Wrapper>
-                <div className="flex flex-col">
-                  <p className="font-semibold text-xl items-center justify-center flex">
-                    Total Students vs Active Students
-                  </p>
-                  <div className="m-2">
-                    <div className="flex">
-                      <p className="m-2"> Select to view values on Y-Axis:</p>
-                      <FormControl>
-                        <RadioGroup
-                          aria-labelledby="demo-radio-buttons-group-label"
-                          defaultValue="Students"
-                          name="radio-buttons-group"
-                          row={true}
-                          value={yaxis}
-                          onChange={handleOptionChange}
-                        >
-                          {(xaxis === 'teacher'
-                            ? filteredOptions
-                            : Y_AXIS_RADIO_OPTIONS
-                          )?.map((i: any) => (
-                            <FormControlLabel
-                              value={i?.value || ''}
-                              control={
-                                <Radio
-                                  sx={{
-                                    color: 'var(--sunlight)',
-                                    '&.Mui-checked': {
-                                      color: 'var(--sunlight)',
-                                    },
-                                  }}
-                                />
-                              }
-                              label={i?.label}
-                            />
-                          ))}
-                        </RadioGroup>
-                      </FormControl>
-                    </div>
-                    <div className="flex justify-start">
-                      <p className="m-2"> Select to view values on X-Axis:</p>
-                      <FormControl>
-                        <RadioGroup
-                          aria-labelledby="demo-radio-buttons-group-label"
-                          defaultValue="Students"
-                          name="radio-buttons-group"
-                          row={true}
-                          value={xaxis}
-                          onChange={handleOptionXaxisChange}
-                        >
-                          {X_AXIS_RADIO_OPTIONS?.map((i: any) => (
-                            <FormControlLabel
-                              value={i?.value || ''}
-                              control={
-                                <Radio
-                                  sx={{
-                                    color: 'var(--sunlight)',
-                                    '&.Mui-checked': {
-                                      color: 'var(--sunlight)',
-                                    },
-                                  }}
-                                />
-                              }
-                              label={i?.label}
-                            />
-                          ))}
-                        </RadioGroup>
-                      </FormControl>
-                    </div>
-                  </div>
-                  <ProgramUsageOverview
-                    barData={barData}
-                    xaxis={xaxis}
-                    yaxis={yaxis}
-                  />
-                  <h1 className="font-semibold text-lg flex justify-center mb-19">
-                    {xaxis === 'class'
-                      ? GRAPH_LABELS.CLASSES
-                      : TABLE_LABELS.TEACHERS}
-                  </h1>
-                </div>
-              </Wrapper>
-            </div>
-          </div>
-        </>
+        <GraphView
+          componentRef={componentRef}
+          barData={barData}
+          setXaxis={setXaxis}
+          xaxis={xaxis}
+        />
       )}
+
+      <CustomizedDialogs
+        maxwidth="sm"
+        open={dialogOpen}
+        setOpen={() => {
+          handleDialog();
+        }}
+        title={popupTitle}
+      >
+        <Wrapper>
+          <AdvanceTable tableData={popupData} headerRows={DialogTableColumns} />
+        </Wrapper>
+      </CustomizedDialogs>
     </RouteLayout>
   );
 }
