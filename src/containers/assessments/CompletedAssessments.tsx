@@ -210,11 +210,18 @@ export default function CompletedAssessments() {
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
+  const tempOrderBy = orderBy === 'start_date' ? 'latest_start_date' : orderBy;
+
+  const orderByFormatted = tempOrderBy
+    ? order === 'asc'
+      ? tempOrderBy
+      : `-${tempOrderBy}`
+    : '';
   const ordering = orderBy ? (order === 'asc' ? orderBy : `-${orderBy}`) : '';
   const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
     useGet({
       baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-      url: `assessments-service/completed-assign-assessment-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&course_name=${currentCourse !== ALL[0].value ? currentCourse : ''}&start_date=${fromDate ? moment(fromDate).format('YYYY-MM-DD') : ''}&submission_date=${toDate ? moment(toDate).format('YYYY-MM-DD') : ''}&user_id=${user?.userId}${selectedGrade && selectedGrade !== 'Select' ? `&class_name=${selectedGrade}` : ''}`,
+      url: `assessments-service/completed-assign-assessment-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&course_name=${currentCourse !== ALL[0].value ? currentCourse : ''}&start_date=${fromDate ? moment(fromDate).format('YYYY-MM-DD') : ''}&submission_date=${toDate ? moment(toDate).format('YYYY-MM-DD') : ''}&user_id=${user?.userId}${selectedGrade && selectedGrade !== 'Select' ? `&class_name=${selectedGrade}` : ''}&order_by=${orderByFormatted}`,
       onSuccess: (res: any) => {
         const accData = res?.data?.response;
         const respData = accData?.results;
