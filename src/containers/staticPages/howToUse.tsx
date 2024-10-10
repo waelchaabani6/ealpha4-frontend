@@ -296,9 +296,6 @@ export default function HowToUse() {
         </div>
       </div>
 
-      {/* <h2 className="text-3xl my-4 pl-6 mt-8">
-        How To Use Mobile App on Windows
-      </h2> */}
       <p className="font-bold pl-6">How To Use Mobile App on Windows</p>
 
       <div className="p-6">
@@ -309,7 +306,6 @@ export default function HowToUse() {
           }}
           className="bg-sandgray min-h-[44px] py-5 px-4 rounded"
         >
-          {/* <p className="font-bold cursor-pointer hover:underline"></p> */}
           <p className="py-1" style={{ color: '#333' }}>
             <a href={Pdf} target="_blank" rel="noopener noreferrer">
               Open pdf file - How to run Android apps in Windows
