@@ -297,60 +297,61 @@ export default function Index() {
                 </span>
               </Link>
             ),
-            Class: (
-              <Link
-                state={{ page }}
-                to={`/${schoolName}/dashboard/${schoolId}/manage-classes`}
-              >
-                <span className="text-accent underline cursor-pointer text-xs font-medium">
-                  {i.total_classes}
-                </span>
-              </Link>
-            ),
-            TotalStudent: (
-              <span
-                role="presentation"
-                className="text-accent underline cursor-pointer text-xs font-medium"
-                onClick={() => {
-                  setPopupTitle('Students List');
-                  handleDataPopup([
-                    {
-                      first_name: 'first_name',
-                      last_name: 'last_name',
-                    },
-                    {
-                      first_name: 'first_name 2',
-                      last_name: 'last_name 2',
-                    },
-                  ]);
-                }}
-              >
-                {i.total_teachers}
-              </span>
-            ),
-            // TotalStudent: i.total_students,
-            TotalTeacher: (
-              <span
-                role="presentation"
-                className="text-accent underline cursor-pointer text-xs font-medium"
-                onClick={() => {
-                  setPopupTitle('Teachers List');
-                  handleDataPopup([
-                    {
-                      first_name: 'first_name',
-                      last_name: 'last_name',
-                    },
-                    {
-                      first_name: 'first_name 2',
-                      last_name: 'last_name 2',
-                    },
-                  ]);
-                }}
-              >
-                {i.total_teachers}
-              </span>
-            ),
-            // TotalTeacher: i.total_teachers,
+            Class: i.total_classes,
+            // Class: (
+            //   <Link
+            //     state={{ page }}
+            //     to={`/${schoolName}/dashboard/${schoolId}/manage-classes`}
+            //   >
+            //     <span className="text-accent underline cursor-pointer text-xs font-medium">
+            //       {i.total_classes}
+            //     </span>
+            //   </Link>
+            // ),
+            // TotalStudent: (
+            //   <span
+            //     role="presentation"
+            //     className="text-accent underline cursor-pointer text-xs font-medium"
+            //     onClick={() => {
+            //       setPopupTitle('Students List');
+            //       handleDataPopup([
+            //         {
+            //           first_name: 'first_name',
+            //           last_name: 'last_name',
+            //         },
+            //         {
+            //           first_name: 'first_name 2',
+            //           last_name: 'last_name 2',
+            //         },
+            //       ]);
+            //     }}
+            //   >
+            //     {i.total_teachers}
+            //   </span>
+            // ),
+            TotalStudent: i.total_students,
+            // TotalTeacher: (
+            //   <span
+            //     role="presentation"
+            //     className="text-accent underline cursor-pointer text-xs font-medium"
+            //     onClick={() => {
+            //       setPopupTitle('Teachers List');
+            //       handleDataPopup([
+            //         {
+            //           first_name: 'first_name',
+            //           last_name: 'last_name',
+            //         },
+            //         {
+            //           first_name: 'first_name 2',
+            //           last_name: 'last_name 2',
+            //         },
+            //       ]);
+            //     }}
+            //   >
+            //     {i.total_teachers}
+            //   </span>
+            // ),
+            TotalTeacher: i.total_teachers,
             TotalTimeStudent: i.total_time_students,
             AvgTimeStudent: i.average_time_students,
             TotalTimeTeacher: i.total_time_teacher,
