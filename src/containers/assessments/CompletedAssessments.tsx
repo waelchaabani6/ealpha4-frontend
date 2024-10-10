@@ -210,7 +210,7 @@ export default function CompletedAssessments() {
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
-  const tempOrderBy = orderBy === 'start_date' ? 'latest_start_date' : orderBy;
+  const tempOrderBy = orderBy === 'start_date' ? 'latest_start_date' : '';
 
   const orderByFormatted = tempOrderBy
     ? order === 'asc'
