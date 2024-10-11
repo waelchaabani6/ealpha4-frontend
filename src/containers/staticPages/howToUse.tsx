@@ -300,12 +300,20 @@ export default function HowToUse() {
         How To Use Mobile App on Windows
       </h2>
 
-      <div className="p-6">
-        <p className="font-bold mb-2 cursor-pointer hover:underline">
-          <a href={Pdf} target="_blank" rel="noopener noreferrer">
-            Open pdf file - How to run Android apps in Windows
-          </a>
-        </p>
+      <div className="p-6 ">
+        <div
+          style={{
+            boxShadow:
+              '0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12)',
+          }}
+          className="bg-sandgray min-h-[44px] py-5 px-4 rounded"
+        >
+          <p className="font-bold cursor-pointer hover:underline">
+            <a href={Pdf} target="_blank" rel="noopener noreferrer">
+              Open pdf file - How to run Android apps in Windows
+            </a>
+          </p>
+        </div>
       </div>
       <StaticFooter />
     </RouteLayout>

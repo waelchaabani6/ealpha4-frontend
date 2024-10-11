@@ -127,7 +127,7 @@ export default function CompletedAssessments() {
     },
     {
       label: TABLE_LABELS?.SCORE_AVG,
-      isSort: true,
+      // isSort: true,
       mapper: 'score',
     },
   ];
