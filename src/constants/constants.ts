@@ -258,7 +258,7 @@ export const TABLE_UPLOAD_RESULTS = {
   FULL_NAME: 'Full Name',
   FIRST_NAME: 'First Name',
   LAST_NAME: 'Last Name',
-  REASON: "Reason"
+  REASON: 'Reason',
 };
 
 // MANAGE INTEGRATION & SUBSCRIPTIONS
@@ -545,3 +545,14 @@ export const START_TIME = 6;
 
 // Discovery doc URL for APIs used by the quickstart
 export const DISCOVERY_DOC = 'https://classroom.googleapis.com/$discovery/rest';
+
+export const USER_ROLE = {
+  SUPER_ADMIN: 1,
+  SUB_ADMIN: 2,
+  SCHOOL_ADMIN: 3,
+  BRANCH_ADMIN: 4,
+  TEACHER: 5,
+  STUDENT: 6,
+  PARENT: 7,
+  DEFAULT: 8,
+};

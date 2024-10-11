@@ -224,7 +224,17 @@ export default function Index() {
             return {
               ...row,
               PerformanceExpectation: (
-                <div className="bg-[#BECCFF] p-4">
+                <div className="bg-[#FFF9BE] p-4">
+                  {row?.PerformanceExpectation}
+                </div>
+              ),
+            };
+          }
+          if (row.PerformanceExpectation === 'Above') {
+            return {
+              ...row,
+              PerformanceExpectation: (
+                <div className="bg-[#d9ffc8] p-4">
                   {row?.PerformanceExpectation}
                 </div>
               ),
@@ -244,7 +254,7 @@ export default function Index() {
             return {
               ...row,
               PerformanceExpectation: (
-                <div className="bg-[#d9ffc8] p-4">
+                <div className="bg-[#BECCFF] p-4">
                   {row?.PerformanceExpectation}
                 </div>
               ),

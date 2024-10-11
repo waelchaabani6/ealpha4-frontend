@@ -13,7 +13,6 @@ import Loader from '@shared/loader';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import { ReactComponent as Book } from '@images/book.svg';
-import { border } from '@mui/system';
 
 type Props = {
   ind: number;
@@ -206,13 +205,14 @@ function SmallCard({ ind, shortName, courseContents, image, logo }: Props) {
                 {ele?.component}
               </span>
             </AccordionSummary>
+
             <AccordionDetails>
               <div className="text-[12px]  cursor-pointer">
                 {ele?.volumeData?.map((innerEle: any, i: any) => (
                   // eslint-disable-next-line jsx-a11y/no-static-element-interactions
                   <div
                     key={i}
-                    className="w-full text-[14px] text-center p-1"
+                    className="w-full text-[14px] text-center p-1 hover:bg-slate-100 rounded-sm transition-all duration-300"
                     onClick={() => {
                       navigate(`${redirectUrl}/${innerEle?.courses_id}`);
                     }}

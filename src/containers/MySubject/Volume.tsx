@@ -227,9 +227,9 @@ function Volume() {
                     </div>
                   </AccordionSummary>
                   <AccordionDetails>
-                    <div>
+                    <div className="">
                       {item?.visible_lessons?.map((ele: any, index: any) => (
-                        <div className="w-full flex items-center mb-2">
+                        <div className="w-full flex items-center mb-2 hover:bg-gray-100 transition-all duration-300 rounded-md">
                           <span
                             role="presentation"
                             className="grow underline cursor-pointer text-sm font-medium"
