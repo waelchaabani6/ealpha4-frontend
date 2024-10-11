@@ -12,155 +12,156 @@ import RouteLayout from '@layout/routeLayout';
 import VideoIcon from '@mui/icons-material/VideoLibrary';
 import StaticHeader from './staticHeader';
 import StaticFooter from './staticFooter';
+import Pdf from '../../assets/Documents/How to run Android apps in Windows.pdf';
+
+const content = [
+  {
+    title: 'Alpha Mathematics',
+    video: [
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_2_My_Courses_Math.mp4',
+        name: 'My Course Resources',
+      },
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_3_Math_Teacher_Resources.mp4',
+        name: 'Math Teacher Resources',
+      },
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_4_Math_SB_PB_Ancillaries.mp4',
+        name: 'Math Student Resources',
+      },
+    ],
+  },
+  {
+    title: 'Alpha Science',
+    video: [
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_5_My_Courses_Science.mp4',
+        name: 'My Course Resources',
+      },
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_6_Science_Teacher_Resources.mp4',
+        name: 'Science Teacher Resources',
+      },
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_Science_SB_PB_Ancillaries.mp4',
+        name: 'Science Student Resources',
+      },
+    ],
+  },
+  // {
+  //   title: 'Alpha Reading & Literature',
+  //   video: [],
+  // },
+  // {
+  //   title: 'Alpha ELT',
+  //   video: [],
+  // },
+  {
+    title: 'Task Navigation',
+    video: [
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_1_Dashboard.mp4',
+        name: 'The Teacher Dashboard',
+      },
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial-Creating_Groups.mp4',
+        name: 'Creating Groups',
+      },
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial-Creating_Assignments.mp4',
+        name: 'Creating Assignments',
+      },
+      // {
+      //   url: '',
+      //   name: 'Creating Assessments',
+      // },
+      // {
+      //   url: '',
+      //   name: 'Viewing Student Assignments',
+      // },
+      // {
+      //   url: '',
+      //   name: 'Viewing Student Assessments',
+      // },
+      // {
+      //   url: '',
+      //   name: 'Viewing Reports',
+      // },
+    ],
+  },
+];
+
+const studentContent = [
+  {
+    title: 'Using a Browser',
+    video: [
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_1-Browser_Login.mp4',
+        name: 'Student Login',
+      },
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_2-Browser_Dashboard.mp4',
+        name: 'Student Dashboard',
+      },
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_3-Completing_Assignments.mp4',
+        name: 'Completing Assignments',
+      },
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_4_Completing_Assessments.mp4',
+        name: 'Completing Assessments',
+      },
+      // {
+      //   url: '',
+      //   name: 'Viewing Reports',
+      // },
+    ],
+  },
+  {
+    title: 'Using the App',
+    video: [
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_APP_Tutorial_1-Login.mp4',
+        name: 'Student Login',
+      },
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_APP_Tutorial_2-The_Dashboard.mp4',
+        name: 'Student Dashboard',
+      },
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student%20_APP_Tutorial_3_Assignments.mp4',
+        name: 'Student Assignments',
+      },
+    ],
+  },
+];
+
+const parentContent = [
+  {
+    title: 'Arabic Tutorials',
+    video: [
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Arabic_Tutorial_1_Introduction_to_Dashboard.mp4',
+        name: 'Introduction to the Student Dashboard - مُقدِّمة إلى لوحة التُّحكُّم الخاصَّة بالطَّالب',
+      },
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Arabic_Tutorial_2_My_Courses.mp4',
+        name: 'My Courses for Students - دليل موادُّ الطَّالب الدِّراسيَّة',
+      },
+      {
+        url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Arabic_Tutorial_3_Assignments.mp4',
+        name: 'Assignments for Students - دليل واجبات الطَّالب',
+      },
+      // {
+      //   url: '',
+      //   name: 'Assessments for Students - دليل تقييم الطَّالب',
+      // },
+    ],
+  },
+];
 
 export default function HowToUse() {
-  const content = [
-    {
-      title: 'Alpha Mathematics',
-      video: [
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_2_My_Courses_Math.mp4',
-          name: 'My Course Resources',
-        },
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_3_Math_Teacher_Resources.mp4',
-          name: 'Math Teacher Resources',
-        },
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_4_Math_SB_PB_Ancillaries.mp4',
-          name: 'Math Student Resources',
-        },
-      ],
-    },
-    {
-      title: 'Alpha Science',
-      video: [
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_5_My_Courses_Science.mp4',
-          name: 'My Course Resources',
-        },
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_6_Science_Teacher_Resources.mp4',
-          name: 'Science Teacher Resources',
-        },
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_Science_SB_PB_Ancillaries.mp4',
-          name: 'Science Student Resources',
-        },
-      ],
-    },
-    // {
-    //   title: 'Alpha Reading & Literature',
-    //   video: [],
-    // },
-    // {
-    //   title: 'Alpha ELT',
-    //   video: [],
-    // },
-    {
-      title: 'Task Navigation',
-      video: [
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial_1_Dashboard.mp4',
-          name: 'The Teacher Dashboard',
-        },
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial-Creating_Groups.mp4',
-          name: 'Creating Groups',
-        },
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Teacher_Tutorial-Creating_Assignments.mp4',
-          name: 'Creating Assignments',
-        },
-        // {
-        //   url: '',
-        //   name: 'Creating Assessments',
-        // },
-        // {
-        //   url: '',
-        //   name: 'Viewing Student Assignments',
-        // },
-        // {
-        //   url: '',
-        //   name: 'Viewing Student Assessments',
-        // },
-        // {
-        //   url: '',
-        //   name: 'Viewing Reports',
-        // },
-      ],
-    },
-  ];
-
-  const studentContent = [
-    {
-      title: 'Using a Browser',
-      video: [
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_1-Browser_Login.mp4',
-          name: 'Student Login',
-        },
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_2-Browser_Dashboard.mp4',
-          name: 'Student Dashboard',
-        },
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_3-Completing_Assignments.mp4',
-          name: 'Completing Assignments',
-        },
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_Tutorial_4_Completing_Assessments.mp4',
-          name: 'Completing Assessments',
-        },
-        // {
-        //   url: '',
-        //   name: 'Viewing Reports',
-        // },
-      ],
-    },
-    {
-      title: 'Using the App',
-      video: [
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_APP_Tutorial_1-Login.mp4',
-          name: 'Student Login',
-        },
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student_APP_Tutorial_2-The_Dashboard.mp4',
-          name: 'Student Dashboard',
-        },
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Student%20_APP_Tutorial_3_Assignments.mp4',
-          name: 'Student Assignments',
-        },
-      ],
-    },
-  ];
-
-  const parentContent = [
-    {
-      title: 'Arabic Tutorials',
-      video: [
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Arabic_Tutorial_1_Introduction_to_Dashboard.mp4',
-          name: 'Introduction to the Student Dashboard - مُقدِّمة إلى لوحة التُّحكُّم الخاصَّة بالطَّالب',
-        },
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Arabic_Tutorial_2_My_Courses.mp4',
-          name: 'My Courses for Students - دليل موادُّ الطَّالب الدِّراسيَّة',
-        },
-        {
-          url: 'https://ealphaedu.com/Ealpha4/ealpha_video/Arabic_Tutorial_3_Assignments.mp4',
-          name: 'Assignments for Students - دليل واجبات الطَّالب',
-        },
-        // {
-        //   url: '',
-        //   name: 'Assessments for Students - دليل تقييم الطَّالب',
-        // },
-      ],
-    },
-  ];
-
   const renderAccordion = (items: any) => {
     const [expandedItem, setExpandedItem] = useState(null); // Initialize with 0
 
@@ -293,6 +294,18 @@ export default function HowToUse() {
         <div className="flex flex-col gap-y-3">
           {renderAccordion(parentContent)}
         </div>
+      </div>
+
+      <h2 className="text-3xl my-4 pl-6 mt-8">
+        How To Use Mobile App on Windows
+      </h2>
+
+      <div className="p-6">
+        <p className="font-bold mb-2 cursor-pointer hover:underline">
+          <a href={Pdf} target="_blank" rel="noopener noreferrer">
+            Open pdf file - How to run Android apps in Windows
+          </a>
+        </p>
       </div>
       <StaticFooter />
     </RouteLayout>
