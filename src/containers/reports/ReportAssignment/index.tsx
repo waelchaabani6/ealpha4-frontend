@@ -21,7 +21,7 @@ import toast from '@shared/toast';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { CSVLink } from 'react-csv';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import { CustomInput } from '@component/input';
@@ -447,6 +447,7 @@ export default function Index() {
           return true;
         });
         setPerData(perbody);
+
         // score data
         const scorebody: any = [];
         ScoreData?.map((i: any) => {
@@ -484,10 +485,6 @@ export default function Index() {
       });
     }
   };
-
-  // const handleOptionChange = (event: any) => {
-  //   setPercentage(event.target.value);
-  // };
 
   const reset = () => {
     setFromDate('');

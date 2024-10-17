@@ -339,7 +339,7 @@ export default function Index() {
       }
       setTotalRecords(ProgramData?.total_records);
     },
-    onError: ({ response }: any) => {},
+    onError: () => {},
     enabled: false,
   });
 
@@ -373,11 +373,6 @@ export default function Index() {
     }
   }, [view]);
 
-  // const handleDataPopup = (data: any) => {
-  //   setDialogOpen(true);
-  //   setpopupData(data);
-  // };
-
   const handleDialog = () => {
     setDialogOpen(false);
   };
@@ -387,7 +382,7 @@ export default function Index() {
       path={`/${schoolName}/reports/program-usage-reports`}
     >
       <HeaderMenus
-        title={`Report - Program Usage - ${view !== 'default' ? 'Graph View' : 'Detailed View'} `}
+        title={`Report - Course Usage - ${view !== 'default' ? 'Graph View' : 'Detailed View'} `}
         menuArray={ADMIN_TOOLBAR_MENU}
         handleToolbarAction={handleToolbarAction}
       />
@@ -397,7 +392,7 @@ export default function Index() {
             <div className="max-w-[200px]">
               <CustomInput
                 name="Program"
-                label="Program"
+                label="Course"
                 size="small"
                 value={ProgramName}
                 disabled={true}
@@ -405,7 +400,7 @@ export default function Index() {
             </div>
           ) : (
             <div>
-              <p className="mb-4 text-sm">Program</p>
+              <p className="mb-4 text-sm">Course</p>
               <Dropdown
                 value={selectedprogram}
                 dataArray={programs}

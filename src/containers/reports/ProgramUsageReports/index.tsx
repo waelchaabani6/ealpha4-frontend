@@ -67,7 +67,7 @@ const TableColumns: any = [
     align: 'center',
   },
   {
-    label: TABLE_LABELS?.PROGRAM,
+    label: TABLE_LABELS?.COURSES,
     mapper: 'Program',
     align: 'center',
   },
@@ -465,7 +465,7 @@ export default function Index() {
   return (
     <RouteLayout navBack={true}>
       <HeaderMenus
-        title={`Report - Program Usage ${view !== 'default' ? '- Overview' : ''} `}
+        title={`Report - Course Usage ${view !== 'default' ? '- Overview' : ''} `}
         menuArray={ADMIN_TOOLBAR_MENU}
         handleToolbarAction={handleToolbarAction}
       />
