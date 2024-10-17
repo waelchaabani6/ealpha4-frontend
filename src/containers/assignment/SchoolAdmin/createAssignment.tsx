@@ -468,7 +468,8 @@ export default function CreateAssignment() {
         title="Assignment Created"
       >
         <div className="text-center">
-          <div className="mb-4 font-bold"> {assignmentRespMessage} </div>
+          <div className="mb-4 font-bold">{assignmentRespMessage}</div>
+
           {listofStudentAssignmentNotCreated.length ? (
             <div className="mb-4 flex flex-col">
               <div className="font-bold text-center">
@@ -485,8 +486,7 @@ export default function CreateAssignment() {
               navigate(`/${schoolName}/assignment`);
             }}
           >
-            {' '}
-            Ok{' '}
+            Ok
           </Button>
         </div>
       </CustomizedDialogs>
