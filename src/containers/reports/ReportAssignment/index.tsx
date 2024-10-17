@@ -1,27 +1,19 @@
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable no-confusing-arrow */
+/* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable operator-linebreak */
+/* eslint-disable indent */
+/* eslint-disable comma-dangle */
 import ButtonToggle from '@component/ToggleButton/ToggleButton';
 import { IconButton } from '@component/button/button';
 import DatePicker from '@component/datepicker';
 import Dropdown from '@component/dropdown/Dropdown';
-import { NumberedPagination } from '@component/pagination/CustomPagination';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import SettingsIcon from '@mui/icons-material/Settings';
-import {
-  FormControl,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
+
 import { useGet, usePost } from '@shared/api/useApi';
-import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import { selectSchoolData } from '@shared/store/schoolSlice';
 import { selectUser } from '@shared/store/userSlice';
@@ -30,39 +22,109 @@ import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { CSVLink } from 'react-csv';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import { CustomInput } from '@component/input';
 import { sortData } from '@utility/utility';
 import {
-  GRAPH_LABELS,
   TABLE_LABELS,
   RESULTS_PER_PAGE,
   TOOLBAR_LABELS,
   USER_TYPE,
 } from '../../../constants/constants';
-import Wrapper from '../../../shared/wrapper/Wrapper';
 import RouteLayout from '../../layout/routeLayout';
-import MultipleAssignmentAreaBar from '../BarChart/MultipleAssignmentAreaBar';
-import MultipleAssignmentsBarGraph from '../BarChart/MultipleAssignmentsBarGraph';
-import MultipleAssignmentLineChart from '../LineChart/MultipleAssignmentLineChart';
+
 import RadialBarChartOne from '../RadialBarChart/RadialBarChartOne';
 import Setting from '../setting';
+import ReportTable from './ReportTable';
+import ReportGraph from './ReportGraph';
 
 const printButton = () => <PrintIcon />;
+
+const TableColumns: any = [
+  {
+    label: TABLE_LABELS?.SR_NO,
+    mapper: 'SR_NO',
+    align: 'center',
+  },
+  {
+    label: TABLE_LABELS?.CLASS,
+    mapper: 'Class',
+    isSort: true,
+  },
+  {
+    label: TABLE_LABELS?.TEACHER,
+    isSort: true,
+    mapper: 'Teacher',
+  },
+  {
+    label: TABLE_LABELS?.PROGRAM,
+    isSort: true,
+    mapper: 'Program',
+  },
+  {
+    label: TABLE_LABELS?.ASSIGNMENT_NAME,
+    isSort: true,
+    mapper: 'AssessmentName',
+  },
+  {
+    label: TABLE_LABELS?.AVG_CLASS,
+    isSort: true,
+    bodyAlign: 'center',
+    colspan: 2,
+    mapper: 'AvgClassScore',
+  },
+  {
+    isSort: true,
+    bodyAlign: 'center',
+    mapper: 'AvgClassPercentage',
+  },
+  {
+    label: TABLE_LABELS?.AVG_COHORT,
+    isSort: true,
+    bodyAlign: 'center',
+    colspan: 2,
+    mapper: 'AvgCohortScore',
+  },
+  {
+    isSort: true,
+    bodyAlign: 'center',
+    mapper: 'AvgCohortPercentage',
+  },
+  {
+    label: TABLE_LABELS?.PERFORMANCE_EXPECTATION,
+    isSort: true,
+    mapper: 'PerformanceExpectation',
+  },
+];
+
+const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
+
+const csvSubHeaders = [
+  TABLE_LABELS?.CLASS_NAME,
+  TABLE_LABELS?.TEACHER,
+  TABLE_LABELS?.PROGRAM,
+  TABLE_LABELS?.ASSIGNMET_NAME,
+  TABLE_LABELS?.AVG_CLASS,
+  TABLE_LABELS?.CLASS_PER,
+  TABLE_LABELS?.AVG_COHORT,
+  TABLE_LABELS?.COHORT_PER,
+  TABLE_LABELS?.PERFORMANCE_EXPECTATION,
+  // TABLE_LABELS?.START_DATE,
+  // TABLE_LABELS?.END_DATE
+];
+
 export default function Index() {
   const location = useLocation();
   const { userId } = useSelector(selectUser);
-  const navigate = useNavigate();
   const [csvData, setCsvData] = useState<[]>([]);
   const [tableData, setTableData] = useState<any>([]);
   const { schoolData, branchData } = useSelector(selectSchoolData);
   const { SCHOOL_ADMIN, BRANCH_ADMIN, TEACHER } = USER_TYPE;
   const ALL = { label: 'All', value: 'All' };
-  const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
   const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || '';
-
   const BRANCH_ID = branchData?.id || '';
+
   // email api
   const {
     isRefetching: emailSendLoading,
@@ -84,19 +146,6 @@ export default function Index() {
   const handelSendEmail = () => {
     sendEmail();
   };
-  const csvSubHeaders = [
-    TABLE_LABELS?.CLASS_NAME,
-    TABLE_LABELS?.TEACHER,
-    TABLE_LABELS?.PROGRAM,
-    TABLE_LABELS?.ASSIGNMET_NAME,
-    TABLE_LABELS?.AVG_CLASS,
-    TABLE_LABELS?.CLASS_PER,
-    TABLE_LABELS?.AVG_COHORT,
-    TABLE_LABELS?.COHORT_PER,
-    TABLE_LABELS?.PERFORMANCE_EXPECTATION,
-    // TABLE_LABELS?.START_DATE,
-    // TABLE_LABELS?.END_DATE
-  ];
 
   const ADMIN_TOOLBAR_MENU = [
     // {
@@ -128,69 +177,10 @@ export default function Index() {
     },
   ];
 
-  const TableColumns: any = [
-    {
-      label: TABLE_LABELS?.SR_NO,
-      mapper: 'SR_NO',
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.CLASS,
-      mapper: 'Class',
-      isSort: true,
-    },
-    {
-      label: TABLE_LABELS?.TEACHER,
-      isSort: true,
-      mapper: 'Teacher',
-    },
-    {
-      label: TABLE_LABELS?.PROGRAM,
-      isSort: true,
-      mapper: 'Program',
-    },
-    {
-      label: TABLE_LABELS?.ASSIGNMENT_NAME,
-      isSort: true,
-      mapper: 'AssessmentName',
-    },
-    {
-      label: TABLE_LABELS?.AVG_CLASS,
-      isSort: true,
-      bodyAlign: 'center',
-      colspan: 2,
-      mapper: 'AvgClassScore',
-    },
-    {
-      isSort: true,
-      bodyAlign: 'center',
-      mapper: 'AvgClassPercentage',
-    },
-    {
-      label: TABLE_LABELS?.AVG_COHORT,
-      isSort: true,
-      bodyAlign: 'center',
-      colspan: 2,
-      mapper: 'AvgCohortScore',
-    },
-    {
-      isSort: true,
-      bodyAlign: 'center',
-      mapper: 'AvgCohortPercentage',
-    },
-    {
-      label: TABLE_LABELS?.PERFORMANCE_EXPECTATION,
-      isSort: true,
-      mapper: 'PerformanceExpectation',
-    },
-  ];
-
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
-  // const recordsPerPage = 10;
   const [pageSize, setPageSize] = useState<any>(RESULTS_PER_PAGE?.[0]);
   const noOfpages = Math.ceil(totalRecords / pageSize);
-  const dispatch = useDispatch();
   const [fromDate, setFromDate] = useState<any>('');
   const [toDate, setToDate] = useState<any>('');
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -210,14 +200,15 @@ export default function Index() {
   const [line, setLine] = useState(0);
   const componentRef = useRef(null);
   const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
-  const link = `/${schoolNameInURL}/reports/report-assignment-details`;
   const [percentage, setPercentage] = useState('false');
   const [scoreData, setScoreData] = useState([]);
   const [PercengateData, setPerData] = useState([]);
   const [PerformanceData, SetPerformanceData] = useState([]);
-  const [rowsPerPage, setRowsPerPage] = useState<any>(RESULTS_PER_PAGE?.[0]);
+
+  const link = `/${schoolNameInURL}/reports/report-assignment-details`;
 
   const USER_ROLE = userData?.role?.name;
+
   const handleDialog = () => {
     setDialogOpen(!dialogOpen);
   };
@@ -299,12 +290,14 @@ export default function Index() {
     },
     enabled: USER_ROLE === SCHOOL_ADMIN || USER_ROLE === BRANCH_ADMIN,
   });
+
   const branchid =
     selectedBranch !== 'All'
       ? BranchArray?.find((i: any) => i?.label === selectedBranch)?.id ||
         BRANCH_ID ||
         ''
       : '';
+
   const { isFetching: reportLoading, refetch: FetchAssignmentReport } = useGet({
     baseURL: ReportURL,
     url: `reports-service/assignment_report/?user_id=${userId}&page=${page}&page_size=${pageSize}&school_id=${SCHOOL_ID}${fromDate ? `&from_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&to_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}${selectedClass !== 'All' ? `&selected_class=${selectedClass}` : ''} ${graph ? `&is_graph=${graph}` : ''}${line ? `&is_line_chart=${line}` : ''}&branch_id=${branchid}`,
@@ -383,12 +376,23 @@ export default function Index() {
           ]);
           return true;
         });
+
         const modifiedRows = body.map((row: any) => {
           if (row.PerformanceExpectation === 'Meets') {
             return {
               ...row,
               PerformanceExpectation: (
-                <div className="bg-[#BECCFF] p-4">
+                <div className="bg-[#FFF9BE] p-4">
+                  {row?.PerformanceExpectation}
+                </div>
+              ),
+            };
+          }
+          if (row.PerformanceExpectation === 'Above') {
+            return {
+              ...row,
+              PerformanceExpectation: (
+                <div className="bg-[#d9ffc8] p-4">
                   {row?.PerformanceExpectation}
                 </div>
               ),
@@ -408,7 +412,7 @@ export default function Index() {
             return {
               ...row,
               PerformanceExpectation: (
-                <div className="bg-[#d9ffc8] p-4">
+                <div className="bg-[#BECCFF] p-4">
                   {row?.PerformanceExpectation}
                 </div>
               ),
@@ -481,9 +485,10 @@ export default function Index() {
     }
   };
 
-  const handleOptionChange = (event: any) => {
-    setPercentage(event.target.value);
-  };
+  // const handleOptionChange = (event: any) => {
+  //   setPercentage(event.target.value);
+  // };
+
   const reset = () => {
     setFromDate('');
     setToDate('');
@@ -533,6 +538,7 @@ export default function Index() {
       setPage(location?.state?.page);
     }
   }, []);
+
   const handlePerPage = (e: any) => {
     setPage(page);
     setPageSize(e);
@@ -545,6 +551,7 @@ export default function Index() {
         menuArray={ADMIN_TOOLBAR_MENU}
         handleToolbarAction={handleToolbarAction}
       />
+
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           {userData && USER_ROLE === USER_TYPE.SCHOOL_ADMIN && (
@@ -559,6 +566,7 @@ export default function Index() {
               sxClass={{ width: '206px', marginRight: '10px' }}
             />
           )}
+
           {userData && USER_ROLE === USER_TYPE.BRANCH_ADMIN && (
             <div className="w-max">
               <CustomInput
@@ -570,6 +578,7 @@ export default function Index() {
               />
             </div>
           )}
+
           {userData &&
             (USER_ROLE === SCHOOL_ADMIN ||
               USER_ROLE === BRANCH_ADMIN ||
@@ -586,6 +595,7 @@ export default function Index() {
                 />
               </div>
             )}
+
           <div>
             <DatePicker
               value={fromDate}
@@ -608,6 +618,7 @@ export default function Index() {
               disableOld={fromDate}
             />
           </div>
+
           {(toDate || fromDate) && (
             <div className="relative top-[-5px]">
               <span
@@ -620,6 +631,7 @@ export default function Index() {
               </span>
             </div>
           )}
+
           <div>
             <Dropdown
               title="Result Of Pages"
@@ -637,258 +649,38 @@ export default function Index() {
           <ButtonToggle view={view} setView={setView} />
         </div>
       </div>
+
       {/* Table Section */}
       {view === 'default' ? (
-        <div className="wrapperBorder mt-3" ref={componentRef}>
-          <Wrapper>
-            <TableContainer className="relative" sx={{ maxHeight: '100%' }}>
-              <Table stickyHeader={true} aria-label="sticky table">
-                <TableHead>
-                  <TableRow>
-                    {TableColumn?.map((item: any, index: number) =>
-                      item?.label ? (
-                        <TableCell
-                          key={`${index}`}
-                          align={item?.align || 'left'}
-                          // style={{ color: getStatusColor(item.PerformanceExpectation) }}
-                          colSpan={item?.colspan || 1}
-                        >
-                          {item?.label}
-                        </TableCell>
-                      ) : (
-                        ''
-                      )
-                    )}
-                  </TableRow>
-                  <TableRow
-                    sx={{
-                      'th.MuiTableCell-root': {
-                        backgroundColor: 'var(--white)',
-                      },
-                    }}
-                  >
-                    <TableCell colSpan={colvalue} />
-                    <TableCell
-                      align="center"
-                      sx={{
-                        backgroundColor: 'var(--light-accent) !important',
-                      }}
-                    >
-                      Score
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      sx={{
-                        backgroundColor: 'var(--light-accent) !important',
-                      }}
-                    >
-                      %
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      sx={{
-                        backgroundColor: 'var(--light-accent) !important',
-                      }}
-                    >
-                      Score
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      sx={{
-                        backgroundColor: 'var(--light-accent) !important',
-                      }}
-                    >
-                      %
-                    </TableCell>
-                    <TableCell />
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {tableData.length ? (
-                    tableData?.map(
-                      (row: any, index: number): JSX.Element => (
-                        <TableRow
-                          key={`${row?.id}-${index}`}
-                          hover={true}
-                          sx={{
-                            '& > *': {
-                              borderBottom: 'unset',
-                              cursor: 'pointer',
-                            },
-                          }}
-                          onClick={() => {
-                            const {
-                              Program,
-                              AssessmentName,
-                              Class,
-                              AvgClassScore,
-                              AvgClassPercentage,
-                              AvgCohortScore,
-                              AvgCohortPercentage,
-                              PerformanceExpectation,
-                            } = row;
-                            const stateData = {
-                              program: Program,
-                              assignment: AssessmentName,
-                              class: Class,
-                              AvgClassScore: AvgClassScore?.toString(), // Ensure it's a string or number
-                              AvgClassPercentage:
-                                AvgClassPercentage?.toString(), // Ensure it's a string or number
-                              AvgCohortScore: AvgCohortScore?.toString(), // Ensure it's a string or number
-                              AvgCohortPercentage:
-                                AvgCohortPercentage?.toString(), // Ensure it's a string or number
-                              PerformanceExpectation:
-                                PerformanceExpectation?.toString(), // Ensure it's a string or number
-                            };
-
-                            navigate(
-                              `${link}/${row.Assignment_ID}/${row.CourseTableId}/${row.classId}`,
-                              { state: { ...stateData, page }, replace: true }
-                            );
-                          }}
-                        >
-                          {TableColumn?.map((item: any, inn: number) => (
-                            <TableCell
-                              key={`${item?.label || row?.id}-${inn}`}
-                              align={item?.bodyAlign || item?.align || 'left'}
-                            >
-                              {row[item?.mapper]}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      )
-                    )
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={13} align="center">
-                        <p>No data found</p>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            {noOfpages && noOfpages > 1 ? (
-              <NumberedPagination
-                totalPages={noOfpages}
-                paginateHandler={handlePagination}
-                currentPage={page}
-              />
-            ) : null}
-          </Wrapper>
-        </div>
+        <ReportTable
+          tableData={tableData}
+          componentRef={componentRef}
+          handlePagination={handlePagination}
+          page={page}
+          noOfpages={noOfpages}
+          link={link}
+          TableColumn={TableColumn}
+          colvalue={colvalue}
+        />
       ) : (
         <>
           {scoreData.length > 1 ? (
-            <div ref={componentRef}>
-              <div className="py-4 h-full grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-white border border-accent rounded-md ">
-                  <div className="flex flex-col items-center justify-center">
-                    <p className="font-semibold text-2xl">
-                      {GRAPH_LABELS.OVERALL_SCORE}
-                    </p>
-                    <div className="flex">
-                      <p className="m-2"> Select to view values on Y-Axis:</p>
-                      <FormControl>
-                        <RadioGroup
-                          aria-labelledby="demo-radio-buttons-group-label"
-                          defaultValue="score"
-                          name="radio-buttons-group"
-                          row={true}
-                          onChange={handleOptionChange}
-                          value={percentage}
-                        >
-                          <FormControlLabel
-                            value={false}
-                            defaultChecked={true}
-                            control={
-                              <Radio
-                                sx={{
-                                  color: 'var(--sunlight)',
-                                  '&.Mui-checked': {
-                                    color: 'var(--sunlight)',
-                                  },
-                                }}
-                              />
-                            }
-                            label="Score"
-                          />
-                          <FormControlLabel
-                            value={true}
-                            control={
-                              <Radio
-                                sx={{
-                                  color: 'var(--sunlight)',
-                                  '&.Mui-checked': {
-                                    color: 'var(--sunlight)',
-                                  },
-                                }}
-                              />
-                            }
-                            label="Percentage"
-                          />
-                        </RadioGroup>
-                      </FormControl>
-                    </div>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <MultipleAssignmentsBarGraph
-                      tabledata={scoreData}
-                      Per={percentage}
-                      PerData={PercengateData}
-                    />
-                  </div>
-                </div>
-                <div className="p-4 bg-white border border-accent rounded-md">
-                  <MultipleAssignmentAreaBar performance={PerformanceData} />
-                </div>
-              </div>
-              <Wrapper>
-                <div className="wrapperBorder mt-3">
-                  <div className="flex flex-col items-center justify-center">
-                    <div className="flex flex-col items-center justify-center">
-                      <p className="font-semibold text-2xl mt-5">
-                        {GRAPH_LABELS.ATTAINMENT_OVER_DATA}
-                      </p>
-                    </div>
-                    <div className="flex ml-auto p-2">
-                      {userData && USER_ROLE === SCHOOL_ADMIN && (
-                        <>
-                          <p className="m-4 mb-5">Select Branch :</p>
-
-                          <Dropdown
-                            value={selectedBranch}
-                            dataArray={BranchArray}
-                            border={true}
-                            onChangeHandler={(val) => {
-                              setselectedBranch(val);
-                            }}
-                            sxClass={{ width: '206px', marginRight: '10px' }}
-                            displayEmpty={true}
-                          />
-                        </>
-                      )}
-                      <p className="m-4 mb-5">Select Class :</p>
-                      <Dropdown
-                        displayEmpty={true}
-                        border={true}
-                        value={selectedClass}
-                        dataArray={classArray}
-                        onChangeHandler={(val) => {
-                          const obj: any = classArray.filter(
-                            (ele: { label: any }) => ele.label === val
-                          )[0];
-                          // setClassId(obj.id);
-                          setSelectedClass(val);
-                          setLine(1);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <MultipleAssignmentLineChart LineData={lineArray} />
-                </div>
-              </Wrapper>
-            </div>
+            <ReportGraph
+              componentRef={componentRef}
+              scoreData={scoreData}
+              PercengateData={PercengateData}
+              lineArray={lineArray}
+              PerformanceData={PerformanceData}
+              BranchArray={BranchArray}
+              selectedBranch={selectedBranch}
+              setselectedBranch={setselectedBranch}
+              selectedClass={selectedClass}
+              classArray={classArray}
+              setSelectedClass={setSelectedClass}
+              setLine={setLine}
+              percentage={percentage}
+              setPercentage={setPercentage}
+            />
           ) : (
             <div ref={componentRef}>
               <div className="p-4 bg-white border border-accent rounded-md mt-5">
@@ -904,6 +696,7 @@ export default function Index() {
           )}
         </>
       )}
+
       <Setting
         dialogOpen={dialogOpen}
         openModal={() => setDialogOpen(!dialogOpen)}

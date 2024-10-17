@@ -113,7 +113,7 @@ const Setting = (props: Props) => {
     onSuccess: (res: any) => {
       const resp = res?.data?.response;
       const body: any = [];
-      const fetchedRecords = resp?.slice(0, 4);
+      const fetchedRecords = resp?.slice(0, 5);
       setPerData(fetchedRecords);
 
       const meetObj = fetchedRecords?.find(
@@ -165,7 +165,7 @@ const Setting = (props: Props) => {
       val.approching2 === ''
     ) {
       toast('error', 'please add required details');
-    } else if (PerData?.length === 4) {
+    } else if (PerData?.length === 5) {
       UpdatePerformance(SettingData);
       props.closeModal();
       setValue({
