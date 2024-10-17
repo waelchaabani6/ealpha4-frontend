@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+/* eslint-disable comma-dangle */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import ButtonToggle from '@component/ToggleButton/ToggleButton';
 import DatePicker from '@component/datepicker';
@@ -20,21 +22,84 @@ import Wrapper from '@shared/wrapper/Wrapper';
 import { getNoOfPages } from '@utility/utility';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import { CSVLink } from 'react-csv';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import TotalAssessment from '../BarChart/TotalAssessment';
-import TotalAssignment from '../BarChart/TotalAssignment';
-import TotalStudentGraph from '../BarChart/TotalStudentGraph';
+import CustomizedDialogs from '@component/dialog/CustomDialog';
+import PageTitle from '@shared/pageTitle';
+import DetailGraphView from './DetailGraphView';
+
+const TableColumns: any = [
+  {
+    label: TABLE_LABELS?.SR_NO,
+    align: 'center',
+  },
+  {
+    label: TABLE_LABELS?.CLASS,
+    mapper: 'class_name',
+    align: 'center',
+  },
+  {
+    label: TABLE_LABELS?.TEACHER,
+    mapper: 'teacher',
+    align: 'center',
+  },
+  {
+    label: TABLE_LABELS?.NO_OF_STUDENT,
+    mapper: 'total_students',
+    align: 'center',
+  },
+  {
+    label: TABLE_LABELS?.NO_OF_ACTIVE_STD,
+    mapper: 'number_of_active_students',
+    align: 'center',
+  },
+  {
+    label: TABLE_LABELS?.NO_OF_NONACTIVE_STD,
+    mapper: 'number_of_non_active_students',
+    align: 'center',
+  },
+  {
+    label: TABLE_LABELS?.NO_OF_ASSIGNMENT,
+    align: 'center',
+    mapper: 'total_assignment',
+  },
+  {
+    label: TABLE_LABELS?.NO_OF_ASSESSMENT,
+    align: 'center',
+    mapper: 'total_assessments',
+  },
+];
+
+const csvSubHeaders = [
+  TABLE_LABELS?.CLASS_NAME,
+  TABLE_LABELS?.TEACHER,
+  TABLE_LABELS?.PROGRAM,
+  TABLE_LABELS?.ASSIGNMET_NAME,
+  TABLE_LABELS?.START_DATE,
+  TABLE_LABELS?.END_DATE,
+];
+
+const DialogTableColumns = [
+  {
+    label: 'First Name',
+    mapper: 'first_name',
+  },
+  {
+    label: 'Last Name',
+    mapper: 'last_name',
+  },
+];
+
+const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
 
 export default function Index() {
   const location = useLocation();
   const componentRef = useRef(null);
   const { FromDate, ToDate, ProgramID, ProgramName, schoolName } = useParams();
   const { schoolData, branchData } = useSelector(selectSchoolData);
-  const userData = useSelector((state: any) => state?.user);
-  const USER_ROLE = userData?.role?.name;
+  // const userData = useSelector((state: any) => state?.user);
 
   const rowsPerPage = 10;
   const printButton = () => <PrintIcon />;
@@ -54,17 +119,14 @@ export default function Index() {
   const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || '';
   const BRANCH_ID = branchData?.school_data?.id || '';
   const noOfpages = getNoOfPages(totalRecords, rowsPerPage);
-  // const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
-  const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [popupTitle, setPopupTitle] = useState('');
+  // const [popupData, setpopupData] = useState<any>({});
+  const [popupData, setpopupData] = useState<any>({
+    inactive_students: [],
+    active_students: [],
+  });
 
-  const csvSubHeaders = [
-    TABLE_LABELS?.CLASS_NAME,
-    TABLE_LABELS?.TEACHER,
-    TABLE_LABELS?.PROGRAM,
-    TABLE_LABELS?.ASSIGNMET_NAME,
-    TABLE_LABELS?.START_DATE,
-    TABLE_LABELS?.END_DATE,
-  ];
   const {
     isRefetching: emailSendLoading,
     refetch: sendEmail,
@@ -110,68 +172,140 @@ export default function Index() {
       ),
     },
   ];
+
   const handelSendEmail = () => {
     sendEmail();
   };
+
   const handleToolbarAction = async (title: string) => {
     if (title === TOOLBAR_LABELS.EMAIL) {
       handelSendEmail();
     }
   };
 
-  const TableColumns: any = [
-    {
-      label: TABLE_LABELS?.SR_NO,
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.CLASS,
-      mapper: 'class_name',
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.TEACHER,
-      mapper: 'teacher',
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.NO_OF_STUDENT,
-      mapper: 'total_students',
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.NO_OF_ACTIVE_STD,
-      mapper: 'number_of_active_students',
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.NO_OF_NONACTIVE_STD,
-      mapper: 'number_of_non_active_students',
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.NO_OF_ASSIGNMENT,
-      align: 'center',
-      mapper: 'total_assignment',
-    },
-    {
-      label: TABLE_LABELS?.NO_OF_ASSESSMENT,
-      align: 'center',
-      mapper: 'total_assessments',
-    },
-  ];
-
   const handlePagination = (currPage: any) => {
     if (currPage) setPage(currPage);
     else setPage(1);
   };
+
   const { isFetching: reportdetailLoading, refetch: ProgramDetails } = useGet({
     baseURL: ReportURL,
     url: `reports-service/program_usage_details_report/?school_id=${SCHOOL_ID}${selectedprogram ? `&selected_program=${selectedprogram}` : ''}&is_graph=${graph}&page=${page}&page_size=${rowsPerPage}`,
     onSuccess: (res: any) => {
       const ProgramData = res?.data?.response;
+      const body: any = [];
       if (graph !== 'yes') {
-        setTableData(ProgramData?.data);
+        ProgramData?.data.map((i: any) => {
+          body.push({
+            ...i,
+            number_of_active_students: (
+              <span
+                role="presentation"
+                className="text-accent underline cursor-pointer text-xs font-medium"
+                onClick={() => {
+                  setPopupTitle('Students List');
+                  setDialogOpen(true);
+                  setpopupData((prev) => ({
+                    ...prev,
+                    active_students: [
+                      {
+                        first_name: 'first_name',
+                        last_name: 'last_name',
+                      },
+                      {
+                        first_name: 'first_name 2',
+                        last_name: 'last_name 2',
+                      },
+                    ],
+                    inactive_students: [],
+                  }));
+                }}
+              >
+                {i.number_of_active_students}
+              </span>
+            ),
+            total_students: (
+              <span
+                role="presentation"
+                className="text-accent underline cursor-pointer text-xs font-medium"
+                onClick={() => {
+                  setPopupTitle('Students List');
+                  setDialogOpen(true);
+                  setpopupData((prev) => ({
+                    ...prev,
+                    active_students: [
+                      {
+                        first_name: 'first_name',
+                        last_name: 'last_name',
+                      },
+                      {
+                        first_name: 'first_name 2',
+                        last_name: 'last_name 2',
+                      },
+                    ],
+                    inactive_students: [
+                      {
+                        first_name: 'first_name',
+                        last_name: 'last_name',
+                      },
+                      {
+                        first_name: 'first_name 2',
+                        last_name: 'last_name 2',
+                      },
+                    ],
+                  }));
+                }}
+              >
+                {i.total_students}
+              </span>
+            ),
+            number_of_non_active_students: (
+              <span
+                role="presentation"
+                className="text-accent underline cursor-pointer text-xs font-medium"
+                onClick={() => {
+                  setPopupTitle('Students List');
+                  setDialogOpen(true);
+                  setpopupData((prev) => ({
+                    ...prev,
+                    active_students: [],
+                    inactive_students: [
+                      {
+                        first_name: 'first_name',
+                        last_name: 'last_name',
+                      },
+                      {
+                        first_name: 'first_name 2',
+                        last_name: 'last_name 2',
+                      },
+                    ],
+                  }));
+                }}
+              >
+                {i.number_of_non_active_students}
+              </span>
+            ),
+            total_assessments: (
+              <Link state={{ page }} to={`/${schoolName}/assessments`}>
+                <span className="text-accent underline cursor-pointer text-xs font-medium">
+                  {i.total_assessments}
+                </span>
+              </Link>
+            ),
+            total_assignment: (
+              <Link state={{ page }} to={`/${schoolName}/assignment`}>
+                <span className="text-accent underline cursor-pointer text-xs font-medium">
+                  {i.total_assignment}
+                </span>
+              </Link>
+            ),
+          });
+          return body;
+        });
+
+        setTableData(body);
+        // setTableData(ProgramData?.data);
+
         setCsvData([]);
       } else {
         // Total Students
@@ -182,6 +316,7 @@ export default function Index() {
             count2: Number(i?.active_students),
           })
         );
+
         setTotalStudent(tempStudent);
 
         // Total Assignment
@@ -217,6 +352,7 @@ export default function Index() {
     url: `course-code-service/courses/content/?ordering=-created_at&limit=1000&selection=Course`,
     enabled: true,
   });
+
   const programs = (data?.data?.response?.results || [])?.map((item: any) => ({
     label: item?.content,
     value: item?.id,
@@ -237,6 +373,14 @@ export default function Index() {
     }
   }, [view]);
 
+  // const handleDataPopup = (data: any) => {
+  //   setDialogOpen(true);
+  //   setpopupData(data);
+  // };
+
+  const handleDialog = () => {
+    setDialogOpen(false);
+  };
   return (
     <RouteLayout
       state={location?.state ? { page: location?.state?.page } : {}}
@@ -299,6 +443,7 @@ export default function Index() {
         </div>
         <ButtonToggle view={view} setView={setView} />
       </div>
+
       {/* Table Section */}
       {view === 'default' ? (
         <div className="wrapperBorder mt-3" ref={componentRef}>
@@ -315,37 +460,45 @@ export default function Index() {
           </Wrapper>
         </div>
       ) : (
-        <>
-          <div className="py-4 h-full grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-white border border-accent rounded-md">
-              <div className="flex flex-col items-center justify-center">
-                <p className="font-semibold text-xl">
-                  {GRAPH_LABELS.TOTAL_VS_ACTIVE}
-                </p>
-              </div>
-              <div className="overflow-x-auto">
-                <TotalStudentGraph data={totalStudent || []} />
-              </div>
-            </div>
-            <div className="p-4 bg-white border border-accent rounded-md">
-              <p className="font-semibold text-xl">
-                {GRAPH_LABELS.TOTAL_ASSIGNMENT}
-              </p>
-              <div className="overflow-x-auto">
-                <TotalAssignment data={totalAssignments || []} />
-              </div>
-            </div>
-            <div className="p-4 bg-white border border-accent rounded-md">
-              <p className="font-semibold text-xl">
-                {GRAPH_LABELS.TOTAL_ASSESSMENT}
-              </p>
-              <div className="overflow-x-auto">
-                <TotalAssessment data={totalAssessments || []} />
-              </div>
-            </div>
-          </div>
-        </>
+        <DetailGraphView
+          totalAssessments={totalAssessments}
+          totalAssignments={totalAssignments}
+          totalStudent={totalStudent}
+        />
       )}
+
+      <CustomizedDialogs
+        maxwidth="sm"
+        open={dialogOpen}
+        setOpen={() => {
+          handleDialog();
+        }}
+        title={popupTitle}
+      >
+        {popupData?.active_students.length > 0 && (
+          <>
+            <PageTitle title="Active students" />
+            <Wrapper>
+              <AdvanceTable
+                tableData={popupData?.active_students}
+                headerRows={DialogTableColumns}
+              />
+            </Wrapper>
+          </>
+        )}
+
+        {popupData?.inactive_students.length > 0 && (
+          <>
+            <PageTitle title="Inactive students" />
+            <Wrapper>
+              <AdvanceTable
+                tableData={popupData?.inactive_students}
+                headerRows={DialogTableColumns}
+              />
+            </Wrapper>
+          </>
+        )}
+      </CustomizedDialogs>
     </RouteLayout>
   );
 }

@@ -39,47 +39,12 @@ import { CSVLink } from 'react-csv';
 import { selectUser } from '@shared/store/userSlice';
 import { useSelector } from 'react-redux';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import ReactToPrint from 'react-to-print';
-import ProgramUsageOverview from '../BarChart/ProgramUsageOverview';
-import GraphView from './GraphView';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
-import PageTitle from '@shared/pageTitle';
+import ReactToPrint from 'react-to-print';
+// import ProgramUsageOverview from '../BarChart/ProgramUsageOverview';
+import GraphView from './GraphView';
 
 const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
-
-// const Y_AXIS_RADIO_OPTIONS = [
-//   {
-//     label: 'Students',
-//     value: 'option1',
-//   },
-//   {
-//     label: 'Teachers',
-//     value: 'option2',
-//   },
-//   {
-//     label: 'Total Time - Students',
-//     value: 'option3',
-//   },
-//   {
-//     label: 'Total Time - Teachers',
-//     value: 'option4',
-//   },
-//   {
-//     label: 'Total Time - Student + Teachers',
-//     value: 'option5',
-//   },
-// ];
-
-// const X_AXIS_RADIO_OPTIONS = [
-//   {
-//     label: 'Class',
-//     value: 'class',
-//   },
-//   {
-//     label: 'Teacher',
-//     value: 'teacher',
-//   },
-// ];
 
 const csvSubHeaders = [
   TABLE_LABELS?.SR_NO,
@@ -173,7 +138,6 @@ export default function Index() {
   const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
   const link = `/${schoolNameInURL}/reports/program-usage-detail`;
   const componentRef = useRef(null);
-  // const rowsPerPage = 10;
   const [rowsPerPage, setRowsPerPage] = useState<any>(RESULTS_PER_PAGE?.[0]);
   const USER_ROLE = userData?.role?.name;
 
@@ -183,7 +147,6 @@ export default function Index() {
   const [totalRecords, setTotalRecords] = useState(0);
   const [fromDate, setFromDate] = useState<any>('');
   const [toDate, setToDate] = useState<any>('');
-  // const [yaxis, setYaxis] = useState('option1');
   const [xaxis, setXaxis] = useState('class');
   const [selectedBranch, setselectedBranch] = useState('');
   const [BranchArray, setBranchArray] = useState<any>([]);
@@ -202,10 +165,6 @@ export default function Index() {
   const BRANCH_ID = branchData?.school_data?.id || '';
 
   const noOfpages = getNoOfPages(totalRecords, rowsPerPage);
-
-  // const filteredOptions = Y_AXIS_RADIO_OPTIONS.filter(
-  //   (option) => option.label !== 'Teachers'
-  // );
 
   const {
     isRefetching: emailSendLoading,
@@ -263,12 +222,7 @@ export default function Index() {
     if (currPage) setPage(currPage);
     else setPage(1);
   };
-  // const handleOptionChange = (event: any) => {
-  //   setYaxis(event.target.value);
-  // };
-  // const handleOptionXaxisChange = (event: any) => {
-  //   setXaxis(event.target.value);
-  // };
+
   const branchid =
     selectedBranch !== 'All'
       ? BranchArray?.find((i: any) => i?.label === selectedBranch)?.id ||
@@ -297,61 +251,58 @@ export default function Index() {
                 </span>
               </Link>
             ),
-            Class: i.total_classes,
-            // Class: (
-            //   <Link
-            //     state={{ page }}
-            //     to={`/${schoolName}/dashboard/${schoolId}/manage-classes`}
-            //   >
-            //     <span className="text-accent underline cursor-pointer text-xs font-medium">
-            //       {i.total_classes}
-            //     </span>
-            //   </Link>
-            // ),
-            // TotalStudent: (
-            //   <span
-            //     role="presentation"
-            //     className="text-accent underline cursor-pointer text-xs font-medium"
-            //     onClick={() => {
-            //       setPopupTitle('Students List');
-            //       handleDataPopup([
-            //         {
-            //           first_name: 'first_name',
-            //           last_name: 'last_name',
-            //         },
-            //         {
-            //           first_name: 'first_name 2',
-            //           last_name: 'last_name 2',
-            //         },
-            //       ]);
-            //     }}
-            //   >
-            //     {i.total_teachers}
-            //   </span>
-            // ),
-            TotalStudent: i.total_students,
-            // TotalTeacher: (
-            //   <span
-            //     role="presentation"
-            //     className="text-accent underline cursor-pointer text-xs font-medium"
-            //     onClick={() => {
-            //       setPopupTitle('Teachers List');
-            //       handleDataPopup([
-            //         {
-            //           first_name: 'first_name',
-            //           last_name: 'last_name',
-            //         },
-            //         {
-            //           first_name: 'first_name 2',
-            //           last_name: 'last_name 2',
-            //         },
-            //       ]);
-            //     }}
-            //   >
-            //     {i.total_teachers}
-            //   </span>
-            // ),
-            TotalTeacher: i.total_teachers,
+            Class: (
+              <Link
+                state={{ page }}
+                to={`/${schoolName}/dashboard/${schoolId}/manage-classes`}
+              >
+                <span className="text-accent underline cursor-pointer text-xs font-medium">
+                  {i.total_classes}
+                </span>
+              </Link>
+            ),
+            TotalStudent: (
+              <span
+                role="presentation"
+                className="text-accent underline cursor-pointer text-xs font-medium"
+                onClick={() => {
+                  setPopupTitle('Students List');
+                  handleDataPopup([
+                    {
+                      first_name: 'first_name',
+                      last_name: 'last_name',
+                    },
+                    {
+                      first_name: 'first_name 2',
+                      last_name: 'last_name 2',
+                    },
+                  ]);
+                }}
+              >
+                {i.total_teachers}
+              </span>
+            ),
+            TotalTeacher: (
+              <span
+                role="presentation"
+                className="text-accent underline cursor-pointer text-xs font-medium"
+                onClick={() => {
+                  setPopupTitle('Teachers List');
+                  handleDataPopup([
+                    {
+                      first_name: 'first_name',
+                      last_name: 'last_name',
+                    },
+                    {
+                      first_name: 'first_name 2',
+                      last_name: 'last_name 2',
+                    },
+                  ]);
+                }}
+              >
+                {i.total_teachers}
+              </span>
+            ),
             TotalTimeStudent: i.total_time_students,
             AvgTimeStudent: i.average_time_students,
             TotalTimeTeacher: i.total_time_teacher,
