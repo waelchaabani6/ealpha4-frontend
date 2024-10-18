@@ -53,6 +53,70 @@ interface Assessment {
   class_or_student: any; // Use proper typing here based on your actual data structure
 }
 
+const TableColumns = [
+  {
+    label: TABLE_LABELS?.SR_NO,
+    align: 'center',
+  },
+  {
+    label: TABLE_LABELS?.ASSESSMENT_NAME,
+    mapper: 'assessment_name',
+    isSort: true,
+  },
+  {
+    label: TABLE_LABELS.COURSES,
+    // isSort: true,
+    align: 'center',
+    mapper: 'subject_name',
+  },
+  {
+    label: TABLE_LABELS?.CLASS_STUDENTS,
+    align: 'center',
+    mapper: 'class_or_student',
+  },
+  {
+    label: TABLE_LABELS?.START_DATE,
+    isSort: true,
+    mapper: 'start_date',
+    format: 'DD-MM-YYYY',
+  },
+  {
+    label: TABLE_LABELS?.END_DATE,
+    // isSort: true,
+    mapper: 'submission_date',
+    format: 'DD-MM-YYYY',
+  },
+  {
+    label: TABLE_LABELS?.CREATED_ON,
+    mapper: 'created_at',
+    format: 'DD-MM-YYYY',
+    isSort: true,
+  },
+  {
+    label: TABLE_LABELS?.TYPE,
+    isSort: true,
+    mapper: 'is_printed',
+  },
+  {
+    label: TABLE_LABELS?.ACTION,
+    colspan: 2,
+    align: 'center',
+    bodyAlign: 'right',
+    component: COMPONENTS?.view,
+    showInHeader: false,
+  },
+  // {
+  //   bodyAlign: 'center',
+  //   component: COMPONENTS?.,
+  //   showInHeader: false
+  // },
+  {
+    bodyAlign: 'left',
+    component: COMPONENTS?.delete,
+    showInHeader: false,
+  },
+];
+
 export default function AssignedAssessments() {
   const location = useLocation();
   const { schoolName } = useParams();
@@ -117,64 +181,6 @@ export default function AssignedAssessments() {
   const { user } = useSelector((state: any) => state);
 
   // console.log('tabel data =', tableData)
-
-  const TableColumns = [
-    {
-      label: TABLE_LABELS?.SR_NO,
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.ASSESSMENT_NAME,
-      mapper: 'assessment_name',
-      isSort: true,
-    },
-    {
-      label: TABLE_LABELS.COURSES,
-      // isSort: true,
-      align: 'center',
-      mapper: 'subject_name',
-    },
-    {
-      label: TABLE_LABELS?.CLASS_STUDENTS,
-      align: 'center',
-      mapper: 'class_or_student',
-    },
-    {
-      label: TABLE_LABELS?.START_DATE,
-      isSort: true,
-      mapper: 'start_date',
-      format: 'DD-MM-YYYY',
-    },
-    {
-      label: TABLE_LABELS?.END_DATE,
-      // isSort: true,
-      mapper: 'submission_date',
-      format: 'DD-MM-YYYY',
-    },
-    {
-      label: TABLE_LABELS?.TYPE,
-      isSort: true,
-      mapper: 'is_printed',
-    },
-    {
-      label: TABLE_LABELS?.ACTION,
-      colspan: 2,
-      align: 'center',
-      bodyAlign: 'right',
-      component: COMPONENTS?.view,
-      showInHeader: false,
-    },
-    // {
-    //   bodyAlign: 'center',
-    //   component: COMPONENTS?.,
-    //   showInHeader: false
-    // },
-    {
-      bodyAlign: 'left',
-      component: COMPONENTS?.delete,
-      showInHeader: false,
-    },
-  ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
   const [page, setPage] = useState(1);
