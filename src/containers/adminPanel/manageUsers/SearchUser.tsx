@@ -1,7 +1,11 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable comma-dangle */
-import Button from '@component/button/button';
-import DebounceInput from '@component/input/DebounceInput';
 import { useEffect, useState } from 'react';
+
+import Button from '@component/button/button';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import CustomSearchInput from '@component/input/CustomSearchInput';
+import { useForm } from 'react-hook-form';
 
 type SearchUserProps = {
   setSearchVal: any;
@@ -30,23 +34,58 @@ export default function SearchUser({
     }
   };
 
+  const handleReset = () => {
+    reset();
+    setSearchVal(() => '');
+    setError('');
+    setPage(1);
+
+    setTimeout(() => {
+      fetchData();
+    }, 500);
+  };
+
   useEffect(() => {
     if (searchVal === '') {
       setError('');
     }
   }, [searchVal]);
 
+  const { control, watch, reset } = useForm();
+
+  useEffect(() => {
+    setSearchVal(watch('search'));
+  }, [watch('search')]);
+
   return (
     <div className="w-full">
       <div className="bg-white rounded-md p-4">
-        <div className="flex w-full gap-x-5">
-          <div className="max-w-xs">
-            <DebounceInput
-              onChange={(value: string) => setSearchVal(value)}
+        <div className="flex w-full gap-x-5 items-baseline">
+          <div className="max-w-xs min-w-[70%]">
+            <CustomSearchInput
+              control={control}
+              name="search"
               loading={isLoading}
             />
           </div>
-          <Button onClick={handleSearch}>Search</Button>
+
+          <Button
+            sx={{
+              width: '400px',
+            }}
+            onClick={handleSearch}
+          >
+            Search
+          </Button>
+
+          <span
+            tabIndex={0}
+            title="Clear Search"
+            onClick={handleReset}
+            role="button"
+          >
+            <RestartAltIcon />
+          </span>
         </div>
         {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
       </div>
