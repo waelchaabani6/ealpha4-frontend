@@ -26,7 +26,7 @@ import { useSelector } from 'react-redux';
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import Dropdown from '@component/dropdown/Dropdown';
-
+// eslint-disable-next-line import/no-extraneous-dependencies
 const printButton = () => <PrintIcon />;
 
 export default function OBE_CompletedAssessments() {

@@ -22,6 +22,8 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import Dropdown from '@component/dropdown/Dropdown';
 import { selectSchoolData } from '@shared/store/schoolSlice';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import CryptoJS from 'crypto-js';
 import CustomPagination from '../../components/pagination/CustomPagination';
 import {
   COMPONENTS,
@@ -261,7 +263,7 @@ export default function AssignedAssessments() {
         const joinedClasses = Array.isArray(item.class_name) ? (item.class_name)?.filter((j: any) => j).join(', ') : item.class_name;
         const temp = {
           ...item,
-          assessment_name: <Link state={{ page, obeasses_id, path: `/${schoolName}/assessments/assigned` }} to={link} ><span className="text-accent underline cursor-pointer text-xs font-medium">{item.assessment_name}</span></Link>,
+          assessment_name: <Link state={{ page, obeasses_id, path: `/${schoolName}/assessments/assigned` }} to={link}><span className="text-accent underline cursor-pointer text-xs font-medium">{item.assessment_name}</span></Link>,
           class_or_student: <span role="presentation" className="text-accent underline cursor-pointer text-xs font-medium" onClick={() => handleDataPopup(item)}>{`${joinedClasses}(${item?.student_count})`}</span>,
           is_printed: (item?.is_printed) ? 'Printed' : 'Online'
         };

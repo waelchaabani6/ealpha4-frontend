@@ -20,6 +20,8 @@ import { getNoOfPages, sortData } from '@utility/utility';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import CryptoJS from 'crypto-js';
 
 export default function OBE_ObeAssessments() {
   const { user } = useSelector((state: any) => state);
@@ -127,7 +129,13 @@ export default function OBE_ObeAssessments() {
     if (handlername === 'delete') {
       deleteHandler(data);
     } else if (handlername === 'view') {
-      navigate(
+      const originPath = window.location.href;
+      const config = { originPath, page};
+      const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(config), 'secret-key').toString();
+
+      window.location.href = `http://localhost:3001/views/1000?token=${encodeURIComponent(encryptedData)}`;
+
+      /* navigate(
         `/${schoolName}/obe-assessments/preview_myassessment_question/${data?.id}`,
         {
           state: {
@@ -136,7 +144,7 @@ export default function OBE_ObeAssessments() {
             path: `/${schoolName}/obe-assessments/assigned`,
           },
         }
-      );
+      ); */
     }
   };
 
@@ -273,7 +281,7 @@ export default function OBE_ObeAssessments() {
 
   // Get Assessment List
   const sort_by = `${orderBy}` ?? 'name';
-  const directoon = order  ?? 'asc';
+  const directoon = order ?? 'asc';
   const fetchAssignments = () => {
     const requestOptions = {
       method: 'GET',

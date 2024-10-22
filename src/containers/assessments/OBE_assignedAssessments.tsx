@@ -22,6 +22,8 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import Dropdown from '@component/dropdown/Dropdown';
 import { selectSchoolData } from '@shared/store/schoolSlice';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import CryptoJS from 'crypto-js';
 import CustomPagination from '../../components/pagination/CustomPagination';
 import {
   COMPONENTS,
@@ -210,7 +212,13 @@ export default function OBE_AssignedAssessments() {
     if (handlername === 'delete') {
       deleteHandler(data);
     } else if (handlername === 'view') {
-      navigate(`/${schoolName}/obe-assessments/preview_myassessment_question/${data?.assessment_id}`, { state: { page, obeasses_id, path: `/${schoolName}/assessments/assigned` } });
+      const originPath = window.location.href;
+      const config = { originPath, page };
+      const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(config), 'secret-key').toString();
+
+      window.location.href = `http://localhost:3001/views/1000?token=${encodeURIComponent(encryptedData)}`;
+
+      // navigate(`/${schoolName}/obe-assessments/preview_myassessment_question/${data?.assessment_id}`, { state: { page, obeasses_id, path: `/${schoolName}/assessments/assigned` } });
     }
   };
 
@@ -261,7 +269,7 @@ export default function OBE_AssignedAssessments() {
         const joinedClasses = Array.isArray(item.class_name) ? (item.class_name)?.filter((j: any) => j).join(', ') : item.class_name;
         const temp = {
           ...item,
-          assessment_name: <Link state={{ page, obeasses_id, path: `/${schoolName}/obe-assessments/assigned` }} to={link} ><span className="text-accent underline cursor-pointer text-xs font-medium">{item.assessment_name}</span></Link>,
+          assessment_name: <Link state={{ page, obeasses_id, path: `/${schoolName}/obe-assessments/assigned` }} to={link}><span className="text-accent underline cursor-pointer text-xs font-medium">{item.assessment_name}</span></Link>,
           class_or_student: <span role="presentation" className="text-accent underline cursor-pointer text-xs font-medium" onClick={() => handleDataPopup(item)}>{`${joinedClasses}(${item?.student_count})`}</span>,
           is_printed: (item?.is_printed) ? 'Printed' : 'Online'
         };
@@ -385,7 +393,7 @@ export default function OBE_AssignedAssessments() {
 
   return (
     <RouteLayout>
-      <HeaderMenus title="Assigned Assessments" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+      <HeaderMenus title="Assigned Assessments bbb teacher" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <div className="pt-[30px]">

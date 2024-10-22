@@ -20,6 +20,8 @@ import { useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import Dropdown from '@component/dropdown/Dropdown';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import CryptoJS from 'crypto-js';
 import CustomPagination from '../../../components/pagination/CustomPagination';
 import {
   RESULTS_PER_PAGE,
@@ -128,11 +130,14 @@ export default function OBE_Index() {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     const duration = minutes;
-
     const obeasses_id = data?.obeasses_id;
-    navigate(`perform-assessment/${data?.assessment_id}`, {
-      state: { page, obeasses_id, duration, path: `/${schoolName}/obe-assessments` }
-    });
+
+    const originPath = window.location.href;
+    const config = { originPath, page, obeasses_id, duration };
+    const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(config), 'secret-key').toString();
+
+    // Change the URL to point to App B running on port 3001
+    window.location.href = `http://localhost:3001/player/1000?token=${encodeURIComponent(encryptedData)}`;
   };
 
   function shouldDisableButton(startDateString: any) {
