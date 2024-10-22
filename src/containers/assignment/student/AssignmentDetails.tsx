@@ -203,6 +203,7 @@ function AssignmentDetails(): JSX.Element {
     const columnsHeader2 = columnsHeader.map((ele, index) => {
       if (ele.component === 'Dropdown' && cIndex === index) {
         setJsonData(jsonCopyData.filter((page: any) => page.Pages === val));
+        console.log(copysinglePages, 'copysinglePages');
         setSinglePages(
           copysinglePages.filter((page: any) => page.page_name === val)
         );
@@ -425,19 +426,6 @@ function AssignmentDetails(): JSX.Element {
               );
             }
 
-            const pagesArray = singlePages.map((ele: any) => ({
-              label: ele.page_name,
-              value: ele.page_name,
-            }));
-
-            const columnsHeader2 = columnsHeader.map((ele) => {
-              if (ele.component === 'Dropdown') {
-                return { ...ele, dataArray: pagesArray };
-              }
-              return ele;
-            });
-
-            setColumns(columnsHeader2);
             // setColumnsCopy(columnsHeader2);
             // setAssignmentsPages(pagesList);
             // scromPagesTemp.push({
@@ -486,8 +474,26 @@ function AssignmentDetails(): JSX.Element {
         // console.log(scromPagesTemp);
       }
 
-      setSinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
-      setCopySinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
+      const tempSinglePages = tempArray.length !== 0 ? tempArray : jsonRespData;
+      setSinglePages((prev) => tempSinglePages);
+
+      setCopySinglePages((prev) => tempSinglePages);
+
+      // const pagesArray = singlePages.map((ele: any) => ({
+      //   label: ele.page_name,
+      //   value: ele.page_name,
+      // }));
+
+      // const columnsHeader2 = columnsHeader.map((ele) => {
+      //   if (ele.component === 'Dropdown') {
+      //     return { ...ele, dataArray: pagesArray };
+      //   }
+      //   return ele;
+      // });
+
+      console.log(columnsHeader, 'columnsHeader2');
+
+      // setColumns(columnsHeader2);
 
       const pagesListprev: any = [];
       if (tempArray.length !== 0) {
@@ -508,7 +514,7 @@ function AssignmentDetails(): JSX.Element {
         });
       }
 
-      const pagesArray = singlePages.map((ele: any) => ({
+      const pagesArray = tempSinglePages.map((ele: any) => ({
         label: ele.page_name,
         value: ele.page_name,
       }));
