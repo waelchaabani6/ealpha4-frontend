@@ -30,7 +30,7 @@ export default function StickyHeadTable({
 }: StickyHeadTableProps) {
   const location = useLocation();
   const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   /*  const navigatToPreview = (state: any) => {
     console.log('from nagivate to preview action');
