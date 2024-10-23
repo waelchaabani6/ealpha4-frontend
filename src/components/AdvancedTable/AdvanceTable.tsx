@@ -1,3 +1,6 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable react/jsx-curly-newline */
+/* eslint-disable implicit-arrow-linebreak */
 import React, { forwardRef } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -215,6 +218,22 @@ const AdvanceTable = forwardRef(
             role="presentation"
             tabIndex={0}
             className="deleteRow"
+            onClick={() =>
+              actionHandler && actionHandler(data, headerData?.component)
+            }
+            style={{ cursor: 'pointer', float: headerData?.bodyAlign }}
+          >
+            <Edit className="tableIcon" style={{ width: '100%' }} />
+          </span>
+        );
+      }
+      if (headerData?.component === COMPONENTS?.edit_password) {
+        return (
+          <span
+            role="presentation"
+            tabIndex={0}
+            className="deleteRow"
+            title="Edit password"
             onClick={() =>
               actionHandler && actionHandler(data, headerData?.component)
             }

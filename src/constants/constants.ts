@@ -29,6 +29,7 @@ export const COMPONENTS = {
   assign: 'assign',
   view: 'view',
   edit: 'edit',
+  edit_password: 'edit_password',
   download: 'download',
   share: 'share',
 };
@@ -556,3 +557,12 @@ export const USER_ROLE = {
   PARENT: 7,
   DEFAULT: 8,
 };
+export const USER_ROLE_LIST_LABEL = [
+  { id: 1, value: 'super-admin', label: USER_TYPE.SUPER_ADMIN },
+  { id: 2, value: 'sub-admin', label: USER_TYPE.SUB_ADMIN },
+  { id: 3, value: 'school-admin', label: USER_TYPE.SCHOOL_ADMIN },
+  { id: 4, value: 'branch-admin', label: USER_TYPE.BRANCH_ADMIN },
+  { id: 5, value: 'teacher', label: USER_TYPE.TEACHER },
+  { id: 6, value: 'student', label: USER_TYPE.STUDENT },
+  { id: 7, value: 'parent', label: USER_TYPE.PARENTS },
+];
