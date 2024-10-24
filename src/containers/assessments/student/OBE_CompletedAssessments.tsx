@@ -27,6 +27,8 @@ import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import Dropdown from '@component/dropdown/Dropdown';
 // eslint-disable-next-line import/no-extraneous-dependencies
+import CryptoJS from 'crypto-js';
+
 const printButton = () => <PrintIcon />;
 
 export default function OBE_CompletedAssessments() {
@@ -201,16 +203,10 @@ export default function OBE_CompletedAssessments() {
     const obeasses_id = data?.obeasses_id;
     const user_ting = data?.user_ting;
     setConfig(user_ting);
-    navigate(
-      `/${schoolName}/obe-assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${data?.assessment_name}`,
-      {
-        state: {
-          page,
-          obeasses_id,
-          path: `/${schoolName}/obe-assessments/completed-assessments`
-        }
-      }
-    );
+    const originPath = window.location.href;
+    const config = { originPath, obeasses_id, user_ting };
+    const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(config), 'secret-key').toString();
+    window.location.href = `http://localhost:3001/student-reports/1000?token=${encodeURIComponent(encryptedData)}`;
   };
   // ----------------------------------------API-------------------------
   // Get Assessment List

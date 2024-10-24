@@ -2,10 +2,8 @@ import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import { CustomInput } from '@component/input';
 import DebounceInput from '@component/input/DebounceInput';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
 import { useGet } from '@shared/api/useApi';
-import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import toast from '@shared/toast';
 import { getNoOfPages } from '@utility/utility';
@@ -14,6 +12,8 @@ import { CSVLink } from 'react-csv';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import { useSelector } from 'react-redux';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import CryptoJS from 'crypto-js';
 import CustomPagination from '../../components/pagination/CustomPagination';
 import { RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '../../constants/constants';
 import Wrapper from '../../shared/wrapper/Wrapper';
@@ -96,44 +96,11 @@ export default function OBE_StudentCompletedAssessmentList() {
 
   const redirect = (url: any, user_ting: string, item: any) => {
     const obeasses_id = item?.obeasses_id;
-    setConfig(user_ting, obeasses_id);
-    navigate(
-      url,
-      {
-        state: {
-          obeasses_id,
-          user_ting
-        }
-      }
-    );
-  };
 
-  const setConfig = (user_ting: string, obeasses_id: string) => {
-    const config = {
-      apiKey: `${import.meta.env.VITE_APP_SDK}`,
-      user: `${user?.first_name} ${user?.last_name}`,
-      role: user?.role?.name,
-      user_ting,
-      obeasses_id
-    };
-    fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(config)
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-
-      })
-      .catch((e) => {
-      });
+    const originPath = window.location.href;
+    const config = { originPath, obeasses_id, user_ting };
+    const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(config), 'secret-key').toString();
+    window.location.href = `http://localhost:3001/teacher-reports/1000?token=${encodeURIComponent(encryptedData)}`;
   };
 
   // ----------------------------------------API-------------------------

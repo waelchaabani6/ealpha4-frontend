@@ -99,11 +99,11 @@ export default function OBE_SingleReportAssessment() {
   //   }
   // }, [status, aid, searchParams]);
 
-  useEffect(() => {
+  /*  useEffect(() => {
     const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
     const baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/teacher-reports/${obeasses_id}`;
     setIframeUrl(baseUrl + generateCacheBuster());
-  }, [obeasses_id]);
+  }, [obeasses_id]); */
 
   const colorCode = (scoreAch: number, type: string) => {
     if (scoreAch <= 60) return { bg: '#FBD4C7', color: '#000000' }[type];
@@ -197,7 +197,7 @@ export default function OBE_SingleReportAssessment() {
             <span className="learnosity-report" id="response-analysis" /> */}
           </div>
         ) : (
-          <div /*className="mt-5 h-max w-full rounded-md border bg-white p-4"*/>
+          <div>
             {/* {error ? <h2>{`${error}`}</h2> : 'Loading...'} */}
           </div>
         )
