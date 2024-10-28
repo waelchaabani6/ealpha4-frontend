@@ -1,3 +1,7 @@
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable comma-dangle */
+/* eslint-disable operator-linebreak */
+/* eslint-disable indent */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import Button from '@component/button/button';
@@ -46,121 +50,122 @@ type lessonWiseFormObjType = {
 let today = new Date();
 const printButton = () => <PrintIcon />;
 
+const TableColumns = [
+  {
+    label: '',
+    isSort: false,
+    mapper: '',
+    isAdd: true,
+  },
+  {
+    label: TABLE_LABELS?.SR_NO,
+    align: 'center',
+    sx: { width: '90px' },
+  },
+  {
+    label: TABLE_LABELS?.ASSIGNMET_NAME,
+    mapper: 'assignment_name',
+    sx: { width: '200px' },
+    isSort: true,
+  },
+  {
+    label: TABLE_LABELS?.COURSES,
+    isSort: true,
+    mapper: 'subject_name',
+  },
+  {
+    label: TABLE_LABELS?.TEACHER,
+    isSort: true,
+    mapper: 'teacher_name',
+  },
+  {
+    label: TABLE_LABELS?.LESSONS,
+    mapper: 'Lessons',
+    sx: { width: '200px' },
+  },
+  {
+    label: TABLE_LABELS?.STATUS,
+    align: 'center',
+    mapper: 'State',
+    sx: { width: '100px' },
+  },
+  {
+    label: TABLE_LABELS?.START_DATE,
+    isSort: true,
+    mapper: 'start_date',
+    format: 'DD-MM-YYYY',
+    sx: { width: '110px' },
+  },
+  {
+    label: TABLE_LABELS?.DUE_DATE,
+    align: 'center',
+    isSort: true,
+    mapper: 'end_date',
+    format: 'DD-MM-YYYY',
+    sx: { width: '110px' },
+  },
+  {
+    label: TABLE_LABELS?.SCORE,
+    align: 'center',
+    isSort: true,
+    mapper: 'score',
+    sx: { width: '110px' },
+  },
+  {
+    label: TABLE_LABELS?.REMARK,
+    mapper: 'remark',
+    sx: { width: '100px' },
+  },
+  {
+    label: TABLE_LABELS?.ACTION,
+    mapper: 'Action',
+    align: 'center',
+    colspan: 2,
+  },
+];
+
+const subTableHeader = [
+  {
+    label: TABLE_LABELS?.SR_NO,
+    align: 'center',
+  },
+  {
+    label: 'Chapter',
+    mapper: 'chapter_name',
+    isSort: true,
+  },
+  {
+    label: 'Lesson Name',
+    // isSort: true,
+    mapper: 'lessonUnitName',
+  },
+  {
+    label: TABLE_LABELS?.ACTION,
+    mapper: 'Action',
+    align: 'center',
+    colspan: 2,
+  },
+];
+
+const headers = [
+  TABLE_LABELS?.ASSIGNMET_NAME,
+  TABLE_LABELS?.COURSES,
+  TABLE_LABELS?.TEACHER,
+  TABLE_LABELS?.LESSONS,
+  TABLE_LABELS?.START_DATE,
+  TABLE_LABELS?.DUE_DATE,
+  TABLE_LABELS?.SCORE,
+  TABLE_LABELS?.STATE,
+];
+
 export default function Index() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user_profile_id: studentID, role } = useSelector(selectUser);
 
-  const headers = [
-    TABLE_LABELS?.ASSIGNMET_NAME,
-    TABLE_LABELS?.COURSES,
-    TABLE_LABELS?.TEACHER,
-    TABLE_LABELS?.LESSONS,
-    TABLE_LABELS?.START_DATE,
-    TABLE_LABELS?.DUE_DATE,
-    TABLE_LABELS?.SCORE,
-    TABLE_LABELS?.STATE,
-  ];
-
   const [csvData, setCsvData] = useState<[]>([]);
   const [tableData, setTableData] = useState<any>([]);
   const imageRef = useRef<any>();
-  const TableColumns = [
-    {
-      label: '',
-      isSort: false,
-      mapper: '',
-      isAdd: true,
-    },
-    {
-      label: TABLE_LABELS?.SR_NO,
-      align: 'center',
-      sx: { width: '90px' },
-    },
-    {
-      label: TABLE_LABELS?.ASSIGNMET_NAME,
-      mapper: 'assignment_name',
-      sx: { width: '200px' },
-      isSort: true,
-    },
-    {
-      label: TABLE_LABELS?.COURSES,
-      isSort: true,
-      mapper: 'subject_name',
-    },
-    {
-      label: TABLE_LABELS?.TEACHER,
-      isSort: true,
-      mapper: 'teacher_name',
-    },
-    {
-      label: TABLE_LABELS?.LESSONS,
-      mapper: 'Lessons',
-      sx: { width: '200px' },
-    },
-    {
-      label: TABLE_LABELS?.STATUS,
-      align: 'center',
-      mapper: 'State',
-      sx: { width: '100px' },
-    },
-    {
-      label: TABLE_LABELS?.START_DATE,
-      isSort: true,
-      mapper: 'start_date',
-      format: 'DD-MM-YYYY',
-      sx: { width: '110px' },
-    },
-    {
-      label: TABLE_LABELS?.DUE_DATE,
-      align: 'center',
-      isSort: true,
-      mapper: 'end_date',
-      format: 'DD-MM-YYYY',
-      sx: { width: '110px' },
-    },
-    {
-      label: TABLE_LABELS?.SCORE,
-      align: 'center',
-      isSort: true,
-      mapper: 'score',
-      sx: { width: '110px' },
-    },
-    {
-      label: TABLE_LABELS?.REMARK,
-      mapper: 'remark',
-      sx: { width: '100px' },
-    },
-    {
-      label: TABLE_LABELS?.ACTION,
-      mapper: 'Action',
-      align: 'center',
-      colspan: 2,
-    },
-  ];
-
-  const subTableHeader = [
-    {
-      label: TABLE_LABELS?.SR_NO,
-      align: 'center',
-    },
-    {
-      label: 'Chapter',
-      mapper: 'chapter_name',
-      isSort: true,
-    },
-    {
-      label: 'Lesson Name',
-      // isSort: true,
-      mapper: 'lessonUnitName',
-    },
-    {
-      label: TABLE_LABELS?.ACTION,
-      mapper: 'Action',
-      align: 'center',
-      colspan: 2,
-    },
-  ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
   const [page, setPage] = useState(1);
@@ -290,8 +295,7 @@ export default function Index() {
             const url = window.URL.createObjectURL(blob);
             // const fileName = fileUrl.split('/')[fileUrl.split('/').length - 1];
             const fileName = response.url.split('?')[0];
-            console.log('file name', fileName);
-            console.log('response url', response.url);
+
             const link = document.createElement('a');
             link.href = fileName;
             link.target = '_blank';
@@ -300,7 +304,7 @@ export default function Index() {
             link.click();
             document.body.removeChild(link);
 
-            //window.URL.revokeObjectURL(url);
+            // window.URL.revokeObjectURL(url);
           });
         })
         .catch((err) => {});
@@ -440,10 +444,9 @@ export default function Index() {
               }}
               to={`/${schoolNameInURL}/MySubject/${ele.course_table_id}`}
             >
-              {' '}
               <span className="underline cursor-pointer font-medium">
                 {ele.course_name}
-              </span>{' '}
+              </span>
             </Link>
           ),
           assignment_name:
@@ -475,10 +478,9 @@ export default function Index() {
                 }
                 to={`/${schoolNameInURL}/assignment/assignment-details/${ele.id}/empty/false`}
               >
-                {' '}
                 <span className="underline cursor-pointer font-medium">
                   {ele.assignment_name}
-                </span>{' '}
+                </span>
                 {/* eslint-disable-next-line react/jsx-closing-tag-location */}
               </Link>
             ),
@@ -517,9 +519,7 @@ export default function Index() {
           Action:
             ele.state === 'Submitted' ? (
               <p>
-                {' '}
-                <Button disabled={true}>{ele.state} </Button>{' '}
-                {/* eslint-disable-next-line react/jsx-closing-tag-location */}
+                <Button disabled={true}>{ele.state} </Button>
               </p>
             ) : ele.state === 'Yet to Start' || ele.state === 'Ongoing' ? (
               <div className="flex justify-center items-center">
@@ -836,15 +836,15 @@ export default function Index() {
   });
 
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon:
-        emailSendLoading || emailSendRefetch ? (
-          <Loader size={20} />
-        ) : (
-          <EmailIcon />
-        ),
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon:
+    //     emailSendLoading || emailSendRefetch ? (
+    //       <Loader size={20} />
+    //     ) : (
+    //       <EmailIcon />
+    //     ),
+    // },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (

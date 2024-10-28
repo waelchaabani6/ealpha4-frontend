@@ -1,3 +1,6 @@
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable operator-linebreak */
 /* eslint-disable comma-dangle */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import DatePicker from '@component/datepicker';
@@ -117,57 +120,57 @@ const TableColumns = [
   },
 ];
 
+const CompletedTableColumns = [
+  {
+    label: 'First Name',
+    mapper: 'first_name',
+  },
+  {
+    label: 'Last Name',
+    mapper: 'last_name',
+  },
+  {
+    label: 'Class',
+    mapper: 'class_name',
+  },
+];
+
+const PendingTableColumns = [
+  {
+    label: 'First Name',
+    mapper: 'first_name',
+  },
+  {
+    label: 'Last Name',
+    mapper: 'last_name',
+  },
+  {
+    label: 'Class',
+    mapper: 'class_name',
+  },
+];
+
+const ALL: Array<any> = [
+  {
+    label: 'Select',
+    value: 'Select',
+  },
+];
+
+const Csvheaders = [
+  TABLE_LABELS?.ASSESSMENT_NAME,
+  TABLE_LABELS?.COURSES,
+  TABLE_LABELS?.CLASS_STUDENTS,
+  TABLE_LABELS?.START_DATE,
+  TABLE_LABELS?.END_DATE,
+  TABLE_LABELS?.TYPE,
+];
+
 export default function AssignedAssessments() {
   const location = useLocation();
   const { schoolName } = useParams();
   const userData = useSelector((state: any) => state?.user);
   const navigate = useNavigate();
-
-  const CompletedTableColumns = [
-    {
-      label: 'First Name',
-      mapper: 'first_name',
-    },
-    {
-      label: 'Last Name',
-      mapper: 'last_name',
-    },
-    {
-      label: 'Class',
-      mapper: 'class_name',
-    },
-  ];
-
-  const PendingTableColumns = [
-    {
-      label: 'First Name',
-      mapper: 'first_name',
-    },
-    {
-      label: 'Last Name',
-      mapper: 'last_name',
-    },
-    {
-      label: 'Class',
-      mapper: 'class_name',
-    },
-  ];
-
-  const ALL: Array<any> = [
-    {
-      label: 'Select',
-      value: 'Select',
-    },
-  ];
-
-  const Csvheaders = [
-    TABLE_LABELS?.ASSESSMENT_NAME,
-    TABLE_LABELS?.COURSES,
-    TABLE_LABELS?.CLASS_STUDENTS,
-    TABLE_LABELS?.START_DATE,
-    TABLE_LABELS?.END_DATE,
-    TABLE_LABELS?.TYPE,
-  ];
 
   const [csvData, setCsvData] = useState<[]>([]);
   const [tableData, setTableData] = useState<any>([]);
@@ -278,14 +281,20 @@ export default function AssignedAssessments() {
         );
         const body: any = [];
         const newTableData = respData?.map((item: any) => {
+          const joinedClasses = Array.isArray(item.class_name)
+            ? item.class_name?.filter((j: any) => j).join(' | ')
+            : item.class_name;
+
           body.push([
             item?.assessment_name,
             item?.subject_name,
-            `${item.class_name}(${item?.student_count})`,
+            // `${item.class_name}(${item?.student_count})`,
+            `${joinedClasses}(${item?.student_count})`,
             item?.start_date,
             item?.submission_date,
             item?.is_printed ? 'Printed' : 'Online',
           ]);
+
           //   const assessmentName = data?.assessment_name?.props?.children?.props?.children || "";
           // navigate(
           //   `/${schoolName}/assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${assessmentName}`,
@@ -297,12 +306,11 @@ export default function AssignedAssessments() {
           //     }
           //   }
           // );
+
           const obeasses_id = item?.obeasses_id;
           // const link = `/${schoolName}/assessments/preview_myassessment_question/${item?.assessment_id}`;
           const link = `/${schoolName}/assessments/assigned/assessment-report/${item?.assessment_id}?assessment=${item?.assessmentName}`;
-          const joinedClasses = Array.isArray(item.class_name)
-            ? item.class_name?.filter((j: any) => j).join(', ')
-            : item.class_name;
+
           const temp = {
             ...item,
             assessment_name: (
@@ -431,6 +439,7 @@ export default function AssignedAssessments() {
   //   ?.filter((i: any) => i?.short_name)
   //   ?.map((ele: any) => ({ label: ele.short_name, value: ele.short_name }))
   //   || [];
+
   const { isLoading: loadClassesForSchool, data: ClassesForSchool } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
     url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}&branch_name=${branchData?.name || ''}`,
@@ -440,11 +449,13 @@ export default function AssignedAssessments() {
       branchData?.school_id?.id
     ),
   });
+
   const formatSchoolClasses =
     ClassesForSchool?.data?.response?.results?.map((ele: any) => ({
       label: ele.name,
       value: ele.name,
     })) || [];
+
   const CLASS_ARRAY =
     (userRole?.name === TEACHER ? TeacherClassesArray : formatSchoolClasses) ||
     [];
@@ -482,6 +493,7 @@ export default function AssignedAssessments() {
             <DebounceInput onChange={handleSearch} />
           </div>
         </div>
+
         <Dropdown
           title="Select Course"
           value={currentCourse}
