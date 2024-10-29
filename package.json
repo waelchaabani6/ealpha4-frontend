@@ -34,6 +34,7 @@
     "@use-gapi/react": "^0.0.3",
     "axios": "^1.2.2",
     "country-calling-code": "^0.0.3",
+    "crypto-js": "^4.2.0",
     "dayjs": "^1.11.7",
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",

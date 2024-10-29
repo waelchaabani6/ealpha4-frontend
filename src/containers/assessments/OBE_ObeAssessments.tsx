@@ -21,8 +21,15 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import CryptoJS from 'crypto-js';
+import encryptMessage from '@utility/encrypt';
 
+interface Message {
+  key: string;
+  user_name: string;
+  user_id: string;
+  assessment_id: string | null;
+  date_time: Date;
+}
 export default function OBE_ObeAssessments() {
   const { user } = useSelector((state: any) => state);
   const navigate = useNavigate();
@@ -126,25 +133,24 @@ export default function OBE_ObeAssessments() {
   };
 
   const actionHandler = (data: any, handlername: string) => {
+    let assessId = null;
+    if (data) {
+      assessId = data?.id;
+    }
+
     if (handlername === 'delete') {
       deleteHandler(data);
     } else if (handlername === 'view') {
-      const originPath = window.location.href;
-      const config = { originPath, page};
-      const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(config), 'secret-key').toString();
-
+      const currentDate = new Date();
+      const message: Message = {
+        key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
+        user_name: user?.userId,
+        user_id: user?.userId,
+        assessment_id: assessId || null,
+        date_time: currentDate,
+      };
+      const encryptedData = encryptMessage(JSON.stringify(message));
       window.location.href = `http://localhost:3001/views/1000?token=${encodeURIComponent(encryptedData)}`;
-
-      /* navigate(
-        `/${schoolName}/obe-assessments/preview_myassessment_question/${data?.id}`,
-        {
-          state: {
-            page,
-            obeasses_id: data?.id,
-            path: `/${schoolName}/obe-assessments/assigned`,
-          },
-        }
-      ); */
     }
   };
 
