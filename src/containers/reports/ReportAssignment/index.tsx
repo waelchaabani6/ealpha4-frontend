@@ -102,7 +102,7 @@ const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
 
 const csvSubHeaders = [
   TABLE_LABELS?.CLASS_NAME,
-  TABLE_LABELS?.TEACHER,
+  // TABLE_LABELS?.TEACHER,
   TABLE_LABELS?.PROGRAM,
   TABLE_LABELS?.ASSIGNMET_NAME,
   TABLE_LABELS?.AVG_CLASS,
@@ -363,7 +363,7 @@ export default function Index() {
             : '';
           csvbody.push([
             i.class_name,
-            i.teacher_name,
+            // i.teacher_name,
             i.program,
             i.assignment_name,
             avgClassScore,
