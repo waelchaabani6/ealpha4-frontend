@@ -205,8 +205,9 @@ export default function Index() {
   const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
     useGet({
       baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-      url: `assessments-service/student--assign-assessment-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}${searchString ? `&assessment_name=${searchString}` : ''}${selectedStatus !== 'All' ? `&status=${selectedStatus}` : ''}${selectedChild ? `&student_id=${selectedChild}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&submission_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}`,
+      url: `assessments-service/student--assign-assessment-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}${searchString ? `&assessment_name=${searchString}` : ''}${selectedStatus !== 'All' ? `&status=${selectedStatus}` : ''}${selectedChild ? `&student_id=${selectedChild}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&submission_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}${ordering ? `&ordering=${ordering}` : ''}`,
       onSuccess: (res: any) => {
+        debugger
         const accData = res?.data?.response;
         const respData = accData?.results;
         setTotalDataCount(accData.count);
@@ -258,6 +259,7 @@ export default function Index() {
     if (selectedChild) {
       fetchAssignedAssignments();
     }
+    
   }, [
     searchString,
     rowsPerPage,
