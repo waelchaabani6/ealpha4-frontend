@@ -120,12 +120,12 @@ const TableColumns: any = [
 
 const DialogTableColumns = [
   {
-    label: 'First Name',
-    mapper: 'first_name',
+    label: TABLE_LABELS?.SR_NO,
+    mapper: 'id',
   },
   {
-    label: 'Last Name',
-    mapper: 'last_name',
+    label: 'Name',
+    mapper: 'name',
   },
 ];
 
@@ -267,16 +267,7 @@ export default function Index() {
                 className="text-accent underline cursor-pointer text-xs font-medium"
                 onClick={() => {
                   setPopupTitle('Students List');
-                  handleDataPopup([
-                    {
-                      first_name: 'first_name',
-                      last_name: 'last_name',
-                    },
-                    {
-                      first_name: 'first_name 2',
-                      last_name: 'last_name 2',
-                    },
-                  ]);
+                  handleDataPopup(i.students);
                 }}
               >
                 {i.total_teachers}
@@ -288,16 +279,7 @@ export default function Index() {
                 className="text-accent underline cursor-pointer text-xs font-medium"
                 onClick={() => {
                   setPopupTitle('Teachers List');
-                  handleDataPopup([
-                    {
-                      first_name: 'first_name',
-                      last_name: 'last_name',
-                    },
-                    {
-                      first_name: 'first_name 2',
-                      last_name: 'last_name 2',
-                    },
-                  ]);
+                  handleDataPopup(i.teachers);
                 }}
               >
                 {i.total_teachers}

@@ -83,12 +83,12 @@ const csvSubHeaders = [
 
 const DialogTableColumns = [
   {
-    label: 'First Name',
-    mapper: 'first_name',
+    label: TABLE_LABELS?.SR_NO,
+    mapper: 'id',
   },
   {
-    label: 'Last Name',
-    mapper: 'last_name',
+    label: 'Name',
+    mapper: 'name',
   },
 ];
 
@@ -207,16 +207,7 @@ export default function Index() {
                   setDialogOpen(true);
                   setpopupData((prev) => ({
                     ...prev,
-                    active_students: [
-                      {
-                        first_name: 'first_name',
-                        last_name: 'last_name',
-                      },
-                      {
-                        first_name: 'first_name 2',
-                        last_name: 'last_name 2',
-                      },
-                    ],
+                    active_students: i.active_students,
                     inactive_students: [],
                   }));
                 }}
@@ -233,26 +224,8 @@ export default function Index() {
                   setDialogOpen(true);
                   setpopupData((prev) => ({
                     ...prev,
-                    active_students: [
-                      {
-                        first_name: 'first_name',
-                        last_name: 'last_name',
-                      },
-                      {
-                        first_name: 'first_name 2',
-                        last_name: 'last_name 2',
-                      },
-                    ],
-                    inactive_students: [
-                      {
-                        first_name: 'first_name',
-                        last_name: 'last_name',
-                      },
-                      {
-                        first_name: 'first_name 2',
-                        last_name: 'last_name 2',
-                      },
-                    ],
+                    active_students: i.active_students,
+                    inactive_students: i.inactive_students,
                   }));
                 }}
               >
@@ -269,16 +242,7 @@ export default function Index() {
                   setpopupData((prev) => ({
                     ...prev,
                     active_students: [],
-                    inactive_students: [
-                      {
-                        first_name: 'first_name',
-                        last_name: 'last_name',
-                      },
-                      {
-                        first_name: 'first_name 2',
-                        last_name: 'last_name 2',
-                      },
-                    ],
+                    inactive_students: i.inactive_students,
                   }));
                 }}
               >
