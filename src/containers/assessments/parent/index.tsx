@@ -1,32 +1,32 @@
-import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import DatePicker from '@component/datepicker';
-import Dropdown from '@component/dropdown/Dropdown';
-import DebounceInput from '@component/input/DebounceInput';
-import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import EmailIcon from '@mui/icons-material/Email';
-import PrintIcon from '@mui/icons-material/Print';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import Divider from '@mui/material/Divider/Divider';
-import { useGet } from '@shared/api/useApi';
-import Loader from '@shared/loader';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import { selectUser } from '@shared/store/userSlice';
-import toast from '@shared/toast';
-import { getNoOfPages, sortData } from '@utility/utility';
-import moment from 'moment';
-import { useEffect, useRef, useState } from 'react';
-import { CSVLink } from 'react-csv';
-import { useSelector } from 'react-redux';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import ReactToPrint from 'react-to-print';
-import CustomPagination from '../../../components/pagination/CustomPagination';
+import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
+import DatePicker from "@component/datepicker";
+import Dropdown from "@component/dropdown/Dropdown";
+import DebounceInput from "@component/input/DebounceInput";
+import { ReactComponent as Share } from "@images/pageHeaderIcons/share.svg";
+import EmailIcon from "@mui/icons-material/Email";
+import PrintIcon from "@mui/icons-material/Print";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import Divider from "@mui/material/Divider/Divider";
+import { useGet } from "@shared/api/useApi";
+import Loader from "@shared/loader";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
+import { selectUser } from "@shared/store/userSlice";
+import toast from "@shared/toast";
+import { getNoOfPages, sortData } from "@utility/utility";
+import moment from "moment";
+import { useEffect, useRef, useState } from "react";
+import { CSVLink } from "react-csv";
+import { useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import ReactToPrint from "react-to-print";
+import CustomPagination from "../../../components/pagination/CustomPagination";
 import {
   RESULTS_PER_PAGE,
   TABLE_LABELS,
   TOOLBAR_LABELS,
-} from '../../../constants/constants';
-import Wrapper from '../../../shared/wrapper/Wrapper';
-import RouteLayout from '../../layout/routeLayout';
+} from "../../../constants/constants";
+import Wrapper from "../../../shared/wrapper/Wrapper";
+import RouteLayout from "../../layout/routeLayout";
 
 const printButton = () => <PrintIcon />;
 
@@ -48,56 +48,56 @@ export default function Index() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center',
+      align: "center",
     },
     {
       label: TABLE_LABELS?.ASSESSMENT_NAME,
-      mapper: 'assessment_name',
+      mapper: "assessment_name",
       isSort: true,
     },
     {
       label: TABLE_LABELS?.TEACHERS,
       isSort: true,
-      mapper: 'teacher',
+      mapper: "teacher",
     },
     {
       label: TABLE_LABELS?.STATUS,
       isSort: true,
-      mapper: 'status',
+      mapper: "status",
     },
     {
       label: TABLE_LABELS?.START_DATE,
       isSort: true,
-      mapper: 'start_date',
-      format: 'DD-MM-YYYY',
+      mapper: "start_date",
+      format: "DD-MM-YYYY",
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
-      mapper: 'submission_date',
-      format: 'DD-MM-YYYY',
+      mapper: "submission_date",
+      format: "DD-MM-YYYY",
     },
   ];
 
   const statusArray = [
-    { label: 'All', value: 'All' },
-    { label: 'Ongoing', value: 'Ongoing' },
-    { label: 'Submitted', value: 'Submitted' },
-    { label: 'Yet to Start', value: 'Yet to start' },
+    { label: "All", value: "All" },
+    { label: "Ongoing", value: "Ongoing" },
+    { label: "Submitted", value: "Submitted" },
+    { label: "Yet to Start", value: "Yet to start" },
   ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
   const [page, setPage] = useState(1);
   const [totalDataCount, setTotalDataCount] = useState(0);
-  const [searchString, setSearchString] = useState('');
+  const [searchString, setSearchString] = useState("");
 
   const [playloadData, setPlayloadData] = useState<any | undefined>({});
-  const [order, setOrder] = useState<any>('desc');
-  const [orderBy, setOrderBy] = useState<any>('created_at');
+  const [order, setOrder] = useState<any>("desc");
+  const [orderBy, setOrderBy] = useState<any>("submission_date");
   const [fromDate, setFromDate] = useState<any>();
   const [toDate, setToDate] = useState<any>();
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
-  const [selectedStatus, setSelectedStatus] = useState<string>('All');
-  const [selectedChild, setSelectedChild] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<string>("All");
+  const [selectedChild, setSelectedChild] = useState("");
   // const [statusArray, setStatusArray] = useState();
   // const [childArray, setChildArray] = useState([{ label: 'Select', value: 'Select' }]);
   const [childrenData, setChildrenData] = useState<any>([]);
@@ -138,12 +138,12 @@ export default function Index() {
     url: `assessments-service/assign-assessment-student-email/pdf-download/?student_id=${selectedChild}`,
     onSuccess: (response: any) => {
       toast(
-        'success',
-        'Email sent successfully to you, please check your inbox'
+        "success",
+        "Email sent successfully to you, please check your inbox"
       );
     },
     onError: ({ response }: any) => {
-      toast('error', response?.data?.message || 'Error');
+      toast("error", response?.data?.message || "Error");
     },
     enabled: false,
   });
@@ -201,13 +201,12 @@ export default function Index() {
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
-  const ordering = orderBy ? (order === 'asc' ? orderBy : `-${orderBy}`) : '';
+  const ordering = orderBy ? (order === "asc" ? orderBy : `-${orderBy}`) : "";
   const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
     useGet({
       baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-      url: `assessments-service/student--assign-assessment-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}${searchString ? `&assessment_name=${searchString}` : ''}${selectedStatus !== 'All' ? `&status=${selectedStatus}` : ''}${selectedChild ? `&student_id=${selectedChild}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&submission_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}${ordering ? `&ordering=${ordering}` : ''}`,
+      url: `assessments-service/student--assign-assessment-list/?${selectedChild ? `student_id=${selectedChild}` : ""}&limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}${searchString ? `&assessment_name=${searchString}` : ""}${selectedStatus !== "All" ? `&status=${selectedStatus}` : ""}${fromDate ? `&start_date=${moment(fromDate).format("YYYY-MM-DD")}` : ""}${toDate ? `&submission_date=${moment(toDate).format("YYYY-MM-DD")}` : ""}`,
       onSuccess: (res: any) => {
-        debugger
         const accData = res?.data?.response;
         const respData = accData?.results;
         setTotalDataCount(accData.count);
@@ -239,8 +238,8 @@ export default function Index() {
   // ----------------------------------------END API---------------------
 
   const reset = () => {
-    setToDate('');
-    setFromDate('');
+    setToDate("");
+    setFromDate("");
   };
 
   useEffect(() => {
@@ -259,7 +258,6 @@ export default function Index() {
     if (selectedChild) {
       fetchAssignedAssignments();
     }
-    
   }, [
     searchString,
     rowsPerPage,
