@@ -119,9 +119,9 @@ const csvSubHeaders = [
   TABLE_LABELS?.CLASS_PER,
   TABLE_LABELS?.AVG_COHORT,
   TABLE_LABELS?.COHORT_PER,
+  TABLE_LABELS?.START_DATE,
+  TABLE_LABELS?.END_DATE,
   TABLE_LABELS?.PERFORMANCE_EXPECTATION,
-  // TABLE_LABELS?.START_DATE,
-  // TABLE_LABELS?.END_DATE
 ];
 
 export default function Index() {
@@ -380,9 +380,9 @@ export default function Index() {
             avgClassPercen,
             avgCohortScore,
             avgCohortPercen,
+            i.start_date,
+            i.end_date,
             i.performance_expectation,
-            // i.start_date,
-            // i.end_date,
           ]);
           return true;
         });
