@@ -450,7 +450,7 @@ export default function Index() {
         const perbody: any = [];
         PerData?.map((i: any) => {
           perbody.push({
-            score: i?.class_percent,
+            percentage: i?.class_percent,
             cohort: i.cohort_percent,
             name: i.name,
           });
