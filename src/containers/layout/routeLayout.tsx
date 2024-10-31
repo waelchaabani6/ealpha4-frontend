@@ -20,7 +20,9 @@ export default function RouteLayout(props: RouteLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const handleBackClick = () => {
-    const isSpecialPath = /^\/Creative%20School\/(?!course-preview$)[^/]+$/.test(location.pathname);
+    const isSpecialPath = /^\/[^/]+\/(?!course-preview$)[^/]+$/.test(
+      location.pathname
+    );
     if (isSpecialPath) {
       navigate("/dashboard");
     } else if (props.path) {
