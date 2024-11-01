@@ -145,7 +145,7 @@ function MySubject() {
                       className="h-max bg-white mt-2 rounded-lg border-green-500 border-solid border"
                     >
                       <div className="min-h-9 flex flex-col font-semibold border-l-4 border-sunlight pl-2 grow m-6">
-                        <p className="sm:text-lg text-sm capitalize">
+                        <p className="sm:text-lg text-sm uppercase">
                           {category}
                         </p>
                       </div>
