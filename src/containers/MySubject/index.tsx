@@ -3,25 +3,25 @@
 /* eslint-disable operator-linebreak */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable no-confusing-arrow */
-import RouteLayout from '@layout/routeLayout';
-import PageTitle from '@shared/pageTitle';
-import Dropdown from '@component/dropdown/Dropdown';
-import Loader from '@shared/loader';
-import { useGet, api } from '@shared/api/useApi';
-import { useSelector } from 'react-redux';
-import { selectUser } from '@shared/store/userSlice';
+import RouteLayout from "@layout/routeLayout";
+import PageTitle from "@shared/pageTitle";
+import Dropdown from "@component/dropdown/Dropdown";
+import Loader from "@shared/loader";
+import { useGet, api } from "@shared/api/useApi";
+import { useSelector } from "react-redux";
+import { selectUser } from "@shared/store/userSlice";
 // import SmallBook from './SmallBook';
-import { useState, useEffect } from 'react';
-import { sortData } from '@utility/utility';
-import SmallCard from './SmallCard';
+import { useState, useEffect } from "react";
+import { sortData } from "@utility/utility";
+import SmallCard from "./SmallCard";
 
 function MySubject() {
   const ALL = {
-    label: 'Select',
-    value: 'All',
+    label: "Select",
+    value: "All",
   };
   const [allCategories, setAllCategories] = useState<any>([ALL]);
-  const [selectedCategory, setSelectedCategory] = useState<any>('All');
+  const [selectedCategory, setSelectedCategory] = useState<any>("All");
   const [courseDetails, setCourseDetails] = useState<any>([]);
   const [courseDetailsdata, setCourseDetailsdata] = useState<any>([]);
 
@@ -66,7 +66,7 @@ function MySubject() {
         .then((courses: any) => ({ category: items.content, courses }))
     );
 
-    console.log(resultAPIs, 'resultAPIs');
+    console.log(resultAPIs, "resultAPIs");
 
     Promise.allSettled(resultAPIs)
       .then((res: any) => {
@@ -101,7 +101,7 @@ function MySubject() {
     refetch: courseDetailsFetch,
   } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/assigned_courses/${userID}/details/?${selectedCategory !== 'All' ? `Category=${selectedCategory}` : ''}`,
+    url: `course-code-service/courses/assigned_courses/${userID}/details/?${selectedCategory !== "All" ? `Category=${selectedCategory}` : ""}`,
     onSuccess: (res: any) => {
       const respData = res?.data?.response;
       setCourseDetails(respData);
@@ -111,16 +111,16 @@ function MySubject() {
   });
 
   useEffect(() => {
-    if (selectedCategory !== 'All') {
+    if (selectedCategory !== "All") {
       courseDetailsFetch();
     }
   }, [selectedCategory]);
-  console.log(categoriesLoading, 'categoriesLoading');
+  console.log(categoriesLoading, "categoriesLoading");
 
   return (
     <div>
       <RouteLayout navBack={true}>
-        <PageTitle title="My Courses" customStyle={{ marginTop: '10px' }} />
+        <PageTitle title="My Courses" customStyle={{ marginTop: "10px" }} />
         <div>
           <Dropdown
             dataArray={allCategories}
@@ -128,14 +128,14 @@ function MySubject() {
             parentStyle="float-right"
             onChangeHandler={(e) => setSelectedCategory(e)}
             title="Select From"
-            sxClass={{ width: '135px' }}
+            sxClass={{ width: "135px" }}
             loading={categoryRefetching || categoriesLoading || isLoading}
           />
         </div>
 
         {!categoriesLoading && !isLoading ? (
           Object.keys(courseDetailsdata).length > 0 && !courseDetailsLoading ? (
-            selectedCategory === 'All' ? (
+            selectedCategory === "All" ? (
               Object.keys(courseDetailsdata).length > 0 &&
               conditionSatisfied ? (
                 Object.keys(courseDetailsdata)?.map((category: any, i: any) =>
@@ -145,7 +145,9 @@ function MySubject() {
                       className="h-max bg-white mt-2 rounded-lg border-green-500 border-solid border"
                     >
                       <div className="min-h-9 flex flex-col font-semibold border-l-4 border-sunlight pl-2 grow m-6">
-                        <p className="sm:text-lg text-sm">{category}</p>
+                        <p className="sm:text-lg text-sm capitalize">
+                          {category}
+                        </p>
                       </div>
                       <div>
                         <div className="flex gap-x-6 gap-y-8 flex-wrap pb-12 overflow-x-auto relative">
@@ -164,7 +166,7 @@ function MySubject() {
                       </div>
                     </div>
                   ) : (
-                    ''
+                    ""
                   )
                 )
               ) : (

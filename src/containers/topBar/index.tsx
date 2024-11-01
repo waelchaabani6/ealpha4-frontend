@@ -135,7 +135,7 @@ export default function Index() {
               ? [
                   { label: 'Report - Assignments', path: 'reports' },
                   {
-                    label: 'Reports Program Usage',
+                    label: 'Reports Course Usage',
                     path: 'reports/program-usage-reports',
                   },
                   {

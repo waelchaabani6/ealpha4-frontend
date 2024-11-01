@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable comma-dangle */
-import { COMPONENTS, TABLE_LABELS } from '@constants/constants';
+import { COMPONENTS, TABLE_LABELS, USER_ROLE } from '@constants/constants';
 
 export const TableColumns = [
   {
@@ -24,10 +24,20 @@ export const TableColumns = [
     isSort: true,
   },
   {
+    label: TABLE_LABELS?.ROLE,
+    mapper: 'role_name',
+    isSort: true,
+  },
+  {
+    label: TABLE_LABELS?.SCHOOL_NAME,
+    mapper: 'school_name',
+    isSort: true,
+  },
+  {
     label: TABLE_LABELS?.ACTION,
     mapper: 'Action',
     align: 'center',
-    component: COMPONENTS?.view,
+    component: COMPONENTS?.edit_password,
     showInHeader: false,
   },
 ];

@@ -1,20 +1,20 @@
 /* eslint-disable operator-linebreak */
 /* eslint-disable no-confusing-arrow */
 /* eslint-disable implicit-arrow-linebreak */
-import RouteLayout from '@layout/routeLayout';
-import PageTitle from '@shared/pageTitle';
-import DebounceInput from '@component/input/DebounceInput';
-import Loader from '@shared/loader';
-import { useGet, api } from '@shared/api/useApi';
-import { useSelector } from 'react-redux';
-import { selectUser } from '@shared/store/userSlice';
-import { useEffect, useState } from 'react';
-import SmallCard from './StudentSmallCard';
+import RouteLayout from "@layout/routeLayout";
+import PageTitle from "@shared/pageTitle";
+import DebounceInput from "@component/input/DebounceInput";
+import Loader from "@shared/loader";
+import { useGet, api } from "@shared/api/useApi";
+import { useSelector } from "react-redux";
+import { selectUser } from "@shared/store/userSlice";
+import { useEffect, useState } from "react";
+import SmallCard from "./StudentSmallCard";
 
 function MySubject() {
   const [courseDetails, setCourseDetails] = useState<any>({});
   const { userId: userID } = useSelector(selectUser);
-  const [searchString, setSearchString] = useState('');
+  const [searchString, setSearchString] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [categoriesData, setCategoriesData] = useState([]);
 
@@ -25,7 +25,7 @@ function MySubject() {
     isSuccess,
   } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/content/?selection=Category${searchString ? `&search=${searchString}` : ''}`,
+    url: `course-code-service/courses/content/?selection=Category${searchString ? `&search=${searchString}` : ""}`,
     onSuccess: (res: any) => {
       const respData = res?.data?.response?.results;
       setCategoriesData(respData);
@@ -73,7 +73,7 @@ function MySubject() {
   return (
     <div>
       <RouteLayout navBack={true}>
-        <PageTitle title="My Courses" customStyle={{ marginTop: '10px' }} />
+        <PageTitle title="My Courses" customStyle={{ marginTop: "10px" }} />
         <div className="w-full flex justify-end">
           <DebounceInput
             onChange={(e) => setSearchString(e)}
@@ -89,7 +89,7 @@ function MySubject() {
                   className="h-max bg-white mt-2 rounded-lg border-green-500 border-solid border"
                 >
                   <div className="min-h-9 flex flex-col font-semibold border-l-4 border-sunlight pl-2 grow m-6">
-                    <p className="sm:text-lg text-sm">{category}</p>
+                    <p className="sm:text-lg text-sm capitalize">{category}</p>
                   </div>
                   <div>
                     <div className="flex flex-wrap mb-5 mt-5">
@@ -107,7 +107,7 @@ function MySubject() {
                   </div>
                 </div>
               ) : (
-                ''
+                ""
               )
             )
           ) : (

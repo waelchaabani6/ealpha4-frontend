@@ -144,7 +144,7 @@ export default function SearchResults({
               order={order}
               setOrder={setOrder}
               setPage={setPage}
-              viewHandler={viewHandler}
+              actionHandler={viewHandler}
             />
           </Wrapper>
         )}
