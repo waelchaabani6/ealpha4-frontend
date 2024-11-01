@@ -46,91 +46,92 @@ const ALL: Array<any> = [
   },
 ];
 
+const TableColumns = [
+  {
+    label: TABLE_LABELS?.SR_NO,
+    align: 'center',
+  },
+  {
+    label: TABLE_LABELS?.ASSESSMENT_NAME,
+    mapper: 'assessment_name',
+    isSort: true,
+  },
+  {
+    label: TABLE_LABELS?.COURSES,
+    isSort: true,
+    mapper: 'subject_name',
+  },
+  {
+    label: TABLE_LABELS?.CLASS_STUDENTS,
+    align: 'center',
+    mapper: 'class_or_student',
+  },
+  {
+    label: TABLE_LABELS?.START_DATE,
+    isSort: true,
+    mapper: 'start_date',
+    format: 'DD-MM-YYYY',
+  },
+  {
+    label: TABLE_LABELS?.DUE_DATE,
+    // isSort: true,
+    mapper: 'submission_date',
+    format: 'DD-MM-YYYY',
+  },
+  {
+    label: TABLE_LABELS?.SCORE_AVG,
+    // isSort: true,
+    mapper: 'score',
+  },
+];
+
+const CompletedTableColumns = [
+  {
+    label: 'First Name',
+    mapper: 'first_name',
+  },
+  {
+    label: 'Last Name',
+    mapper: 'last_name',
+  },
+  {
+    label: 'Class',
+    mapper: 'class_name',
+  },
+];
+
+const PendingTableColumns = [
+  {
+    label: 'First Name',
+    mapper: 'first_name',
+  },
+  {
+    label: 'Last Name',
+    mapper: 'last_name',
+  },
+  {
+    label: 'Class',
+    mapper: 'class_name',
+  },
+];
+
+const headers = [
+  TABLE_LABELS?.ASSESSMENT_NAME,
+  TABLE_LABELS?.COURSES,
+  TABLE_LABELS?.CLASS_STUDENTS,
+  TABLE_LABELS?.START_DATE,
+  TABLE_LABELS?.END_DATE,
+  TABLE_LABELS?.SCORE,
+];
+
 export default function CompletedAssessments() {
   const location = useLocation();
   const { schoolName } = useParams();
   const { user } = useSelector((state: any) => state);
-  const CompletedTableColumns = [
-    {
-      label: 'First Name',
-      mapper: 'first_name',
-    },
-    {
-      label: 'Last Name',
-      mapper: 'last_name',
-    },
-    {
-      label: 'Class',
-      mapper: 'class_name',
-    },
-  ];
-
-  const PendingTableColumns = [
-    {
-      label: 'First Name',
-      mapper: 'first_name',
-    },
-    {
-      label: 'Last Name',
-      mapper: 'last_name',
-    },
-    {
-      label: 'Class',
-      mapper: 'class_name',
-    },
-  ];
-
-  const headers = [
-    TABLE_LABELS?.ASSESSMENT_NAME,
-    TABLE_LABELS?.COURSES,
-    TABLE_LABELS?.CLASS_STUDENTS,
-    TABLE_LABELS?.START_DATE,
-    TABLE_LABELS?.END_DATE,
-    TABLE_LABELS?.SCORE,
-  ];
 
   const [csvData, setCsvData] = useState<[]>([]);
   const [tableData, setTableData] = useState<any>([]);
   const [adminDeleteDialog, setAdminDeleteDialog] = useState(false);
-
-  const TableColumns = [
-    {
-      label: TABLE_LABELS?.SR_NO,
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.ASSESSMENT_NAME,
-      mapper: 'assessment_name',
-      isSort: true,
-    },
-    {
-      label: TABLE_LABELS?.COURSES,
-      isSort: true,
-      mapper: 'subject_name',
-    },
-    {
-      label: TABLE_LABELS?.CLASS_STUDENTS,
-      align: 'center',
-      mapper: 'class_or_student',
-    },
-    {
-      label: TABLE_LABELS?.START_DATE,
-      isSort: true,
-      mapper: 'start_date',
-      format: 'DD-MM-YYYY',
-    },
-    {
-      label: TABLE_LABELS?.DUE_DATE,
-      // isSort: true,
-      mapper: 'submission_date',
-      format: 'DD-MM-YYYY',
-    },
-    {
-      label: TABLE_LABELS?.SCORE_AVG,
-      // isSort: true,
-      mapper: 'score',
-    },
-  ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
   const [page, setPage] = useState(1);
@@ -231,18 +232,21 @@ export default function CompletedAssessments() {
         );
         const body: any = [];
         const newTableData = respData?.map((item: any) => {
+          const joinedClasses = Array.isArray(item.class_name)
+            ? item.class_name?.filter((j: any) => j).join(' | ')
+            : item.class_name;
+
           body.push([
             item?.assessment_name,
             item?.subject_name,
-            `${item.class_name}(${item?.student_count})`,
+            // `${item.class_name}(${item?.student_count})`,
+            `${joinedClasses}(${item?.student_count})`,
             item?.start_date,
             item?.submission_date,
             item?.score,
           ]);
           // const link = `/${schoolNameInURL}/assessments/assigned/assessment-report/${item?.assessment_id}?assessment=${item?.assessment_name}`;
-          const joinedClasses = Array.isArray(item.class_name)
-            ? item.class_name?.filter((j: any) => j).join(', ')
-            : item.class_name;
+
           const link2 = `/${schoolNameInURL}/assessments/assigned/completed_assessments/completed_assessment_student_list/${item?.assessment_id}?assessment=${item?.assessment_name}&class=${joinedClasses}&start_date=${item.start_date}&end_date=${item.submission_date}`;
           const temp = {
             ...item,

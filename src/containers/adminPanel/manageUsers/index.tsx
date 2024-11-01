@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import RouteLayout from '@layout/routeLayout';
 import { useGet } from '@shared/api/useApi';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
+import { USER_ROLE_LIST_LABEL } from '@constants/constants';
 
 import SearchUser from './SearchUser';
 import SearchResults from './SearchResults';
@@ -33,6 +34,9 @@ export default function manageUsers() {
             id: item1?.profile.id,
             last_name: item1?.profile.last_name,
             role_id: item1?.role_id,
+            role_name: USER_ROLE_LIST_LABEL.find(
+              (obj: any) => obj.id === item1.role_id
+            ).label,
           });
           return body;
         });

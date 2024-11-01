@@ -5,14 +5,9 @@
 /* eslint-disable implicit-arrow-linebreak */
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import AddIcon from '@mui/icons-material/Add';
-import EmailIcon from '@mui/icons-material/Email';
-import { ReactComponent as Download } from '@images/pageHeaderIcons/download.svg';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
 import PrintIcon from '@mui/icons-material/Print';
-import { ReactComponent as Edit } from '@images/longMenuIcons/Edit.svg';
-import { ReactComponent as Add } from '@images/longMenuIcons/Add.svg';
-import { ReactComponent as Delete } from '@images/longMenuIcons/Delete.svg';
-import { ReactComponent as License } from '@images/longMenuIcons/license.svg';
+
 import { useNavigate, Link } from 'react-router-dom';
 import routes, {
   PANEL,
@@ -39,8 +34,6 @@ import DebounceInput from '@component/input/DebounceInput';
 import {
   STATUS_ITEMS,
   RESULTS_PER_PAGE,
-  COMPONENTS,
-  TABLE_LABELS,
   TOOLBAR_LABELS,
 } from '../../constants/constants';
 import CustomPagination from '../../components/pagination/CustomPagination';
@@ -51,8 +44,15 @@ import RemoveBranchPopup from './components/RemoveBranchPopup';
 import MigrateUser from './components/MigrateUser';
 import PermanentlyRemoveBranch from './components/PermanentlyRemoveBranch';
 import RouteLayout from '../layout/routeLayout';
-import { useSelector } from 'react-redux';
-import { selectUser } from '@shared/store/userSlice';
+
+import {
+  ALL,
+  csvSubHeaders,
+  headers,
+  moreMenuOptions,
+  subTableHeader,
+  TableColumns,
+} from './utils';
 
 const printButton = () => <PrintIcon />;
 const masterServiceBaseURL = import.meta.env.VITE_APP_MASTER_SERVICE_URL;
@@ -66,63 +66,6 @@ type removedBranchObjectType = {
 const SchoolManagmentList = (): JSX.Element => {
   let noOfpages = 1;
   const navigate = useNavigate();
-  const moreMenuOptions = [
-    {
-      icon: <Edit />,
-      label: 'Edit School Details',
-      value: 'editSchoolDetails',
-    },
-    {
-      icon: <Add />,
-      label: 'Add New Branch',
-      value: 'addNewBranch',
-    },
-    {
-      icon: <License />,
-      label: 'Extend License',
-      value: 'extendLicense',
-    },
-    {
-      icon: <Delete />,
-      label: 'Delete',
-      value: 'delete',
-    },
-  ];
-
-  const BranchTableMenus = [
-    {
-      icon: <License />,
-      label: 'Extend License',
-      value: 'extendLicense',
-    },
-    {
-      icon: <Delete />,
-      label: 'Delete',
-      value: 'delete',
-    },
-  ];
-  const headers = [
-    TABLE_LABELS?.SCHOOL_ID,
-    TABLE_LABELS?.SCHOOL_NAME,
-    TABLE_LABELS?.SCHOOL_TYPE,
-    TABLE_LABELS?.BRANCHES,
-    TABLE_LABELS?.CREATED_ON,
-    TABLE_LABELS?.EXPIRATION,
-    TABLE_LABELS?.EXPIRATION_DAYS_LEFT,
-    TABLE_LABELS?.STATUS,
-  ];
-
-  const csvSubHeaders = [
-    TABLE_LABELS?.SCHOOL_ID,
-    TABLE_LABELS?.SCHOOL_NAME,
-    TABLE_LABELS?.BRANCH_ID,
-    TABLE_LABELS?.BRANCH_NAME,
-    TABLE_LABELS?.BRANCH_TYPE,
-    TABLE_LABELS?.CREATED_ON,
-    TABLE_LABELS?.EXPIRATION,
-    TABLE_LABELS?.EXPIRATION_DAYS_LEFT,
-    TABLE_LABELS?.STATUS,
-  ];
 
   const [tempCSVData, setTempCSVData] = useState<[]>([]);
   const [csvData, setCsvData] = useState<[]>([]);
@@ -168,136 +111,12 @@ const SchoolManagmentList = (): JSX.Element => {
     setCsvData(finalData);
   }, [bulkSelect]);
 
-  const TableColumns = [
-    {
-      label: '',
-      isSort: false,
-      mapper: '',
-      isAdd: true,
-    },
-    {
-      label: TABLE_LABELS?.SR_NO,
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.SCHOOL_ID,
-      mapper: 'id',
-      isSort: true,
-    },
-    {
-      label: TABLE_LABELS?.SCHOOL_NAME,
-      isSort: true,
-      mapper: 'name',
-    },
-    {
-      label: TABLE_LABELS?.SCHOOL_TYPE,
-      isSort: true,
-      mapper: 'school_type',
-    },
-    {
-      label: TABLE_LABELS?.BRANCHES,
-      isSort: true,
-      mapper: 'branch_count',
-    },
-    {
-      label: TABLE_LABELS?.COUNTRY_NAME,
-      isSort: true,
-      mapper: 'country_code',
-    },
-    {
-      label: TABLE_LABELS?.CREATED_ON,
-      isSort: true,
-      mapper: 'created_at',
-      format: 'DD-MM-YYYY',
-    },
-    {
-      label: TABLE_LABELS?.EXPIRATION,
-      isSort: true,
-      mapper: 'activation_end_date',
-    },
-    {
-      label: TABLE_LABELS?.EXPIRATION_DAYS_LEFT,
-      isSort: true,
-      mapper: 'expiration_days_left',
-    },
-    {
-      label: TABLE_LABELS?.STATUS,
-      align: 'center',
-      mapper: 'status',
-      component: COMPONENTS?.switch,
-      showInHeader: false,
-    },
-    {
-      label: TABLE_LABELS?.ACTION,
-      component: COMPONENTS?.longmenu,
-      menuArray: moreMenuOptions,
-    },
-  ];
-  const subTableHeader = [
-    {
-      align: 'center',
-      component: COMPONENTS?.checkbox,
-      selector: 'id',
-      showInHeader: true,
-    },
-    {
-      label: TABLE_LABELS?.SR_NO,
-      align: 'center',
-    },
-    {
-      label: TABLE_LABELS?.BRANCH_ID,
-      align: 'center',
-      mapper: 'id',
-    },
-    {
-      label: TABLE_LABELS?.BRANCH_NAME,
-      align: 'center',
-      mapper: 'name',
-    },
-    {
-      label: TABLE_LABELS?.BRANCH_TYPE,
-      align: 'center',
-      mapper: 'branch_type',
-    },
-    {
-      label: TABLE_LABELS?.CREATED_ON,
-      isSort: true,
-      mapper: 'created_at',
-      format: 'DD-MM-YYYY',
-    },
-    {
-      label: TABLE_LABELS?.EXPIRATION,
-      isSort: true,
-      mapper: 'activation_end_date',
-    },
-    {
-      label: TABLE_LABELS?.EXPIRATION_DAYS_LEFT,
-      isSort: true,
-      mapper: 'expiration_days',
-    },
-    {
-      label: TABLE_LABELS?.STATUS,
-      align: 'center',
-      mapper: 'status',
-      component: COMPONENTS?.switch,
-      showInHeader: false,
-    },
-    {
-      label: TABLE_LABELS?.ACTION,
-      component: COMPONENTS?.longmenu,
-      menuArray: BranchTableMenus,
-    },
-  ];
-  const ALL = {
-    label: 'Select',
-    value: 'All',
-  };
   const [selectData, setSelectData] = useState<any>(ALL?.value);
   const [selectedAcademicYear, setselectedAcademicYear] = useState(ALL?.value);
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
   const [page, setPage] = useState(1);
   const [totalDataCount, setTotalDataCount] = useState(0);
-  const [academicYearArray, setAcademicYearArray] = useState<any>([ALL]);
+  // const [academicYearArray, setAcademicYearArray] = useState<any>([ALL]);
 
   const [licenseDialog, setLicenseDialog] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
@@ -331,9 +150,9 @@ const SchoolManagmentList = (): JSX.Element => {
     setSelectData(e);
   };
 
-  const handleAcademic = (e: any) => {
-    setselectedAcademicYear(e);
-  };
+  // const handleAcademic = (e: any) => {
+  //   setselectedAcademicYear(e);
+  // };
 
   const handlePerPage = (e: any) => {
     setPage(1);
@@ -452,15 +271,15 @@ const SchoolManagmentList = (): JSX.Element => {
     Start API
    --------------------------------------------------------------------------------------------------------- */
   //  Get Academiic Year
-  const { isLoading: academicYearLoading, refetch: academicFetch } = useGet({
-    baseURL: import.meta.env.VITE_APP_MASTER_SERVICE_URL,
-    url: 'master-service/academic-year/',
-    cacheTime: 2000,
-    onSuccess: (res: any) => {
-      const resp = res?.data || [];
-      setAcademicYearArray([ALL, ...resp]);
-    },
-  });
+  // const { isLoading: academicYearLoading, refetch: academicFetch } = useGet({
+  //   baseURL: import.meta.env.VITE_APP_MASTER_SERVICE_URL,
+  //   url: 'master-service/academic-year/',
+  //   cacheTime: 2000,
+  //   onSuccess: (res: any) => {
+  //     const resp = res?.data || [];
+  //     setAcademicYearArray([ALL, ...resp]);
+  //   },
+  // });
 
   // Toolbar Email
   const { isLoading: emailLoaded, mutate: mutateEmail } = usePost({
@@ -562,6 +381,7 @@ const SchoolManagmentList = (): JSX.Element => {
   // Get School Listing
   const temps = rowsPerPage === 'all' ? totalDataCount : rowsPerPage;
   const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
+
   const { isLoading, isRefetching, refetch } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
     url: `schools-service/schools/get-schools/?limit=${temps}&offset=${(page - 1) * Number(temps)}&status=${selectData !== 'All' ? selectData : ''}&academic_year=${selectedAcademicYear !== 'All' ? selectedAcademicYear : ''}&ordering=${ordering}&search=${searchString}${selectedCountry && selectedCountry !== 'Select' ? `&country=${selectedCountry}` : ``}`,
@@ -722,7 +542,6 @@ const SchoolManagmentList = (): JSX.Element => {
   }, [playloadData]);
 
   useEffect(() => {
-    console.log('refresh data');
     refetch();
   }, [
     rowsPerPage,
@@ -735,9 +554,9 @@ const SchoolManagmentList = (): JSX.Element => {
     selectedCountry,
   ]);
 
-  useEffect(() => {
-    academicFetch();
-  }, []);
+  // useEffect(() => {
+  //   academicFetch();
+  // }, []);
 
   noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const componentRef = useRef(null);
@@ -800,13 +619,13 @@ const SchoolManagmentList = (): JSX.Element => {
             dataArray={STATUS_ITEMS}
             onChangeHandler={handleStatus}
           />
-          <Dropdown
+          {/* <Dropdown
             title="Academic Year"
             value={selectedAcademicYear}
             dataArray={academicYearArray}
             onChangeHandler={handleAcademic}
             loading={academicYearLoading}
-          />
+          /> */}
           <Dropdown
             title="Result Of Pages"
             value={rowsPerPage}
@@ -823,12 +642,14 @@ const SchoolManagmentList = (): JSX.Element => {
             sxClass={{ width: '100%' }}
           />
         </div>
+
         <CustomPagination
           totalPages={noOfpages}
           paginateHandler={handlePagination}
           currentPage={page}
         />
       </div>
+
       {/* Table Section */}
       <div className="wrapperBorder mt-3" ref={componentRef}>
         <Wrapper>
@@ -856,6 +677,7 @@ const SchoolManagmentList = (): JSX.Element => {
           />
         </Wrapper>
       </div>
+
       {/* Extend License Dialog */}
       <ExtendLicensePopupForm
         propDatas={popupData}

@@ -1,4 +1,15 @@
-import { BRANCHES, SCHOOL, SCHOOL_MANAGEMENT, MANAGE_CLASSES, EDIT, MANAGE_MEMBERS, ADD_TEACHER, PROMOTE_STUDENT, ADD_STUDENT, ADD_PARENT } from '@constants/routes';
+import {
+  BRANCHES,
+  SCHOOL,
+  SCHOOL_MANAGEMENT,
+  MANAGE_CLASSES,
+  EDIT,
+  MANAGE_MEMBERS,
+  ADD_TEACHER,
+  PROMOTE_STUDENT,
+  ADD_STUDENT,
+  ADD_PARENT,
+} from '@constants/routes';
 import { ReactComponent as AddClass } from '@images/smicons/Ic_addclass.svg';
 import { ReactComponent as AddTeacher } from '@images/smicons/Ic_addteacher.svg';
 import { ReactComponent as AddStudent } from '@images/smicons/Ic_addstudent.svg';
@@ -29,83 +40,83 @@ export default function Index() {
     {
       text: 'Add Class',
       link: `/school-management/school/${id}/${MANAGE_CLASSES}?add=true`,
-      img: <AddClass />
+      img: <AddClass />,
     },
     {
       text: 'Add Teacher',
       link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/${MANAGE_MEMBERS}/${ADD_TEACHER}`,
-      img: <AddTeacher />
+      img: <AddTeacher />,
     },
     {
       text: 'Add Student',
       link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/${MANAGE_MEMBERS}/${ADD_STUDENT}`,
-      img: <AddStudent />
+      img: <AddStudent />,
     },
     {
       text: 'Add Parent',
       link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/${MANAGE_MEMBERS}/${ADD_PARENT}`,
-      img: <AddParent />
+      img: <AddParent />,
     },
     {
       text: 'Manage Admin',
       link: `/school-management/school/${id}/admin`,
-      img: <ManageAdmin />
+      img: <ManageAdmin />,
     },
     {
       text: 'Manage Members',
       link: `/school-management/school/${id}/${MANAGE_MEMBERS}`,
-      img: <ManageMembers />
+      img: <ManageMembers />,
     },
     {
       text: 'Manage Classes',
       link: `/school-management/school/${id}/manage-classes`,
-      img: <ManageClasses />
+      img: <ManageClasses />,
     },
     {
       text: 'Manage Cource Permissions',
       link: `/publisher/manage-course-permission`,
-      img: <ManageCourcePermission />
+      img: <ManageCourcePermission />,
     },
     {
       text: 'Manage Branches',
       link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/${BRANCHES}`,
-      img: <ManageBranch />
+      img: <ManageBranch />,
     },
     {
       text: 'Attendence',
       link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/attandance/mark`,
-      img: <Attendence />
+      img: <Attendence />,
     },
     {
       text: 'Attendence Reports',
       link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/attandance/reports`,
-      img: <Attendence />
+      img: <Attendence />,
     },
     {
       text: 'Edit School Details',
       link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/${EDIT}`,
-      img: <EditSchool />
+      img: <EditSchool />,
     },
     {
       text: 'Email Server Setting',
       link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/notification/smtp-server`,
-      img: <Notification />
+      img: <Notification />,
     },
     {
       text: 'Push Notification',
       link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/notification/push-notification`,
-      img: <Notification />
+      img: <Notification />,
     },
     {
       text: 'Email Notification',
       link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/notification/email-notification`,
-      img: <Notification />
+      img: <Notification />,
     },
     {
       text: 'SMS Notification',
       link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/notification/sms-notification`,
-      img: <Notification />
-    }
+      img: <Notification />,
+    },
   ];
 
   return (
@@ -116,14 +127,17 @@ export default function Index() {
           subtitle={`School : ${schoolData?.school_name}`}
         />
         <div className="card-container">
-          {
-            SCOOL_PANEL_ITEMS.map((i: any) => (
-              <Link key={i?.text} to={i?.link} className="cards">
-                {i?.img}
-                <span>{i?.text}</span>
-              </Link>
-            ))
-          }
+          {SCOOL_PANEL_ITEMS.map((i: any) => (
+            <Link
+              key={i?.text}
+              to={i?.link}
+              className="cards"
+              state={schoolData}
+            >
+              {i?.img}
+              <span>{i?.text}</span>
+            </Link>
+          ))}
         </div>
       </div>
     </RouteLayout>

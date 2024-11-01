@@ -85,11 +85,16 @@ const CoursesFilter = ({ grade, shortName }: any) => {
             res?.forEach((element: any) => {
               const respData2 = element?.value?.courses?.data?.response;
               respData2?.map((i: any) => {
+                
+                const volumeLabel = i?.volume?.toLowerCase().includes("volume")
+                  ? `${i?.volume} - ${element?.value?.i?.component || ""}`
+                  : i?.volume;
                 body.push({
-                  label: i?.volume,
-                  value: i?.volume_id,
+                  label: volumeLabel,
+                  value: i?.courses_id,
                   id: i?.courses_id,
                 });
+             
                 body?.sort(sortData);
                 return body;
               });
