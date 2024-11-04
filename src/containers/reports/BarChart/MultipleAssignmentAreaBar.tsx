@@ -1,5 +1,5 @@
-import { GRAPH_LABELS } from '@constants/constants';
-import React from 'react';
+import { GRAPH_LABELS } from "@constants/constants";
+import React from "react";
 import {
   ComposedChart,
   Area,
@@ -7,7 +7,7 @@ import {
   XAxis,
   YAxis,
   ResponsiveContainer,
-} from 'recharts';
+} from "recharts";
 
 type Props = {
   performance: (string | number)[];
@@ -36,36 +36,33 @@ const CustomLegend = () => (
 );
 
 function MultipleAssignmentAreaBar(prop: Props) {
-
   const expectations = [
     { label: "Exceeds", from: 81, to: 100, color: "#BECCFF" },
     { label: "Above", from: 66, to: 80, color: "#D9FFC8" },
     { label: "Meets", from: 56, to: 65, color: "#FFF9BE" },
     { label: "Approaching", from: 35, to: 55, color: "#FFD6A5" },
-    { label: "Does Not Meet", from: 0, to: 34, color: "#FCD4C6" }
+    { label: "Does Not Meet", from: 0, to: 34, color: "#FCD4C6" },
   ];
-  
+
   const { performance } = prop;
   const makeLabel = (value) => {
     if (value >= 81) {
-      
-      return 'Exceeds';
+      return "Exceeds";
     }
     if (value >= 66) {
-      return 'Above';
+      return "Above";
     }
     if (value >= 56) {
-      return 'Meets';
+      return "Meets";
     }
     if (value >= 35) {
-      return 'Approaching';
+      return "Approaching";
     }
     if (value > 0) {
-      return 'Does Not Meet';
+      return "Does Not Meet";
     }
-    return 'Zero';
+    return "Zero";
   };
-  
 
   const myTick = (props: any) => {
     const { x, y, payload } = props;
@@ -78,10 +75,6 @@ function MultipleAssignmentAreaBar(prop: Props) {
       </g>
     );
   };
-    // Helper function to check if there's data in a specific range
-    const hasDataInRange = (from: number, to: number) => {
-      return performance.some((item) => item.value >= from && item.value <= to);
-    };
 
   return (
     <div className="w-full h-full flex flex-col pl-12 relative overflow-x-auto">
