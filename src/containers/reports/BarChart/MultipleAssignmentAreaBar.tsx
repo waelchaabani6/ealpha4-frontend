@@ -36,22 +36,36 @@ const CustomLegend = () => (
 );
 
 function MultipleAssignmentAreaBar(prop: Props) {
+
+  const expectations = [
+    { label: "Exceeds", from: 81, to: 100, color: "#BECCFF" },
+    { label: "Above", from: 66, to: 80, color: "#D9FFC8" },
+    { label: "Meets", from: 56, to: 65, color: "#FFF9BE" },
+    { label: "Approaching", from: 35, to: 55, color: "#FFD6A5" },
+    { label: "Does Not Meet", from: 0, to: 34, color: "#FCD4C6" }
+  ];
+  
   const { performance } = prop;
-  const makeLabel = (value: number) => {
-    if (value >= 80) {
+  const makeLabel = (value) => {
+    if (value >= 81) {
+      
       return 'Exceeds';
     }
-    if (value >= 60) {
+    if (value >= 66) {
+      return 'Above';
+    }
+    if (value >= 56) {
       return 'Meets';
     }
-    if (value >= 40) {
+    if (value >= 35) {
       return 'Approaching';
     }
-    if (value >= 20) {
+    if (value > 0) {
       return 'Does Not Meet';
     }
-    return '0';
+    return 'Zero';
   };
+  
 
   const myTick = (props: any) => {
     const { x, y, payload } = props;
@@ -64,6 +78,10 @@ function MultipleAssignmentAreaBar(prop: Props) {
       </g>
     );
   };
+    // Helper function to check if there's data in a specific range
+    const hasDataInRange = (from: number, to: number) => {
+      return performance.some((item) => item.value >= from && item.value <= to);
+    };
 
   return (
     <div className="w-full h-full flex flex-col pl-12 relative overflow-x-auto">
@@ -87,10 +105,15 @@ function MultipleAssignmentAreaBar(prop: Props) {
             tick={myTick}
             domain={[0, 100]}
           />
-          <Area type="monotone" dataKey="area4" fill="#D9FFC8" stroke="none" />
-          <Area type="monotone" dataKey="area3" fill="#BECCFF" stroke="none" />
-          <Area type="monotone" dataKey="area2" fill="#FFF9BE" stroke="none" />
-          <Area type="monotone" dataKey="area1" fill="#FCD4C6" stroke="none" />
+          {expectations.map((expectation, index) => (
+            <Area
+              key={index}
+              type="monotone"
+              dataKey={`area${expectations.length - index}`} // area4, area3, etc.
+              fill={expectation.color}
+              stroke="none"
+            />
+          ))}
           <Bar
             barSize={16}
             dataKey="class_percent"
