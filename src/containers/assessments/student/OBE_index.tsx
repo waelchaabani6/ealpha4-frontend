@@ -22,6 +22,7 @@ import ReactToPrint from 'react-to-print';
 import Dropdown from '@component/dropdown/Dropdown';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import CryptoJS from 'crypto-js';
+import encryptMessage from '@utility/encrypt';
 import CustomPagination from '../../../components/pagination/CustomPagination';
 import {
   RESULTS_PER_PAGE,
@@ -32,7 +33,17 @@ import Wrapper from '../../../shared/wrapper/Wrapper';
 import RouteLayout from '../../layout/routeLayout';
 
 const printButton = () => <PrintIcon />;
-
+interface Message {
+  key: string;
+  user_name: string;
+  user_id: string;
+  obeasses_id: string | null;
+  date_time: Date;
+  originPath: string;
+  page: number;
+  duration: number;
+  obeId: string;
+}
 export default function OBE_Index() {
   const { user } = useSelector((state: any) => state);
   const location = useLocation();
@@ -131,13 +142,23 @@ export default function OBE_Index() {
     const seconds = totalSeconds % 60;
     const duration = minutes;
     const obeasses_id = data?.obeasses_id;
-
+    const currentDate = new Date();
     const originPath = window.location.href;
-    const config = { originPath, page, obeasses_id, duration };
-    const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(config), 'secret-key').toString();
+    const message: Message = {
+      key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
+      user_name: `${user?.first_name} ${user?.last_name}`,
+      user_id: user?.user_ting,
+      obeasses_id: obeasses_id || null,
+      date_time: currentDate,
+      obeId: data?.assessment_id,
+      originPath,
+      page,
+      duration
+    };
+    const encryptedData = encryptMessage(JSON.stringify(message));
 
     // Change the URL to point to App B running on port 3001
-    window.location.href = `http://localhost:3001/player/1000?token=${encodeURIComponent(encryptedData)}`;
+    window.location.href = `http://localhost:3001/player/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`;
   };
 
   function shouldDisableButton(startDateString: any) {

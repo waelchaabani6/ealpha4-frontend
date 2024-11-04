@@ -10,9 +10,10 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { USER_TYPE } from '@constants/constants';
-import { useNavigate } from 'react-router-dom';
-import { sortData } from '@utility/utility';
+import {useLocation, useNavigate} from 'react-router-dom';
+import {sortData, userRole} from '@utility/utility';
 import axios from 'axios';
+import encryptMessage from '@utility/encrypt';
 import RouteLayout from '../layout/routeLayout';
 import schema from './schema';
 
@@ -20,10 +21,13 @@ export default function AssignedAssessments() {
   const navigate = useNavigate();
   const { SCHOOL_ADMIN, BRANCH_ADMIN, TEACHER } = USER_TYPE;
   const { schoolData, branchData } = useSelector(selectSchoolData);
+  const [dataValues, setDataValues] = useState<any>();
+  const [obeId, setObeId] = useState<string | null>(null);
   const { user } = useSelector((state: any) => state);
   const role = user?.role?.name;
   const [courseArray, setcourseArray] = useState<any>([]);
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
+  const location = useLocation();
   const {
     handleSubmit,
     control
@@ -34,11 +38,32 @@ export default function AssignedAssessments() {
 
   // ----------API Call--------------------------------------------------------------------
   const { isLoading: LoadAssesment, mutate: mutateAssesment } = usePost({
-    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+    baseURL: import.meta.env.VITE_APP_OBE_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/create-assessment/`,
     onSuccess: (response: any) => {
       const data = response?.data?.response;
       navigate(`create/${data?.id}`);
+    },
+    onError: ({ response }: any) => {
+      const errorObj = response?.data?.errors;
+      let errMessage = '';
+      if (Object.keys(errorObj).length) {
+        Object.keys(errorObj).forEach((key1: any) => {
+          errMessage = `${key1}:${errorObj?.[key1][0]}`;
+        });
+      } else {
+        errMessage = response?.statusText;
+      }
+      toast('error', errMessage || 'Error');
+    }
+  });
+  const { isLoading: LoadObeAssesment, mutate: mutateObeAssesment } = usePost({
+    baseURL: import.meta.env.VITE_APP_OBE_ASSESSMENT_SERVICE_URL,
+    url: `assessments-service/create-assessment/`,
+    onSuccess: (response: any) => {
+      const data = response?.data?.response;
+      setDataValues(data);
+      // navigate(`create/${data?.id}`);
     },
     onError: ({ response }: any) => {
       const errorObj = response?.data?.errors;
@@ -95,30 +120,73 @@ export default function AssignedAssessments() {
   // eslint-disable-next-line consistent-return
   const getConfigAssessments = async (name: any, subject_id: any, grade_id: any) => {
     const config = {
-      apiKey: `${import.meta.env.VITE_APP_SDK}`,
+      apiKey: `${import.meta.env.VITE_OBESASS_API_KEY}`,
       name,
       subject_id,
       grade_id,
       user: `${user?.first_name} ${user?.last_name}`,
-      role: user?.role?.name
+      role: user?.role?.name,
+      user_ting: user?.user_ting
     };
 
     try {
-      const [response] = await Promise.all([axios.post(
-        `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config/assessments`,
-        JSON.stringify(config),
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_OBEASSESS_SDK_URL}sdk-assessments`,
+        { name: config?.name, subject_id: config?.subject_id },
         {
           headers: {
-            Origin: '*',
-            'Content-Type': 'application/json'
+            'X-Authorization': `${config?.apiKey}`,
+            Accept: 'application/json',
+            User: config?.user,
+            Role: config?.role,
+            User_ting: config?.user_ting
           }
         }
-      )]);
-      if (response.status === 200) {
+      );
+      if (response.status === 200 || response.status === 201) {
+        // const obeasses_id = await res?.data?.data?.item?.id;
+
         return response;
       } /* empty */
-    } catch (error) { /* empty */ }
+    } catch (error) {
+    }
   };
+  useEffect(() => {
+    if (dataValues) {
+      const currentDate = new Date();
+      const message: any = {
+        key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
+        user_name: `${user?.first_name} ${user?.last_name}`,
+        user_id: user?.user_ting,
+        assessment_id: obeId,
+        date_time: currentDate,
+        redirectionPath: location.pathname
+      };
+      const encryptedData = encryptMessage(JSON.stringify(message));
+      window.location.href = `http://localhost:3001/create-assessments/?token=${encodeURIComponent(encryptedData)}`;
+    }
+  }, [dataValues, obeId]);
+
+  // async function createAssessments(config) {
+  //   console.log(config)
+  //   let data = { name : config?.name ,subject_id: config?.subject_id }
+  //   try {
+  //     return await axios.post(`${process.env.REACT_APP_API_URL}/apiv2/sdk-assessments`,
+  //         data,
+  //         {
+  //           headers: {
+  //             'X-Authorization': `${config?.apiKey}`,
+  //             Accept: 'application/json',
+  //             User: config?.user,
+  //             Role: config?.role,
+  //             User_ting: config?.user_ting
+  //           }
+  //         },
+  //     );
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
 
   // ----------END APIs-------------------------------------------------------------------------
   const CLASS_ARRAY = (role === TEACHER ? TeacherClassesArray : formatSchoolClasses) || [];
@@ -126,10 +194,11 @@ export default function AssignedAssessments() {
   const onSubmit = async (values: any) => {
     // const getCourse = courseArray.find((i: any) => Number(i?.value) === Number(values?.select_course));
     const getGrade = CLASS_ARRAY.find((i: any) => Number(i?.value) === Number(values?.select_grade));
-
     const res = await getConfigAssessments(values?.assignment_name, '', getGrade?.value);
-    const obeasses_id = await res?.data?.data?.item?.id;
 
+    const obeasses_id = await res?.data?.item?.id;
+    // console.log(await res?.data?.item?.id, 'sadasdasdas')
+    setObeId(obeasses_id);
     const payload = {
       assessment_name: values?.assignment_name,
       // courses: getCourse?.value,
@@ -142,7 +211,9 @@ export default function AssignedAssessments() {
       updated_by: user?.userId,
       obeasses_id
     };
-    mutateAssesment(payload);
+    // mutateAssesment(payload);
+    const response = mutateObeAssesment(payload);
+    setDataValues(response);
   };
 
   useEffect(() => {

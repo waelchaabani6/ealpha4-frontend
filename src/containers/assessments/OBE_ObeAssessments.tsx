@@ -144,13 +144,13 @@ export default function OBE_ObeAssessments() {
       const currentDate = new Date();
       const message: Message = {
         key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
-        user_name: user?.userId,
-        user_id: user?.userId,
+        user_name: `${user?.first_name} ${user?.last_name}`,
+        user_id: user?.user_ting,
         assessment_id: assessId || null,
         date_time: currentDate,
       };
       const encryptedData = encryptMessage(JSON.stringify(message));
-      window.location.href = `http://localhost:3001/views/1000?token=${encodeURIComponent(encryptedData)}`;
+      window.location.href = `http://localhost:3001/views/${assessId}?token=${encodeURIComponent(encryptedData)}`;
     }
   };
 

@@ -34,6 +34,7 @@ import {
 } from '../../constants/constants';
 import Wrapper from '../../shared/wrapper/Wrapper';
 import RouteLayout from '../layout/routeLayout';
+import encryptMessage from "@utility/encrypt";
 
 const printButton = () => <PrintIcon />;
 
@@ -212,11 +213,16 @@ export default function OBE_AssignedAssessments() {
     if (handlername === 'delete') {
       deleteHandler(data);
     } else if (handlername === 'view') {
-      const originPath = window.location.href;
-      const config = { originPath, page };
-      const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(config), 'secret-key').toString();
-
-      window.location.href = `http://localhost:3001/views/1000?token=${encodeURIComponent(encryptedData)}`;
+      const currentDate = new Date();
+      const message: any = {
+        key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
+        user_name: `${user?.first_name} ${user?.last_name}`,
+        user_id: user?.user_ting,
+        assessment_id: obeasses_id || null,
+        date_time: currentDate
+      };
+      const encryptedData = encryptMessage(JSON.stringify(message));
+      window.location.href = `http://localhost:3001/views/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`;
 
       // navigate(`/${schoolName}/obe-assessments/preview_myassessment_question/${data?.assessment_id}`, { state: { page, obeasses_id, path: `/${schoolName}/assessments/assigned` } });
     }

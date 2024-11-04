@@ -18,9 +18,18 @@ import CustomPagination from '../../components/pagination/CustomPagination';
 import { RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '../../constants/constants';
 import Wrapper from '../../shared/wrapper/Wrapper';
 import RouteLayout from '../layout/routeLayout';
-
+import encryptMessage from '@utility/encrypt';
 const printButton = () => <PrintIcon />;
-
+interface Message {
+  key: string;
+  user_name: string;
+  user_id: string;
+  obeasses_id: string | null;
+  date_time: Date;
+  originPath: string;
+  page: number;
+  user_ting: string;
+}
 export default function OBE_StudentCompletedAssessmentList() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -98,9 +107,20 @@ export default function OBE_StudentCompletedAssessmentList() {
     const obeasses_id = item?.obeasses_id;
 
     const originPath = window.location.href;
+    const currentDate = new Date();
     const config = { originPath, obeasses_id, user_ting };
-    const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(config), 'secret-key').toString();
-    window.location.href = `http://localhost:3001/teacher-reports/1000?token=${encodeURIComponent(encryptedData)}`;
+    const message: Message = {
+      key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
+      user_name: `${user?.first_name} ${user?.last_name}`,
+      user_id: user?.user_ting,
+      obeasses_id: obeasses_id || null,
+      date_time: currentDate,
+      originPath,
+      page,
+      user_ting
+    };
+    const encryptedData = encryptMessage(JSON.stringify(message));
+    window.location.href = `http://localhost:3001/teacher-reports/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`;
   };
 
   // ----------------------------------------API-------------------------

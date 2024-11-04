@@ -12,13 +12,13 @@ import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DeletePopup from '@shared/DeletePopup';
-import { useDelete, useGet } from '@shared/api/useApi';
+import {api, useDelete, useGet} from '@shared/api/useApi';
 import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import PageTitle from '@shared/pageTitle';
 import toast from '@shared/toast';
 import Wrapper from '@shared/wrapper/Wrapper';
-import { getNoOfPages } from '@utility/utility';
+import {getNoOfPages, userRole} from '@utility/utility';
 import moment from 'moment';
 import { useEffect, useRef, useState } from 'react';
 import { CSVLink } from 'react-csv';
@@ -28,9 +28,20 @@ import ReactToPrint from 'react-to-print';
 import Dropdown from '@component/dropdown/Dropdown';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import CryptoJS from 'crypto-js';
+import encryptMessage from '@utility/encrypt';
+import {useQuery} from "react-query";
 
 const printButton = () => <PrintIcon />;
-
+interface Message {
+  key: string;
+  user_name: string;
+  user_id: string;
+  obeasses_id: string | null;
+  date_time: Date;
+  originPath: string;
+  page: number;
+  user_ting: string;
+}
 export default function OBE_CompletedAssessments() {
   const { schoolName } = useParams();
   const { user } = useSelector((state: any) => state);
@@ -68,6 +79,7 @@ export default function OBE_CompletedAssessments() {
 
   const [csvData, setCsvData] = useState<[]>([]);
   const [tableData, setTableData] = useState<any>([]);
+  const [userRoles, setUserRoles] = useState<any>({});
   const [adminDeleteDialog, setAdminDeleteDialog] = useState(false);
 
   const TableColumns = [
@@ -102,6 +114,10 @@ export default function OBE_CompletedAssessments() {
       mapper: 'action'
     }
   ];
+  interface UserData {
+    user_ting: string;
+    role?: { name: string };
+  }
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
   const [page, setPage] = useState(1);
@@ -117,9 +133,21 @@ export default function OBE_CompletedAssessments() {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const completedAssignRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
+  const userData = useSelector((state: any) => state?.user) as UserData;
+  const searchParams = new URLSearchParams(location.search);
+  const assessmentId = searchParams.get('assessment_id');
+  const obeassesId = searchParams.get('obeasses_id');
+
+
 
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const componentRef = useRef(null);
+
+  useEffect(() => {
+    if (location.search) {
+      sync();
+    }
+  }, [location.search]);
 
   const handleDialog = () => {
     setDialogOpen(false);
@@ -204,9 +232,19 @@ export default function OBE_CompletedAssessments() {
     const user_ting = data?.user_ting;
     setConfig(user_ting);
     const originPath = window.location.href;
-    const config = { originPath, obeasses_id, user_ting };
-    const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(config), 'secret-key').toString();
-    window.location.href = `http://localhost:3001/student-reports/1000?token=${encodeURIComponent(encryptedData)}`;
+    const currentDate = new Date();
+    const message: Message = {
+      key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
+      user_name: `${user?.first_name} ${user?.last_name}`,
+      user_id: user?.user_ting,
+      obeasses_id: obeasses_id || null,
+      date_time: currentDate,
+      originPath,
+      page,
+      user_ting
+    };
+    const encryptedData = encryptMessage(JSON.stringify(message));
+    window.location.href = `http://localhost:3001/student-reports/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`;
   };
   // ----------------------------------------API-------------------------
   // Get Assessment List
@@ -249,6 +287,11 @@ export default function OBE_CompletedAssessments() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || response?.statusText || 'Error');
     }
+  });
+  const { isLoading: loadSync, refetch: sync } = useGet({
+    baseURL: import.meta.env.VITE_APP_OBE_ASSESSMENT_SERVICE_URL,
+    url: `assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&obeasses_id=${obeassesId}&assessment_id=${assessmentId}`,
+    enabled: false
   });
 
   // Toolbar Email
@@ -302,6 +345,8 @@ export default function OBE_CompletedAssessments() {
       setPage(location?.state?.page);
     }
   }, []);
+
+
 
   if (emailLoaded) {
     <div className="backdrop-blur-sm bg-white/30 w-screen h-screen absolute z-50 top-0 left-0 grid place-items-center">
