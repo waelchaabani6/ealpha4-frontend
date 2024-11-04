@@ -58,7 +58,7 @@ const TableColumns: any = [
     mapper: "Teacher",
   },
   {
-    label: TABLE_LABELS?.PROGRAM,
+    label: TABLE_LABELS?.COURSES,
     isSort: true,
     mapper: "Program",
   },
@@ -113,7 +113,7 @@ const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
 const csvSubHeaders = [
   TABLE_LABELS?.CLASS_NAME,
   // TABLE_LABELS?.TEACHER,
-  TABLE_LABELS?.PROGRAM,
+  TABLE_LABELS?.COURSES,
   TABLE_LABELS?.ASSIGNMET_NAME,
   TABLE_LABELS?.AVG_CLASS,
   TABLE_LABELS?.CLASS_PER,
