@@ -92,6 +92,7 @@ export default function StudentQuickReportLearnosity() {
 
   return (
     <RouteLayout navBack={true}>
+   
       <HeaderMenus
         title={`${searchParams.get('assessment') || 'Test'}`}
         menuArray={ADMIN_TOOLBAR_MENU}
@@ -101,7 +102,7 @@ export default function StudentQuickReportLearnosity() {
         <>
           <div className="wrapperBorder mt-3" ref={componentRef}>
             <div className="p-[13px]">
-              <PageTitle title="Quick View Report" />
+              <PageTitle title={`Quick View Report - ${searchParams.get('assessment') || 'Test'}`} />
             </div>
             <Wrapper>
               <>
@@ -116,6 +117,7 @@ export default function StudentQuickReportLearnosity() {
           {error ? <h2>{`${error}`}</h2> : 'Loading...'}
         </div>
       )}
+     
     </RouteLayout>
   );
 }
