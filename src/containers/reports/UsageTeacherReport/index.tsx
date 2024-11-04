@@ -1,8 +1,15 @@
+/* eslint-disable comma-dangle */
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import Dropdown from '@component/dropdown/Dropdown';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { GRAPH_LABELS, RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS, USER_TYPE } from '@constants/constants';
+import {
+  GRAPH_LABELS,
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+  USER_TYPE,
+} from '@constants/constants';
 import EmailIcon from '@mui/icons-material/Email';
 import { CSVLink } from 'react-csv';
 import PrintIcon from '@mui/icons-material/Print';
@@ -62,11 +69,15 @@ export default function Index() {
     TABLE_LABELS?.CLASS,
     TABLE_LABELS?.TEACHER,
     TABLE_LABELS?.STUDENT_IN_CLASS,
-    TABLE_LABELS?.PROGRAM,
+    TABLE_LABELS?.COURSES,
     TABLE_LABELS?.ACTIVE_STUDENT,
-    TABLE_LABELS?.AVG_ACTIVE_PER_STUDENT
+    TABLE_LABELS?.AVG_ACTIVE_PER_STUDENT,
   ];
-  const { isRefetching: emailSendLoading, refetch: sendEmail, isLoading: emailLoad } = useGet({
+  const {
+    isRefetching: emailSendLoading,
+    refetch: sendEmail,
+    isLoading: emailLoad,
+  } = useGet({
     baseURL: ReportURL,
     url: `reports-service/usage-report-teacher-detail/send-email/?school_id=${schoolData?.id || branchData?.school_data?.id}`,
     onSuccess: () => {
@@ -76,7 +87,7 @@ export default function Index() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Unable to send email');
     },
-    enabled: false
+    enabled: false,
   }) as any;
   const handelSendEmail = () => {
     sendEmail();
@@ -84,7 +95,8 @@ export default function Index() {
   const ADMIN_TOOLBAR_MENU = [
     {
       title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
+      icon:
+        emailSendLoading || emailLoad ? <Loader size={20} /> : <EmailIcon />,
     },
     {
       title: 'Export',
@@ -97,7 +109,7 @@ export default function Index() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: 'Print',
@@ -106,8 +118,8 @@ export default function Index() {
           trigger={printButton}
           content={() => componentRef.current}
         />
-      )
-    }
+      ),
+    },
   ];
   const handleToolbarAction = async (title: string) => {
     if (title === TOOLBAR_LABELS.EMAIL) {
@@ -118,39 +130,38 @@ export default function Index() {
   const TableColumns: any = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'left'
+      align: 'left',
     },
     {
       label: TABLE_LABELS?.CLASS,
       mapper: 'Class',
-      bodyAlign: 'left'
+      bodyAlign: 'left',
     },
     {
       label: TABLE_LABELS?.TEACHER,
       mapper: 'Teacher',
-      bodyAlign: 'left'
+      bodyAlign: 'left',
     },
     {
       label: TABLE_LABELS?.STUDENT_IN_CLASS,
       mapper: 'StudentInClass',
-      bodyAlign: 'left'
-
+      bodyAlign: 'left',
     },
     {
-      label: TABLE_LABELS?.PROGRAM,
+      label: TABLE_LABELS?.COURSES,
       bodyAlign: 'left',
-      mapper: 'Program'
+      mapper: 'Program',
     },
     {
       label: TABLE_LABELS?.ACTIVE_STUDENT,
       bodyAlign: 'left',
-      mapper: 'ActiveStudents'
+      mapper: 'ActiveStudents',
     },
     {
       label: TABLE_LABELS?.AVG_ACTIVE_PER_STUDENT,
       bodyAlign: 'center',
-      mapper: 'AvgActiveStudent'
-    }
+      mapper: 'AvgActiveStudent',
+    },
   ];
 
   const handlePagination = (currPage: any) => {
@@ -166,25 +177,32 @@ export default function Index() {
   const { data: branchList, isLoading: branchListLoading } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
     url: `schools-service/school-branches/?limit=100&school_id=${schoolData?.id || branchData?.school_data?.id}`,
-    enabled: !!(schoolData?.id || branchData?.school_data?.id)
+    enabled: !!(schoolData?.id || branchData?.school_data?.id),
   });
   const BranchArr = branchList?.data?.response?.results?.sort(sortByName);
 
-  const branchName = useMemo(() => branchList?.data?.response?.results.find((itm: any) => itm.id === selectedBranch)?.name || branchData?.name, [selectedBranch, branchData]);
+  const branchName = useMemo(
+    () =>
+      branchList?.data?.response?.results.find(
+        (itm: any) => itm.id === selectedBranch
+      )?.name || branchData?.name,
+    [selectedBranch, branchData]
+  );
 
   const { isLoading: schoolClassLoading, data: schoolClassList } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}${(branchData || selectedBranch !== 'select') ? `&branch_name=${branchName}` : ''}`
+    url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}${branchData || selectedBranch !== 'select' ? `&branch_name=${branchName}` : ''}`,
   });
-  const SchooClassList = schoolClassList?.data?.response?.results?.sort(sortByName);
+  const SchooClassList =
+    schoolClassList?.data?.response?.results?.sort(sortByName);
 
   const { data: teacherList, isLoading: teacherListLoading } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
-    url: `users-service/teachers-list/?limit=1000&ordering=-created_at&school_id=${schoolData?.id || branchData?.school_data?.id}${(branchData || selectedBranch !== 'select') ? `&branch_name=${branchName}` : ''}`
+    url: `users-service/teachers-list/?limit=1000&ordering=-created_at&school_id=${schoolData?.id || branchData?.school_data?.id}${branchData || selectedBranch !== 'select' ? `&branch_name=${branchName}` : ''}`,
   });
   const { isLoading: subjectsLoading, data: subjectList } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/content/?ordering=-created_at&limit=100&offset=0&selection=Course`
+    url: `course-code-service/courses/content/?ordering=-created_at&limit=100&offset=0&selection=Course`,
   });
   const SubjectArr = subjectList?.data?.response?.results?.sort(sortByName);
 
@@ -200,7 +218,9 @@ export default function Index() {
   const TeacherArr = teacherList?.data?.response?.results?.sort(compare);
 
   const teacherName = useMemo(() => {
-    const obj = teacherList?.data?.response?.results?.find((itm: any) => itm.user_id === selectedteacher);
+    const obj = teacherList?.data?.response?.results?.find(
+      (itm: any) => itm.user_id === selectedteacher
+    );
     if (obj) {
       return `${obj?.first_name} ${obj?.last_name}`;
     }
@@ -215,18 +235,32 @@ export default function Index() {
       setTotalData(Graph1);
       const Graph2 = res?.data?.response?.average_active_days_per_students;
       SetNoOfDaysArr(Graph2);
-    }
+    },
   });
 
-  const tableData = useMemo(() => data?.data?.response?.data?.map((itm: any) => ({
-    Class: itm?.class_name,
-    Teacher: <Link state={{ page }} to={`${link}/${itm?.class_name}/${itm?.teacher_name}/${itm?.school_id}/${itm?.class_id}/${itm?.start_date}/${itm?.end_date}`}><span className="text-accent underline cursor-pointer text-xs font-medium">{itm?.teacher_name}</span></Link>,
-    StudentInClass: itm?.students_in_class,
-    Program: itm?.program,
-    ActiveStudents: itm?.active_students,
-    AvgActiveStudent: itm?.avg_active_days_per_student,
-    TotalTeacher: ''
-  })), [data]) || [];
+  const tableData =
+    useMemo(
+      () =>
+        data?.data?.response?.data?.map((itm: any) => ({
+          Class: itm?.class_name,
+          Teacher: (
+            <Link
+              state={{ page }}
+              to={`${link}/${itm?.class_name}/${itm?.teacher_name}/${itm?.school_id}/${itm?.class_id}/${itm?.start_date}/${itm?.end_date}`}
+            >
+              <span className="text-accent underline cursor-pointer text-xs font-medium">
+                {itm?.teacher_name}
+              </span>
+            </Link>
+          ),
+          StudentInClass: itm?.students_in_class,
+          Program: itm?.program,
+          ActiveStudents: itm?.active_students,
+          AvgActiveStudent: itm?.avg_active_days_per_student,
+          TotalTeacher: '',
+        })),
+      [data]
+    ) || [];
   const CSVDataFunction = () => {
     const csvdata = tableData.map((i: any) => [
       i?.Class,
@@ -234,7 +268,7 @@ export default function Index() {
       i?.StudentInClass,
       i?.Program,
       i?.ActiveStudents,
-      i?.AvgActiveStudent
+      i?.AvgActiveStudent,
     ]);
 
     setCsvData(csvdata);
@@ -249,13 +283,13 @@ export default function Index() {
 
   const chartData1 = (NoOfDaysArr || []).map((i: any) => ({
     name: i?.class_name,
-    count1: i?.avg_active_days_per_student
+    count1: i?.avg_active_days_per_student,
   }));
 
   const tempStudent = (totalData || []).map((i: any) => ({
     name: i?.class_name,
     count1: Number(i?.total_student) - Number(i?.active_students),
-    count2: Number(i?.active_students)
+    count2: Number(i?.active_students),
   }));
 
   const reset = () => {
@@ -289,63 +323,83 @@ export default function Index() {
         menuArray={ADMIN_TOOLBAR_MENU}
         handleToolbarAction={handleToolbarAction}
       />
-      <div className={`w-full grid grid-cols-1 ${userRole().isBranchAdmin ? 'lg:grid-cols-7' : 'lg:grid-cols-8'} my-2 gap-2 items-center justify-between`}>
-        {
-          view === 'default'
-            ? (
-              <>
-                {
-                  !userRole().isBranchAdmin && (
-                    <Dropdown
-                      title="Select Branch"
-                      value={selectedBranch}
-                      dataArray={[{ label: 'All', value: 'select' }, ...(BranchArr?.map((item: any) => ({ label: item.name, value: item.id })) || [])]}
-                      onChangeHandler={(val) => {
-                        setselectedBranch(val);
-                        setSelectedClass('select');
-                        setSelectedTeacher('select');
-                      }}
-                      loading={branchListLoading}
-                      sxClass={{ width: '100%' }}
-                    />
-                  )
-                }
-
-                <Dropdown
-                  title="Result Of Pages"
-                  value={rowsPerPage}
-                  dataArray={RESULTS_PER_PAGE}
-                  onChangeHandler={handlePerPage}
-                  sxClass={{ width: '100%' }}
-                />
-                <Dropdown
-                  title="Teacher Name"
-                  loading={teacherListLoading}
-                  value={selectedteacher}
-                  dataArray={[{ label: 'All', value: 'select' }, ...(TeacherArr?.map((itm: any) => ({ label: `${itm?.first_name} ${itm?.last_name}`, value: itm?.user_id })) || [])]}
-                  onChangeHandler={(val) => setSelectedTeacher(val)}
-                  sxClass={{ width: '100%' }}
-                />
-                <Dropdown
-                  title="Select a class"
-                  value={selectedClass}
-                  loading={schoolClassLoading}
-                  dataArray={[{ label: 'All', value: 'select' }, ...(SchooClassList?.map((item: any) => ({ label: item.name, value: item.id })) || [])]}
-                  onChangeHandler={(val) => setSelectedClass(val)}
-                  sxClass={{ width: '100%' }}
-                />
-              </>
-            )
-            : (
+      <div
+        className={`w-full grid grid-cols-1 ${userRole().isBranchAdmin ? 'lg:grid-cols-7' : 'lg:grid-cols-8'} my-2 gap-2 items-center justify-between`}
+      >
+        {view === 'default' ? (
+          <>
+            {!userRole().isBranchAdmin && (
               <Dropdown
-                title="Select Program"
-                value={selectedprogram}
-                dataArray={[{ label: 'Select', value: 'select' }, ...(SubjectArr?.map((itm: any) => ({ label: itm?.content, value: itm?.content })) || [])]}
-                onChangeHandler={(val) => setSelectedProgram(val)}
+                title="Select Branch"
+                value={selectedBranch}
+                dataArray={[
+                  { label: 'All', value: 'select' },
+                  ...(BranchArr?.map((item: any) => ({
+                    label: item.name,
+                    value: item.id,
+                  })) || []),
+                ]}
+                onChangeHandler={(val) => {
+                  setselectedBranch(val);
+                  setSelectedClass('select');
+                  setSelectedTeacher('select');
+                }}
+                loading={branchListLoading}
                 sxClass={{ width: '100%' }}
               />
-            )
-        }
+            )}
+
+            <Dropdown
+              title="Result Of Pages"
+              value={rowsPerPage}
+              dataArray={RESULTS_PER_PAGE}
+              onChangeHandler={handlePerPage}
+              sxClass={{ width: '100%' }}
+            />
+            <Dropdown
+              title="Teacher Name"
+              loading={teacherListLoading}
+              value={selectedteacher}
+              dataArray={[
+                { label: 'All', value: 'select' },
+                ...(TeacherArr?.map((itm: any) => ({
+                  label: `${itm?.first_name} ${itm?.last_name}`,
+                  value: itm?.user_id,
+                })) || []),
+              ]}
+              onChangeHandler={(val) => setSelectedTeacher(val)}
+              sxClass={{ width: '100%' }}
+            />
+            <Dropdown
+              title="Select a class"
+              value={selectedClass}
+              loading={schoolClassLoading}
+              dataArray={[
+                { label: 'All', value: 'select' },
+                ...(SchooClassList?.map((item: any) => ({
+                  label: item.name,
+                  value: item.id,
+                })) || []),
+              ]}
+              onChangeHandler={(val) => setSelectedClass(val)}
+              sxClass={{ width: '100%' }}
+            />
+          </>
+        ) : (
+          <Dropdown
+            title="Select Course"
+            value={selectedprogram}
+            dataArray={[
+              { label: 'Select', value: 'select' },
+              ...(SubjectArr?.map((itm: any) => ({
+                label: itm?.content,
+                value: itm?.content,
+              })) || []),
+            ]}
+            onChangeHandler={(val) => setSelectedProgram(val)}
+            sxClass={{ width: '100%' }}
+          />
+        )}
 
         <DatePicker
           fullWidth={true}
@@ -374,16 +428,20 @@ export default function Index() {
           shouldDisableDate={() => false}
         />
         <div className={` flex gap-x-4 items-center  pt-2 lg:pt-6`}>
-          {
-            (toDate || fromDate) && (
-              <span tabIndex={0} title="Clear dates" onClick={() => reset()} role="button">
-                <RestartAltIcon />
-              </span>
-            )
-          }
+          {(toDate || fromDate) && (
+            <span
+              tabIndex={0}
+              title="Clear dates"
+              onClick={() => reset()}
+              role="button"
+            >
+              <RestartAltIcon />
+            </span>
+          )}
         </div>
-        <div className={`${view === 'default' ? 'lg:col-auto' : 'lg:col-span-3'} mt-3 flex justify-end`}>
-
+        <div
+          className={`${view === 'default' ? 'lg:col-auto' : 'lg:col-span-3'} mt-3 flex justify-end`}
+        >
           <ButtonToggle view={view} setView={setView} />
         </div>
 
@@ -394,7 +452,6 @@ export default function Index() {
           value={selectedBranch}
           disabled={true}
         /> */}
-
       </div>
       {/* Table Section */}
       {view === 'default' ? (
@@ -425,11 +482,8 @@ export default function Index() {
                   </p>
                 </div>
                 <div className="overflow-x-auto">
-
                   <TotalStudentGraph data={tempStudent || []} />
-                </div>
-                {' '}
-
+                </div>{' '}
               </div>
               <div className="p-4 bg-white border border-accent rounded-md">
                 <div className="flex flex-col items-center justify-center">
@@ -438,18 +492,16 @@ export default function Index() {
                   </p>
                 </div>
                 <div className="overflow-x-auto">
-
-                  <TotalAssessment data={chartData1 || []} title={GRAPH_LABELS.NOOFDAYS} />
-                </div>
-                {' '}
-
+                  <TotalAssessment
+                    data={chartData1 || []}
+                    title={GRAPH_LABELS.NOOFDAYS}
+                  />
+                </div>{' '}
               </div>
             </div>
           </div>
-
         </>
       )}
-
     </RouteLayout>
   );
 }
