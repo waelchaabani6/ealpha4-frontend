@@ -1,3 +1,6 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable no-shadow */
+/* eslint-disable linebreak-style */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-console */
 /* eslint-disable operator-linebreak */
@@ -30,6 +33,10 @@ import DeletePopup from '@shared/DeletePopup';
 import Loader from '@shared/loader';
 import moment from 'moment';
 import DebounceInput from '@component/input/DebounceInput';
+
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import DatePicker from '@component/datepicker';
+
 // import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import {
   STATUS_ITEMS,
@@ -74,6 +81,8 @@ const SchoolManagmentList = (): JSX.Element => {
   const [bulkSelect, setBulkSelect] = useState<any>([]);
   const [removedBranchObject, setRemovedBranchObject] =
     useState<removedBranchObjectType | null>(null);
+
+  const [date, setDate] = useState<any>('');
 
   useEffect(() => {
     let finalData = [];
@@ -381,10 +390,11 @@ const SchoolManagmentList = (): JSX.Element => {
   // Get School Listing
   const temps = rowsPerPage === 'all' ? totalDataCount : rowsPerPage;
   const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
+  const formatDate = date !== '' ? moment(date).format('YYYY-MM-DD') : '';
 
   const { isLoading, isRefetching, refetch } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/schools/get-schools/?limit=${temps}&offset=${(page - 1) * Number(temps)}&status=${selectData !== 'All' ? selectData : ''}&academic_year=${selectedAcademicYear !== 'All' ? selectedAcademicYear : ''}&ordering=${ordering}&search=${searchString}${selectedCountry && selectedCountry !== 'Select' ? `&country=${selectedCountry}` : ``}`,
+    url: `schools-service/schools/get-schools/?limit=${temps}&offset=${(page - 1) * Number(temps)}&status=${selectData !== 'All' ? selectData : ''}&academic_year=${selectedAcademicYear !== 'All' ? selectedAcademicYear : ''}&ordering=${ordering}&search=${searchString}${selectedCountry && selectedCountry !== 'Select' ? `&country=${selectedCountry}` : ``}&created_at=${formatDate}`,
     onSuccess: (resp: any) => {
       const accData = resp?.data?.response;
       const respData = accData?.results;
@@ -552,6 +562,7 @@ const SchoolManagmentList = (): JSX.Element => {
     order,
     searchString,
     selectedCountry,
+    date,
   ]);
 
   // useEffect(() => {
@@ -588,6 +599,10 @@ const SchoolManagmentList = (): JSX.Element => {
   // const { school_name: schoolName, role } = useSelector(selectUser);
   // console.log(role.name, 'role');
   // console.log(schoolName, 'schoolName');
+
+  const handleReset = () => {
+    setDate('');
+  };
 
   return (
     <RouteLayout>
@@ -641,6 +656,27 @@ const SchoolManagmentList = (): JSX.Element => {
             onChangeHandler={countryChangeHandler}
             sxClass={{ width: '100%' }}
           />
+
+          <div className="flex gap-x-4 items-end">
+            <DatePicker
+              value={date}
+              label="Created On"
+              handlePickerChange={(date: string) => setDate(date)}
+              sxType={4}
+              defaultStyle={true}
+              format="YYYY-MM-DD"
+              disablePast={false}
+            />
+            <span
+              className="mb-1"
+              tabIndex={0}
+              title="Clear Date"
+              onClick={handleReset}
+              role="button"
+            >
+              <RestartAltIcon />
+            </span>
+          </div>
         </div>
 
         <CustomPagination
