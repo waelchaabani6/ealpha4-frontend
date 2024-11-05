@@ -1,6 +1,11 @@
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import React, { useState, useRef, useEffect } from 'react';
-import { GRAPH_LABELS, RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '@constants/constants';
+import {
+  GRAPH_LABELS,
+  RESULTS_PER_PAGE,
+  TABLE_LABELS,
+  TOOLBAR_LABELS,
+} from '@constants/constants';
 import EmailIcon from '@mui/icons-material/Email';
 import { CSVLink } from 'react-csv';
 import PrintIcon from '@mui/icons-material/Print';
@@ -41,7 +46,15 @@ export default function Index() {
   const [TimeArr, setTimeData] = useState([]);
   const [Graph1Arr, SetGraphArr] = useState([]);
   const { schoolData, branchData } = useSelector(selectSchoolData);
-  const { ClassName, TeacherName, SchoolID, ClassID, StartDate, LastDate, schoolName } = useParams();
+  const {
+    ClassName,
+    TeacherName,
+    SchoolID,
+    ClassID,
+    StartDate,
+    LastDate,
+    schoolName,
+  } = useParams();
   const componentRef = useRef(null);
   const location = useLocation();
   const rowsPerPage = 10;
@@ -49,7 +62,11 @@ export default function Index() {
   const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
   const noOfpages = getNoOfPages(totalRecords, rowsPerPage);
 
-  const { isRefetching: emailSendLoading, refetch: sendEmail, isLoading: emailLoad } = useGet({
+  const {
+    isRefetching: emailSendLoading,
+    refetch: sendEmail,
+    isLoading: emailLoad,
+  } = useGet({
     baseURL: ReportURL,
     url: `reports-service/usage-report/student-detail/send-email/?school_id=${schoolData?.id || branchData?.school_data?.id}`,
     onSuccess: () => {
@@ -59,23 +76,24 @@ export default function Index() {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Unable to send email');
     },
-    enabled: false
+    enabled: false,
   }) as any;
 
   const csvSubHeaders = [
     TABLE_LABELS?.SR_NO,
     TABLE_LABELS?.STUDENT_FNAME,
     TABLE_LABELS?.STUDENT_LNAME,
-    TABLE_LABELS?.PROGRAM,
+    TABLE_LABELS?.COURSES,
     TABLE_LABELS?.ACTIVE_DAYS,
     TABLE_LABELS?.CONTENT_OPENED,
     TABLE_LABELS?.CONTENT_COMPLETED,
-    TABLE_LABELS?.TOTAL_TIME_STUDENTS
+    TABLE_LABELS?.TOTAL_TIME_STUDENTS,
   ];
   const ADMIN_TOOLBAR_MENU = [
     {
       title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
+      icon:
+        emailSendLoading || emailLoad ? <Loader size={20} /> : <EmailIcon />,
     },
     {
       title: 'Export',
@@ -88,7 +106,7 @@ export default function Index() {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: 'Print',
@@ -97,8 +115,8 @@ export default function Index() {
           trigger={printButton}
           content={() => componentRef.current}
         />
-      )
-    }
+      ),
+    },
   ];
   const handelSendEmail = () => {
     sendEmail();
@@ -112,44 +130,43 @@ export default function Index() {
     {
       label: TABLE_LABELS?.SR_NO,
       mapper: 'SR_NO',
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.STUDENT_FNAME,
       mapper: 'FirstName',
-      bodyAlign: 'center'
+      bodyAlign: 'center',
     },
     {
       label: TABLE_LABELS?.STUDENT_LNAME,
       mapper: 'LastName',
-      bodyAlign: 'center'
+      bodyAlign: 'center',
     },
     {
-      label: TABLE_LABELS?.PROGRAM,
+      label: TABLE_LABELS?.COURSES,
       mapper: 'Program',
-      bodyAlign: 'center'
-
+      bodyAlign: 'center',
     },
     {
       label: TABLE_LABELS?.ACTIVE_DAYS,
       bodyAlign: 'center',
-      mapper: 'ActiveDays'
+      mapper: 'ActiveDays',
     },
     {
       label: TABLE_LABELS?.CONTENT_OPENED,
       bodyAlign: 'center',
-      mapper: 'ContentOpened'
+      mapper: 'ContentOpened',
     },
     {
       label: TABLE_LABELS?.CONTENT_COMPLETED,
       bodyAlign: 'center',
-      mapper: 'ContentCompleted'
+      mapper: 'ContentCompleted',
     },
     {
       label: TABLE_LABELS?.TOTAL_TIME_STUDENTS,
       bodyAlign: 'center',
-      mapper: 'TotalTime'
-    }
+      mapper: 'TotalTime',
+    },
   ];
 
   const { isLoading, refetch: StudentDetail } = useGet({
@@ -164,21 +181,28 @@ export default function Index() {
       SetTotalRecords(StdData?.total_records);
       if (TableData) {
         const body: any = [];
-        const csvbody:any = [];
+        const csvbody: any = [];
         TableData?.map((i: any) => {
-          body.push(
-            {
-              SR_NO: i?.series_no,
-              FirstName: i?.first_name,
-              LastName: i?.last_name,
-              Program: i?.program,
-              ActiveDays: i?.active_days,
-              ContentOpened: i?.content_opened,
-              ContentCompleted: i?.content_completed,
-              TotalTime: i?.total_time
-            }
-          );
-          csvbody.push([i?.series_no, i?.first_name, i?.last_name, i?.program, i?.active_days, i?.content_opened, i?.content_completed, i?.total_time]);
+          body.push({
+            SR_NO: i?.series_no,
+            FirstName: i?.first_name,
+            LastName: i?.last_name,
+            Program: i?.program,
+            ActiveDays: i?.active_days,
+            ContentOpened: i?.content_opened,
+            ContentCompleted: i?.content_completed,
+            TotalTime: i?.total_time,
+          });
+          csvbody.push([
+            i?.series_no,
+            i?.first_name,
+            i?.last_name,
+            i?.program,
+            i?.active_days,
+            i?.content_opened,
+            i?.content_completed,
+            i?.total_time,
+          ]);
           return true;
         });
         SetTableData(body);
@@ -187,12 +211,20 @@ export default function Index() {
       if (Graph1) {
         const body: any = [];
         // eslint-disable-next-line array-callback-return
-        Graph1?.map((i:any) => {
-          const convertedArray = [i?.programs?.reduce((acc:any, curr:any) => ({ ...acc, [curr?.program_name]: curr?.active_days }), {})];
+        Graph1?.map((i: any) => {
+          const convertedArray = [
+            i?.programs?.reduce(
+              (acc: any, curr: any) => ({
+                ...acc,
+                [curr?.program_name]: curr?.active_days,
+              }),
+              {}
+            ),
+          ];
 
           body.push({
             name: i?.first_name,
-            Program: convertedArray
+            Program: convertedArray,
           });
         });
         SetGraphArr(body);
@@ -200,13 +232,11 @@ export default function Index() {
       if (Graph2) {
         const body: any = [];
         Graph2?.map((i: any) => {
-          body.push(
-            {
-              Completed: i?.no_of_content_completed,
-              Opened: i?.content_opened,
-              name: i?.student_name
-            }
-          );
+          body.push({
+            Completed: i?.no_of_content_completed,
+            Opened: i?.content_opened,
+            name: i?.student_name,
+          });
           return true;
         });
         setContentData(body);
@@ -215,35 +245,35 @@ export default function Index() {
         const body: any = [];
         Graph3?.map((i: any) => {
           const total_time_sum = i?.total_time_sum;
-          const [hours, minutes, seconds] = total_time_sum.split(':').map(Number);
+          const [hours, minutes, seconds] = total_time_sum
+            .split(':')
+            .map(Number);
           const totalSeconds = hours * 3600 + minutes * 60 + seconds;
-          let totalDays:any;
+          let totalDays: any;
           if (totalSeconds >= 1) {
             totalDays = Math.ceil(totalSeconds / (24 * 3600));
           } else {
             totalDays = 0;
           }
-          body.push(
-            {
-              time: totalDays,
-              name: i?.first_name
-            }
-          );
+          body.push({
+            time: totalDays,
+            name: i?.first_name,
+          });
           return true;
         });
         setTimeData(body);
       }
-    }
+    },
   });
 
   const handlePagination = (currPage: any) => {
     if (currPage) setPage(currPage);
     else setPage(1);
   };
-  const handleOptionChange = (event:any) => {
+  const handleOptionChange = (event: any) => {
     setYaxis(event.target.value);
   };
-  const handleOptionXaxisChange = (event:any) => {
+  const handleOptionXaxisChange = (event: any) => {
     setXaxis(event.target.value);
   };
   useEffect(() => {
@@ -255,16 +285,17 @@ export default function Index() {
     StudentDetail();
   }, [view]);
   return (
-    <RouteLayout state={location?.state} path={`/${schoolName}/reports/usage-for-teacher`}>
+    <RouteLayout
+      state={location?.state}
+      path={`/${schoolName}/reports/usage-for-teacher`}
+    >
       <HeaderMenus
         title="Report - Usage Report"
         menuArray={ADMIN_TOOLBAR_MENU}
         handleToolbarAction={handleToolbarAction}
       />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
-
         <>
-
           <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
             <div className="w-max">
               <CustomInput
@@ -284,40 +315,35 @@ export default function Index() {
                 disabled={true}
               />
             </div>
-            {
-              view && view === 'secondary' && (
-                <>
-
-                  <div className="w-[150px]">
-                    <DatePicker
-                      value={StartDate}
-                      label="From"
-                      handlePickerChange={(date: string) => setFromDate(date)}
+            {view && view === 'secondary' && (
+              <>
+                <div className="w-[150px]">
+                  <DatePicker
+                    value={StartDate}
+                    label="From"
+                    handlePickerChange={(date: string) => setFromDate(date)}
                     // sxType={1}
-                      defaultStyle={true}
-                      disablePast={false}
-                      disabled={true}
-                      disableFuture={toDate}
-                    />
-                  </div>
-                  <div className="w-[150px]">
-                    <DatePicker
-                      value={LastDate}
-                      label="To"
-                      handlePickerChange={(date: string) => setToDate(date)}
+                    defaultStyle={true}
+                    disablePast={false}
+                    disabled={true}
+                    disableFuture={toDate}
+                  />
+                </div>
+                <div className="w-[150px]">
+                  <DatePicker
+                    value={LastDate}
+                    label="To"
+                    handlePickerChange={(date: string) => setToDate(date)}
                     // sxType={1}
-                      defaultStyle={true}
-                      disablePast={false}
-                      disabled={true}
-                      disableFuture={toDate}
-                    />
-                  </div>
-                </>
-              )
-            }
-
+                    defaultStyle={true}
+                    disablePast={false}
+                    disabled={true}
+                    disableFuture={toDate}
+                  />
+                </div>
+              </>
+            )}
           </div>
-
         </>
         <div>
           <ButtonToggle view={view} setView={setView} />
@@ -352,7 +378,6 @@ export default function Index() {
                   </p>
                 </div>
                 <div className="overflow-x-auto">
-
                   <ActiveDaysUsage data={Graph1Arr || []} title="students" />
                 </div>
               </div>
@@ -361,7 +386,6 @@ export default function Index() {
                   {GRAPH_LABELS.CONTENT_OPENED_COMPLETED}
                 </p>
                 <div className="overflow-x-auto">
-
                   <ContentOpened data={ContentArr} title="students" />
                 </div>
               </div>
@@ -377,7 +401,6 @@ export default function Index() {
           </div>
         </>
       )}
-
     </RouteLayout>
   );
 }

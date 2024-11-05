@@ -631,7 +631,7 @@ export default function Index() {
               <>
                 <div>
                   <Dropdown
-                    title="Select Program"
+                    title="Select Course"
                     value={selectedprogram}
                     dataArray={[ALL, ...ProgramArr]}
                     onChangeHandler={(val) => {
