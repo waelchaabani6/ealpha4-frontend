@@ -57,16 +57,17 @@ export default function StudentCompletedAssessmentList() {
     {
       label: TABLE_LABELS?.STUDENT_NAME,
       mapper: "student_name",
+      filter_by: "first_name",
       isSort: true,
     },
     {
       label: TABLE_LABELS?.START_DATE,
-      isSort: true,
+      isSort: false,
       mapper: "start_date",
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
-      isSort: true,
+      isSort: false,
       mapper: "submission_date",
     },
     {
