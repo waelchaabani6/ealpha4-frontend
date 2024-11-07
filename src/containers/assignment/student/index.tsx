@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable comma-dangle */
 /* eslint-disable operator-linebreak */
@@ -37,6 +38,7 @@ import {
 } from '../../../constants/constants';
 import Wrapper from '../../../shared/wrapper/Wrapper';
 import RouteLayout from '../../layout/routeLayout';
+import UseGetProfile from '@utility/Hooks/UseGetProfile';
 
 const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
 
@@ -193,6 +195,8 @@ export default function Index() {
   const [viewMoreOpenModal, setViewMoreOpenModal] = useState(false);
   const [remarkText, setRemarkText] = useState('');
 
+  const { getUser } = UseGetProfile();
+
   const handelSendEmail = () => {
     sendEmail();
   };
@@ -347,6 +351,7 @@ export default function Index() {
     const userFd = new FormData();
     userFd.append('state', passObj.state);
     setFormObject(userFd);
+    getUser();
   };
 
   useEffect(() => {
@@ -358,6 +363,7 @@ export default function Index() {
   useEffect(() => {
     if (formObject !== null && selectedStudentId !== -1) {
       updateStatus(formObject);
+      getUser();
     }
   }, [formObject]);
 
