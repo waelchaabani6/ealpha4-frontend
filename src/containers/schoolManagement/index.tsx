@@ -1,17 +1,17 @@
-/* eslint-disable linebreak-style */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable no-shadow */
+/* eslint-disable linebreak-style */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-console */
 /* eslint-disable operator-linebreak */
 /* eslint-disable comma-dangle */
 /* eslint-disable implicit-arrow-linebreak */
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import AddIcon from '@mui/icons-material/Add';
-import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import PrintIcon from '@mui/icons-material/Print';
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import AddIcon from "@mui/icons-material/Add";
+import { ReactComponent as Share } from "@images/pageHeaderIcons/share.svg";
+import PrintIcon from "@mui/icons-material/Print";
 
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link } from "react-router-dom";
 import routes, {
   PANEL,
   SCHOOL,
@@ -20,36 +20,36 @@ import routes, {
   EDIT,
   NEW_BRANCH,
   BRANCHES,
-} from '@constants/routes';
-import { CSVLink } from 'react-csv';
+} from "@constants/routes";
+import { CSVLink } from "react-csv";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import ReactToPrint from 'react-to-print';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import Dropdown from '@component/dropdown/Dropdown';
-import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import { useDelete, useGet, usePatch, usePost } from '@shared/api/useApi';
-import toast from '@shared/toast';
-import DeletePopup from '@shared/DeletePopup';
-import Loader from '@shared/loader';
-import moment from 'moment';
-import DebounceInput from '@component/input/DebounceInput';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import DatePicker from '@component/datepicker';
+import ReactToPrint from "react-to-print";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
+import Dropdown from "@component/dropdown/Dropdown";
+import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
+import { useDelete, useGet, usePatch, usePost } from "@shared/api/useApi";
+import toast from "@shared/toast";
+import DeletePopup from "@shared/DeletePopup";
+import Loader from "@shared/loader";
+import moment from "moment";
+import DebounceInput from "@component/input/DebounceInput";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import DatePicker from "@component/datepicker";
 
 // import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import {
   STATUS_ITEMS,
   RESULTS_PER_PAGE,
   TOOLBAR_LABELS,
-} from '../../constants/constants';
-import CustomPagination from '../../components/pagination/CustomPagination';
-import { getNoOfPages } from '../../utilities/utility';
-import Wrapper from '../../shared/wrapper/Wrapper';
-import ExtendLicensePopupForm from './components/ExtendLicensePopupForm';
-import RemoveBranchPopup from './components/RemoveBranchPopup';
-import MigrateUser from './components/MigrateUser';
-import PermanentlyRemoveBranch from './components/PermanentlyRemoveBranch';
-import RouteLayout from '../layout/routeLayout';
+} from "../../constants/constants";
+import CustomPagination from "../../components/pagination/CustomPagination";
+import { getNoOfPages } from "../../utilities/utility";
+import Wrapper from "../../shared/wrapper/Wrapper";
+import ExtendLicensePopupForm from "./components/ExtendLicensePopupForm";
+import RemoveBranchPopup from "./components/RemoveBranchPopup";
+import MigrateUser from "./components/MigrateUser";
+import PermanentlyRemoveBranch from "./components/PermanentlyRemoveBranch";
+import RouteLayout from "../layout/routeLayout";
 
 import {
   ALL,
@@ -58,11 +58,11 @@ import {
   moreMenuOptions,
   subTableHeader,
   TableColumns,
-} from './utils';
+} from "./utils";
 
 const printButton = () => <PrintIcon />;
 const masterServiceBaseURL = import.meta.env.VITE_APP_MASTER_SERVICE_URL;
-const SELECT = 'Select';
+const SELECT = "Select";
 
 type removedBranchObjectType = {
   school_id: string;
@@ -101,7 +101,7 @@ const SchoolManagmentList = (): JSX.Element => {
             item1?.id,
             item1?.branch_name,
             item1?.branch_type,
-            moment(item1?.created_at).format('DD-MM-YYYY'),
+            moment(item1?.created_at).format("DD-MM-YYYY"),
             item1?.activation_end_date,
             item1?.expiration_days,
             item1?.status,
@@ -131,15 +131,15 @@ const SchoolManagmentList = (): JSX.Element => {
   const [schoolDeleteDialog, setSchoolDeleteDialog] = useState(false);
   const [playloadData, setPlayloadData] = useState<any | undefined>({});
   const [popupData, setpopupData] = useState<any>({});
-  const [selectedCountry, setCountry] = useState<string>('Select');
+  const [selectedCountry, setCountry] = useState<string>("Select");
 
-  const [migrateTo, setMigrateTo] = useState('');
-  const [order, setOrder] = useState<any>('desc');
-  const [orderBy, setOrderBy] = useState<any>('created_at');
+  const [migrateTo, setMigrateTo] = useState("");
+  const [order, setOrder] = useState<any>("desc");
+  const [orderBy, setOrderBy] = useState<any>("created_at");
 
-  const [searchString, setSearchString] = useState('');
+  const [searchString, setSearchString] = useState("");
 
-  const [date, setDate] = useState<any>('');
+  const [date, setDate] = useState<any>("");
 
   /*
   IMPORTANT:: Please do not remove this code. as it will be required in future.
@@ -188,18 +188,18 @@ const SchoolManagmentList = (): JSX.Element => {
   };
 
   const importData = async () => {
-    const input: any = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.csv';
+    const input: any = document.createElement("input");
+    input.type = "file";
+    input.accept = ".csv";
     input.onchange = () => {
       const file = input?.files?.[0];
-      const fileType = file.name.split('.').pop();
-      if (fileType === 'csv') {
+      const fileType = file.name.split(".").pop();
+      if (fileType === "csv") {
         const documentFormData = new FormData();
-        documentFormData.append('csv_file', file);
+        documentFormData.append("csv_file", file);
         mutateImport(documentFormData);
       } else {
-        toast('error', 'Please upload CSV filetype only');
+        toast("error", "Please upload CSV filetype only");
       }
     };
     input.click();
@@ -207,26 +207,26 @@ const SchoolManagmentList = (): JSX.Element => {
 
   const handelSendEmail = () => {
     const payload = {
-      list_type: 'school-list',
+      list_type: "school-list",
     };
     setPlayloadData({
-      apicall: 'sendEmail',
+      apicall: "sendEmail",
       payload,
     });
   };
 
   const handleMoreOption = (id: any, rowData: any) => {
-    if (id === 'editSchoolDetails') {
+    if (id === "editSchoolDetails") {
       console.log(`${SCHOOL_MANAGEMENT}/${SCHOOL}/${rowData.id}/${EDIT}`);
       navigate(`${SCHOOL_MANAGEMENT}/${SCHOOL}/${rowData.id}/${EDIT}`);
-    } else if (id === 'addNewBranch') {
+    } else if (id === "addNewBranch") {
       navigate(`${SCHOOL_MANAGEMENT}/${SCHOOL}/${rowData.id}/${NEW_BRANCH}`);
     } else {
       setpopupData(rowData);
       if (id === moreMenuOptions[2]?.value) {
         setLicenseDialog(true);
       } else if (id === moreMenuOptions[3]?.value) {
-        if ('branch_ting' in rowData) {
+        if ("branch_ting" in rowData) {
           setDeleteDialog(true);
         } else {
           setSchoolDeleteDialog(true);
@@ -237,17 +237,17 @@ const SchoolManagmentList = (): JSX.Element => {
 
   const statusHandler = (e: any, data: object | any) => {
     const payload = {
-      status: e.target.checked ? 'Active' : 'Inactive',
+      status: e.target.checked ? "Active" : "Inactive",
     };
-    if ('branch_ting' in data) {
+    if ("branch_ting" in data) {
       setPlayloadData({
-        apicall: 'branchStatus',
+        apicall: "branchStatus",
         payload,
         id: data?.id,
       });
     } else {
       setPlayloadData({
-        apicall: 'schoolStatus',
+        apicall: "schoolStatus",
         payload,
         id: data?.school_id,
       });
@@ -296,10 +296,10 @@ const SchoolManagmentList = (): JSX.Element => {
     url: `users-service/school-list/pdf-download`,
     onSuccess: (response: any) => {
       tempDataReset();
-      toast('success', response?.data?.message || 'Email sent successfully');
+      toast("success", response?.data?.message || "Email sent successfully");
     },
     onError: ({ response }: any) => {
-      toast('error', response?.data?.message || 'Error');
+      toast("error", response?.data?.message || "Error");
       tempDataReset();
     },
   });
@@ -328,11 +328,11 @@ const SchoolManagmentList = (): JSX.Element => {
           </p>
         </div>
       );
-      toast('success', text);
+      toast("success", text);
       refetch();
     },
     onError: ({ response }: any) => {
-      toast('error', response?.statusText || 'Error');
+      toast("error", response?.statusText || "Error");
       tempDataReset();
     },
   });
@@ -345,10 +345,10 @@ const SchoolManagmentList = (): JSX.Element => {
       onSuccess: (response: any) => {
         tempDataReset();
         refetch();
-        toast('success', 'School deleted successfully');
+        toast("success", "School deleted successfully");
       },
       onError: ({ response }: any) => {
-        toast('error', response?.statusText || 'Error');
+        toast("error", response?.statusText || "Error");
       },
     });
 
@@ -359,11 +359,11 @@ const SchoolManagmentList = (): JSX.Element => {
     onSuccess: (response: any) => {
       setPlayloadData({});
       refetch();
-      toast('success', 'Status Updated successfully');
+      toast("success", "Status Updated successfully");
     },
     onError: ({ response }: any) => {
       refetch();
-      toast('error', response?.statusText || 'Error');
+      toast("error", response?.statusText || "Error");
     },
   });
 
@@ -375,26 +375,26 @@ const SchoolManagmentList = (): JSX.Element => {
       onSuccess: (response: any) => {
         setPlayloadData({});
         refetch();
-        toast('success', 'Status Updated successfully');
+        toast("success", "Status Updated successfully");
       },
       onError: ({ response }: any) => {
-        toast('error', response?.statusText || 'Error');
+        toast("error", response?.statusText || "Error");
       },
     });
 
   const { data: countryData, isLoading: countryLoading } = useGet({
     baseURL: masterServiceBaseURL,
-    url: 'master-service/country/',
+    url: "master-service/country/",
   });
 
   // Get School Listing
-  const temps = rowsPerPage === 'all' ? totalDataCount : rowsPerPage;
-  const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
-  const formatDate = date !== '' ? moment(date).format('YYYY-MM-DD') : '';
+  const temps = rowsPerPage === "all" ? totalDataCount : rowsPerPage;
+  const ordering = order === "asc" ? orderBy : `-${orderBy}`;
+  const formatDate = date !== "" ? moment(date).format("YYYY-MM-DD") : "";
 
   const { isLoading, isRefetching, refetch } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/schools/get-schools/?limit=${temps}&offset=${(page - 1) * Number(temps)}&status=${selectData !== 'All' ? selectData : ''}&academic_year=${selectedAcademicYear !== 'All' ? selectedAcademicYear : ''}&ordering=${ordering}&search=${searchString}${selectedCountry && selectedCountry !== 'Select' ? `&country=${selectedCountry}` : ``}&created_at=${formatDate}`,
+    url: `schools-service/schools/get-schools/?limit=${temps}&offset=${(page - 1) * Number(temps)}&status=${selectData !== "All" ? selectData : ""}&academic_year=${selectedAcademicYear !== "All" ? selectedAcademicYear : ""}&ordering=${ordering}&search=${searchString}${selectedCountry && selectedCountry !== "Select" ? `&country=${selectedCountry}` : ``}&created_at=${formatDate}`,
     onSuccess: (resp: any) => {
       const accData = resp?.data?.response;
       const respData = accData?.results;
@@ -407,7 +407,7 @@ const SchoolManagmentList = (): JSX.Element => {
             item?.name,
             item?.school_type,
             item?.branch_count,
-            moment(item?.created_at).format('DD-MM-YYYY'),
+            moment(item?.created_at).format("DD-MM-YYYY"),
             item?.activation_end_date,
             item?.expiration_days_left,
             item?.status,
@@ -434,7 +434,7 @@ const SchoolManagmentList = (): JSX.Element => {
             ),
             school_name: item?.name,
             activation_end_date: moment(item?.activation_end_date).format(
-              'DD-MM-YYYY'
+              "DD-MM-YYYY"
             ),
           };
           if (temp?.subData?.length) {
@@ -458,7 +458,7 @@ const SchoolManagmentList = (): JSX.Element => {
                   branch_name: i?.name,
                   school_name: item?.name,
                   activation_end_date: moment(item?.activation_end_date).format(
-                    'DD-MM-YYYY'
+                    "DD-MM-YYYY"
                   ),
                 };
                 return newD;
@@ -490,12 +490,12 @@ const SchoolManagmentList = (): JSX.Element => {
         setMigrateDialog(false);
         refetch();
         toast(
-          'success',
-          response?.data?.message || 'Branch Migrated successfully'
+          "success",
+          response?.data?.message || "Branch Migrated successfully"
         );
       },
       onError: ({ response }: any) => {
-        toast('error', response?.data?.message || 'Error');
+        toast("error", response?.data?.message || "Error");
       },
     });
   /* ---------------------------------------------------------------------------------------------------------
@@ -517,8 +517,8 @@ const SchoolManagmentList = (): JSX.Element => {
         <CSVLink
           filename={
             bulkSelect?.length
-              ? 'Branch List.csv'
-              : 'School Management List.csv'
+              ? "Branch List.csv"
+              : "School Management List.csv"
           }
           data={csvData}
           headers={bulkSelect?.length ? csvSubHeaders : headers}
@@ -541,11 +541,11 @@ const SchoolManagmentList = (): JSX.Element => {
 
   useEffect(() => {
     if (Object.keys(playloadData).length) {
-      if (playloadData?.apicall === 'schoolStatus') {
+      if (playloadData?.apicall === "schoolStatus") {
         mutateSchoolStatus(playloadData?.payload);
-      } else if (playloadData?.apicall === 'branchStatus') {
+      } else if (playloadData?.apicall === "branchStatus") {
         mutateBranchStatus(playloadData?.payload);
-      } else if (playloadData?.apicall === 'sendEmail') {
+      } else if (playloadData?.apicall === "sendEmail") {
         mutateEmail(playloadData?.payload);
       }
     }
@@ -601,7 +601,7 @@ const SchoolManagmentList = (): JSX.Element => {
   // console.log(schoolName, 'schoolName');
 
   const handleReset = () => {
-    setDate('');
+    setDate("");
   };
 
   return (
@@ -655,7 +655,7 @@ const SchoolManagmentList = (): JSX.Element => {
             loading={countryLoading}
             dataArray={countryDataArray}
             onChangeHandler={countryChangeHandler}
-            sxClass={{ width: '100%' }}
+            sxClass={{ width: "100%" }}
           />
 
           <div className="flex gap-x-4 items-end">
