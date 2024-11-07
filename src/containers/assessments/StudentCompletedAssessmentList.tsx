@@ -36,6 +36,8 @@ export default function StudentCompletedAssessmentList() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { aid } = useParams();
   const { user } = useSelector((state: any) => state);
+  let formattedClassNames = searchParams.get("class");
+  formattedClassNames = formattedClassNames.replace(/\s*\|\s*/g, ",");
 
   const headers = [
     TABLE_LABELS?.STUDENT_NAME,
@@ -146,7 +148,7 @@ export default function StudentCompletedAssessmentList() {
   const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
     useGet({
       baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-      url: `assessments-service/assessment-student-details/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&assessment_id=${aid}&class_name=${searchParams.get("class")}`,
+      url: `assessments-service/assessment-student-details/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&assessment_id=${aid}&class_name=${formattedClassNames}`,
       onSuccess: (res: any) => {
         const accData = res?.data?.response;
         const respData = accData?.results;
