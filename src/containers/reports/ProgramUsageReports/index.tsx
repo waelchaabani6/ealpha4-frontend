@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable react/jsx-curly-newline */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable operator-linebreak */
@@ -49,7 +50,6 @@ const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
 const csvSubHeaders = [
   TABLE_LABELS?.SR_NO,
   TABLE_LABELS?.COURSES,
-  TABLE_LABELS?.NO_OF_SCHOOL,
   TABLE_LABELS?.TOTAL_CLASS,
   TABLE_LABELS?.TOTAL_STUDENT,
   TABLE_LABELS?.TOTAL_TEACHER,
@@ -295,13 +295,14 @@ export default function Index() {
             ToDate: i.end_date,
           });
           csvbody.push([
+            i.series_no,
             i.program,
             i.total_classes,
             i.total_students,
             i.total_teachers,
             i.total_time_students,
             i.average_time_students,
-            i.total_time_teachers,
+            i.total_time_teacher,
             i.average_time_teachers,
             i.total_time_teachers_and_students,
           ]);
