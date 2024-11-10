@@ -78,10 +78,7 @@ function MultipleAssignmentAreaBar(prop: Props) {
       </g>
     );
   };
-    // Helper function to check if there's data in a specific range
-    const hasDataInRange = (from: number, to: number) => {
-      return performance.some((item) => item.value >= from && item.value <= to);
-    };
+
 
   return (
     <div className="w-full h-full flex flex-col pl-12 relative overflow-x-auto">
@@ -104,6 +101,7 @@ function MultipleAssignmentAreaBar(prop: Props) {
             width={140}
             tick={myTick}
             domain={[0, 100]}
+            ticks={[34, 55, 65, 80, 100]}
           />
           {expectations.map((expectation, index) => (
             <Area
