@@ -108,7 +108,7 @@ export default function MyAssessments() {
     const obeasses_id = data?.obeasses_id;
     let assessId = null;
     if (data) {
-      assessId = data?.id;
+      assessId = data?.obeasses_id;
     }
 
     if (handlername === 'delete') {
@@ -124,7 +124,7 @@ export default function MyAssessments() {
         date_time: currentDate
       };
       const encryptedData = encryptMessage(JSON.stringify(message));
-      window.location.href = `http://localhost:3001/views/${assessId}?token=${encodeURIComponent(encryptedData)}`;
+      window.open(`http://localhost:3001/views/${assessId}?token=${encodeURIComponent(encryptedData)}`, '_blank');
     }
   };
 

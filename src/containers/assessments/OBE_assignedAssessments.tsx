@@ -24,6 +24,7 @@ import Dropdown from '@component/dropdown/Dropdown';
 import { selectSchoolData } from '@shared/store/schoolSlice';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import CryptoJS from 'crypto-js';
+import encryptMessage from '@utility/encrypt';
 import CustomPagination from '../../components/pagination/CustomPagination';
 import {
   COMPONENTS,
@@ -34,7 +35,6 @@ import {
 } from '../../constants/constants';
 import Wrapper from '../../shared/wrapper/Wrapper';
 import RouteLayout from '../layout/routeLayout';
-import encryptMessage from "@utility/encrypt";
 
 const printButton = () => <PrintIcon />;
 
@@ -222,12 +222,9 @@ export default function OBE_AssignedAssessments() {
         date_time: currentDate
       };
       const encryptedData = encryptMessage(JSON.stringify(message));
-      window.location.href = `http://localhost:3001/views/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`;
-
-      // navigate(`/${schoolName}/obe-assessments/preview_myassessment_question/${data?.assessment_id}`, { state: { page, obeasses_id, path: `/${schoolName}/assessments/assigned` } });
+      window.open(`http://localhost:3001/views/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`, '_blank');
     }
   };
-
   const deleteHandler = (row: any) => {
     setPlayloadData({
       id: (row?.assign_assessment_id || []).join(',')
@@ -399,7 +396,7 @@ export default function OBE_AssignedAssessments() {
 
   return (
     <RouteLayout>
-      <HeaderMenus title="Assigned Assessments bbb teacher" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+      <HeaderMenus title="Assigned Assessments" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
           <div className="pt-[30px]">

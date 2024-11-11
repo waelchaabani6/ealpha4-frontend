@@ -14,11 +14,12 @@ import ReactToPrint from 'react-to-print';
 import { useSelector } from 'react-redux';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import CryptoJS from 'crypto-js';
+import encryptMessage from '@utility/encrypt';
 import CustomPagination from '../../components/pagination/CustomPagination';
 import { RESULTS_PER_PAGE, TABLE_LABELS, TOOLBAR_LABELS } from '../../constants/constants';
 import Wrapper from '../../shared/wrapper/Wrapper';
 import RouteLayout from '../layout/routeLayout';
-import encryptMessage from '@utility/encrypt';
+
 const printButton = () => <PrintIcon />;
 interface Message {
   key: string;
@@ -120,7 +121,7 @@ export default function OBE_StudentCompletedAssessmentList() {
       user_ting
     };
     const encryptedData = encryptMessage(JSON.stringify(message));
-    window.location.href = `http://localhost:3001/teacher-reports/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`;
+    window.open(`http://localhost:3001/teacher-reports/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`, '_blank');
   };
 
   // ----------------------------------------API-------------------------

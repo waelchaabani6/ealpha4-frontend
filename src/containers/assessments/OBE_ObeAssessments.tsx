@@ -150,7 +150,7 @@ export default function OBE_ObeAssessments() {
         date_time: currentDate,
       };
       const encryptedData = encryptMessage(JSON.stringify(message));
-      window.location.href = `http://localhost:3001/views/${assessId}?token=${encodeURIComponent(encryptedData)}`;
+      window.open(`http://localhost:3001/views/${assessId}?token=${encodeURIComponent(encryptedData)}`, '_blank');
     }
   };
 
