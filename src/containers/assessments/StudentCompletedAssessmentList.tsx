@@ -73,6 +73,7 @@ export default function StudentCompletedAssessmentList() {
     {
       label: TABLE_LABELS?.SCORE,
       isSort: true,
+      filter_by: "score",
       mapper: "percentage",
     },
   ];
