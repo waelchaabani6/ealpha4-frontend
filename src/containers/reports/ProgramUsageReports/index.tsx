@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable react/jsx-curly-newline */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable operator-linebreak */
@@ -9,7 +10,6 @@ import DatePicker from '@component/datepicker';
 import Dropdown from '@component/dropdown/Dropdown';
 import { CustomInput } from '@component/input';
 import {
-  GRAPH_LABELS,
   TABLE_LABELS,
   RESULTS_PER_PAGE,
   TOOLBAR_LABELS,
@@ -17,17 +17,10 @@ import {
 } from '@constants/constants';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
 import RouteLayout from '@layout/routeLayout';
-import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import {
-  FormControl,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-} from '@mui/material';
+
 import { useGet } from '@shared/api/useApi';
-import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import { selectSchoolData } from '@shared/store/schoolSlice';
 import toast from '@shared/toast';
@@ -48,8 +41,7 @@ const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
 
 const csvSubHeaders = [
   TABLE_LABELS?.SR_NO,
-  TABLE_LABELS?.PROGRAM,
-  TABLE_LABELS?.NO_OF_SCHOOL,
+  TABLE_LABELS?.COURSES,
   TABLE_LABELS?.TOTAL_CLASS,
   TABLE_LABELS?.TOTAL_STUDENT,
   TABLE_LABELS?.TOTAL_TEACHER,
@@ -240,8 +232,10 @@ export default function Index() {
       if (tableArray) {
         const body: any = [];
         const csvbody: any = [];
+
         tableArray?.map((i: any, index: any) => {
           const rowLink = `${link}/${i.start_date}/${i.end_date}/${i.program_id}/${i.program}`;
+
           body.push({
             SR_NO: i.series_no,
             Program: (
@@ -270,7 +264,7 @@ export default function Index() {
                   handleDataPopup(i.students);
                 }}
               >
-                {i.total_teachers}
+                {i.total_students}
               </span>
             ),
             TotalTeacher: (
@@ -295,13 +289,14 @@ export default function Index() {
             ToDate: i.end_date,
           });
           csvbody.push([
+            i.series_no,
             i.program,
             i.total_classes,
             i.total_students,
             i.total_teachers,
             i.total_time_students,
             i.average_time_students,
-            i.total_time_teachers,
+            i.total_time_teacher,
             i.average_time_teachers,
             i.total_time_teachers_and_students,
           ]);

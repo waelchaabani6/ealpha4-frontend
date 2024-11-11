@@ -1,42 +1,44 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable comma-dangle */
 /* eslint-disable operator-linebreak */
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import Button from '@component/button/button';
-import DatePicker from '@component/datepicker';
-import CustomizedDialogs from '@component/dialog/CustomDialog';
-import FileSelect from '@component/fileUpload';
-import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import { ReactComponent as Search } from '@images/search.svg';
-import DownloadIcon from '@mui/icons-material/Download';
-import EmailIcon from '@mui/icons-material/Email';
-import PrintIcon from '@mui/icons-material/Print';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import UploadIcon from '@mui/icons-material/Upload';
-import Divider from '@mui/material/Divider/Divider';
-import { useGet, usePost, usePatch } from '@shared/api/useApi';
-import Loader from '@shared/loader';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import { selectUser } from '@shared/store/userSlice';
-import toast from '@shared/toast';
-import { getNoOfPages } from '@utility/utility';
-import moment from 'moment';
-import { useEffect, useRef, useState } from 'react';
-import { CSVLink } from 'react-csv';
-import { useSelector } from 'react-redux';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import ReactToPrint from 'react-to-print';
-import Dropdown from '@component/dropdown/Dropdown';
-import CustomPagination from '../../../components/pagination/CustomPagination';
+import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
+import Button from "@component/button/button";
+import DatePicker from "@component/datepicker";
+import CustomizedDialogs from "@component/dialog/CustomDialog";
+import FileSelect from "@component/fileUpload";
+import { ReactComponent as Share } from "@images/pageHeaderIcons/share.svg";
+import { ReactComponent as Search } from "@images/search.svg";
+import DownloadIcon from "@mui/icons-material/Download";
+import EmailIcon from "@mui/icons-material/Email";
+import PrintIcon from "@mui/icons-material/Print";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import UploadIcon from "@mui/icons-material/Upload";
+import Divider from "@mui/material/Divider/Divider";
+import { useGet, usePost, usePatch } from "@shared/api/useApi";
+import Loader from "@shared/loader";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
+import { selectUser } from "@shared/store/userSlice";
+import toast from "@shared/toast";
+import { getNoOfPages } from "@utility/utility";
+import moment from "moment";
+import { useEffect, useRef, useState } from "react";
+import { CSVLink } from "react-csv";
+import { useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import ReactToPrint from "react-to-print";
+import Dropdown from "@component/dropdown/Dropdown";
+import CustomPagination from "../../../components/pagination/CustomPagination";
 import {
   RESULTS_PER_PAGE,
   TABLE_LABELS,
   TOOLBAR_LABELS,
-} from '../../../constants/constants';
-import Wrapper from '../../../shared/wrapper/Wrapper';
-import RouteLayout from '../../layout/routeLayout';
+} from "../../../constants/constants";
+import Wrapper from "../../../shared/wrapper/Wrapper";
+import RouteLayout from "../../layout/routeLayout";
+import UseGetProfile from "@utility/Hooks/UseGetProfile";
 
 const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
 
@@ -52,74 +54,74 @@ const printButton = () => <PrintIcon />;
 
 const TableColumns = [
   {
-    label: '',
+    label: "",
     isSort: false,
-    mapper: '',
+    mapper: "",
     isAdd: true,
   },
   {
     label: TABLE_LABELS?.SR_NO,
-    align: 'center',
-    sx: { width: '90px' },
+    align: "center",
+    sx: { width: "90px" },
   },
   {
     label: TABLE_LABELS?.ASSIGNMET_NAME,
-    mapper: 'assignment_name',
-    sx: { width: '200px' },
+    mapper: "assignment_name",
+    sx: { width: "200px" },
     isSort: true,
   },
   {
     label: TABLE_LABELS?.COURSES,
     isSort: true,
-    mapper: 'subject_name',
+    mapper: "subject_name",
   },
   {
     label: TABLE_LABELS?.TEACHER,
     isSort: true,
-    mapper: 'teacher_name',
+    mapper: "teacher_name",
   },
   {
     label: TABLE_LABELS?.LESSONS,
-    mapper: 'Lessons',
-    sx: { width: '200px' },
+    mapper: "Lessons",
+    sx: { width: "200px" },
   },
   {
     label: TABLE_LABELS?.STATUS,
-    align: 'center',
-    mapper: 'State',
-    sx: { width: '100px' },
+    align: "center",
+    mapper: "State",
+    sx: { width: "100px" },
   },
   {
     label: TABLE_LABELS?.START_DATE,
     isSort: true,
-    mapper: 'start_date',
-    format: 'DD-MM-YYYY',
-    sx: { width: '110px' },
+    mapper: "start_date",
+    format: "DD-MM-YYYY",
+    sx: { width: "110px" },
   },
   {
     label: TABLE_LABELS?.DUE_DATE,
-    align: 'center',
+    align: "center",
     isSort: true,
-    mapper: 'end_date',
-    format: 'DD-MM-YYYY',
-    sx: { width: '110px' },
+    mapper: "end_date",
+    format: "DD-MM-YYYY",
+    sx: { width: "110px" },
   },
   {
     label: TABLE_LABELS?.SCORE,
-    align: 'center',
+    align: "center",
     isSort: true,
-    mapper: 'score',
-    sx: { width: '110px' },
+    mapper: "score",
+    sx: { width: "110px" },
   },
   {
     label: TABLE_LABELS?.REMARK,
-    mapper: 'remark',
-    sx: { width: '100px' },
+    mapper: "remark",
+    sx: { width: "100px" },
   },
   {
     label: TABLE_LABELS?.ACTION,
-    mapper: 'Action',
-    align: 'center',
+    mapper: "Action",
+    align: "center",
     colspan: 2,
   },
 ];
@@ -127,22 +129,22 @@ const TableColumns = [
 const subTableHeader = [
   {
     label: TABLE_LABELS?.SR_NO,
-    align: 'center',
+    align: "center",
   },
   {
-    label: 'Chapter',
-    mapper: 'chapter_name',
+    label: "Chapter",
+    mapper: "chapter_name",
     isSort: true,
   },
   {
-    label: 'Lesson Name',
+    label: "Lesson Name",
     // isSort: true,
-    mapper: 'lessonUnitName',
+    mapper: "lessonUnitName",
   },
   {
     label: TABLE_LABELS?.ACTION,
-    mapper: 'Action',
-    align: 'center',
+    mapper: "Action",
+    align: "center",
     colspan: 2,
   },
 ];
@@ -171,12 +173,12 @@ export default function Index() {
   const [page, setPage] = useState(1);
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [assignmentList, setAssignmentList] = useState<any>([]);
-  const [searchVal, setSearchVal] = useState('');
+  const [searchVal, setSearchVal] = useState("");
 
-  const [order, setOrder] = useState<any>('desc');
-  const [orderBy, setOrderBy] = useState<any>('created_at');
-  const [fromDate, setFromDate] = useState<any>('');
-  const [toDate, setToDate] = useState<any>('');
+  const [order, setOrder] = useState<any>("desc");
+  const [orderBy, setOrderBy] = useState<any>("created_at");
+  const [fromDate, setFromDate] = useState<any>("");
+  const [toDate, setToDate] = useState<any>("");
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [ErrorDialogOpen, setErrorDialogOpen] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState(-1);
@@ -186,12 +188,14 @@ export default function Index() {
   const [lessonWiseformObject, setLessonWiseformObject] = useState<any>(null);
   const componentRef = useRef(null);
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
-  const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
+  const schoolNameInURL = decodeURIComponent(location.pathname.split("/")[1]);
   const [uploadLoaderIndex, setUploadLoaderIndex] = useState<
     number | undefined
   >();
   const [viewMoreOpenModal, setViewMoreOpenModal] = useState(false);
-  const [remarkText, setRemarkText] = useState('');
+  const [remarkText, setRemarkText] = useState("");
+
+  const { getUser } = UseGetProfile();
 
   const handelSendEmail = () => {
     sendEmail();
@@ -205,11 +209,11 @@ export default function Index() {
     baseURL,
     url: `assignments-service/student-assigned-pdf-download/?student_id=${studentID}`,
     onSuccess: () => {
-      toast('success', 'Email sent successfully');
+      toast("success", "Email sent successfully");
     },
     retry: false,
     onError: ({ response }: any) => {
-      toast('error', response?.data?.message || 'Unable to send email');
+      toast("error", response?.data?.message || "Unable to send email");
     },
     enabled: false,
   }) as any;
@@ -221,7 +225,7 @@ export default function Index() {
 
   const handleToolbarAction = async (title: string) => {
     if (title === TOOLBAR_LABELS.ADD_ASSIGNMENT) {
-      navigate('create-assignment');
+      navigate("create-assignment");
     } else if (title === TOOLBAR_LABELS.EMAIL) {
       handelSendEmail();
     }
@@ -232,8 +236,8 @@ export default function Index() {
     state: string,
     contentUrl: string
   ) => {
-    if (subData?.status !== 'Ongoing') {
-      statusChange('Ongoing');
+    if (subData?.status !== "Ongoing") {
+      statusChange("Ongoing");
     }
     const lessonWiseFormObj: lessonWiseFormObjType = {
       assign_assignment: subData.id,
@@ -255,9 +259,9 @@ export default function Index() {
         urlLessonId: subData.lessonUnitId,
         chapterIndex: 0,
         lessonIndex: 0,
-        assignButton: role.name === 'Teacher',
+        assignButton: role.name === "Teacher",
         isDueDatedExceeded: false,
-        moduleName: 'assignment',
+        moduleName: "assignment",
         assignmentId: subData.id,
         contentUrl,
         pageName: subData.pageName || subData.lessonUnitName,
@@ -280,7 +284,7 @@ export default function Index() {
       let tempLoaderIndexArray = [...loaderIndexArray, index];
       setLoaderIndexArray([...tempLoaderIndexArray]);
       fetch(fileUrl, {
-        method: 'GET',
+        method: "GET",
         headers: {},
       })
         .then((response) => {
@@ -294,12 +298,12 @@ export default function Index() {
           response.blob().then((blob) => {
             const url = window.URL.createObjectURL(blob);
             // const fileName = fileUrl.split('/')[fileUrl.split('/').length - 1];
-            const fileName = response.url.split('?')[0];
+            const fileName = response.url.split("?")[0];
 
-            const link = document.createElement('a');
+            const link = document.createElement("a");
             link.href = fileName;
-            link.target = '_blank';
-            link.setAttribute('download', '');
+            link.target = "_blank";
+            link.setAttribute("download", "");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -338,15 +342,16 @@ export default function Index() {
   });
 
   const reset = () => {
-    setToDate('');
-    setFromDate('');
+    setToDate("");
+    setFromDate("");
   };
 
   const statusChange = async (Status: string) => {
     const passObj: { state: string } = { state: Status };
     const userFd = new FormData();
-    userFd.append('state', passObj.state);
+    userFd.append("state", passObj.state);
     setFormObject(userFd);
+    getUser();
   };
 
   useEffect(() => {
@@ -358,6 +363,7 @@ export default function Index() {
   useEffect(() => {
     if (formObject !== null && selectedStudentId !== -1) {
       updateStatus(formObject);
+      getUser();
     }
   }, [formObject]);
 
@@ -365,11 +371,11 @@ export default function Index() {
     baseURL,
     url: `assignments-service/assignments/student/${selectedStudentId}/change-status/`,
     onSuccess: (response: any) => {
-      toast('success', response?.data?.message);
+      toast("success", response?.data?.message);
       refetchAssignmentList();
     },
     onError: (response: any) => {
-      toast('error', response?.response?.data?.message);
+      toast("error", response?.response?.data?.message);
     },
   });
 
@@ -378,7 +384,7 @@ export default function Index() {
     url: `assignments-service/assignments/student/lessons-pages/change-status`,
     onSuccess: (response: any) => {},
     onError: (response: any) => {
-      toast('error', response?.response?.data?.message);
+      toast("error", response?.response?.data?.message);
     },
   });
 
@@ -431,24 +437,12 @@ export default function Index() {
           ele.end_date
         );
         const ShouldDisableButtonCond2 =
-          ele.single_access && ele?.state === 'Ongoing';
+          ele.single_access && ele?.state === "Ongoing";
         return {
           ...ele,
           SR_NO: inde + 1,
-          subject_name: (
-            <Link
-              state={{
-                pagination: page,
-                exitButton: true,
-                path: `/${schoolNameInURL}/assignment`,
-              }}
-              to={`/${schoolNameInURL}/MySubject/${ele.course_table_id}`}
-            >
-              <span className="underline cursor-pointer font-medium">
-                {ele.course_name}
-              </span>
-            </Link>
-          ),
+          subject_name: ele.course_name,
+
           assignment_name:
             ele.subData.length >= 2 ? (
               ele.assignment_name
@@ -467,7 +461,7 @@ export default function Index() {
                         lessonIndex: 0,
                         assignButton: false,
                         isDueDatedExceeded: false,
-                        moduleName: 'assignment',
+                        moduleName: "assignment",
                         assignmentId: ele.subData[0].id,
                         pageName: ele.subData[0].pageName,
                         pageNumber: ele.subData[0].pageNumber,
@@ -485,7 +479,7 @@ export default function Index() {
               </Link>
             ),
           teacher_name:
-            ele.state === 'Submitted' ? (
+            ele.state === "Submitted" ? (
               <p className="">{ele.teacher_name}</p>
             ) : (
               ele.teacher_name
@@ -497,31 +491,31 @@ export default function Index() {
           // start_date: ele.state === 'Submitted' ? <p className="">{ele.start_date}</p> : ele.start_date,
           // end_date: ele.state === 'Submitted' ? <p className="">{ele.end_date}</p> : <span>{ele.end_date}</span>,
           score:
-            ele.state === 'Submitted' ? (
+            ele.state === "Submitted" ? (
               <p className="">{ele.score}</p>
             ) : (
               <div className="text-center relative left-[-10px]">
-                {ele.score ? ele.score : 'N/A'}
+                {ele.score ? ele.score : "N/A"}
               </div>
             ),
           State:
-            ele.state === 'Submitted' ? (
+            ele.state === "Submitted" ? (
               <p className="">{ele.state}</p>
             ) : (
               ele.state
             ),
           rowSx:
-            ele.state === 'Submitted'
-              ? { td: { color: 'var(--accent)' } }
-              : ele.state === 'Ongoing'
-                ? { td: { color: 'var(--sunlight)' } }
-                : '',
+            ele.state === "Submitted"
+              ? { td: { color: "var(--accent)" } }
+              : ele.state === "Ongoing"
+                ? { td: { color: "var(--sunlight)" } }
+                : "",
           Action:
-            ele.state === 'Submitted' ? (
+            ele.state === "Submitted" ? (
               <p>
                 <Button disabled={true}>{ele.state} </Button>
               </p>
-            ) : ele.state === 'Yet to Start' || ele.state === 'Ongoing' ? (
+            ) : ele.state === "Yet to Start" || ele.state === "Ongoing" ? (
               <div className="flex justify-center items-center">
                 {ele.subData.length >= 2 ? null : (
                   <Button
@@ -534,9 +528,9 @@ export default function Index() {
                         ele.contentUrl
                       );
                     }}
-                    sx={{ width: '100px' }}
+                    sx={{ width: "100px" }}
                   >
-                    {ele.state === 'Yet to Start' ? 'Start' : 'Continue'}
+                    {ele.state === "Yet to Start" ? "Start" : "Continue"}
                   </Button>
                 )}
                 <Button
@@ -545,41 +539,41 @@ export default function Index() {
                     setActionConfirmPopup(true);
                     setSelectedStudentId(ele.id);
                   }}
-                  sx={{ width: '100px', marginLeft: '5px' }}
+                  sx={{ width: "100px", marginLeft: "5px" }}
                 >
                   Submit
                 </Button>
-                {ele.end_date >= moment(new Date()).format('YYYY-MM-DD') ? (
+                {ele.end_date >= moment(new Date()).format("YYYY-MM-DD") ? (
                   <FileSelect
                     ref={imageRef}
                     onChange={(e) => onChange(e, ele.id, inde)}
                   >
                     {inde === uploadLoaderIndex ? (
-                      <Button sx={{ marginLeft: '5px' }} loading={true}>
+                      <Button sx={{ marginLeft: "5px" }} loading={true}>
                         l
                       </Button>
                     ) : (
                       <UploadIcon
                         style={{
-                          borderRadius: '5px',
-                          cursor: 'pointer',
-                          padding: '5px',
-                          width: '37px',
-                          height: '37px',
-                          marginLeft: '4px',
-                          background: 'var(--sunlight)',
-                          color: 'white',
+                          borderRadius: "5px",
+                          cursor: "pointer",
+                          padding: "5px",
+                          width: "37px",
+                          height: "37px",
+                          marginLeft: "4px",
+                          background: "var(--sunlight)",
+                          color: "white",
                         }}
                       />
                     )}
                   </FileSelect>
                 ) : (
-                  ''
+                  ""
                 )}
                 {ele?.assignment_files?.length ? (
                   <>
                     {loaderIndexArray.includes(inde) ? (
-                      <Button sx={{ marginLeft: '5px' }} loading={true}>
+                      <Button sx={{ marginLeft: "5px" }} loading={true}>
                         l
                       </Button>
                     ) : (
@@ -589,18 +583,18 @@ export default function Index() {
                         role="button"
                         download={true}
                         onClick={() => onLinkClick(ele.assignment_files, inde)}
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: "pointer" }}
                       >
                         <DownloadIcon
                           style={{
-                            borderRadius: '5px',
-                            cursor: 'pointer',
-                            padding: '5px',
-                            width: '37px',
-                            height: '37px',
-                            marginLeft: '4px',
-                            background: '#516cf6',
-                            color: 'white',
+                            borderRadius: "5px",
+                            cursor: "pointer",
+                            padding: "5px",
+                            width: "37px",
+                            height: "37px",
+                            marginLeft: "4px",
+                            background: "#516cf6",
+                            color: "white",
                           }}
                         />
                       </a>
@@ -609,14 +603,14 @@ export default function Index() {
                 ) : (
                   <p
                     style={{
-                      borderRadius: '5px',
-                      cursor: 'pointer',
-                      padding: '5px',
-                      width: '37px',
-                      height: '37px',
-                      marginLeft: '4px',
-                      background: 'none',
-                      color: 'white',
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                      padding: "5px",
+                      width: "37px",
+                      height: "37px",
+                      marginLeft: "4px",
+                      background: "none",
+                      color: "white",
                     }}
                   />
                 )}
@@ -625,7 +619,7 @@ export default function Index() {
           remark: (
             <div>
               <div className="">
-                {(ele?.remark ?? '').slice(0, 10)}
+                {(ele?.remark ?? "").slice(0, 10)}
                 {ele?.remark?.length > 10 && (
                   <div>
                     <span
@@ -636,7 +630,7 @@ export default function Index() {
                         setRemarkText(ele?.remark);
                       }}
                     >
-                      {' '}
+                      {" "}
                       View More
                     </span>
                   </div>
@@ -648,7 +642,7 @@ export default function Index() {
             ele.subData.length >= 2
               ? ele.subData.map((subData: any, index: number) => {
                   const subShouldDisableButton =
-                    ele.single_access && subData?.status === 'Ongoing';
+                    ele.single_access && subData?.status === "Ongoing";
                   return {
                     SR_NO: index + 1,
                     chapter_name: subData.chapter_name,
@@ -671,10 +665,10 @@ export default function Index() {
                                 lessonIndex: 0,
                                 assignButton: false,
                                 isDueDatedExceeded: false,
-                                moduleName: 'assignment',
+                                moduleName: "assignment",
                                 assignmentId: ele.subData[index].id,
-                                pageName: '',
-                                pageNumber: '-1',
+                                pageName: "",
+                                pageNumber: "-1",
                                 contentUrl: ele.subData[index].contentUrl,
                                 pagination: page,
                               }
@@ -690,12 +684,12 @@ export default function Index() {
                     pageName: (
                       <span className="text-accent underline cursor-pointer font-medium">
                         {subData.pageName &&
-                          JSON.parse(subData.pageName || '').join(', ')}
+                          JSON.parse(subData.pageName || "").join(", ")}
                       </span>
                     ),
                     Action:
-                      subData?.status === 'Yet to Start' ||
-                      subData?.status === 'Ongoing' ? (
+                      subData?.status === "Yet to Start" ||
+                      subData?.status === "Ongoing" ? (
                         <div className="flex justify-center items-center">
                           <Button
                             disabled={
@@ -709,11 +703,11 @@ export default function Index() {
                                 subData.contentUrl
                               );
                             }}
-                            sx={{ width: '100px' }}
+                            sx={{ width: "100px" }}
                           >
-                            {subData?.status === 'Yet to Start'
-                              ? 'Start'
-                              : 'Continue'}
+                            {subData?.status === "Yet to Start"
+                              ? "Start"
+                              : "Continue"}
                           </Button>
                           {/* eslint-disable-next-line react/jsx-closing-tag-location */}
                         </div>
@@ -743,21 +737,21 @@ export default function Index() {
     refetchAssignmentList();
   }, [rowsPerPage, fromDate, toDate, page, order, orderBy]);
 
-  const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
+  const ordering = order === "asc" ? orderBy : `-${orderBy}`;
   const {
     isLoading,
     refetch: refetchAssignmentList,
     isRefetching,
   }: any = useGet({
     baseURL,
-    url: `assignments-service/student/assignment/list/?student_id=${studentID}${searchVal !== '' ? `&search=${searchVal}` : ''}&ordering=${ordering}&offset=${(page - 1) * Number(rowsPerPage)}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&end_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}&limit=${rowsPerPage}&all_assignments=all`,
+    url: `assignments-service/student/assignment/list/?student_id=${studentID}${searchVal !== "" ? `&search=${searchVal}` : ""}&ordering=${ordering}&offset=${(page - 1) * Number(rowsPerPage)}${fromDate ? `&start_date=${moment(fromDate).format("YYYY-MM-DD")}` : ""}${toDate ? `&end_date=${moment(toDate).format("YYYY-MM-DD")}` : ""}&limit=${rowsPerPage}&all_assignments=all`,
     onSuccess: (res: any) => {
       const tempAssignmentList: any = res?.data?.results;
       const myCsvData = tempAssignmentList.map((ele: any) => [
         ele.assignment_name,
         ele.course_name,
         ele.teacher_name,
-        ele.lesson_name ? ele.lesson_name.substring(0, 20) : '',
+        ele.lesson_name ? ele.lesson_name.substring(0, 20) : "",
         ele.start_date,
         ele.end_date,
         ele.score,
@@ -796,9 +790,9 @@ export default function Index() {
                     course_table_id: assignmentMainList.course_table_id,
                     id: assignmentMainList.id,
                     pageName: JSON.stringify(pageNameArray), // name,
-                    pageNumber: pageNumberArray.join(','), // Number(page_number),
+                    pageNumber: pageNumberArray.join(","), // Number(page_number),
                     contentUrl: lesson.content_url,
-                    module: 'Assignment',
+                    module: "Assignment",
                     status: lesson.status,
                   });
                 } else {
@@ -812,8 +806,8 @@ export default function Index() {
                     course_id: assignmentMainList.course_id,
                     course_table_id: assignmentMainList.course_table_id,
                     id: assignmentMainList.id,
-                    pageName: '',
-                    pageNumber: '1',
+                    pageName: "",
+                    pageNumber: "1",
                     contentUrl: lesson.content_url,
                     status: lesson.status,
                   });
@@ -825,7 +819,7 @@ export default function Index() {
         assignmentMainList.subData = subData;
         assignmentMainList.contentUrl =
           assignmentMainList.subData.length >= 2
-            ? ''
+            ? ""
             : assignmentMainList?.chapters[0]?.lessons[0]?.content_url;
         return assignmentMainList;
       });
@@ -895,9 +889,9 @@ export default function Index() {
           <Button
             onClick={async () => {
               setActionConfirmPopup(false);
-              statusChange('Submitted');
+              statusChange("Submitted");
             }}
-            sx={{ marginRight: '10px' }}
+            sx={{ marginRight: "10px" }}
           >
             Yes
           </Button>
@@ -966,7 +960,7 @@ export default function Index() {
             value={rowsPerPage}
             dataArray={RESULTS_PER_PAGE}
             onChangeHandler={handlePerPage}
-            sxClass={{ width: '206px', marginRight: '5px' }}
+            sxClass={{ width: "206px", marginRight: "5px" }}
           />
           <div className="flex gap-2 justify-center items-center h-[36px]">
             <span
@@ -1035,8 +1029,8 @@ export default function Index() {
               setDialogOpen(false);
             }}
           >
-            {' '}
-            Ok{' '}
+            {" "}
+            Ok{" "}
           </Button>
         </div>
       </CustomizedDialogs>
@@ -1057,8 +1051,8 @@ export default function Index() {
               setErrorDialogOpen(false);
             }}
           >
-            {' '}
-            Ok{' '}
+            {" "}
+            Ok{" "}
           </Button>
         </div>
       </CustomizedDialogs>

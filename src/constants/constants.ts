@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable operator-linebreak */
 /* eslint-disable comma-dangle */
 /* eslint-disable no-shadow */
@@ -457,7 +458,7 @@ export const GRAPH_LABELS = {
   TOTAL_VS_ACTIVE: 'Total Students vs Active Students',
   TOTAL_ASSIGNMENT: 'Total Assignments',
   TOTAL_ASSESSMENT: 'Total Assessments',
-  ACTIVE_DAYS: 'Active Days per Program',
+  ACTIVE_DAYS: 'Active Days per Course',
   CONTENT_OPENED_COMPLETED: 'Content Opened vs Content Completed',
   TOTAL_TIME_PER_GRAPH: 'Total Time Per Class',
   AVG_ACTIVE_STUDENTS: 'Average Active Days per Student',

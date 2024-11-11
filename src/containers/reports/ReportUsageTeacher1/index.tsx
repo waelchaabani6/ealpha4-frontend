@@ -78,7 +78,7 @@ export default function Index() {
     TABLE_LABELS?.CLASS,
     TABLE_LABELS?.CLASSES_TAUGHT,
     TABLE_LABELS?.TEACHER,
-    TABLE_LABELS?.PROGRAM,
+    TABLE_LABELS?.COURSES,
     TABLE_LABELS?.ACTIVE_DAYS,
     TABLE_LABELS?.CONTENT_OPENED,
     TABLE_LABELS?.CONTENT_COMPLETED,
@@ -138,7 +138,7 @@ export default function Index() {
       mapper: 'Teacher',
     },
     {
-      label: TABLE_LABELS?.PROGRAM,
+      label: TABLE_LABELS?.COURSES,
       mapper: 'Program',
     },
     {
@@ -435,7 +435,7 @@ export default function Index() {
           </>
         ) : (
           <Dropdown
-            title="Select Program"
+            title="Select Course"
             value={selectedprogram}
             dataArray={[
               { label: 'Select', value: 'select' },

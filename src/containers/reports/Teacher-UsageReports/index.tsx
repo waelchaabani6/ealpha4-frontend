@@ -1,3 +1,6 @@
+/* eslint-disable no-confusing-arrow */
+/* eslint-disable indent */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import React, { useState, useRef, useEffect } from 'react';
 import Dropdown from '@component/dropdown/Dropdown';
@@ -631,7 +634,7 @@ export default function Index() {
               <>
                 <div>
                   <Dropdown
-                    title="Select Program"
+                    title="Select Course"
                     value={selectedprogram}
                     dataArray={[ALL, ...ProgramArr]}
                     onChangeHandler={(val) => {
