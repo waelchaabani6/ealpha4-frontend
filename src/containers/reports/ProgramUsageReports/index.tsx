@@ -10,7 +10,6 @@ import DatePicker from '@component/datepicker';
 import Dropdown from '@component/dropdown/Dropdown';
 import { CustomInput } from '@component/input';
 import {
-  GRAPH_LABELS,
   TABLE_LABELS,
   RESULTS_PER_PAGE,
   TOOLBAR_LABELS,
@@ -18,17 +17,10 @@ import {
 } from '@constants/constants';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
 import RouteLayout from '@layout/routeLayout';
-import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import {
-  FormControl,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-} from '@mui/material';
+
 import { useGet } from '@shared/api/useApi';
-import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import { selectSchoolData } from '@shared/store/schoolSlice';
 import toast from '@shared/toast';
@@ -240,8 +232,10 @@ export default function Index() {
       if (tableArray) {
         const body: any = [];
         const csvbody: any = [];
+
         tableArray?.map((i: any, index: any) => {
           const rowLink = `${link}/${i.start_date}/${i.end_date}/${i.program_id}/${i.program}`;
+
           body.push({
             SR_NO: i.series_no,
             Program: (
@@ -270,7 +264,7 @@ export default function Index() {
                   handleDataPopup(i.students);
                 }}
               >
-                {i.total_teachers}
+                {i.total_students}
               </span>
             ),
             TotalTeacher: (
