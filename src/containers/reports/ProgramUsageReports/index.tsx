@@ -203,6 +203,21 @@ export default function Index() {
       ),
     },
   ];
+  const ADMIN_TOOLBAR_MENU_GRAPH = [
+    {
+      title: 'Export',
+      icon: (
+        <CSVLink
+          filename="Report Program Usage.csv"
+          data={csvData}
+          headers={csvSubHeaders}
+          enclosingCharacter=""
+        >
+          <Share />
+        </CSVLink>
+      ),
+    },
+  ];
 
   const handleToolbarAction = async (title: string) => {
     if (title === TOOLBAR_LABELS.EMAIL) {
@@ -443,7 +458,9 @@ export default function Index() {
     <RouteLayout navBack={true}>
       <HeaderMenus
         title={`Report - Course Usage ${view !== 'default' ? '- Overview' : ''} `}
-        menuArray={ADMIN_TOOLBAR_MENU}
+        menuArray={
+          view === 'default' ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
+        }
         handleToolbarAction={handleToolbarAction}
       />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">

@@ -13,7 +13,11 @@ import Loader from '@shared/loader';
 import Pagination from '@mui/material/Pagination';
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import {
-  RESULTS_PER_PAGE, COMPONENTS, TABLE_COURCES, TABLE_SUBSCRIPTIONS, TOOLBAR_LABELS
+  RESULTS_PER_PAGE,
+  COMPONENTS,
+  TABLE_COURCES,
+  TABLE_SUBSCRIPTIONS,
+  TOOLBAR_LABELS,
 } from '@constants/constants';
 import RouteLayout from '../../layout/routeLayout';
 import Dropdown from '../../../components/dropdown/Dropdown';
@@ -29,58 +33,58 @@ const ManageCourses = (): JSX.Element => {
   const TableColumns = [
     {
       label: TABLE_COURCES?.SR_NO,
-      align: 'center'
+      align: 'center',
     },
     {
       label: TABLE_SUBSCRIPTIONS?.Integration_Name,
       isSort: true,
-      mapper: 'name'
+      mapper: 'name',
       // align: 'center'
     },
     {
       label: TABLE_SUBSCRIPTIONS?.School_Name,
       isSort: true,
-      mapper: 'school_name'
+      mapper: 'school_name',
       // align: 'center'
     },
     {
       label: TABLE_SUBSCRIPTIONS?.Branch_Name,
       isSort: true,
-      mapper: 'branch_name'
+      mapper: 'branch_name',
     },
     {
       label: TABLE_SUBSCRIPTIONS?.Number_of_Users,
       isSort: true,
-      mapper: 'number_of_licenses'
+      mapper: 'number_of_licenses',
     },
     {
       label: TABLE_SUBSCRIPTIONS?.Role,
       // isSort: true,
-      mapper: 'role_names'
+      mapper: 'role_names',
     },
     {
       label: TABLE_SUBSCRIPTIONS?.Assigned_Date,
       isSort: true,
-      mapper: 'assign_date'
+      mapper: 'assign_date',
     },
     {
       label: TABLE_SUBSCRIPTIONS?.Assigned_By,
       isSort: true,
       mapper: 'assigned_by',
-      align: 'left'
+      align: 'left',
     },
     {
       label: TABLE_SUBSCRIPTIONS?.ACTION,
       mapper: 'status',
       component: COMPONENTS?.switch,
       showInHeader: false,
-      align: 'center'
-    }
+      align: 'center',
+    },
   ];
 
   const SELECT = {
     label: 'Select',
-    value: 'Select'
+    value: 'Select',
   };
   const [selectedData, setSelectedData] = useState<string>('Select');
   const [selectDataArray, setSelectDataArray] = useState<any>([SELECT]);
@@ -100,7 +104,11 @@ const ManageCourses = (): JSX.Element => {
   const [orderBy, setOrderBy] = useState<any>('name');
 
   // email api
-  const { isRefetching: emailSendLoading, mutate: sendEmail, isLoading: emailLoad } = usePost({
+  const {
+    isRefetching: emailSendLoading,
+    mutate: sendEmail,
+    isLoading: emailLoad,
+  } = usePost({
     baseURL,
     url: 'schools-service/schools/integrations/export-pdf/',
     onSuccess: (response: any) => {
@@ -109,7 +117,7 @@ const ManageCourses = (): JSX.Element => {
     onError: ({ response }: any) => {
       toast('error', response?.data?.message || 'Error');
     },
-    enabled: false
+    enabled: false,
   }) as any;
 
   const csvSubHeaders = [
@@ -121,14 +129,14 @@ const ManageCourses = (): JSX.Element => {
     TABLE_SUBSCRIPTIONS?.Role,
     TABLE_SUBSCRIPTIONS?.Assigned_Date,
     TABLE_SUBSCRIPTIONS?.Assigned_By,
-    TABLE_SUBSCRIPTIONS?.ACTION
+    TABLE_SUBSCRIPTIONS?.ACTION,
   ];
 
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
+    // },
     {
       title: 'Export',
       icon: (
@@ -140,7 +148,7 @@ const ManageCourses = (): JSX.Element => {
         >
           <Share />
         </CSVLink>
-      )
+      ),
     },
     {
       title: 'Print',
@@ -149,8 +157,8 @@ const ManageCourses = (): JSX.Element => {
           trigger={printButton}
           content={() => componentRef.current}
         />
-      )
-    }
+      ),
+    },
   ];
 
   const handlePerPage = (e: any) => {
@@ -168,7 +176,7 @@ const ManageCourses = (): JSX.Element => {
 
   const statusHandler = (e: any, data: any) => {
     const payload = {
-      status: (e.target.checked) ? 'Active' : 'Inactive'
+      status: e.target.checked ? 'Active' : 'Inactive',
     };
     setTargetStatusChange({ id: data?.id, data: payload });
   };
@@ -186,19 +194,17 @@ const ManageCourses = (): JSX.Element => {
       const resp = res?.data?.response?.results;
       const body: any = [];
       resp?.map((i: any) => {
-        body.push(
-          {
-            id: i?.id,
-            label: i?.name,
-            value: i?.name
-          }
-        );
+        body.push({
+          id: i?.id,
+          label: i?.name,
+          value: i?.name,
+        });
         body.sort(sortData);
         return body;
       });
       setSelectSchoolArray([SELECT, ...body]);
     },
-    onError: () => { }
+    onError: () => {},
   });
 
   const { isLoading: integrationListLoading, data: integrationList } = useGet({
@@ -208,18 +214,16 @@ const ManageCourses = (): JSX.Element => {
       const resp = res?.data?.response?.results;
       const body: any = [];
       resp?.map((i: any) => {
-        body.push(
-          {
-            label: i?.name,
-            value: i?.name
-          }
-        );
+        body.push({
+          label: i?.name,
+          value: i?.name,
+        });
         body.sort(sortData);
         return body;
       });
       setSelectDataArray([SELECT, ...body]);
     },
-    onError: () => { }
+    onError: () => {},
   });
 
   const { isLoading: branchListLoading, data: branchList } = useGet({
@@ -230,38 +234,37 @@ const ManageCourses = (): JSX.Element => {
       const resp = res?.data?.response;
       const body: any = [];
       resp?.map((i: any) => {
-        body.push(
-          {
-            label: i?.name,
-            value: i?.name
-          }
-        );
+        body.push({
+          label: i?.name,
+          value: i?.name,
+        });
         body?.sort(sortData);
         return body;
       });
       setSelectBranchArray([SELECT, ...body]);
     },
-    onError: () => { }
+    onError: () => {},
   });
 
   // Status Update : Course
-  const { isLoading: loadingStatus, mutate: mutateSubscriptionStatus } = usePatch({
-    baseURL,
-    url: `schools-service/schools/school-integrations/${targetStatusChange?.id}/change-status/`,
-    onSuccess: (response: any) => {
-      setTargetStatusChange(null);
-      refetch();
-      toast('success', 'Status Updated successfully');
-    },
-    onError: ({ response }: any) => {
-      refetch();
-      toast('error', response?.statusText || 'Error');
-    }
-  });
+  const { isLoading: loadingStatus, mutate: mutateSubscriptionStatus } =
+    usePatch({
+      baseURL,
+      url: `schools-service/schools/school-integrations/${targetStatusChange?.id}/change-status/`,
+      onSuccess: (response: any) => {
+        setTargetStatusChange(null);
+        refetch();
+        toast('success', 'Status Updated successfully');
+      },
+      onError: ({ response }: any) => {
+        refetch();
+        toast('error', response?.statusText || 'Error');
+      },
+    });
 
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   // Get Manage Subscriptions Listing
-  const temps = (rowsPerPage === 'all') ? totalDataCount : rowsPerPage;
+  const temps = rowsPerPage === 'all' ? totalDataCount : rowsPerPage;
   const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
   const { isLoading, isRefetching, refetch } = useGet({
     baseURL,
@@ -283,9 +286,13 @@ const ManageCourses = (): JSX.Element => {
             roles,
             moment(item?.assign_date).format('DD-MM-YYYY'),
             item?.assigned_by,
-            item?.status
+            item?.status,
           ]);
-          const temp = { ...item, role_names: roles, assign_date: moment(item?.assign_date).format('DD-MM-YYYY') };
+          const temp = {
+            ...item,
+            role_names: roles,
+            assign_date: moment(item?.assign_date).format('DD-MM-YYYY'),
+          };
           return temp;
         });
         setCsvData(body);
@@ -297,7 +304,7 @@ const ManageCourses = (): JSX.Element => {
     onError: ({ response }: any) => {
       tableReset();
     },
-    enabled: false
+    enabled: false,
   });
 
   useEffect(() => {
@@ -308,12 +315,24 @@ const ManageCourses = (): JSX.Element => {
 
   useEffect(() => {
     refetch();
-  }, [rowsPerPage, page, selectedData, selectedSchool, selectedBranch, order, orderBy]);
+  }, [
+    rowsPerPage,
+    page,
+    selectedData,
+    selectedSchool,
+    selectedBranch,
+    order,
+    orderBy,
+  ]);
 
   return (
     <>
       <RouteLayout navBack={true}>
-        <HeaderMenus title="Manage Subscriptions" menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
+        <HeaderMenus
+          title="Manage Subscriptions"
+          menuArray={ADMIN_TOOLBAR_MENU}
+          handleToolbarAction={handleToolbarAction}
+        />
         <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
           <div className="flex flex-wrap md:justify-start justify-center gap-2 lg:grow grow-0">
             <Dropdown

@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable no-confusing-arrow */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable comma-dangle */
@@ -128,6 +129,22 @@ export default function Index() {
           trigger={printButton}
           content={() => componentRef.current}
         />
+      ),
+    },
+  ];
+
+  const ADMIN_TOOLBAR_MENU_GRAPH = [
+    {
+      title: 'Export',
+      icon: (
+        <CSVLink
+          filename="Assigned Students.csv"
+          data={csvData}
+          headers={headers}
+          enclosingCharacter=""
+        >
+          <Share />
+        </CSVLink>
       ),
     },
   ];
@@ -327,7 +344,9 @@ export default function Index() {
     <RouteLayout>
       <HeaderMenus
         title="Report -  Assignments Question Level for Students"
-        menuArray={ADMIN_TOOLBAR_MENU}
+        menuArray={
+          view === 'default' ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
+        }
         handleToolbarAction={handleToolbarAction}
       />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">

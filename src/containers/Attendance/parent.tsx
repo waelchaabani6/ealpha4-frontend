@@ -312,10 +312,10 @@ export default function () {
   });
 
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon: emailLoaded || refetchEmail ? <Loader size={20} /> : <EmailIcon />,
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon: emailLoaded || refetchEmail ? <Loader size={20} /> : <EmailIcon />,
+    // },
     {
       title: TOOLBAR_LABELS.PRINT,
       icon: (

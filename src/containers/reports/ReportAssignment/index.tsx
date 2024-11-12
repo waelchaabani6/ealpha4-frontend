@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable no-confusing-arrow */
 /* eslint-disable jsx-a11y/control-has-associated-label */
@@ -183,6 +184,21 @@ export default function Index() {
           trigger={printButton}
           content={() => componentRef.current}
         />
+      ),
+    },
+  ];
+  const ADMIN_TOOLBAR_MENU_GRAPH = [
+    {
+      title: 'Export',
+      icon: (
+        <CSVLink
+          filename="Report Assignment.csv"
+          data={csvData}
+          headers={csvSubHeaders}
+          enclosingCharacter=""
+        >
+          <Share />
+        </CSVLink>
       ),
     },
   ];
@@ -555,7 +571,9 @@ export default function Index() {
     <RouteLayout navBack={true}>
       <HeaderMenus
         title={`Report -  ${view === 'default' ? '' : 'Multiple'} Assignments`}
-        menuArray={ADMIN_TOOLBAR_MENU}
+        menuArray={
+          view === 'default' ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
+        }
         handleToolbarAction={handleToolbarAction}
       />
 
