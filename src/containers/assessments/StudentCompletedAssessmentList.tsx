@@ -163,7 +163,7 @@ export default function StudentCompletedAssessmentList() {
             item?.student_name,
             item?.start_date,
             item?.submission_date,
-            item?.score,
+            item?.percentage,
           ]);
 
           const link2 = `/${schoolNameInURL}/assessments/assigned/completed_assessments/completed_assessment_student_list/student_report/${aid}?user=${item?.user_ting}`;
