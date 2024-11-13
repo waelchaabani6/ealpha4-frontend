@@ -8,80 +8,80 @@
 /* eslint-disable indent */
 /* eslint-disable consistent-return */
 /* eslint-disable operator-linebreak */
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, Link, useLocation, useParams } from 'react-router-dom';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import PrintIcon from '@mui/icons-material/Print';
-import { CSVLink } from 'react-csv';
-import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import ReactToPrint from 'react-to-print';
-import routes from '@constants/routes';
-import Wrapper from '@shared/wrapper/Wrapper';
-import Dropdown from '@component/dropdown/Dropdown';
-import { useGet, usePatch } from '@shared/api/useApi';
-import moment from 'moment';
-import CustomizedDialogs from '@component/dialog/CustomDialog';
-import { CustomInput } from '@component/input';
-import Button from '@component/button/button';
-import { useSelector } from 'react-redux';
-import { selectUser } from '@shared/store/userSlice';
-import { HEADERMENUS } from '@constants/constants';
-import { ScromPage } from '@constants/types';
-import RouteLayout from '../../layout/routeLayout';
-import { TABLE_LABELS, TOOLBAR_LABELS } from '../../../constants/constants';
-import SimpleTableDx from '../../../components/SimpleTableDx/index';
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate, Link, useLocation, useParams } from "react-router-dom";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
+import PrintIcon from "@mui/icons-material/Print";
+import { CSVLink } from "react-csv";
+import { ReactComponent as Share } from "@images/pageHeaderIcons/share.svg";
+import ReactToPrint from "react-to-print";
+import routes from "@constants/routes";
+import Wrapper from "@shared/wrapper/Wrapper";
+import Dropdown from "@component/dropdown/Dropdown";
+import { useGet, usePatch } from "@shared/api/useApi";
+import moment from "moment";
+import CustomizedDialogs from "@component/dialog/CustomDialog";
+import { CustomInput } from "@component/input";
+import Button from "@component/button/button";
+import { useSelector } from "react-redux";
+import { selectUser } from "@shared/store/userSlice";
+import { HEADERMENUS } from "@constants/constants";
+import { ScromPage } from "@constants/types";
+import RouteLayout from "../../layout/routeLayout";
+import { TABLE_LABELS, TOOLBAR_LABELS } from "../../../constants/constants";
+import SimpleTableDx from "../../../components/SimpleTableDx/index";
 
 const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
 
 type dataType = { label: string; value: string };
 const stateChange: any = {
-  'Mark as Ongoing': 'Ongoing',
-  'Mark As Complete': 'Completed',
+  "Mark as Ongoing": "Ongoing",
+  "Mark As Complete": "Completed",
 };
 
 const printButton = () => <PrintIcon />;
 const dataArray: dataType[] = [];
 
 const csvSubHeaders = [
-  'page_name',
-  'Score',
-  'Unattempted',
-  'Incorrect',
-  'Correct',
+  "page_name",
+  "Score",
+  "Unattempted",
+  "Incorrect",
+  "Correct",
 ];
 interface Column {
   id:
-    | 'page_name'
-    | 'Score'
-    | 'Errors'
-    | 'Mistake'
-    | 'Unattempted'
-    | 'Wrong'
-    | 'Correct'
-    | 'MyScore';
+    | "page_name"
+    | "Score"
+    | "Errors"
+    | "Mistake"
+    | "Unattempted"
+    | "Wrong"
+    | "Correct"
+    | "MyScore";
   label: string;
   minWidth?: number;
-  align?: 'right';
+  align?: "right";
   format?: (value: number) => string;
-  component?: 'Dropdown';
+  component?: "Dropdown";
   dataArray?: Array<{ label: string; value: string }>;
   selectedValue?: string;
 }
 // readonly Column[]
 const columns: Column[] = [
   {
-    id: 'page_name',
-    label: 'Page',
+    id: "page_name",
+    label: "Page",
     minWidth: 170,
-    align: 'right',
-    component: 'Dropdown',
+    align: "right",
+    component: "Dropdown",
     dataArray,
-    selectedValue: '',
+    selectedValue: "",
   },
-  { id: 'Unattempted', label: 'Unattempted', minWidth: 170, align: 'right' },
-  { id: 'Wrong', label: 'Incorrect', minWidth: 170, align: 'right' },
-  { id: 'Correct', label: 'Correct', minWidth: 170, align: 'right' },
-  { id: 'MyScore', label: 'Score', minWidth: 100, align: 'right' },
+  { id: "Unattempted", label: "Unattempted", minWidth: 170, align: "right" },
+  { id: "Wrong", label: "Incorrect", minWidth: 170, align: "right" },
+  { id: "Correct", label: "Correct", minWidth: 170, align: "right" },
+  { id: "MyScore", label: "Score", minWidth: 100, align: "right" },
 ];
 
 interface Data {
@@ -145,7 +145,7 @@ function AssignmentDetails(): JSX.Element {
   const [studentList, setStudentList] = useState([]);
   const [selectedStudentName, setSelectedStudentName] = useState<any>();
   const [markStatusChange, setMarkStatusChange] = useState(false);
-  const [modState, selectedModState] = useState('');
+  const [modState, selectedModState] = useState("");
   const [selectedId, setSelectedId] = useState(-1);
   const { first_name: fName, last_name: lName } = useSelector(selectUser);
   const [jsonData, setJsonData] = useState([]);
@@ -154,24 +154,24 @@ function AssignmentDetails(): JSX.Element {
   const location = useLocation();
   const score = 80;
   const componentRef = useRef(null);
-  const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
+  const schoolNameInURL = decodeURIComponent(location.pathname.split("/")[1]);
   const [fullHeight, setFullHeight] = useState(false);
-  const [teacher, setTeacher] = useState('');
+  const [teacher, setTeacher] = useState("");
 
   const [singlePages, setSinglePages] = useState<ScromPage[]>([]);
   const [copysinglePages, setCopySinglePages] = useState<ScromPage[]>([]);
 
   const [val, setValue] = React.useState({
-    Nmeet1: '',
-    Nmeet2: '',
-    above1: '',
-    above2: '',
-    exceed1: '',
-    exceed2: '',
-    meet1: '',
-    meet2: '',
-    approching1: '',
-    approching2: '',
+    Nmeet1: "",
+    Nmeet2: "",
+    above1: "",
+    above2: "",
+    exceed1: "",
+    exceed2: "",
+    meet1: "",
+    meet2: "",
+    approching1: "",
+    approching2: "",
   });
 
   useEffect(() => {
@@ -191,19 +191,19 @@ function AssignmentDetails(): JSX.Element {
 
   const handelSendEmail = () => {
     const payload = {
-      list_type: 'school-list',
+      list_type: "school-list",
     };
     setPlayloadData({
-      apicall: 'sendEmail',
+      apicall: "sendEmail",
       payload,
     });
   };
 
   const changeColumnsHeader = (val: string, cIndex: number) => {
     const columnsHeader2 = columnsHeader.map((ele, index) => {
-      if (ele.component === 'Dropdown' && cIndex === index) {
+      if (ele.component === "Dropdown" && cIndex === index) {
         setJsonData(jsonCopyData.filter((page: any) => page.Pages === val));
-        console.log(copysinglePages, 'copysinglePages');
+        console.log(copysinglePages, "copysinglePages");
         setSinglePages(
           copysinglePages.filter((page: any) => page.page_name === val)
         );
@@ -219,15 +219,15 @@ function AssignmentDetails(): JSX.Element {
       navigate(routes?.SCHOOL_MANAGEMENT__ADD);
     } else if (title === TOOLBAR_LABELS.EMAIL) {
       handelSendEmail();
-    } else if (title === 'Preview') {
+    } else if (title === "Preview") {
       let state = { ...locationState };
       if (assignmentData && assignmentData.end_date) {
         state = {
           ...locationState,
           isDueDatedExceeded:
             new Date() > new Date(assignmentData.end_date) ||
-            assignmentData?.state === 'Submitted' ||
-            assignmentData?.state === 'Completed',
+            assignmentData?.state === "Submitted" ||
+            assignmentData?.state === "Completed",
         };
       }
       navigate(`/${schoolNameInURL}/course-preview`, {
@@ -239,7 +239,7 @@ function AssignmentDetails(): JSX.Element {
   const ADMIN_TOOLBAR_MENU = [
     {
       type: HEADERMENUS.BUTTON,
-      title: 'Preview',
+      title: "Preview",
     },
     {
       title: TOOLBAR_LABELS.EXPORT,
@@ -284,53 +284,53 @@ function AssignmentDetails(): JSX.Element {
       if (score >= val.exceed1 && score <= val.exceed2) {
         // Exceeds
         // return { bg: '#d9ffc8', color: '#6CA463' }[type]; // green
-        return { bg: '#BECCFF', color: '#132E90 ' }[type]; // blue
+        return { bg: "#BECCFF", color: "#132E90 " }[type]; // blue
       }
       if (score >= val.above1 && score <= val.above2) {
         /// Above
-        return { bg: '#d9ffc8', color: '#6CA463' }[type]; // green
+        return { bg: "#d9ffc8", color: "#6CA463" }[type]; // green
       }
       if (score >= val.meet1 && score <= val.meet2) {
         /// Meets
         // return { bg: '#BECCFF', color: '#132E90 ' }[type]; // blue
-        return { bg: '#FFF9BE', color: '#C7B551' }[type]; // yellow
+        return { bg: "#FFF9BE", color: "#C7B551" }[type]; // yellow
       }
       if (score >= val.approching1 && score <= val.approching2) {
         // Approaching
         // return { bg: '#FFF9BE', color: '#C7B551' }[type]; // yellow
-        return { bg: '#FFD6A5', color: '#FF9E4F' }[type]; // orange
+        return { bg: "#FFD6A5", color: "#FF9E4F" }[type]; // orange
       }
       if (score >= val.Nmeet1 && score <= val.Nmeet2) {
         // Does not Meet
         // return { bg: '#FCD4C6', color: '#E36B6B' }[type];
-        return { bg: '#FFD6A5', color: '#FF9E4F' }[type]; // orange
+        return { bg: "#FFD6A5", color: "#FF9E4F" }[type]; // orange
       }
     } else {
-      return { bg: '#FFD6A5', color: '#FF9E4F' }[type];
+      return { bg: "#FFD6A5", color: "#FF9E4F" }[type];
     }
   }
 
   function getPerformanceText(score: any) {
     if (score >= val.exceed1 && score <= val.exceed2) {
-      return 'Exceeds';
+      return "Exceeds";
     }
     if (score >= val.above1 && score <= val.above2) {
-      return 'Above';
+      return "Above";
     }
     if (score >= val.meet1 && score <= val.meet2) {
-      return 'Meets';
+      return "Meets";
     }
     if (score >= val.approching1 && score <= val.approching2) {
-      return 'Approaching';
+      return "Approaching";
     }
     if (
       (score >= val.Nmeet1 && score <= val.Nmeet2) ||
       score == null ||
       isNaN(score)
     ) {
-      return 'Does not Meet';
+      return "Does not Meet";
     }
-    return '';
+    return "";
   }
 
   const {
@@ -377,7 +377,7 @@ function AssignmentDetails(): JSX.Element {
           : [];
       setJsonData(jsonRespData);
       setJsonCopyData(jsonRespData);
-      console.log('jsonRespData', jsonRespData);
+      console.log("jsonRespData", jsonRespData);
 
       if (jsonRespData && jsonRespData.length !== 0) {
         setCsvData(jsonRespData.map((ele: any) => createExcellData(ele)));
@@ -491,7 +491,7 @@ function AssignmentDetails(): JSX.Element {
       //   return ele;
       // });
 
-      console.log(columnsHeader, 'columnsHeader2');
+      console.log(columnsHeader, "columnsHeader2");
 
       // setColumns(columnsHeader2);
 
@@ -520,7 +520,7 @@ function AssignmentDetails(): JSX.Element {
       }));
 
       const columnsHeader2 = columnsHeader.map((ele) => {
-        if (ele.component === 'Dropdown') {
+        if (ele.component === "Dropdown") {
           return { ...ele, dataArray: pagesArray };
         }
         return ele;
@@ -561,19 +561,19 @@ function AssignmentDetails(): JSX.Element {
       const body: any = [];
       const fetchedRecords = resp?.slice(0, 4);
       const meetObj = fetchedRecords?.find(
-        (obj: any) => obj.status === 'Meets'
+        (obj: any) => obj.status === "Meets"
       );
       const aboveObj = fetchedRecords?.find(
-        (obj: any) => obj.status === 'Above'
+        (obj: any) => obj.status === "Above"
       );
       const AppObj = fetchedRecords?.find(
-        (obj: any) => obj.status === 'Approaching'
+        (obj: any) => obj.status === "Approaching"
       );
       const DMeetObj = fetchedRecords?.find(
-        (obj: any) => obj.status === 'Does Not Meet'
+        (obj: any) => obj.status === "Does Not Meet"
       );
       const ExceedsObj = fetchedRecords?.find(
-        (obj: any) => obj.status === 'Exceeds'
+        (obj: any) => obj.status === "Exceeds"
       );
 
       setValue((prevState: any) => ({
@@ -610,7 +610,7 @@ function AssignmentDetails(): JSX.Element {
     <div>
       <RouteLayout
         state={location?.state ? { page: location?.state?.pagination } : {}}
-        path={`/${schoolName}/${isFromComplete === 'true' ? `assignment/completed-assignments` : `assignment`}`}
+        path={`/${schoolName}/${isFromComplete === "true" ? `assignment/completed-assignments` : `assignment`}`}
       >
         <div className="relative">
           <HeaderMenus
@@ -621,7 +621,7 @@ function AssignmentDetails(): JSX.Element {
         </div>
 
         <div ref={componentRef}>
-          <div className={`${isFromComplete === 'false' ? 'mt-5' : 'mt-20'}`}>
+          <div className={`${isFromComplete === "false" ? "mt-5" : "mt-20"}`}>
             <div className="bg-white text-right flex justify-end pt-5 pb-5">
               <div className="flex">
                 <span className="rounded-full border-2 flex justify-center items-center p-2 relative bg-[#FBD4C7] h-[3px] w-[3px]" />
@@ -678,19 +678,19 @@ function AssignmentDetails(): JSX.Element {
                     <div className="mr-4">
                       <div className="font-bold"> Student </div>
                       <div>
-                        {' '}
-                        {fName} {lName}{' '}
+                        {" "}
+                        {fName} {lName}{" "}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              {isFromComplete === 'true' ||
-              ['Submitted', 'Completed'].includes(assignmentData?.state) ? (
+              {isFromComplete === "true" ||
+              ["Submitted", "Completed"].includes(assignmentData?.state) ? (
                 <div className="grow box-content flex items-center h-full justify-center">
                   <div
                     style={{
-                      backgroundColor: colorCode(assignmentData?.score, 'bg'),
+                      backgroundColor: colorCode(assignmentData?.score, "bg"),
                     }}
                     className="h-[180px] flex items-center justify-center md:text-2xl text-sm rounded p-5"
                   >
@@ -698,7 +698,7 @@ function AssignmentDetails(): JSX.Element {
                     <span
                       className="text-blue-100"
                       style={{
-                        color: colorCode(assignmentData?.score, 'color'),
+                        color: colorCode(assignmentData?.score, "color"),
                       }}
                     >
                       &nbsp;
@@ -720,16 +720,16 @@ function AssignmentDetails(): JSX.Element {
                   <div className="mb-5">
                     <div className="font-bold"> Start Date </div>
                     <div>
-                      {' '}
-                      {`${moment(assignmentData?.start_date?.replace('Z', ''))?.format('DD-MM-YYYY')}`}{' '}
+                      {" "}
+                      {`${moment(assignmentData?.start_date?.replace("Z", ""))?.format("DD-MM-YYYY")}`}{" "}
                     </div>
                   </div>
 
                   <div>
                     <div className="font-bold"> End Date </div>
                     <div>
-                      {' '}
-                      {`${moment(assignmentData?.end_date?.replace('Z', ''))?.format('DD-MM-YYYY')}`}{' '}
+                      {" "}
+                      {`${moment(assignmentData?.end_date?.replace("Z", ""))?.format("DD-MM-YYYY")}`}{" "}
                     </div>
                   </div>
                 </div>
@@ -749,7 +749,13 @@ function AssignmentDetails(): JSX.Element {
                 handleClearClick={() => {
                   setJsonData(jsonCopyData);
                   setSinglePages(copysinglePages);
-                  setColumns(columns);
+                  const columnsHeader2 = columnsHeader.map((ele) => {
+                    if (ele.component === "Dropdown") {
+                      return { ...ele, selectedValue: "" };
+                    }
+                    return ele;
+                  });
+                  setColumns(columnsHeader2);
                 }}
                 fullHeight={fullHeight}
               />
