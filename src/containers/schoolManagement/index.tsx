@@ -407,7 +407,7 @@ const SchoolManagmentList = (): JSX.Element => {
             item?.name,
             item?.school_type,
             item?.branch_count,
-            moment(item?.created_at).format("DD-MM-YYYY"),
+            item?.created_at.match(/^\d{4}-\d{2}-\d{2}/)[0],
             item?.activation_end_date,
             item?.expiration_days_left,
             item?.status,
@@ -607,7 +607,7 @@ const SchoolManagmentList = (): JSX.Element => {
   return (
     <RouteLayout>
       <HeaderMenus
-        title="School Management"
+        title="School Managementt"
         menuArray={ADMIN_TOOLBAR_MENU}
         handleToolbarAction={handleToolbarAction}
       />
