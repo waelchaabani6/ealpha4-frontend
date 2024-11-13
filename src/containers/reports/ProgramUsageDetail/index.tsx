@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable indent */
 /* eslint-disable comma-dangle */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
@@ -169,6 +170,22 @@ export default function Index() {
           trigger={printButton}
           content={() => componentRef.current}
         />
+      ),
+    },
+  ];
+
+  const ADMIN_TOOLBAR_MENU_GRAPH = [
+    {
+      title: 'Export',
+      icon: (
+        <CSVLink
+          filename="Program Usage-Details.csv"
+          data={csvData}
+          headers={csvSubHeaders}
+          enclosingCharacter=""
+        >
+          <Share />
+        </CSVLink>
       ),
     },
   ];
@@ -347,7 +364,9 @@ export default function Index() {
     >
       <HeaderMenus
         title={`Report - Course Usage - ${view !== 'default' ? 'Graph View' : 'Detailed View'} `}
-        menuArray={ADMIN_TOOLBAR_MENU}
+        menuArray={
+          view === 'default' ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
+        }
         handleToolbarAction={handleToolbarAction}
       />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">

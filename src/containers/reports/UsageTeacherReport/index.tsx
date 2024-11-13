@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable comma-dangle */
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import React, { useState, useRef, useEffect, useMemo } from 'react';
@@ -93,11 +94,11 @@ export default function Index() {
     sendEmail();
   };
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon:
-        emailSendLoading || emailLoad ? <Loader size={20} /> : <EmailIcon />,
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon:
+    //     emailSendLoading || emailLoad ? <Loader size={20} /> : <EmailIcon />,
+    // },
     {
       title: 'Export',
       icon: (
@@ -121,6 +122,23 @@ export default function Index() {
       ),
     },
   ];
+
+  const ADMIN_TOOLBAR_MENU_GRAPH = [
+    {
+      title: 'Export',
+      icon: (
+        <CSVLink
+          filename="Usage Reports Teacher.csv"
+          data={csvData}
+          headers={csvSubHeaders}
+          enclosingCharacter=""
+        >
+          <Share />
+        </CSVLink>
+      ),
+    },
+  ];
+
   const handleToolbarAction = async (title: string) => {
     if (title === TOOLBAR_LABELS.EMAIL) {
       handelSendEmail();
@@ -320,7 +338,9 @@ export default function Index() {
     <RouteLayout>
       <HeaderMenus
         title="Report - Usage Report"
-        menuArray={ADMIN_TOOLBAR_MENU}
+        menuArray={
+          view === 'default' ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
+        }
         handleToolbarAction={handleToolbarAction}
       />
       <div

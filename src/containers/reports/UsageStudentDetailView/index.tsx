@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable comma-dangle */
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import React, { useState, useRef, useEffect } from 'react';
@@ -90,12 +91,13 @@ export default function Index() {
     TABLE_LABELS?.CONTENT_COMPLETED,
     TABLE_LABELS?.TOTAL_TIME_STUDENTS,
   ];
+
   const ADMIN_TOOLBAR_MENU = [
-    {
-      title: TOOLBAR_LABELS.EMAIL,
-      icon:
-        emailSendLoading || emailLoad ? <Loader size={20} /> : <EmailIcon />,
-    },
+    // {
+    //   title: TOOLBAR_LABELS.EMAIL,
+    //   icon:
+    //     emailSendLoading || emailLoad ? <Loader size={20} /> : <EmailIcon />,
+    // },
     {
       title: 'Export',
       icon: (
@@ -119,6 +121,23 @@ export default function Index() {
       ),
     },
   ];
+
+  const ADMIN_TOOLBAR_MENU_GRAPH = [
+    {
+      title: 'Export',
+      icon: (
+        <CSVLink
+          filename="Report Student Detail.csv"
+          data={csvData}
+          headers={csvSubHeaders}
+          enclosingCharacter=""
+        >
+          <Share />
+        </CSVLink>
+      ),
+    },
+  ];
+
   const handelSendEmail = () => {
     sendEmail();
   };
@@ -292,7 +311,9 @@ export default function Index() {
     >
       <HeaderMenus
         title="Report - Usage Report"
-        menuArray={ADMIN_TOOLBAR_MENU}
+        menuArray={
+          view === 'default' ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
+        }
         handleToolbarAction={handleToolbarAction}
       />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">

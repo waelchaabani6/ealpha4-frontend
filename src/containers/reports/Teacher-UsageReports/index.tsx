@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable no-confusing-arrow */
 /* eslint-disable indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
@@ -113,6 +114,7 @@ export default function Index() {
     TABLE_LABELS?.DISTINCT_ASSIGNMENT,
     TABLE_LABELS?.DISTINCT_ASSESSMENT,
   ];
+
   const ADMIN_TOOLBAR_MENU = [
     // {
     //   title: TOOLBAR_LABELS.EMAIL,
@@ -141,6 +143,22 @@ export default function Index() {
       ),
     },
   ];
+  const ADMIN_TOOLBAR_MENU_GRAPH = [
+    {
+      title: 'Export',
+      icon: (
+        <CSVLink
+          filename="Usage Reports Teacher.csv"
+          data={csvData}
+          headers={csvSubHeaders}
+          enclosingCharacter=""
+        >
+          <Share />
+        </CSVLink>
+      ),
+    },
+  ];
+
   const handleToolbarAction = async (title: string) => {
     if (title === TOOLBAR_LABELS.EMAIL) {
       handelSendEmail();
@@ -530,7 +548,9 @@ export default function Index() {
     <RouteLayout>
       <HeaderMenus
         title={`Report - Usage for Teacher - 2 ${view === 'default' ? '' : ' - Graph View'}`}
-        menuArray={ADMIN_TOOLBAR_MENU}
+        menuArray={
+          view === 'default' ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
+        }
         handleToolbarAction={handleToolbarAction}
       />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
