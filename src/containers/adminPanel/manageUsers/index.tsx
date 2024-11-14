@@ -38,6 +38,7 @@ export default function manageUsers() {
             role_name: USER_ROLE_LIST_LABEL.find(
               (obj: any) => obj.id === item1.role_id
             ).label,
+            school_name: item1?.school_name,
           });
           return body;
         });
