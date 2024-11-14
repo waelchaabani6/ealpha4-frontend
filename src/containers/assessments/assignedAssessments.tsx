@@ -13,7 +13,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DeletePopup from '@shared/DeletePopup';
-import { useDelete, useGet, usePost } from '@shared/api/useApi';
+import { useDelete, useGet, usePatch, usePost } from '@shared/api/useApi';
 import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import PageTitle from '@shared/pageTitle';
@@ -27,6 +27,8 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import Dropdown from '@component/dropdown/Dropdown';
 import { selectSchoolData } from '@shared/store/schoolSlice';
+import Button from '@component/button/button';
+
 import CustomPagination from '../../components/pagination/CustomPagination';
 import {
   COMPONENTS,
@@ -37,7 +39,6 @@ import {
 } from '../../constants/constants';
 import Wrapper from '../../shared/wrapper/Wrapper';
 import RouteLayout from '../layout/routeLayout';
-import Button from '@component/button/button';
 
 const printButton = () => <PrintIcon />;
 
@@ -58,6 +59,8 @@ interface Assessment {
   student_details: any[]; // Use proper typing here based on your actual data structure
   class_or_student: any; // Use proper typing here based on your actual data structure
 }
+
+const baseURL = import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL;
 
 const TableColumns = [
   {
@@ -204,7 +207,7 @@ export default function AssignedAssessments() {
 
   const [editAssessmentDialog, setEditAssessmentDialog] = useState(false);
   const [editAssessmentData, setEditAssessmentData] = useState<any>({});
-  const [extendedDueDate, setExtendedDeuData] = useState<Date>();
+  const [extendedDueDate, setExtendedDueData] = useState<Date>();
 
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const componentRef = useRef(null);
@@ -261,6 +264,7 @@ export default function AssignedAssessments() {
     setAdminDeleteDialog(false);
     mutateDelete(playloadData);
   };
+
   const handleDataPopup = (data: any) => {
     setDialogOpen(true);
     setpopupData(data);
@@ -493,7 +497,26 @@ export default function AssignedAssessments() {
 
   const updateAssessment = () => {
     const dueDate = moment(extendedDueDate).format('YYYY-MM-DD');
-    console.log('dueDate', dueDate);
+
+    updateDueDate({
+      due_date: dueDate,
+    });
+  };
+
+  const { isLoading: updateLoading, mutate: updateDueDate } = usePatch({
+    baseURL,
+    url: `assessments-service/assign-assessment/${editAssessmentData?.assessment_id}/edit-assessment/?user_id=${userData?.userId}&domain_name=${window?.location?.hostname}`,
+    onSuccess: ({ response }: any) => {
+      resetAll();
+    },
+    onError: ({ response }: any) => {},
+  });
+
+  const resetAll = () => {
+    setExtendedDueData(null);
+    setEditAssessmentDialog(false);
+    setEditAssessmentData({});
+    fetchAssignedAssignments();
   };
 
   return (
@@ -684,7 +707,7 @@ export default function AssignedAssessments() {
               value={editAssessmentData?.submission_date}
               label="Update Due Date"
               handlePickerChange={(date: string) =>
-                setExtendedDeuData(new Date(date))
+                setExtendedDueData(new Date(date))
               }
               sxType={4}
               defaultStyle={true}
@@ -701,7 +724,9 @@ export default function AssignedAssessments() {
           )} */}
 
           <div className="flex justify-center mt-5">
-            <Button onClick={updateAssessment}>Update</Button>
+            <Button onClick={updateAssessment} disabled={!extendedDueDate}>
+              Update
+            </Button>
           </div>
         </div>
       </CustomizedDialogs>
