@@ -1,3 +1,5 @@
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable linebreak-style */
 /* eslint-disable react/jsx-closing-tag-location */
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable operator-linebreak */
@@ -35,6 +37,7 @@ import {
 } from '../../constants/constants';
 import Wrapper from '../../shared/wrapper/Wrapper';
 import RouteLayout from '../layout/routeLayout';
+import Button from '@component/button/button';
 
 const printButton = () => <PrintIcon />;
 
@@ -108,11 +111,11 @@ const TableColumns = [
     component: COMPONENTS?.view,
     showInHeader: false,
   },
-  // {
-  //   bodyAlign: 'center',
-  //   component: COMPONENTS?.,
-  //   showInHeader: false
-  // },
+  {
+    bodyAlign: 'center',
+    component: COMPONENTS?.edit,
+    showInHeader: false,
+  },
   {
     bodyAlign: 'left',
     component: COMPONENTS?.delete,
@@ -199,6 +202,10 @@ export default function AssignedAssessments() {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const completedAssignRef = useRef(null);
 
+  const [editAssessmentDialog, setEditAssessmentDialog] = useState(false);
+  const [editAssessmentData, setEditAssessmentData] = useState<any>({});
+  const [extendedDueDate, setExtendedDeuData] = useState<Date>();
+
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const componentRef = useRef(null);
 
@@ -237,6 +244,9 @@ export default function AssignedAssessments() {
           },
         }
       );
+    } else if (handlername === 'edit') {
+      setEditAssessmentDialog(true);
+      setEditAssessmentData(data);
     }
   };
 
@@ -276,9 +286,9 @@ export default function AssignedAssessments() {
         const accData = res?.data?.response;
         const respData = accData?.results;
         setTotalDataCount(accData.count);
-        const schoolNameInURL = decodeURIComponent(
-          location.pathname.split('/')[1]
-        );
+        // const schoolNameInURL = decodeURIComponent(
+        //   location.pathname.split('/')[1]
+        // );
         const body: any = [];
         const newTableData = respData?.map((item: any) => {
           const joinedClasses = Array.isArray(item.class_name)
@@ -313,6 +323,7 @@ export default function AssignedAssessments() {
 
           const temp = {
             ...item,
+            assessment_raw_name: item.assessment_name,
             assessment_name: (
               <Link
                 state={{
@@ -480,6 +491,11 @@ export default function AssignedAssessments() {
     }
   }, [userRole, user]);
 
+  const updateAssessment = () => {
+    const dueDate = moment(extendedDueDate).format('YYYY-MM-DD');
+    console.log('dueDate', dueDate);
+  };
+
   return (
     <RouteLayout>
       <HeaderMenus
@@ -623,6 +639,72 @@ export default function AssignedAssessments() {
         setOpen={setAdminDeleteDialog}
         handleDelete={handleAdminDelete}
       />
+
+      <CustomizedDialogs
+        title="Edit assessment"
+        open={editAssessmentDialog}
+        setOpen={() => {
+          // selectedModState('');
+        }}
+        onclose={() => {
+          setEditAssessmentDialog(false);
+        }}
+        maxwidth="sm"
+      >
+        <div className="w-full flex justify-center flex-col">
+          <div className="py-4">
+            <PageTitle title={editAssessmentData?.assessment_raw_name} />
+          </div>
+
+          <div className="flex mb-3">
+            <p className="font-bold">Course :&nbsp;</p>
+            <p>{editAssessmentData?.subject_name} </p>
+          </div>
+
+          <div className="mb-3">
+            <DatePicker
+              value={editAssessmentData?.start_date}
+              label="Start Date"
+              sxType={4}
+              defaultStyle={true}
+              fullWidth={true}
+              parentLabelClass="relative top-[-4px]"
+              noFontSize={true}
+              disabled={true}
+            />
+          </div>
+
+          <div>
+            <DatePicker
+              // @ts-ignore
+              disablePast={
+                editAssessmentData?.start_date &&
+                new Date(editAssessmentData?.start_date)
+              }
+              value={editAssessmentData?.submission_date}
+              label="Update Due Date"
+              handlePickerChange={(date: string) =>
+                setExtendedDeuData(new Date(date))
+              }
+              sxType={4}
+              defaultStyle={true}
+              fullWidth={true}
+              parentLabelClass="relative top-[-4px]"
+              noFontSize={true}
+            />
+          </div>
+
+          {/* {ErrorMsg && (
+            <div style={{ fontSize: '0.75rem' }} className=" text-red-400">
+              {ErrorMsg}
+            </div>
+          )} */}
+
+          <div className="flex justify-center mt-5">
+            <Button onClick={updateAssessment}>Update</Button>
+          </div>
+        </div>
+      </CustomizedDialogs>
     </RouteLayout>
   );
 }
