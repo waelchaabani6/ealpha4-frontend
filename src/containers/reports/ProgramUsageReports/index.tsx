@@ -184,7 +184,7 @@ export default function Index() {
       title: 'Export',
       icon: (
         <CSVLink
-          filename="Report Program Usage.csv"
+          filename="Report Course Usage.csv"
           data={csvData}
           headers={csvSubHeaders}
           enclosingCharacter=""
