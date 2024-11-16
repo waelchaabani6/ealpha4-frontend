@@ -407,7 +407,7 @@ const SchoolManagmentList = (): JSX.Element => {
             item?.name,
             item?.school_type,
             item?.branch_count,
-            item?.created_at.match(/^\d{4}-\d{2}-\d{2}/)[0],
+            moment(item?.created_at).format("YYYY-MM-DD"),
             item?.activation_end_date,
             item?.expiration_days_left,
             item?.status,
