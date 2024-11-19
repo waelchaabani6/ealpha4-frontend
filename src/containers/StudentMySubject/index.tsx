@@ -74,12 +74,13 @@ function MySubject() {
     <div>
       <RouteLayout navBack={true}>
         <PageTitle title="My Courses" customStyle={{ marginTop: "10px" }} />
-        <div className="w-full flex justify-end">
+        {/* Reomve The Search For Now */}
+        {/* <div className="w-full flex justify-end">
           <DebounceInput
             onChange={(e) => setSearchString(e)}
             loading={isLoading}
           />
-        </div>
+        </div> */}
         {!categoriesLoading && !isLoading ? (
           Object.keys(courseDetails).length > 0 && conditionSatisfied ? (
             Object.keys(courseDetails)?.map((category: any, i: any) =>
