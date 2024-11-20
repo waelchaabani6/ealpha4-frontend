@@ -239,6 +239,7 @@ export default function Index() {
     if (subData?.status !== "Ongoing") {
       statusChange("Ongoing");
     }
+    console.log(subData);
     const lessonWiseFormObj: lessonWiseFormObjType = {
       assign_assignment: subData.id,
       lesson_id: subData.lessonUnitId,
@@ -534,7 +535,7 @@ export default function Index() {
                   </Button>
                 )}
                 <Button
-                  disabled={shouldDisableButton}
+                  disabled={shouldDisableButton || ele.state !== "Ongoing"}
                   onClick={() => {
                     setActionConfirmPopup(true);
                     setSelectedStudentId(ele.id);
