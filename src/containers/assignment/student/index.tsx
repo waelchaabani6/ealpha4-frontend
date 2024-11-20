@@ -444,41 +444,41 @@ export default function Index() {
           SR_NO: inde + 1,
           subject_name: ele.course_name,
 
-          assignment_name:
-            ele.subData.length >= 2 ? (
-              ele.assignment_name
-            ) : (
-              <Link
-                state={
-                  ele.subData.length !== 0
-                    ? {
-                        chapterMainId: ele.subData[0].chapterMainId,
-                        courseId: ele.subData[0].course_table_id,
-                        chapterId: ele.subData[0].chapter_id,
-                        lessonId: ele.subData[0].lessonMainId,
-                        urlCourseId: ele.subData[0].course_id,
-                        urlLessonId: ele.subData[0].lessonUnitId,
-                        chapterIndex: 0,
-                        lessonIndex: 0,
-                        assignButton: false,
-                        isDueDatedExceeded: false,
-                        moduleName: "assignment",
-                        assignmentId: ele.subData[0].id,
-                        pageName: ele.subData[0].pageName,
-                        pageNumber: ele.subData[0].pageNumber,
-                        contentUrl: ele.subData[0].contentUrl,
-                        pagination: page,
-                      }
-                    : {}
-                }
-                to={`/${schoolNameInURL}/assignment/assignment-details/${ele.id}/empty/false`}
-              >
-                <span className="underline cursor-pointer font-medium">
-                  {ele.assignment_name}
-                </span>
-                {/* eslint-disable-next-line react/jsx-closing-tag-location */}
-              </Link>
-            ),
+          assignment_name: ele.assignment_name,
+          // ele.subData.length >= 2 ? (
+          //   ele.assignment_name
+          // ) : (
+          //   <Link
+          //     state={
+          //       ele.subData.length !== 0
+          //         ? {
+          //             chapterMainId: ele.subData[0].chapterMainId,
+          //             courseId: ele.subData[0].course_table_id,
+          //             chapterId: ele.subData[0].chapter_id,
+          //             lessonId: ele.subData[0].lessonMainId,
+          //             urlCourseId: ele.subData[0].course_id,
+          //             urlLessonId: ele.subData[0].lessonUnitId,
+          //             chapterIndex: 0,
+          //             lessonIndex: 0,
+          //             assignButton: false,
+          //             isDueDatedExceeded: false,
+          //             moduleName: "assignment",
+          //             assignmentId: ele.subData[0].id,
+          //             pageName: ele.subData[0].pageName,
+          //             pageNumber: ele.subData[0].pageNumber,
+          //             contentUrl: ele.subData[0].contentUrl,
+          //             pagination: page,
+          //           }
+          //         : {}
+          //     }
+          //     to={`/${schoolNameInURL}/assignment/assignment-details/${ele.id}/empty/false`}
+          //   >
+          //     <span className="underline cursor-pointer font-medium">
+          //       {ele.assignment_name}
+          //     </span>
+          //     {/* eslint-disable-next-line react/jsx-closing-tag-location */}
+          //   </Link>
+          // ),
           teacher_name:
             ele.state === "Submitted" ? (
               <p className="">{ele.teacher_name}</p>
