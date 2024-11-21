@@ -290,6 +290,9 @@ export default function Index() {
             value={selectedStatus}
             dataArray={statusArray}
             onChangeHandler={(value) => setSelectedStatus(value)}
+            sxClass={{
+              width: "250px",
+            }}
           />
           <Dropdown
             title="Select Child"
@@ -298,6 +301,9 @@ export default function Index() {
             displayEmpty={true}
             onChangeHandler={(value) => setSelectedChild(value)}
             loading={childrenLoading}
+            sxClass={{
+              width: "250px",
+            }}
           />
           <div>
             <DatePicker
