@@ -21,7 +21,7 @@ export default function manageUsers() {
 
   const { isFetching: LogListLoading, refetch: fetchUsers } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
-    url: `users-service/user-search?username=${searchString}&limit=${rowsPerPage}&offset=${(page - 1) * rowsPerPage}`,
+    url: `users-service/user-search?search_in=${searchString}&limit=${rowsPerPage}&offset=${(page - 1) * rowsPerPage}`,
     onSuccess: (res: any) => {
       const respData = res?.data?.results;
       setTotalDataCount(res?.data?.count);

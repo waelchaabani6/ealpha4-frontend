@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable no-shadow */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable curly */
@@ -139,7 +140,9 @@ function createData(
       ? `0%`
       : // : `${parseFloat(((Number(Correct) * 100) / Number(maxScore)).toFixed(2))}%`;
         `${parseFloat(((Number(Correct / total_pages) * 100) / Number(maxScore)).toFixed(2))}%`;
-  const scormDataView = scormData ? JSON.parse(scormData) : {};
+  const scormDataView =
+    scormData && scormData?.length > 0 ? JSON.parse(scormData) : {};
+
   return {
     Pages,
     page_name,
@@ -596,9 +599,11 @@ function AssignmentDetails() {
         // console.log(scromPagesTemp);
       }
 
-      console.log(jsonRespData, '#jsonRespData');
-      setSinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
-      setCopySinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
+      // setSinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
+      // setCopySinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
+
+      setSinglePages(jsonRespData);
+      setCopySinglePages(jsonRespData);
 
       const pagesListprev: any = [];
       if (tempArray.length !== 0) {
