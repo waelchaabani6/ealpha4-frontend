@@ -37,6 +37,7 @@ import TotalStudentGraph from "../BarChart/TotalStudentGraph";
 import AverageActiveStudent from "../BarChart/AverageActiveStudent";
 import BarChartType1 from "../BarChart/barChartType1";
 import TotalAssessment from "../BarChart/TotalAssessment";
+import TeacherGraphComponent from "../BarChart/TeacherGraphComponent";
 
 export default function Index() {
   const [csvData, setCsvData] = useState<[]>([]);
@@ -65,6 +66,9 @@ export default function Index() {
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const schoolNameInURL = decodeURIComponent(location.pathname.split("/")[1]);
   const link = `/${schoolNameInURL}/reports/student-detail-view`;
+  const [assignmentGraph, setAssignmentGraph] = useState([]);
+  const [assessmentGraph, setAssessmentGraph] = useState([]);
+  const [timeOpenedGraph, setTimeOpenedGraph] = useState([]);
 
   const csvSubHeaders = [
     TABLE_LABELS?.CLASS,
@@ -144,24 +148,28 @@ export default function Index() {
       handelSendEmail();
     }
   };
-
   const TableColumns: any = [
-    { label: "Teacher Name", mapper: "teacher_name", align: "left" },
-    { label: "Class", mapper: "total_class", align: "left" },
-    { label: "Course", mapper: "distinct_assignment", align: "left" },
+    { label: "Student Name", mapper: "student_name", align: "left" },
+    { label: "Class", mapper: "class", align: "left" },
     { label: "First Login", mapper: "first_login", align: "left" },
     { label: "Last Login", mapper: "last_login", align: "left" },
-    { label: "Total Time", mapper: "avg_time_per_logins", align: "left" },
+    { label: "Total Logins", mapper: "total_logins", align: "left" },
     {
-      label: "No of Assignments Created",
-      mapper: "distinct_assignment",
+      label: "Avg Time Per Login",
+      mapper: "avg_time_per_logins",
       align: "left",
     },
     {
-      label: "No of Assessments Created",
-      mapper: "distinct_assessment",
+      label: "Assignments Completed",
+      mapper: "assignments_completed",
       align: "left",
     },
+    {
+      label: "Assessments Submitted",
+      mapper: "assessments_submitted",
+      align: "left",
+    },
+    { label: "Courses", mapper: "courses", align: "left" },
   ];
 
   const handlePagination = (currPage: any) => {
@@ -218,74 +226,70 @@ export default function Index() {
   const TeacherArr = teacherList?.data?.response?.results?.sort(compare);
   const DateTimeRegex = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})\.\d+Z$/;
 
-  const teacherName = useMemo(() => {
-    const obj = teacherList?.data?.response?.results?.find(
-      (itm: any) => itm.user_id === selectedteacher
-    );
-    if (obj) {
-      return `${obj?.first_name} ${obj?.last_name}`;
-    }
-    return "";
-  }, [selectedteacher]) as string;
   const { isLoading, data } = useGet({
     baseURL: ReportURL,
-    url: `reports-service/usage-report-teacher_enhanced_details/?school_id=${schoolData?.id || branchData?.school_data?.id}${selectedBranch !== "select" ? `&branch_id=${selectedBranch}` : userRole().isBranchAdmin || branchData ? `&branch_id=${branchData?.id}` : ""}${selectedteacher !== "select" ? `&teacher=${teacherName}` : ""}${selectedClass !== "select" ? `&class_id=${selectedClass}` : ""}${fromDate ? `&from_date=${moment(fromDate).format("yyyy-MM-DD")}` : ""}${toDate ? `&to_date=${moment(toDate).format("yyyy-MM-DD")}` : ""}&page=${page}&page_size=${rowsPerPage}&is_graph=${graph}${selectedprogram !== "select" ? `&program=${selectedprogram}` : ""}`,
+    url: `reports-service/usage-report-student_enhanced_details/?school_id=${schoolData?.id || branchData?.school_data?.id}${
+      selectedBranch !== "select"
+        ? `&branch_id=${selectedBranch}`
+        : userRole().isBranchAdmin || branchData
+          ? `&branch_id=${branchData?.id}`
+          : ""
+    }${selectedClass !== "select" ? `&class_id=${selectedClass}` : ""}${
+      fromDate ? `&from_date=${moment(fromDate).format("yyyy-MM-DD")}` : ""
+    }${
+      toDate ? `&to_date=${moment(toDate).format("yyyy-MM-DD")}` : ""
+    }&page=${page}&page_size=${rowsPerPage}&is_graph=${graph}${
+      selectedprogram !== "select" ? `&program=${selectedprogram}` : ""
+    }`,
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.total_records);
       setTotalData(res?.data?.response?.data);
-      // const Graph1 = res?.data?.response?.total_students_vs_active_students;
-      // setTotalData(Graph1);
-      // const Graph2 = res?.data?.response?.average_active_days_per_students;
-      // SetNoOfDaysArr(Graph2);
+
+      // Graph data
+      const Graph1 = res?.data?.response?.assessment_graph;
+      const Graph2 = res?.data?.response?.time_opended_graph;
+      const Graph3 = res?.data?.response?.assignment_graph;
+
+      setAssignmentGraph(Graph3);
+      setAssessmentGraph(Graph1);
+      setTimeOpenedGraph(Graph2);
     },
   });
+
   const tableData = useMemo(() => {
     if (!data?.data?.response?.data) return []; // Safely handle if data is undefined or empty
     return data?.data.response.data.map((itm: any) => ({
-      teacher_name: itm.teacher_name,
-      total_class: itm.total_class,
-      distinct_assignment:
-        itm.distinct_assignment?.[itm.distinct_assignment.length - 1]?.total ||
-        0,
+      student_name: itm.student_name,
+      class: itm.class,
       first_login: itm?.first_login?.replace(DateTimeRegex, "$1, $2"),
-      last_login: itm.last_login?.replace(DateTimeRegex, "$1, $2"),
+      last_login: itm?.last_login?.replace(DateTimeRegex, "$1, $2"),
+      total_logins: itm.total_logins,
       avg_time_per_logins: itm.avg_time_per_logins,
-      distinct_assessment:
-        itm.distinct_assessment?.[itm.distinct_assessment.length - 1]?.total ||
-        0,
+      assignments_completed: itm.assignments?.completed || 0,
+      assessments_submitted: itm.assessments?.submitted || 0,
+      courses: itm.courses?.join(", "), // Combine courses into a comma-separated string
     }));
+  }, [data]);
+
+  useEffect(() => {
+    if (data) {
+      console.log("API Response:", data?.data?.response);
+    }
   }, [data]);
 
   const CSVDataFunction = () => {
     const csvdata = tableData?.map((i: any) => [
-      i?.Class,
-      i?.Teacher?.props?.children?.props?.children || "",
-      i?.StudentInClass,
-      i?.Program,
-      i?.ActiveStudents,
-      i?.AvgActiveStudent,
+      i?.student_name,
+      i?.first_login,
+      i?.last_login,
+      i?.total_logins,
+      i?.avg_time_per_logins,
+      i?.assignments_completed,
+      i?.assessments_submitted,
+      i?.courses,
     ]);
-
     setCsvData(csvdata);
   };
-  //   const csvdata: any = [];
-  //   // eslint-disable-next-line array-callback-return
-  //   tableData.map((i: any) => {
-  //     csvdata.push([i?.Class, i?.StudentInClass, i?.Program, i?.ActiveStudents, i?.AvgActiveStudent]);
-  //     setCsvData(csvdata);
-  //   });
-  // };
-
-  const chartData1 = (NoOfDaysArr || []).map((i: any) => ({
-    name: i?.class_name,
-    count1: i?.avg_active_days_per_student,
-  }));
-
-  const tempStudent = (totalData || []).map((i: any) => ({
-    name: i?.class_name,
-    count1: Number(i?.total_student) - Number(i?.active_students),
-    count2: Number(i?.active_students),
-  }));
 
   const reset = () => {
     setFromDate("");
@@ -314,7 +318,7 @@ export default function Index() {
   return (
     <RouteLayout>
       <HeaderMenus
-        title="Report - Usage Report"
+        title="Report - Student Usage Report"
         menuArray={
           view === "default" ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
         }
@@ -353,20 +357,7 @@ export default function Index() {
               onChangeHandler={handlePerPage}
               sxClass={{ width: "100%" }}
             />
-            <Dropdown
-              title="Teacher Name"
-              loading={teacherListLoading}
-              value={selectedteacher}
-              dataArray={[
-                { label: "All", value: "select" },
-                ...(TeacherArr?.map((itm: any) => ({
-                  label: `${itm?.first_name} ${itm?.last_name}`,
-                  value: itm?.user_id,
-                })) || []),
-              ]}
-              onChangeHandler={(val) => setSelectedTeacher(val)}
-              sxClass={{ width: "100%" }}
-            />
+
             <Dropdown
               title="Select a class"
               value={selectedClass}
@@ -436,11 +427,11 @@ export default function Index() {
             </span>
           )}
         </div>
-        <div
+        {/* <div
           className={`${view === "default" ? "lg:col-auto" : "lg:col-span-3"} mt-3 flex justify-end`}
         >
           <ButtonToggle view={view} setView={setView} />
-        </div>
+        </div> */}
 
         {/* <CustomInput
           name="Branch Name"
@@ -471,29 +462,50 @@ export default function Index() {
         <>
           <div className="p-5" ref={componentRef}>
             <h1 className="font-semibold text-l">Teachers</h1>
-            <div className="py-4 h-full grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 bg-white border border-accent rounded-md">
+            <div className="py-4 h-full grid grid-cols-1 gap-4">
+              {/* Assignment Graph */}
+              <div className="p-4 bg-white border border-accent rounded-md w-full">
                 <div className="flex flex-col items-center justify-center">
                   <p className="font-semibold text-xl">
-                    {GRAPH_LABELS.TOTAL_VS_ACTIVE}
+                    {GRAPH_LABELS.ASSIGNMENT_GRAPH}
                   </p>
                 </div>
-                <div className="overflow-x-auto">
-                  <TotalStudentGraph data={tempStudent || []} />
-                </div>{" "}
-              </div>
-              <div className="p-4 bg-white border border-accent rounded-md">
-                <div className="flex flex-col items-center justify-center">
-                  <p className="font-semibold text-xl">
-                    {GRAPH_LABELS.AVG_ACTIVE_STUDENTS}
-                  </p>
-                </div>
-                <div className="overflow-x-auto">
-                  <TotalAssessment
-                    data={chartData1 || []}
-                    title={GRAPH_LABELS.NOOFDAYS}
+                <div className="overflow-x-auto w-full">
+                  <TeacherGraphComponent
+                    data={assignmentGraph}
+                    title={GRAPH_LABELS.ASSIGNMENT_GRAPH}
                   />
-                </div>{" "}
+                </div>
+              </div>
+
+              {/* Assessment Graph */}
+              <div className="p-4 bg-white border border-accent rounded-md w-full">
+                <div className="flex flex-col items-center justify-center">
+                  <p className="font-semibold text-xl">
+                    {GRAPH_LABELS.ASSESSMENT_GRAPH}
+                  </p>
+                </div>
+                <div className="overflow-x-auto w-full">
+                  <TeacherGraphComponent
+                    data={assessmentGraph}
+                    title={GRAPH_LABELS.ASSESSMENT_GRAPH}
+                  />
+                </div>
+              </div>
+
+              {/* Time Opened Graph */}
+              <div className="p-4 bg-white border border-accent rounded-md w-full">
+                <div className="flex flex-col items-center justify-center">
+                  <p className="font-semibold text-xl">
+                    {GRAPH_LABELS.TIME_OPENED_GRAPH}
+                  </p>
+                </div>
+                <div className="overflow-x-auto w-full">
+                  <TeacherGraphComponent
+                    data={timeOpenedGraph}
+                    title={GRAPH_LABELS.TIME_OPENED_GRAPH}
+                  />
+                </div>
               </div>
             </div>
           </div>

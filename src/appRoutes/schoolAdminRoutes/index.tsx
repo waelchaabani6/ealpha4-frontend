@@ -25,12 +25,14 @@ const ProgramUsageDetail = React.lazy(
 const StudentDetailView = React.lazy(
   () => import("@containers/reports/UsageStudentDetailView")
 );
+
 const UsageTeacherReport = React.lazy(
   () => import("@containers/reports/UsageTeacherReport")
 );
-const UsageTeacherReport2 = React.lazy(
-  () => import("@containers/reports/UsageTeacherReport2")
+const UsageStudentReport = React.lazy(
+  () => import("@containers/reports/UsageStudentReport")
 );
+
 const ProgramUsageTeacher = React.lazy(
   () => import("@containers/reports/ReportUsageTeacher1")
 );
@@ -442,7 +444,7 @@ export default createBrowserRouter([
                 element: <ProgramUsageTeacher />,
               },
               { path: "usage-for-teacher", element: <UsageTeacherReport /> },
-              { path: "usage-for-teacher2", element: <UsageTeacherReport2 /> },
+              { path: "usage-for-student", element: <UsageStudentReport /> },
               {
                 path: "student-detail-view/:ClassName/:TeacherName/:SchoolID/:ClassID/:StartDate/:LastDate",
                 element: <StudentDetailView />,
