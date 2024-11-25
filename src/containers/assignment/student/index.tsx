@@ -512,7 +512,7 @@ export default function Index() {
                 ? { td: { color: "var(--sunlight)" } }
                 : "",
           Action:
-            ele.state === "Submitted" ? (
+            ele.state === "Submitted" || ele.state === "Auto Submitted" ? (
               <p>
                 <Button disabled={true}>{ele.state} </Button>
               </p>
