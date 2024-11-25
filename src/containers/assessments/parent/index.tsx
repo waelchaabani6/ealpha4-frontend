@@ -35,7 +35,7 @@ export default function Index() {
 
   const headers = [
     TABLE_LABELS?.SR_NO,
-    TABLE_LABELS?.ASSIGNMET_NAME,
+    TABLE_LABELS?.ASSESSMENT_NAME,
     TABLE_LABELS?.TEACHER,
     TABLE_LABELS?.STATUS,
     TABLE_LABELS?.START_DATE,
@@ -241,6 +241,9 @@ export default function Index() {
     setToDate("");
     setFromDate("");
   };
+  const handlePerPage = (e: any) => {
+    setRowsPerPage(e);
+  };
 
   useEffect(() => {
     if (userId) {
@@ -291,7 +294,7 @@ export default function Index() {
             dataArray={statusArray}
             onChangeHandler={(value) => setSelectedStatus(value)}
             sxClass={{
-              width: "250px",
+              width: "160px",
             }}
           />
           <Dropdown
@@ -302,7 +305,7 @@ export default function Index() {
             onChangeHandler={(value) => setSelectedChild(value)}
             loading={childrenLoading}
             sxClass={{
-              width: "250px",
+              width: "230px",
             }}
           />
           <div>
@@ -329,6 +332,13 @@ export default function Index() {
               disableOld={fromDate}
             />
           </div>
+          <Dropdown
+            title="Result Of Pages"
+            value={rowsPerPage}
+            dataArray={RESULTS_PER_PAGE}
+            onChangeHandler={handlePerPage}
+            sxClass={{ width: "95px", marginRight: "5px" }}
+          />
           <div className="flex gap-2 justify-center items-center h-[36px]">
             <span
               tabIndex={0}
@@ -345,7 +355,7 @@ export default function Index() {
             />
             <Link to={`${location?.pathname}/completed-assessments`}>
               <div className="text-accent underline cursor-pointer text-base font-medium pl-2">
-                Completed Assessment
+                Completed Assessments
               </div>
             </Link>
           </div>

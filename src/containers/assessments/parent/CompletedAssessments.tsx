@@ -37,7 +37,7 @@ export default function CompletedAssessments() {
 
   const headers = [
     TABLE_LABELS?.SR_NO,
-    TABLE_LABELS?.ASSIGNMET_NAME,
+    TABLE_LABELS?.ASSESSMENT_NAME,
     TABLE_LABELS?.TEACHER,
     TABLE_LABELS?.START_DATE,
     TABLE_LABELS?.DUE_DATE,
@@ -123,6 +123,9 @@ export default function CompletedAssessments() {
   const reset = () => {
     setToDate("");
     setFromDate("");
+  };
+  const handlePerPage = (e: any) => {
+    setRowsPerPage(e);
   };
 
   // Toolbar Email
@@ -299,7 +302,7 @@ export default function CompletedAssessments() {
             dataArray={statusArray}
             onChangeHandler={(value) => setSelectedStatus(value)}
             sxClass={{
-              width: "250px",
+              width: "200px",
             }}
           />
           <Dropdown
@@ -310,7 +313,7 @@ export default function CompletedAssessments() {
             onChangeHandler={(value) => setSelectedChild(value)}
             loading={childrenLoading}
             sxClass={{
-              width: "250px",
+              width: "230px",
             }}
           />
           <div>
@@ -337,6 +340,13 @@ export default function CompletedAssessments() {
               disableOld={fromDate}
             />
           </div>
+          <Dropdown
+            title="Result Of Pages"
+            value={rowsPerPage}
+            dataArray={RESULTS_PER_PAGE}
+            onChangeHandler={handlePerPage}
+            sxClass={{ width: "95px", marginRight: "5px" }}
+          />
           <div className="flex gap-2 justify-center items-center h-[36px]">
             <span
               tabIndex={0}
