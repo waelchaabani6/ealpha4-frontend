@@ -136,7 +136,7 @@ export const TABLE_LABELS = {
   TOTAL_TIME_TEACH_STD: "Total Time Teachers and Students (HH:MM:SS)",
   NO_OF_STUDENT: "Number Of Students ",
   NO_OF_ACTIVE_STD: "Number Of Active Students",
-  NO_OF_NONACTIVE_STD: "Number Of Non Active Students",
+  NO_OF_NONACTIVE_STD: "Number Of Inactive Students",
   NO_OF_ASSIGNMENT: "Number Of Assignment ",
   NO_OF_ASSESSMENT: "Number Of Assessments ",
   CLASSES_TAUGHT: "No. of Classes Taught",
