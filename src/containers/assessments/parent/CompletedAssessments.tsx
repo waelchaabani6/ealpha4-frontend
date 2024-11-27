@@ -191,11 +191,20 @@ export default function CompletedAssessments() {
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
-  const ordering = orderBy ? (order === "asc" ? orderBy : `-${orderBy}`) : "";
+  const ordering = !orderBy.includes("teacher")
+    ? order === "asc"
+      ? orderBy
+      : `-${orderBy}`
+    : "";
+  const endpointOrderBy = orderBy.includes("teacher")
+    ? order === "asc"
+      ? orderBy
+      : `-${orderBy}`
+    : "";
   const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
     useGet({
       baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-      url: `assessments-service/completed-assign-assessment-student-list/?student_id=${selectedChild}&limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}${searchString ? `&search=${searchString}` : ""}${selectedStatus !== "All" ? `&status=${selectedStatus}` : ""}${fromDate ? `&start_date=${moment(fromDate).format("YYYY-MM-DD")}` : ""}${toDate ? `&submission_date=${moment(toDate).format("YYYY-MM-DD")}` : ""}`,
+      url: `assessments-service/completed-assign-assessment-student-list/?student_id=${selectedChild}&limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&orderBy=${endpointOrderBy}${searchString ? `&search=${searchString}` : ""}${selectedStatus !== "All" ? `&status=${selectedStatus}` : ""}${fromDate ? `&start_date=${moment(fromDate).format("YYYY-MM-DD")}` : ""}${toDate ? `&submission_date=${moment(toDate).format("YYYY-MM-DD")}` : ""}`,
       onSuccess: (res: any) => {
         const accData = res?.data?.response;
         const respData = accData?.results;
