@@ -717,7 +717,9 @@ export default function Index() {
                   StudentAssignmentData &&
                   StudentAssignmentData.length &&
                   StudentAssignmentData.filter(
-                    (ele: any) => ele.state === 'Submitted'
+                    (ele: any) =>
+                      ele.state === 'Submitted' ||
+                      ele.state === 'Auto Submitted'
                   ).map((ele: any) => ({
                     FirstName: ele.first_name,
                     LastName: ele.last_name,
@@ -739,7 +741,9 @@ export default function Index() {
                   StudentAssignmentData.length &&
                   StudentAssignmentData.filter(
                     (ele: any) =>
-                      ele.state !== 'Submitted' && ele.state !== 'Completed'
+                      ele.state !== 'Submitted' &&
+                      ele.state !== 'Completed' &&
+                      ele.state !== 'Auto Submitted'
                   ).map((ele: any) => ({
                     FirstName: ele.first_name,
                     LastName: ele.last_name,
