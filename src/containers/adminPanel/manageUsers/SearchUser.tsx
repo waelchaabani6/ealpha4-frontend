@@ -89,7 +89,7 @@ export default function SearchUser({
         </div>
         {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
       </div>
-      <p>Search for user by username, email or first name.</p>
+      <p>Search for user by username, email, first name, role or school.</p>
     </div>
   );
 }
