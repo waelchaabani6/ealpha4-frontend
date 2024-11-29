@@ -1,3 +1,5 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable comma-dangle */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import DatePicker from '@component/datepicker';
@@ -385,7 +387,7 @@ export default function Index() {
               to={subjectLink}
             >
               <span
-                className={`${ele.state === 'Submitted' ? 'text-accent' : ''} underline cursor-pointer`}
+                className={`${ele.state === 'Submitted' || ele.state === 'Auto Submitted' ? 'text-accent' : ''} underline cursor-pointer`}
               >
                 {ele.course_name}
               </span>
@@ -393,9 +395,9 @@ export default function Index() {
           ),
           State: (
             <div
-              className={`text-left whitespace-nowrap ${ele.state === 'Submitted' ? 'text-accent' : ''}`}
+              className={`text-left whitespace-nowrap ${ele.state === 'Submitted' || ele.state === 'Auto Submitted' ? 'text-accent' : ''}`}
             >
-              {ele.state}
+              {ele.state === 'Auto Submitted' ? 'Submitted' : ele.state}
             </div>
           ),
           end_date: (
@@ -422,7 +424,7 @@ export default function Index() {
           ),
           assignmentId: ele.id,
           rowSx:
-            ele.state === 'Submitted'
+            ele.state === 'Submitted' || ele.state === 'Auto Submitted'
               ? { td: { color: 'var(--accent)' } }
               : ele.state === 'Ongoing'
                 ? { td: { color: 'var(--sunlight)' } }
