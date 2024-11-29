@@ -121,6 +121,7 @@ export default function Index() {
   const BRANCH_ID = branchData?.school_data?.id || "";
   const noOfpages = getNoOfPages(totalRecords, rowsPerPage);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [inactiveDialogOpen, setInactiveDialogOpen] = useState<boolean>(false);
   const [popupTitle, setPopupTitle] = useState("");
   // const [popupData, setpopupData] = useState<any>({});
   const [popupData, setpopupData] = useState<any>({
@@ -255,7 +256,7 @@ export default function Index() {
                 className="text-accent underline cursor-pointer text-xs font-medium"
                 onClick={() => {
                   setPopupTitle("Students List");
-                  setDialogOpen(true);
+                  setInactiveDialogOpen(true);
                   setpopupData((prev) => ({
                     ...prev,
                     active_students: [],
@@ -453,7 +454,7 @@ export default function Index() {
         }}
         title={popupTitle}
       >
-        {popupData?.active_students.length > 0 && (
+        {popupData?.active_students.length > 0 ? (
           <>
             <PageTitle title="Active students" />
             <Wrapper>
@@ -463,24 +464,35 @@ export default function Index() {
               />
             </Wrapper>
           </>
+        ) : (
+          <>
+            <p>No data found</p>
+          </>
         )}
-
-        {popupData?.inactive_students &&
-          (popupData?.inactive_students.length > 0 ? (
-            <>
-              <PageTitle title="Inactive students" />
-              <Wrapper>
-                <AdvanceTable
-                  tableData={popupData?.inactive_students}
-                  headerRows={DialogTableColumns}
-                />
-              </Wrapper>
-            </>
-          ) : (
-            <>
-              <p>No data found</p>
-            </>
-          ))}
+      </CustomizedDialogs>
+      <CustomizedDialogs
+        maxwidth="sm"
+        open={inactiveDialogOpen}
+        setOpen={() => {
+          setInactiveDialogOpen(false);
+        }}
+        title={popupTitle}
+      >
+        {popupData?.inactive_students.length > 0 ? (
+          <>
+            <PageTitle title="Inactive students" />
+            <Wrapper>
+              <AdvanceTable
+                tableData={popupData?.inactive_students}
+                headerRows={DialogTableColumns}
+              />
+            </Wrapper>
+          </>
+        ) : (
+          <>
+            <p>No data found</p>
+          </>
+        )}
       </CustomizedDialogs>
     </RouteLayout>
   );
