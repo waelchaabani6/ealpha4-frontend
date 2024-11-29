@@ -354,7 +354,7 @@ export default function CompletedAssessments() {
             value={rowsPerPage}
             dataArray={RESULTS_PER_PAGE}
             onChangeHandler={handlePerPage}
-            sxClass={{ width: "95px", marginRight: "5px" }}
+            sxClass={{ width: "100px", marginRight: "5px" }}
           />
           <div className="flex gap-2 justify-center items-center h-[36px]">
             <span
