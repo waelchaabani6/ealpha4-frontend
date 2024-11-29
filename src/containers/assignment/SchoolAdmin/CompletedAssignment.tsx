@@ -331,7 +331,7 @@ export default function CompletedAssignment() {
             </div>
           );
         } else {
-          classElement = `<div>${classes}</div>`;
+          classElement = `${classes}`;
         }
         return {
           ...ele,

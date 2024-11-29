@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable operator-linebreak */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable no-confusing-arrow */
@@ -377,6 +378,7 @@ export default function AssignPermission() {
                     (ele: any) => ({ label: ele.name, value: ele.id })
                   )}
                   displayEmpty={true}
+                  disabled={location?.state?.id && location?.state?.id}
                 />
               </div>
               <Input

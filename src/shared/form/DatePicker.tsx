@@ -23,9 +23,11 @@ type DatePickerProps = {
   required?: boolean;
   sxClass?: any;
   padding?:boolean;
+  autoComplete?: string; // Optional autoComplete prop
 }
 
 export default function DatePicker(props: DatePickerProps) {
+  const { autoComplete = 'on' } = props;
   const [open, setOpen] = useState<boolean>(false);
   const togglePicker = () => setOpen(!open);
   return (
@@ -76,6 +78,7 @@ export default function DatePicker(props: DatePickerProps) {
                 size="small"
                 error={!!error}
                 className="w-full"
+                autoComplete={autoComplete}
                 sx={
                   {
                     '.Mui-disabled': {

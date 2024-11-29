@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable operator-linebreak */
 /* eslint-disable no-confusing-arrow */
@@ -159,6 +160,21 @@ export default function Index() {
         />
       ),
     },
+  ];
+  const ADMIN_TOOLBAR_MENU_GRAPH = [
+    // {
+    //   title: 'Export',
+    //   icon: (
+    //     <CSVLink
+    //       filename="Report Assignment Details.csv"
+    //       data={csvData}
+    //       headers={headers}
+    //       enclosingCharacter=""
+    //     >
+    //       <Share />
+    //     </CSVLink>
+    //   ),
+    // },
   ];
 
   const TableColumns = [
@@ -430,7 +446,9 @@ export default function Index() {
     >
       <HeaderMenus
         title={`Report -  ${view === 'default' ? 'Assignments Details' : 'Multiple Assignments Student Level'}`}
-        menuArray={ADMIN_TOOLBAR_MENU}
+        menuArray={
+          view === 'default' ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
+        }
         handleToolbarAction={handleToolbarAction}
       />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">

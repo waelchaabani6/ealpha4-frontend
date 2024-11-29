@@ -57,21 +57,23 @@ export default function StudentCompletedAssessmentList() {
     {
       label: TABLE_LABELS?.STUDENT_NAME,
       mapper: "student_name",
+      filter_by: "first_name",
       isSort: true,
     },
     {
       label: TABLE_LABELS?.START_DATE,
-      isSort: true,
+      isSort: false,
       mapper: "start_date",
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
-      isSort: true,
+      isSort: false,
       mapper: "submission_date",
     },
     {
       label: TABLE_LABELS?.SCORE,
       isSort: true,
+      filter_by: "score",
       mapper: "percentage",
     },
   ];
@@ -161,7 +163,7 @@ export default function StudentCompletedAssessmentList() {
             item?.student_name,
             item?.start_date,
             item?.submission_date,
-            item?.score,
+            item?.percentage,
           ]);
 
           const link2 = `/${schoolNameInURL}/assessments/assigned/completed_assessments/completed_assessment_student_list/student_report/${aid}?user=${item?.user_ting}`;

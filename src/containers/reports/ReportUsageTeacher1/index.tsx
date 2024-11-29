@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import ButtonToggle from '@component/ToggleButton/ToggleButton';
 import DatePicker from '@component/datepicker';
@@ -78,7 +79,7 @@ export default function Index() {
     TABLE_LABELS?.CLASS,
     TABLE_LABELS?.CLASSES_TAUGHT,
     TABLE_LABELS?.TEACHER,
-    TABLE_LABELS?.PROGRAM,
+    TABLE_LABELS?.COURSES,
     TABLE_LABELS?.ACTIVE_DAYS,
     TABLE_LABELS?.CONTENT_OPENED,
     TABLE_LABELS?.CONTENT_COMPLETED,
@@ -113,6 +114,23 @@ export default function Index() {
       ),
     },
   ];
+
+  const ADMIN_TOOLBAR_MENU_GRAPH = [
+    // {
+    //   title: 'Export',
+    //   icon: (
+    //     <CSVLink
+    //       filename="Teacher-1 usage Report.csv"
+    //       data={csvData}
+    //       headers={csvSubHeaders}
+    //       enclosingCharacter=""
+    //     >
+    //       <Share />
+    //     </CSVLink>
+    //   ),
+    // },
+  ];
+
   const handleToolbarAction = async (title: string) => {
     if (title === TOOLBAR_LABELS.EMAIL) {
       handelSendEmail();
@@ -138,7 +156,7 @@ export default function Index() {
       mapper: 'Teacher',
     },
     {
-      label: TABLE_LABELS?.PROGRAM,
+      label: TABLE_LABELS?.COURSES,
       mapper: 'Program',
     },
     {
@@ -368,7 +386,9 @@ export default function Index() {
     <RouteLayout>
       <HeaderMenus
         title={`Report - Usage for Teacher - 1 ${view === 'default' ? '' : ' - Graph View'}`}
-        menuArray={ADMIN_TOOLBAR_MENU}
+        menuArray={
+          view === 'default' ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
+        }
         handleToolbarAction={handleToolbarAction}
       />
 
@@ -435,7 +455,7 @@ export default function Index() {
           </>
         ) : (
           <Dropdown
-            title="Select Program"
+            title="Select Course"
             value={selectedprogram}
             dataArray={[
               { label: 'Select', value: 'select' },

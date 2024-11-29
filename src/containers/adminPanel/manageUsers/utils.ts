@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable comma-dangle */
 import { COMPONENTS, TABLE_LABELS, USER_ROLE } from '@constants/constants';

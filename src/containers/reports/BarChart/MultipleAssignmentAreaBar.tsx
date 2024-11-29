@@ -1,5 +1,5 @@
-import { GRAPH_LABELS } from '@constants/constants';
-import React from 'react';
+import { GRAPH_LABELS } from "@constants/constants";
+import React from "react";
 import {
   ComposedChart,
   Area,
@@ -7,7 +7,7 @@ import {
   XAxis,
   YAxis,
   ResponsiveContainer,
-} from 'recharts';
+} from "recharts";
 
 type Props = {
   performance: (string | number)[];
@@ -36,21 +36,32 @@ const CustomLegend = () => (
 );
 
 function MultipleAssignmentAreaBar(prop: Props) {
+  const expectations = [
+    { label: "Exceeds", from: 81, to: 100, color: "#BECCFF" },
+    { label: "Above", from: 66, to: 80, color: "#D9FFC8" },
+    { label: "Meets", from: 56, to: 65, color: "#FFF9BE" },
+    { label: "Approaching", from: 35, to: 55, color: "#FFD6A5" },
+    { label: "Does Not Meet", from: 0, to: 34, color: "#FCD4C6" },
+  ];
+
   const { performance } = prop;
-  const makeLabel = (value: number) => {
-    if (value >= 80) {
-      return 'Exceeds';
+  const makeLabel = (value) => {
+    if (value >= 81) {
+      return "Exceeds";
     }
-    if (value >= 60) {
-      return 'Meets';
+    if (value >= 66) {
+      return "Above";
     }
-    if (value >= 40) {
-      return 'Approaching';
+    if (value >= 56) {
+      return "Meets";
     }
-    if (value >= 20) {
-      return 'Does Not Meet';
+    if (value >= 35) {
+      return "Approaching";
     }
-    return '0';
+    if (value > 0) {
+      return "Does Not Meet";
+    }
+    return "Zero";
   };
 
   const myTick = (props: any) => {
@@ -86,11 +97,17 @@ function MultipleAssignmentAreaBar(prop: Props) {
             width={140}
             tick={myTick}
             domain={[0, 100]}
+            ticks={[34, 55, 65, 80, 100]}
           />
-          <Area type="monotone" dataKey="area4" fill="#D9FFC8" stroke="none" />
-          <Area type="monotone" dataKey="area3" fill="#BECCFF" stroke="none" />
-          <Area type="monotone" dataKey="area2" fill="#FFF9BE" stroke="none" />
-          <Area type="monotone" dataKey="area1" fill="#FCD4C6" stroke="none" />
+          {expectations.map((expectation, index) => (
+            <Area
+              key={index}
+              type="monotone"
+              dataKey={`area${expectations.length - index}`} // area4, area3, etc.
+              fill={expectation.color}
+              stroke="none"
+            />
+          ))}
           <Bar
             barSize={16}
             dataKey="class_percent"

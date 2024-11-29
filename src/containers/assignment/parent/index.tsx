@@ -1,32 +1,32 @@
-import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import Button from '@component/button/button';
-import DatePicker from '@component/datepicker';
-import Dropdown from '@component/dropdown/Dropdown';
-import DebounceInput from '@component/input/DebounceInput';
-import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import EmailIcon from '@mui/icons-material/Email';
-import PrintIcon from '@mui/icons-material/Print';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { useGet } from '@shared/api/useApi';
-import Loader from '@shared/loader';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import { selectUser } from '@shared/store/userSlice';
-import toast from '@shared/toast';
-import { getNoOfPages } from '@utility/utility';
-import moment from 'moment';
-import { useEffect, useRef, useState } from 'react';
-import { CSVLink } from 'react-csv';
-import { useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
-import ReactToPrint from 'react-to-print';
-import CustomPagination from '../../../components/pagination/CustomPagination';
+import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
+import Button from "@component/button/button";
+import DatePicker from "@component/datepicker";
+import Dropdown from "@component/dropdown/Dropdown";
+import DebounceInput from "@component/input/DebounceInput";
+import { ReactComponent as Share } from "@images/pageHeaderIcons/share.svg";
+import EmailIcon from "@mui/icons-material/Email";
+import PrintIcon from "@mui/icons-material/Print";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import { useGet } from "@shared/api/useApi";
+import Loader from "@shared/loader";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
+import { selectUser } from "@shared/store/userSlice";
+import toast from "@shared/toast";
+import { getNoOfPages } from "@utility/utility";
+import moment from "moment";
+import { useEffect, useRef, useState } from "react";
+import { CSVLink } from "react-csv";
+import { useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import ReactToPrint from "react-to-print";
+import CustomPagination from "../../../components/pagination/CustomPagination";
 import {
   RESULTS_PER_PAGE,
   TABLE_LABELS,
   TOOLBAR_LABELS,
-} from '../../../constants/constants';
-import Wrapper from '../../../shared/wrapper/Wrapper';
-import RouteLayout from '../../layout/routeLayout';
+} from "../../../constants/constants";
+import Wrapper from "../../../shared/wrapper/Wrapper";
+import RouteLayout from "../../layout/routeLayout";
 
 const printButton = () => <PrintIcon />;
 const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
@@ -56,75 +56,75 @@ export default function Index() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center',
+      align: "center",
     },
     {
       label: TABLE_LABELS?.ASSIGNMET_NAME,
-      mapper: 'assignment_name',
+      mapper: "assignment_name",
       isSort: true,
     },
     {
       label: TABLE_LABELS?.COURSES,
       isSort: true,
-      mapper: 'course_name',
+      mapper: "course_name",
     },
     {
       label: TABLE_LABELS?.TEACHER,
       isSort: true,
-      mapper: 'teacher_name',
+      mapper: "teacher_name",
     },
     {
       label: TABLE_LABELS?.LESSONS,
-      mapper: 'lesson_name',
+      mapper: "lesson_name",
     },
     {
       label: TABLE_LABELS?.STATUS,
-      align: 'center',
-      mapper: 'state',
+      align: "center",
+      mapper: "state",
     },
     {
       label: TABLE_LABELS?.START_DATE,
       isSort: true,
-      mapper: 'start_date',
-      format: 'DD-MM-YYYY',
+      mapper: "start_date",
+      format: "DD-MM-YYYY",
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
       isSort: true,
-      mapper: 'end_date',
-      format: 'DD-MM-YYYY',
+      mapper: "end_date",
+      format: "DD-MM-YYYY",
     },
     {
       label: TABLE_LABELS?.SCORE,
       isSort: true,
-      mapper: 'score',
+      mapper: "score",
     },
     {
       label: TABLE_LABELS?.ACTION,
-      mapper: 'action',
-      align: 'center',
+      mapper: "action",
+      align: "center",
     },
   ];
 
   const statusArray = [
-    { label: 'All', value: 'All' },
-    { label: 'Ongoing', value: 'Ongoing' },
-    { label: 'Submitted', value: 'Submitted' },
-    { label: 'Yet to Start', value: 'Yet to start' },
+    { label: "All", value: "All" },
+    { label: "Ongoing", value: "Ongoing" },
+    { label: "Submitted", value: "Submitted" },
+    { label: "Yet to Start", value: "Yet to start" },
   ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
   const [page, setPage] = useState(1);
   const [totalDataCount, setTotalDataCount] = useState(0);
-  const [searchString, setSearchString] = useState('');
+  const [searchString, setSearchString] = useState("");
 
-  const [order, setOrder] = useState<any>('desc');
-  const [orderBy, setOrderBy] = useState<any>('created_at');
-  const [fromDate, setFromDate] = useState<any>('');
-  const [toDate, setToDate] = useState<any>('');
+  const [order, setOrder] = useState<any>("desc");
+  const [orderBy, setOrderBy] = useState<any>("created_at");
+  const [fromDate, setFromDate] = useState<any>("");
+  const [toDate, setToDate] = useState<any>("");
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
-  const [selectedStatus, setSelectedStatus] = useState<string>('All');
-  const [selectedChild, setSelectedChild] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<string>("All");
+  const [selectedChild, setSelectedChild] = useState("");
   const [childrenData, setChildrenData] = useState<any>([]);
 
   const componentRef = useRef(null);
@@ -149,8 +149,11 @@ export default function Index() {
   };
 
   const reset = () => {
-    setToDate('');
-    setFromDate('');
+    setToDate("");
+    setFromDate("");
+  };
+  const handlePerPage = (e: any) => {
+    setRowsPerPage(e);
   };
 
   // Toolbar Email
@@ -163,13 +166,13 @@ export default function Index() {
     url: `assignments-service/student-assigned-pdf-download/?student_id=${selectedChild}`,
     onSuccess: (response: any) => {
       toast(
-        'success',
-        'Email sent successfully to you, please check your inbox'
+        "success",
+        "Email sent successfully to you, please check your inbox"
       );
     },
     retry: false,
     onError: ({ response }: any) => {
-      toast('error', response?.data?.message || 'Unable to send email');
+      toast("error", response?.data?.message || "Unable to send email");
     },
     enabled: false,
   });
@@ -237,11 +240,11 @@ export default function Index() {
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
-  const ordering = orderBy ? (order === 'asc' ? orderBy : `-${orderBy}`) : '';
+  const ordering = orderBy ? (order === "asc" ? orderBy : `-${orderBy}`) : "";
   const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
     useGet({
       baseURL,
-      url: `assignments-service/student/assignment/list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}${searchString ? `&search=${searchString}` : ''}${selectedStatus !== 'All' ? `&state=${selectedStatus}` : ''}${selectedChild ? `&student_id=${selectedChild}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&end_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}`,
+      url: `assignments-service/student/assignment/list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}${searchString ? `&search=${searchString}` : ""}${selectedStatus !== "All" ? `&state=${selectedStatus}` : ""}${selectedChild ? `&student_id=${selectedChild}` : ""}${fromDate ? `&start_date=${moment(fromDate).format("YYYY-MM-DD")}` : ""}${toDate ? `&end_date=${moment(toDate).format("YYYY-MM-DD")}` : ""}`,
       onSuccess: (res: any) => {
         const accData = res?.data;
         const respData = accData?.results;
@@ -262,7 +265,7 @@ export default function Index() {
           const temp = {
             ...item,
             action:
-              item.state === 'Completed' ? (
+              item.state === "Completed" ? (
                 <Button onClick={() => handleButtonClick(item)}>
                   Get Report
                 </Button>
@@ -322,6 +325,9 @@ export default function Index() {
             value={selectedStatus}
             dataArray={statusArray}
             onChangeHandler={(value) => setSelectedStatus(value)}
+            sxClass={{
+              width: "200px", // Override the width to 250px
+            }}
           />
           <Dropdown
             title="Select Child"
@@ -330,6 +336,9 @@ export default function Index() {
             dataArray={childrenData}
             onChangeHandler={(value) => setSelectedChild(value)}
             loading={childrenLoading}
+            sxClass={{
+              width: "230px", // Override the width to 250px
+            }}
           />
           <div>
             <DatePicker
@@ -355,6 +364,13 @@ export default function Index() {
               format="YYYY-MM-DD"
             />
           </div>
+          <Dropdown
+            title="Result Of Pages"
+            value={rowsPerPage}
+            dataArray={RESULTS_PER_PAGE}
+            onChangeHandler={handlePerPage}
+            sxClass={{ width: "100px", marginRight: "5px" }}
+          />
           {fromDate || toDate ? (
             <div className="flex gap-2 justify-center items-center h-[36px]">
               <span

@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable comma-dangle */
 import { useEffect, useState } from 'react';
@@ -20,7 +21,7 @@ export default function manageUsers() {
 
   const { isFetching: LogListLoading, refetch: fetchUsers } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
-    url: `users-service/user-search?username=${searchString}&limit=${rowsPerPage}&offset=${(page - 1) * rowsPerPage}`,
+    url: `users-service/user-search?search_in=${searchString}&limit=${rowsPerPage}&offset=${(page - 1) * rowsPerPage}`,
     onSuccess: (res: any) => {
       const respData = res?.data?.results;
       setTotalDataCount(res?.data?.count);
@@ -37,6 +38,7 @@ export default function manageUsers() {
             role_name: USER_ROLE_LIST_LABEL.find(
               (obj: any) => obj.id === item1.role_id
             ).label,
+            school_name: item1?.school_name,
           });
           return body;
         });
