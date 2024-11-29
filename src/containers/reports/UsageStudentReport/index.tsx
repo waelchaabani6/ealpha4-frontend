@@ -351,14 +351,6 @@ export default function Index() {
             )}
 
             <Dropdown
-              title="Result Of Pages"
-              value={rowsPerPage}
-              dataArray={RESULTS_PER_PAGE}
-              onChangeHandler={handlePerPage}
-              sxClass={{ width: "100%" }}
-            />
-
-            <Dropdown
               title="Select a class"
               value={selectedClass}
               loading={schoolClassLoading}
@@ -414,6 +406,13 @@ export default function Index() {
           // disableFuture={new Date() <= currentUserAcademicDate()?.end ? new Date() : currentUserAcademicDate()?.end}
           handlePickerChange={(date: string) => setToDate(date)}
           shouldDisableDate={() => false}
+        />
+        <Dropdown
+          title="Result Of Pages"
+          value={rowsPerPage}
+          dataArray={RESULTS_PER_PAGE}
+          onChangeHandler={handlePerPage}
+          sxClass={{ width: "100%" }}
         />
         <div className={` flex gap-x-4 items-center  pt-2 lg:pt-6`}>
           {(toDate || fromDate) && (
