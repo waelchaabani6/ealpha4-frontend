@@ -572,9 +572,18 @@ export default function Index() {
         }}
         title={popupTitle}
       >
-        <Wrapper>
-          <AdvanceTable tableData={popupData} headerRows={DialogTableColumns} />
-        </Wrapper>
+        {popupData?.length > 0 ? (
+          <Wrapper>
+            <AdvanceTable
+              tableData={popupData}
+              headerRows={DialogTableColumns}
+            />
+          </Wrapper>
+        ) : (
+          <div className="flex justify-center items-center">
+            <span>No data found</span>
+          </div>
+        )}
       </CustomizedDialogs>
     </RouteLayout>
   );
