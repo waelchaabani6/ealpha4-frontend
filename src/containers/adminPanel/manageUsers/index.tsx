@@ -1,27 +1,29 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable comma-dangle */
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
-import RouteLayout from '@layout/routeLayout';
-import { useGet } from '@shared/api/useApi';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import { USER_ROLE_LIST_LABEL } from '@constants/constants';
+import RouteLayout from "@layout/routeLayout";
+import { useGet } from "@shared/api/useApi";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
+import { USER_ROLE_LIST_LABEL } from "@constants/constants";
 
-import SearchUser from './SearchUser';
-import SearchResults from './SearchResults';
+import SearchUser from "./SearchUser";
+import SearchResults from "./SearchResults";
 
 export default function manageUsers() {
-  const [searchString, setSearchVal] = useState('');
+  const [searchString, setSearchVal] = useState("");
   const [searchData, setSearchData] = useState<any>([]);
 
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(10 as number | "All");
   const [page, setPage] = useState(1);
   const [totalDataCount, setTotalDataCount] = useState(0);
 
   const { isFetching: LogListLoading, refetch: fetchUsers } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
-    url: `users-service/user-search?search_in=${searchString}&limit=${rowsPerPage}&offset=${(page - 1) * rowsPerPage}`,
+    url: `users-service/user-search?search_in=${searchString}&limit=${
+      rowsPerPage === "All" ? "All" : rowsPerPage
+    }&offset=${rowsPerPage === "All" ? 0 : (page - 1) * rowsPerPage}`,
     onSuccess: (res: any) => {
       const respData = res?.data?.results;
       setTotalDataCount(res?.data?.count);

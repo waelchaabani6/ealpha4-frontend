@@ -1,28 +1,28 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable operator-linebreak */
 /* eslint-disable comma-dangle */
-import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import CustomizedDialogs from '@component/dialog/CustomDialog';
+import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
+import CustomizedDialogs from "@component/dialog/CustomDialog";
 import {
   PASSWORD_REGEX,
   PASSWORD_REGEX_MESSAGE,
   RESULTS_PER_PAGE,
-} from '@constants/constants';
-import { yupResolver } from '@hookform/resolvers/yup';
-import PageTitle from '@shared/pageTitle';
-import Wrapper from '@shared/wrapper/Wrapper';
-import { getNoOfPages } from '@utility/utility';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import Input from '@shared/form/Input';
+} from "@constants/constants";
+import { yupResolver } from "@hookform/resolvers/yup";
+import PageTitle from "@shared/pageTitle";
+import Wrapper from "@shared/wrapper/Wrapper";
+import { getNoOfPages } from "@utility/utility";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import Input from "@shared/form/Input";
 
-import * as yup from 'yup';
-import Button from '@component/button/button';
-import toast from '@shared/toast';
-import { usePost } from '@shared/api/useApi';
-import Dropdown from '@component/dropdown/Dropdown';
-import Loader from '@shared/loader';
-import { TableColumns } from './utils';
+import * as yup from "yup";
+import Button from "@component/button/button";
+import toast from "@shared/toast";
+import { usePost } from "@shared/api/useApi";
+import Dropdown from "@component/dropdown/Dropdown";
+import Loader from "@shared/loader";
+import { TableColumns } from "./utils";
 
 type FormInputTypes = {
   username: any;
@@ -33,7 +33,7 @@ const userServiceBaseURL = import.meta.env.VITE_APP_USER_SERVICE_URL;
 
 type SearchResultsProps = {
   searchData: any;
-  rowsPerPage: number;
+  rowsPerPage: number | "All";
   page: number;
   setPage: any;
   totalDataCount: number;
@@ -50,8 +50,8 @@ export default function SearchResults({
   setRowsPerPage,
   LogListLoading,
 }: SearchResultsProps) {
-  const [order, setOrder] = useState<any>('desc');
-  const [orderBy, setOrderBy] = useState<any>('assessment_name');
+  const [order, setOrder] = useState<any>("desc");
+  const [orderBy, setOrderBy] = useState<any>("assessment_name");
 
   const [dialogOpen, setdialogOpen] = useState<boolean>(false);
   const [buttonOpenForm, setButtonOpenForm] = useState<boolean>(false);
@@ -60,7 +60,7 @@ export default function SearchResults({
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
 
   const shape = {
-    confirm_password: yup.string().when('confirm_password', {
+    confirm_password: yup.string().when("confirm_password", {
       is: (val: any) => val?.length,
       then: yup.string().matches(PASSWORD_REGEX, PASSWORD_REGEX_MESSAGE),
       otherwise: yup.string().optional(),
@@ -74,7 +74,7 @@ export default function SearchResults({
 
   const addSubAdminSchema = yup
     .object()
-    .shape(shape, [['confirm_password', 'confirm_password']]);
+    .shape(shape, [["confirm_password", "confirm_password"]]);
 
   const { handleSubmit, control, reset, setValue } = useForm<FormInputTypes>({
     resolver: yupResolver(addSubAdminSchema),
@@ -94,23 +94,23 @@ export default function SearchResults({
 
   const viewHandler = (data: any, handlername: string) => {
     setdialogOpen(true);
-    setValue('username', data?.user_name);
+    setValue("username", data?.user_name);
   };
 
   // Update Parent
   const { isLoading: loadingUpdateUser, mutate: mutateUpdateUser } = usePost({
     baseURL: userServiceBaseURL,
-    url: 'users-service/reset-password/reset-user-password/',
+    url: "users-service/reset-password/reset-user-password/",
     onSuccess: (response: any) => {
-      toast('success', 'User Updated successfully');
+      toast("success", "User Updated successfully");
       setdialogOpen(false);
     },
     onError: ({ response }: any) => {
       toast(
-        'error',
+        "error",
         response?.status === 400
-          ? 'User already exists'
-          : response?.statusText || 'Error'
+          ? "User already exists"
+          : response?.statusText || "Error"
       );
     },
   });
@@ -155,7 +155,7 @@ export default function SearchResults({
         onclose={() => reset()}
         open={dialogOpen}
         setOpen={() => setdialogOpen(false)}
-        title={editMode ? 'Edit User' : 'Reset Password'}
+        title={editMode ? "Edit User" : "Reset Password"}
       >
         <form
           className="h-full pb-6"
@@ -177,7 +177,7 @@ export default function SearchResults({
               disabled={true}
               sxClass={{
                 'input[type="text"]': {
-                  textTransform: 'lowercase',
+                  textTransform: "lowercase",
                 },
               }}
               tolowercase={true}
@@ -198,7 +198,7 @@ export default function SearchResults({
               loading={loadingUpdateUser}
               onClick={() => setButtonOpenForm(false)}
             >
-              {editMode ? 'Update' : 'Reset'}
+              {editMode ? "Update" : "Reset"}
             </Button>
           </div>
         </form>
