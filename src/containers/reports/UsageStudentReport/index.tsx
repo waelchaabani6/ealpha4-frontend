@@ -311,8 +311,13 @@ export default function Index() {
   }, []);
 
   const handlePerPage = (e: any) => {
-    setPage(page);
-    setRowsPerPage(e);
+    if (e === "All") {
+      setRowsPerPage(e);
+      setPage(1);
+    } else {
+      setRowsPerPage(e);
+      setPage(page);
+    }
   };
 
   return (
