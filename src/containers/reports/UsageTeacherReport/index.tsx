@@ -1,3 +1,6 @@
+/* eslint-disable operator-linebreak */
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable linebreak-style */
 /* eslint-disable comma-dangle */
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
@@ -259,11 +262,11 @@ export default function Index() {
     }));
   }, [data]);
 
-  useEffect(() => {
-    if (data) {
-      console.log('API Response:', data?.data?.response);
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data) {
+  //     console.log('API Response:', data?.data?.response);
+  //   }
+  // }, [data]);
 
   const CSVDataFunction = () => {
     const csvdata = tableData?.map((i: any) => [
@@ -356,13 +359,6 @@ export default function Index() {
             )}
 
             <Dropdown
-              title="Result Of Pages"
-              value={rowsPerPage}
-              dataArray={RESULTS_PER_PAGE}
-              onChangeHandler={handlePerPage}
-              sxClass={{ width: '100%' }}
-            />
-            <Dropdown
               title="Teacher Name"
               loading={teacherListLoading}
               value={selectedteacher}
@@ -433,6 +429,15 @@ export default function Index() {
           handlePickerChange={(date: string) => setToDate(date)}
           shouldDisableDate={() => false}
         />
+
+        <Dropdown
+          title="Result Of Pages"
+          value={rowsPerPage}
+          dataArray={RESULTS_PER_PAGE}
+          onChangeHandler={handlePerPage}
+          sxClass={{ width: '100%' }}
+        />
+
         <div className={` flex gap-x-4 items-center  pt-2 lg:pt-6`}>
           {(toDate || fromDate) && (
             <span
@@ -445,6 +450,7 @@ export default function Index() {
             </span>
           )}
         </div>
+
         <div
           className={`${view === 'default' ? 'lg:col-auto' : 'lg:col-span-3'} mt-3 flex justify-end`}
         >
