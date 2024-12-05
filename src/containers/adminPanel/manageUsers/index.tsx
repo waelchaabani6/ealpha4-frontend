@@ -1,29 +1,53 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable comma-dangle */
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-import RouteLayout from "@layout/routeLayout";
-import { useGet } from "@shared/api/useApi";
-import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
-import { USER_ROLE_LIST_LABEL } from "@constants/constants";
+import RouteLayout from '@layout/routeLayout';
+import { useGet } from '@shared/api/useApi';
+import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
+import { USER_ROLE_LIST_LABEL } from '@constants/constants';
 
-import SearchUser from "./SearchUser";
-import SearchResults from "./SearchResults";
+import SearchUser from './SearchUser';
+import SearchResults from './SearchResults';
 
 export default function manageUsers() {
-  const [searchString, setSearchVal] = useState("");
+  const [searchString, setSearchVal] = useState('');
   const [searchData, setSearchData] = useState<any>([]);
 
-  const [rowsPerPage, setRowsPerPage] = useState(10 as number | "All");
+  const [rowsPerPage, setRowsPerPage] = useState(10 as number | 'All');
   const [page, setPage] = useState(1);
   const [totalDataCount, setTotalDataCount] = useState(0);
+  const [order, setOrder] = useState<any>('asc');
+  const [orderBy, setOrderBy] = useState<any>('username');
+
+  const formatOrderBy = (orderString: string) => {
+    if (orderString === 'user_name') {
+      return 'username';
+    }
+    if (orderString === 'first_name') {
+      return 'firstname';
+    }
+    if (orderString === 'last_name') {
+      return 'lastname';
+    }
+    if (orderString === 'school_name') {
+      return 'schoolname';
+    }
+    if (orderString === 'role') {
+      return 'role';
+    }
+    return '';
+  };
+
+  const formattedOrderby = formatOrderBy(orderBy);
+  const ordering = order === 'asc' ? formattedOrderby : `-${formattedOrderby}`;
 
   const { isFetching: LogListLoading, refetch: fetchUsers } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
     url: `users-service/user-search?search_in=${searchString}&limit=${
-      rowsPerPage === "All" ? "All" : rowsPerPage
-    }&offset=${rowsPerPage === "All" ? 0 : (page - 1) * rowsPerPage}`,
+      rowsPerPage === 'All' ? 'All' : rowsPerPage
+    }&offset=${rowsPerPage === 'All' ? 0 : (page - 1) * rowsPerPage}&ordering=${ordering}`,
     onSuccess: (res: any) => {
       const respData = res?.data?.results;
       setTotalDataCount(res?.data?.count);
@@ -53,7 +77,7 @@ export default function manageUsers() {
 
   useEffect(() => {
     searchData?.length && fetchUsers();
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, orderBy, order]);
 
   return (
     <RouteLayout navBack={true}>
@@ -76,6 +100,10 @@ export default function manageUsers() {
           totalDataCount={totalDataCount}
           page={page}
           LogListLoading={LogListLoading}
+          setOrderBy={setOrderBy}
+          setOrder={setOrder}
+          order={order}
+          orderBy={orderBy}
         />
       </div>
     </RouteLayout>
