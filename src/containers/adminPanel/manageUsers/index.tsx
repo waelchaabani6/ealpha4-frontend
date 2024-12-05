@@ -53,13 +53,14 @@ export default function manageUsers() {
       setTotalDataCount(res?.data?.count);
 
       const body: any = [];
+
       if (respData?.length) {
-        respData.map((item1: any) => {
+        respData?.map((item1: any) => {
           body.push({
             user_name: item1?.user_name,
-            first_name: item1?.profile.first_name,
-            id: item1?.profile.id,
-            last_name: item1?.profile.last_name,
+            first_name: item1?.profile?.first_name,
+            id: item1?.profile?.id,
+            last_name: item1?.profile?.last_name,
             role_id: item1?.role_id,
             role_name: USER_ROLE_LIST_LABEL.find(
               (obj: any) => obj.id === item1.role_id
