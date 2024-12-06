@@ -34,7 +34,7 @@ export default function manageUsers() {
     if (orderString === 'school_name') {
       return 'schoolname';
     }
-    if (orderString === 'role') {
+    if (orderString === 'role_name') {
       return 'role';
     }
     return '';
