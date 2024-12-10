@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 import {
   BRANCHES,
   SCHOOL,
@@ -117,6 +118,36 @@ export default function Index() {
       link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/notification/sms-notification`,
       img: <Notification />,
     },
+    {
+      text: 'Reports - Assignment',
+      link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/reports`,
+      img: <Reports />,
+    },
+    {
+      text: 'Reports - Course Usage',
+      link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/reports/program-usage-reports`,
+      img: <Reports />,
+    },
+    {
+      text: 'Reports - Teacher Usage',
+      link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/reports/usage-for-teacher`,
+      img: <Reports />,
+    },
+    {
+      text: 'Reports - Student Usage',
+      link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/reports/usage-for-student`,
+      img: <Reports />,
+    },
+    // {
+    //   text: 'Reports - Usage for Teacher - 1',
+    //   link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/reports/teacher-program-usage`,
+    //   img: <Reports />,
+    // },
+    // {
+    //   text: 'Reports - Usage for Teacher - 2',
+    //   link: `${SCHOOL_MANAGEMENT}/${SCHOOL}/${id}/reports/teacher-reports`,
+    //   img: <Reports />,
+    // },
   ];
 
   return (
