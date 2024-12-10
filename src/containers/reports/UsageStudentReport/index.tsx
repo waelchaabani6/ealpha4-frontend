@@ -69,6 +69,7 @@ export default function Index() {
   const [assignmentGraph, setAssignmentGraph] = useState([]);
   const [assessmentGraph, setAssessmentGraph] = useState([]);
   const [timeOpenedGraph, setTimeOpenedGraph] = useState([]);
+  const [tableData, setTableData] = useState<any>([]);
 
   const csvSubHeaders = [
     TABLE_LABELS?.CLASS,
@@ -243,6 +244,39 @@ export default function Index() {
     }`,
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.total_records);
+      const ProgramData = res?.data?.response?.data;
+      const body: any = [];
+
+      if (graph !== "yes") {
+        ProgramData?.forEach((i: any) => {
+          body.push({
+            ...i,
+            courses: (
+              <span>
+                {Object.entries(i?.courses || {}).map(
+                  ([courseName, courseId], index) => (
+                    <Link
+                      key={index}
+                      to={`/${schoolNameInURL}/reports/program-usage-detail/undefined/undefined/${courseId}/${encodeURIComponent(courseName)}`}
+                      className="text-accent underline cursor-pointer text-xs font-medium"
+                    >
+                      {courseName}
+                      {index < Object.entries(i?.courses || {}).length - 1
+                        ? ", "
+                        : ""}
+                      {/* Add a comma between course names */}
+                    </Link>
+                  )
+                )}
+              </span>
+            ),
+          });
+        });
+
+        setTableData(body); // Set the processed table data
+      } else {
+        // Handle the `graph === 'yes'` case here if needed
+      }
       setTotalData(res?.data?.response?.data);
 
       // Graph data
@@ -256,20 +290,25 @@ export default function Index() {
     },
   });
 
-  const tableData = useMemo(() => {
-    if (!data?.data?.response?.data) return []; // Safely handle if data is undefined or empty
-    return data?.data.response.data.map((itm: any) => ({
-      student_name: itm.student_name,
-      class: itm.class,
-      first_login: itm?.first_login?.replace(DateTimeRegex, "$1, $2"),
-      last_login: itm?.last_login?.replace(DateTimeRegex, "$1, $2"),
-      total_logins: itm.total_logins,
-      avg_time_per_logins: itm.avg_time_per_logins,
-      assignments_completed: itm.assignments?.completed || 0,
-      assessments_submitted: itm.assessments?.submitted || 0,
-      courses: itm.courses?.join(", "), // Combine courses into a comma-separated string
-    }));
-  }, [data]);
+  // const tableData = useMemo(() => {
+  //   if (!data?.data?.response?.data) return []; // Safely handle if data is undefined or empty
+  //   return data?.data.response.data.map((itm: any) => ({
+  //     student_name: itm.student_name,
+  //     class: itm.class,
+  //     first_login: itm?.first_login?.replace(DateTimeRegex, "$1, $2"),
+  //     last_login: itm?.last_login?.replace(DateTimeRegex, "$1, $2"),
+  //     total_logins: itm.total_logins,
+  //     avg_time_per_logins: itm.avg_time_per_logins,
+  //     assignments_completed: itm.assignments?.completed || 0,
+  //     assessments_submitted: itm.assessments?.submitted || 0,
+  //     courses: Object.entries(itm?.courses || {}).map(
+  //       ([courseName, courseId]) => ({
+  //         name: courseName,
+  //         link: `/reports/program-usage-reports/${courseId}/${encodeURIComponent(courseName)}`,
+  //       })
+  //     ),
+  //   }));
+  // }, [data]);
 
   useEffect(() => {
     if (data) {
