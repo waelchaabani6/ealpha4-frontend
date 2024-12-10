@@ -37,7 +37,7 @@ export default function CompletedAssessments() {
 
   const headers = [
     TABLE_LABELS?.SR_NO,
-    TABLE_LABELS?.ASSIGNMET_NAME,
+    TABLE_LABELS?.ASSESSMENT_NAME,
     TABLE_LABELS?.TEACHER,
     TABLE_LABELS?.START_DATE,
     TABLE_LABELS?.DUE_DATE,
@@ -124,6 +124,9 @@ export default function CompletedAssessments() {
     setToDate("");
     setFromDate("");
   };
+  const handlePerPage = (e: any) => {
+    setRowsPerPage(e);
+  };
 
   // Toolbar Email
   const {
@@ -188,11 +191,20 @@ export default function CompletedAssessments() {
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
-  const ordering = orderBy ? (order === "asc" ? orderBy : `-${orderBy}`) : "";
+  const ordering = !orderBy.includes("teacher")
+    ? order === "asc"
+      ? orderBy
+      : `-${orderBy}`
+    : "";
+  const endpointOrderBy = orderBy.includes("teacher")
+    ? order === "asc"
+      ? orderBy
+      : `-${orderBy}`
+    : "";
   const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
     useGet({
       baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-      url: `assessments-service/completed-assign-assessment-student-list/?student_id=${selectedChild}&limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}${searchString ? `&search=${searchString}` : ""}${selectedStatus !== "All" ? `&status=${selectedStatus}` : ""}${fromDate ? `&start_date=${moment(fromDate).format("YYYY-MM-DD")}` : ""}${toDate ? `&submission_date=${moment(toDate).format("YYYY-MM-DD")}` : ""}`,
+      url: `assessments-service/completed-assign-assessment-student-list/?student_id=${selectedChild}&limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&orderBy=${endpointOrderBy}${searchString ? `&search=${searchString}` : ""}${selectedStatus !== "All" ? `&status=${selectedStatus}` : ""}${fromDate ? `&start_date=${moment(fromDate).format("YYYY-MM-DD")}` : ""}${toDate ? `&submission_date=${moment(toDate).format("YYYY-MM-DD")}` : ""}`,
       onSuccess: (res: any) => {
         const accData = res?.data?.response;
         const respData = accData?.results;
@@ -298,6 +310,9 @@ export default function CompletedAssessments() {
             value={selectedStatus}
             dataArray={statusArray}
             onChangeHandler={(value) => setSelectedStatus(value)}
+            sxClass={{
+              width: "200px",
+            }}
           />
           <Dropdown
             title="Select Child"
@@ -306,6 +321,9 @@ export default function CompletedAssessments() {
             displayEmpty={true}
             onChangeHandler={(value) => setSelectedChild(value)}
             loading={childrenLoading}
+            sxClass={{
+              width: "230px",
+            }}
           />
           <div>
             <DatePicker
@@ -331,6 +349,13 @@ export default function CompletedAssessments() {
               disableOld={fromDate}
             />
           </div>
+          <Dropdown
+            title="Result Of Pages"
+            value={rowsPerPage}
+            dataArray={RESULTS_PER_PAGE}
+            onChangeHandler={handlePerPage}
+            sxClass={{ width: "100px", marginRight: "5px" }}
+          />
           <div className="flex gap-2 justify-center items-center h-[36px]">
             <span
               tabIndex={0}

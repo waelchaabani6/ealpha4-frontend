@@ -33,12 +33,16 @@ const userServiceBaseURL = import.meta.env.VITE_APP_USER_SERVICE_URL;
 
 type SearchResultsProps = {
   searchData: any;
-  rowsPerPage: number;
+  rowsPerPage: number | 'All';
   page: number;
   setPage: any;
   totalDataCount: number;
   setRowsPerPage: React.Dispatch<React.SetStateAction<number>>;
   LogListLoading: boolean;
+  setOrderBy: React.Dispatch<any>;
+  setOrder: React.Dispatch<any>;
+  order: any;
+  orderBy: any;
 };
 
 export default function SearchResults({
@@ -49,10 +53,11 @@ export default function SearchResults({
   totalDataCount,
   setRowsPerPage,
   LogListLoading,
+  setOrderBy,
+  setOrder,
+  order,
+  orderBy,
 }: SearchResultsProps) {
-  const [order, setOrder] = useState<any>('desc');
-  const [orderBy, setOrderBy] = useState<any>('assessment_name');
-
   const [dialogOpen, setdialogOpen] = useState<boolean>(false);
   const [buttonOpenForm, setButtonOpenForm] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);

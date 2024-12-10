@@ -4,38 +4,38 @@
 /* eslint-disable operator-linebreak */
 /* eslint-disable comma-dangle */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import ButtonToggle from '@component/ToggleButton/ToggleButton';
-import DatePicker from '@component/datepicker';
-import Dropdown from '@component/dropdown/Dropdown';
-import { CustomInput } from '@component/input';
+import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
+import ButtonToggle from "@component/ToggleButton/ToggleButton";
+import DatePicker from "@component/datepicker";
+import Dropdown from "@component/dropdown/Dropdown";
+import { CustomInput } from "@component/input";
 import {
   TABLE_LABELS,
   RESULTS_PER_PAGE,
   TOOLBAR_LABELS,
   USER_TYPE,
-} from '@constants/constants';
-import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import RouteLayout from '@layout/routeLayout';
-import PrintIcon from '@mui/icons-material/Print';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
+} from "@constants/constants";
+import { ReactComponent as Share } from "@images/pageHeaderIcons/share.svg";
+import RouteLayout from "@layout/routeLayout";
+import PrintIcon from "@mui/icons-material/Print";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 
-import { useGet } from '@shared/api/useApi';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import { selectSchoolData } from '@shared/store/schoolSlice';
-import toast from '@shared/toast';
-import Wrapper from '@shared/wrapper/Wrapper';
-import { getNoOfPages, sortData } from '@utility/utility';
-import moment from 'moment';
-import React, { useEffect, useRef, useState } from 'react';
-import { CSVLink } from 'react-csv';
-import { selectUser } from '@shared/store/userSlice';
-import { useSelector } from 'react-redux';
-import { Link, useLocation, useParams } from 'react-router-dom';
-import CustomizedDialogs from '@component/dialog/CustomDialog';
-import ReactToPrint from 'react-to-print';
+import { useGet } from "@shared/api/useApi";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
+import { selectSchoolData } from "@shared/store/schoolSlice";
+import toast from "@shared/toast";
+import Wrapper from "@shared/wrapper/Wrapper";
+import { getNoOfPages, sortData } from "@utility/utility";
+import moment from "moment";
+import React, { useEffect, useRef, useState } from "react";
+import { CSVLink } from "react-csv";
+import { selectUser } from "@shared/store/userSlice";
+import { useSelector } from "react-redux";
+import { Link, useLocation, useParams } from "react-router-dom";
+import CustomizedDialogs from "@component/dialog/CustomDialog";
+import ReactToPrint from "react-to-print";
 // import ProgramUsageOverview from '../BarChart/ProgramUsageOverview';
-import GraphView from './GraphView';
+import GraphView from "./GraphView";
 
 const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
 
@@ -55,13 +55,13 @@ const csvSubHeaders = [
 const TableColumns: any = [
   {
     label: TABLE_LABELS?.SR_NO,
-    mapper: 'SR_NO',
-    align: 'center',
+    mapper: "SR_NO",
+    align: "center",
   },
   {
     label: TABLE_LABELS?.COURSES,
-    mapper: 'Program',
-    align: 'center',
+    mapper: "Program",
+    align: "center",
   },
   // {
   //   label: TABLE_LABELS?.NO_OF_SCHOOL,
@@ -70,54 +70,54 @@ const TableColumns: any = [
   // },
   {
     label: TABLE_LABELS?.TOTAL_CLASS,
-    mapper: 'Class',
-    align: 'center',
+    mapper: "Class",
+    align: "center",
   },
   {
     label: TABLE_LABELS?.TOTAL_STUDENT,
-    align: 'center',
-    mapper: 'TotalStudent',
+    align: "center",
+    mapper: "TotalStudent",
   },
   {
     label: TABLE_LABELS?.TOTAL_TEACHER,
-    align: 'center',
-    mapper: 'TotalTeacher',
+    align: "center",
+    mapper: "TotalTeacher",
   },
   {
     label: TABLE_LABELS?.TOTAL_TIME_STUDENT,
-    align: 'center',
-    mapper: 'TotalTimeStudent',
+    align: "center",
+    mapper: "TotalTimeStudent",
   },
   {
     label: TABLE_LABELS?.AVG_TIME_STUDENT,
-    mapper: 'AvgTimeStudent',
-    align: 'center',
+    mapper: "AvgTimeStudent",
+    align: "center",
   },
   {
     label: TABLE_LABELS?.TOTAL_TIME_TEACHER,
-    mapper: 'TotalTimeTeacher',
-    align: 'center',
+    mapper: "TotalTimeTeacher",
+    align: "center",
   },
   {
     label: TABLE_LABELS?.AVG_TIME_TEACHER,
-    mapper: 'AvgTimeTeacher',
-    align: 'center',
+    mapper: "AvgTimeTeacher",
+    align: "center",
   },
   {
     label: TABLE_LABELS?.TOTAL_TIME_TEACH_STD,
-    mapper: 'TotalTimeTeacherStd',
-    align: 'center',
+    mapper: "TotalTimeTeacherStd",
+    align: "center",
   },
 ];
 
 const DialogTableColumns = [
   {
     label: TABLE_LABELS?.SR_NO,
-    mapper: 'id',
+    mapper: "id",
   },
   {
-    label: 'Name',
-    mapper: 'name',
+    label: "Name",
+    mapper: "name",
   },
 ];
 
@@ -127,34 +127,34 @@ export default function Index() {
   const userData = useSelector((state: any) => state?.user);
 
   const { schoolData, branchData } = useSelector(selectSchoolData);
-  const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
+  const schoolNameInURL = decodeURIComponent(location.pathname.split("/")[1]);
   const link = `/${schoolNameInURL}/reports/program-usage-detail`;
   const componentRef = useRef(null);
   const [rowsPerPage, setRowsPerPage] = useState<any>(RESULTS_PER_PAGE?.[0]);
   const USER_ROLE = userData?.role?.name;
 
   const [csvData, setCsvData] = useState<[]>([]);
-  const [view, setView] = React.useState('default');
+  const [view, setView] = React.useState("default");
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [fromDate, setFromDate] = useState<any>('');
-  const [toDate, setToDate] = useState<any>('');
-  const [xaxis, setXaxis] = useState('class');
-  const [selectedBranch, setselectedBranch] = useState('');
+  const [fromDate, setFromDate] = useState<any>("");
+  const [toDate, setToDate] = useState<any>("");
+  const [xaxis, setXaxis] = useState("class");
+  const [selectedBranch, setselectedBranch] = useState("");
   const [BranchArray, setBranchArray] = useState<any>([]);
   const [temp, setTemp] = useState(false);
   const [tableData, setTableData] = useState<any>([]);
   const [barData, setBarData] = useState<(string | number)[]>([]);
-  const [graph, setGraph] = useState('');
+  const [graph, setGraph] = useState("");
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [popupData, setpopupData] = useState<any>({});
-  const [popupTitle, setPopupTitle] = useState('');
+  const [popupTitle, setPopupTitle] = useState("");
 
   const { schoolId } = useSelector(selectUser);
   const { schoolName } = useParams();
 
-  const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || '';
-  const BRANCH_ID = branchData?.school_data?.id || '';
+  const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || "";
+  const BRANCH_ID = branchData?.id || "";
 
   const noOfpages = getNoOfPages(totalRecords, rowsPerPage);
 
@@ -166,11 +166,11 @@ export default function Index() {
     baseURL: ReportURL,
     url: `reports-service/program_usage-report/send-email/?school_id=${SCHOOL_ID}`,
     onSuccess: () => {
-      toast('success', 'Email sent successfully');
+      toast("success", "Email sent successfully");
     },
     retry: false,
     onError: ({ response }: any) => {
-      toast('error', response?.data?.message || 'Unable to send email');
+      toast("error", response?.data?.message || "Unable to send email");
     },
     enabled: false,
   }) as any;
@@ -181,10 +181,10 @@ export default function Index() {
     //   icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
     // },
     {
-      title: 'Export',
+      title: "Export",
       icon: (
         <CSVLink
-          filename="Report Program Usage.csv"
+          filename="Report Course Usage.csv"
           data={csvData}
           headers={csvSubHeaders}
           enclosingCharacter=""
@@ -194,7 +194,7 @@ export default function Index() {
       ),
     },
     {
-      title: 'Print',
+      title: "Print",
       icon: (
         <ReactToPrint
           trigger={printButton}
@@ -204,19 +204,19 @@ export default function Index() {
     },
   ];
   const ADMIN_TOOLBAR_MENU_GRAPH = [
-    {
-      title: 'Export',
-      icon: (
-        <CSVLink
-          filename="Report Program Usage.csv"
-          data={csvData}
-          headers={csvSubHeaders}
-          enclosingCharacter=""
-        >
-          <Share />
-        </CSVLink>
-      ),
-    },
+    // {
+    //   title: 'Export',
+    //   icon: (
+    //     <CSVLink
+    //       filename="Report Program Usage.csv"
+    //       data={csvData}
+    //       headers={csvSubHeaders}
+    //       enclosingCharacter=""
+    //     >
+    //       <Share />
+    //     </CSVLink>
+    //   ),
+    // },
   ];
 
   const handleToolbarAction = async (title: string) => {
@@ -231,14 +231,15 @@ export default function Index() {
   };
 
   const branchid =
-    selectedBranch !== 'All'
+    selectedBranch !== "All"
       ? BranchArray?.find((i: any) => i?.label === selectedBranch)?.id ||
         BRANCH_ID ||
-        ''
-      : '';
+        ""
+      : "";
+
   const { isFetching: reportLoading, refetch: FetchProgramUsage } = useGet({
     baseURL: ReportURL,
-    url: `reports-service/program_usage_report/?school_id=${SCHOOL_ID}${fromDate ? `&from_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&to_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}&page=${page}&page_size=${rowsPerPage}${graph ? `&is_graph=${graph}` : ''}${branchid ? `&branch_id=${branchid}` : ''}`,
+    url: `reports-service/program_usage_report/?school_id=${SCHOOL_ID}${fromDate ? `&from_date=${moment(fromDate).format("YYYY-MM-DD")}` : ""}${toDate ? `&to_date=${moment(toDate).format("YYYY-MM-DD")}` : ""}&page=${page}&page_size=${rowsPerPage}${graph ? `&is_graph=${graph}` : ""}${branchid ? `&branch_id=${branchid}` : ""}`,
     onSuccess: (res: any) => {
       const ProgramData = res?.data?.response;
       const tableArray = ProgramData?.data;
@@ -275,7 +276,7 @@ export default function Index() {
                 role="presentation"
                 className="text-accent underline cursor-pointer text-xs font-medium"
                 onClick={() => {
-                  setPopupTitle('Students List');
+                  setPopupTitle("Students List");
                   handleDataPopup(i.students);
                 }}
               >
@@ -287,7 +288,7 @@ export default function Index() {
                 role="presentation"
                 className="text-accent underline cursor-pointer text-xs font-medium"
                 onClick={() => {
-                  setPopupTitle('Teachers List');
+                  setPopupTitle("Teachers List");
                   handleDataPopup(i.teachers);
                 }}
               >
@@ -330,13 +331,13 @@ export default function Index() {
           const teacherstudent = ele?.total_time_teachers_and_students;
 
           const [hours1, minutes1, seconds1] = total_time_student
-            .split(':')
+            .split(":")
             .map(Number);
           const [hours2, minutes2, seconds2] = time_teachers
-            .split(':')
+            .split(":")
             .map(Number);
           const [hours3, minutes3, seconds3] = teacherstudent
-            .split(':')
+            .split(":")
             .map(Number);
 
           const totalSeconds1 = hours1 * 3600 + minutes1 * 60 + seconds1;
@@ -374,8 +375,8 @@ export default function Index() {
   };
 
   const reset = () => {
-    setFromDate('');
-    setToDate('');
+    setFromDate("");
+    setToDate("");
     // setselectedBranch('');
   };
 
@@ -414,15 +415,15 @@ export default function Index() {
   ]);
 
   useEffect(() => {
-    if (view === 'secondary') {
-      setGraph('yes');
+    if (view === "secondary") {
+      setGraph("yes");
     } else {
-      setGraph('');
+      setGraph("");
     }
-    if (xaxis === 'class') {
+    if (xaxis === "class") {
       setTemp(true);
     }
-    if (xaxis === 'teacher') {
+    if (xaxis === "teacher") {
       setTemp(false);
     }
     reset();
@@ -457,9 +458,9 @@ export default function Index() {
   return (
     <RouteLayout navBack={true}>
       <HeaderMenus
-        title={`Report - Course Usage ${view !== 'default' ? '- Overview' : ''} `}
+        title={`Report - Course Usage ${view !== "default" ? "- Overview" : ""} `}
         menuArray={
-          view === 'default' ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
+          view === "default" ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
         }
         handleToolbarAction={handleToolbarAction}
       />
@@ -470,12 +471,12 @@ export default function Index() {
               <Dropdown
                 displayEmpty={false}
                 title="Select Branch"
-                value={selectedBranch || 'All'}
-                dataArray={[{ label: 'All', value: 'All' }, ...BranchArray]}
+                value={selectedBranch || "All"}
+                dataArray={[{ label: "All", value: "All" }, ...BranchArray]}
                 onChangeHandler={(val) => {
                   setselectedBranch(val);
                 }}
-                sxClass={{ width: '206px', marginRight: '10px' }}
+                sxClass={{ width: "206px", marginRight: "10px" }}
               />
             )}
             <div>
@@ -484,7 +485,7 @@ export default function Index() {
                 value={rowsPerPage}
                 dataArray={RESULTS_PER_PAGE}
                 onChangeHandler={handlePerPage}
-                sxClass={{ width: '206px', marginRight: '10px' }}
+                sxClass={{ width: "206px", marginRight: "10px" }}
               />
             </div>
             {userData && USER_ROLE === USER_TYPE.BRANCH_ADMIN && (
@@ -493,7 +494,7 @@ export default function Index() {
                   name="Branch Name"
                   label="Branch Name"
                   size="small"
-                  value={branchData?.name || ''}
+                  value={branchData?.name || ""}
                   disabled={true}
                 />
               </div>
@@ -540,7 +541,7 @@ export default function Index() {
       </div>
 
       {/* Table Section */}
-      {view === 'default' ? (
+      {view === "default" ? (
         <div className="wrapperBorder mt-3" ref={componentRef}>
           <Wrapper>
             <AdvanceTable
@@ -571,9 +572,18 @@ export default function Index() {
         }}
         title={popupTitle}
       >
-        <Wrapper>
-          <AdvanceTable tableData={popupData} headerRows={DialogTableColumns} />
-        </Wrapper>
+        {popupData?.length > 0 ? (
+          <Wrapper>
+            <AdvanceTable
+              tableData={popupData}
+              headerRows={DialogTableColumns}
+            />
+          </Wrapper>
+        ) : (
+          <div className="flex justify-center items-center">
+            <span>No data found</span>
+          </div>
+        )}
       </CustomizedDialogs>
     </RouteLayout>
   );

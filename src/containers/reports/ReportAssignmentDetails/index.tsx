@@ -162,19 +162,19 @@ export default function Index() {
     },
   ];
   const ADMIN_TOOLBAR_MENU_GRAPH = [
-    {
-      title: 'Export',
-      icon: (
-        <CSVLink
-          filename="Report Assignment Details.csv"
-          data={csvData}
-          headers={headers}
-          enclosingCharacter=""
-        >
-          <Share />
-        </CSVLink>
-      ),
-    },
+    // {
+    //   title: 'Export',
+    //   icon: (
+    //     <CSVLink
+    //       filename="Report Assignment Details.csv"
+    //       data={csvData}
+    //       headers={headers}
+    //       enclosingCharacter=""
+    //     >
+    //       <Share />
+    //     </CSVLink>
+    //   ),
+    // },
   ];
 
   const TableColumns = [

@@ -35,7 +35,7 @@ export default function Index() {
 
   const headers = [
     TABLE_LABELS?.SR_NO,
-    TABLE_LABELS?.ASSIGNMET_NAME,
+    TABLE_LABELS?.ASSESSMENT_NAME,
     TABLE_LABELS?.TEACHER,
     TABLE_LABELS?.STATUS,
     TABLE_LABELS?.START_DATE,
@@ -201,11 +201,20 @@ export default function Index() {
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
-  const ordering = orderBy ? (order === "asc" ? orderBy : `-${orderBy}`) : "";
+  const ordering = !orderBy.includes("teacher")
+    ? order === "asc"
+      ? orderBy
+      : `-${orderBy}`
+    : "";
+  const endpointOrderBy = orderBy.includes("teacher")
+    ? order === "asc"
+      ? orderBy
+      : `-${orderBy}`
+    : "";
   const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
     useGet({
       baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-      url: `assessments-service/student--assign-assessment-list/?${selectedChild ? `student_id=${selectedChild}` : ""}&limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}${searchString ? `&assessment_name=${searchString}` : ""}${selectedStatus !== "All" ? `&status=${selectedStatus}` : ""}${fromDate ? `&start_date=${moment(fromDate).format("YYYY-MM-DD")}` : ""}${toDate ? `&submission_date=${moment(toDate).format("YYYY-MM-DD")}` : ""}`,
+      url: `assessments-service/student--assign-assessment-list/?${selectedChild ? `student_id=${selectedChild}` : ""}&limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&orderBy=${endpointOrderBy}${searchString ? `&assessment_name=${searchString}` : ""}${selectedStatus !== "All" ? `&status=${selectedStatus}` : ""}${fromDate ? `&start_date=${moment(fromDate).format("YYYY-MM-DD")}` : ""}${toDate ? `&submission_date=${moment(toDate).format("YYYY-MM-DD")}` : ""}`,
       onSuccess: (res: any) => {
         const accData = res?.data?.response;
         const respData = accData?.results;
@@ -240,6 +249,9 @@ export default function Index() {
   const reset = () => {
     setToDate("");
     setFromDate("");
+  };
+  const handlePerPage = (e: any) => {
+    setRowsPerPage(e);
   };
 
   useEffect(() => {
@@ -290,6 +302,9 @@ export default function Index() {
             value={selectedStatus}
             dataArray={statusArray}
             onChangeHandler={(value) => setSelectedStatus(value)}
+            sxClass={{
+              width: "160px",
+            }}
           />
           <Dropdown
             title="Select Child"
@@ -298,6 +313,9 @@ export default function Index() {
             displayEmpty={true}
             onChangeHandler={(value) => setSelectedChild(value)}
             loading={childrenLoading}
+            sxClass={{
+              width: "230px",
+            }}
           />
           <div>
             <DatePicker
@@ -323,6 +341,13 @@ export default function Index() {
               disableOld={fromDate}
             />
           </div>
+          <Dropdown
+            title="Result Of Pages"
+            value={rowsPerPage}
+            dataArray={RESULTS_PER_PAGE}
+            onChangeHandler={handlePerPage}
+            sxClass={{ width: "95px", marginRight: "5px" }}
+          />
           <div className="flex gap-2 justify-center items-center h-[36px]">
             <span
               tabIndex={0}
@@ -339,7 +364,7 @@ export default function Index() {
             />
             <Link to={`${location?.pathname}/completed-assessments`}>
               <div className="text-accent underline cursor-pointer text-base font-medium pl-2">
-                Completed Assessment
+                Completed Assessments
               </div>
             </Link>
           </div>

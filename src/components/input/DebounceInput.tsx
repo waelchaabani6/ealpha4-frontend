@@ -1,17 +1,17 @@
-import React, { useEffect, useImperativeHandle, useState } from 'react';
-import { ReactComponent as Search } from '@images/search.svg';
-import { useDebounce } from 'react-use';
-import ClearIcon from '@mui/icons-material/Clear';
-import { CircularProgress } from '@mui/material';
+import React, { useEffect, useImperativeHandle, useState } from "react";
+import { ReactComponent as Search } from "@images/search.svg";
+import { useDebounce } from "react-use";
+import ClearIcon from "@mui/icons-material/Clear";
+import { CircularProgress } from "@mui/material";
 
 type Props = {
   onChange: (value: string) => void;
   loading?: boolean;
-}
+};
 
 export default React.forwardRef((props: Props, ref: any) => {
-  const [value, setvalue] = useState<string>('');
-  const [debouncedValue, setDebouncedValue] = useState<string>('');
+  const [value, setvalue] = useState<string>("");
+  const [debouncedValue, setDebouncedValue] = useState<string>("");
 
   useDebounce(
     () => {
@@ -32,20 +32,18 @@ export default React.forwardRef((props: Props, ref: any) => {
 
   useImperativeHandle(ref, () => ({
     reset() {
-      setvalue('');
-    }
+      setvalue("");
+    },
   }));
 
   const reset = () => {
-    setvalue('');
-    setDebouncedValue('');
+    setvalue("");
+    setDebouncedValue("");
   };
 
   return (
-    <div className="min-w-[250px] h-[36px]">
-      <div
-        className="w-full h-full flex flex-col relative"
-      >
+    <div className="min-w-[200px] h-[36px]">
+      <div className="w-full h-full flex flex-col relative">
         <div className="flex-1 flex bg-white border-2 rounded px-0.5">
           <div className="flex-1">
             <input
@@ -57,11 +55,20 @@ export default React.forwardRef((props: Props, ref: any) => {
             />
           </div>
           <div className="flex items-center gap-[5px] justify-end">
-            {
-              props?.loading
-                ? <CircularProgress color="success" size={20} />
-                : value && <span aria-label="Mute volume" role="button" tabIndex={0} onClick={reset}><ClearIcon /></span>
-            }
+            {props?.loading ? (
+              <CircularProgress color="success" size={20} />
+            ) : (
+              value && (
+                <span
+                  aria-label="Mute volume"
+                  role="button"
+                  tabIndex={0}
+                  onClick={reset}
+                >
+                  <ClearIcon />
+                </span>
+              )
+            )}
             <Search className="w-[26px]" />
           </div>
         </div>

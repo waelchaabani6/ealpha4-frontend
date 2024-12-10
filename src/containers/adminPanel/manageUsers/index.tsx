@@ -15,29 +15,57 @@ export default function manageUsers() {
   const [searchString, setSearchVal] = useState('');
   const [searchData, setSearchData] = useState<any>([]);
 
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(10 as number | 'All');
   const [page, setPage] = useState(1);
   const [totalDataCount, setTotalDataCount] = useState(0);
+  const [order, setOrder] = useState<any>('asc');
+  const [orderBy, setOrderBy] = useState<any>('username');
+
+  const formatOrderBy = (orderString: string) => {
+    if (orderString === 'user_name') {
+      return 'username';
+    }
+    if (orderString === 'first_name') {
+      return 'firstname';
+    }
+    if (orderString === 'last_name') {
+      return 'lastname';
+    }
+    if (orderString === 'school_name') {
+      return 'schoolname';
+    }
+    if (orderString === 'role_name') {
+      return 'role';
+    }
+    return '';
+  };
+
+  const formattedOrderby = formatOrderBy(orderBy);
+  const ordering = order === 'asc' ? formattedOrderby : `-${formattedOrderby}`;
 
   const { isFetching: LogListLoading, refetch: fetchUsers } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
-    url: `users-service/user-search?username=${searchString}&limit=${rowsPerPage}&offset=${(page - 1) * rowsPerPage}`,
+    url: `users-service/user-search?search_in=${searchString}&limit=${
+      rowsPerPage === 'All' ? 'All' : rowsPerPage
+    }&offset=${rowsPerPage === 'All' ? 0 : (page - 1) * rowsPerPage}&ordering=${ordering}`,
     onSuccess: (res: any) => {
       const respData = res?.data?.results;
       setTotalDataCount(res?.data?.count);
 
       const body: any = [];
+
       if (respData?.length) {
-        respData.map((item1: any) => {
+        respData?.map((item1: any) => {
           body.push({
             user_name: item1?.user_name,
-            first_name: item1?.profile.first_name,
-            id: item1?.profile.id,
-            last_name: item1?.profile.last_name,
+            first_name: item1?.profile?.first_name,
+            id: item1?.profile?.id,
+            last_name: item1?.profile?.last_name,
             role_id: item1?.role_id,
             role_name: USER_ROLE_LIST_LABEL.find(
               (obj: any) => obj.id === item1.role_id
             ).label,
+            school_name: item1?.school_name,
           });
           return body;
         });
@@ -50,7 +78,7 @@ export default function manageUsers() {
 
   useEffect(() => {
     searchData?.length && fetchUsers();
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, orderBy, order]);
 
   return (
     <RouteLayout navBack={true}>
@@ -73,6 +101,10 @@ export default function manageUsers() {
           totalDataCount={totalDataCount}
           page={page}
           LogListLoading={LogListLoading}
+          setOrderBy={setOrderBy}
+          setOrder={setOrder}
+          order={order}
+          orderBy={orderBy}
         />
       </div>
     </RouteLayout>
