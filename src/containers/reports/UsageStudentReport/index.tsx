@@ -270,6 +270,8 @@ export default function Index() {
                 )}
               </span>
             ),
+            first_login: i?.first_login?.replace(DateTimeRegex, "$1, $2"),
+            last_login: i?.last_login?.replace(DateTimeRegex, "$1, $2"),
           });
         });
 
