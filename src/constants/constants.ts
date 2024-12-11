@@ -113,6 +113,7 @@ export const TABLE_LABELS = {
   STUDENT_NAME: "Student Name",
   TYPE: "Type",
   Assigned_By: "Assigned By",
+  Assigned_ON: "Assigned On",
   DUE_DATE: "Due Date",
   ASSESSMENT_NAME: "Assessment Name",
   ASSIGNMENT_NAME: "Assignment Name",
