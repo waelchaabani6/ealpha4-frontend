@@ -240,10 +240,6 @@ function AssignmentDetails(): JSX.Element {
 
   const ADMIN_TOOLBAR_MENU = [
     {
-      type: HEADERMENUS.BUTTON,
-      title: 'Preview',
-    },
-    {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
         <CSVLink

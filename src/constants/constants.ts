@@ -22,6 +22,9 @@ export const ACADEMIC_YEAR_DATA: Array<OBJECT> = [
   { label: "2020-21", value: "2020-2021" },
 ];
 export const RESULTS_PER_PAGE: Array<string | number> = [10, 20, 30, "All"];
+export const THOUSAND_RESULTS_PER_PAGE: Array<string | number> = [
+  10, 20, 30, 1000,
+];
 export const COMPONENTS = {
   switch: "switch",
   longmenu: "longmenu",
@@ -113,6 +116,7 @@ export const TABLE_LABELS = {
   STUDENT_NAME: "Student Name",
   TYPE: "Type",
   Assigned_By: "Assigned By",
+  Assigned_ON: "Assigned On",
   DUE_DATE: "Due Date",
   ASSESSMENT_NAME: "Assessment Name",
   ASSIGNMENT_NAME: "Assignment Name",

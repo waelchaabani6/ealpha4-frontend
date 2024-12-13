@@ -4,41 +4,41 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable operator-linebreak */
 /* eslint-disable comma-dangle */
-import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import DatePicker from '@component/datepicker';
-import CustomizedDialogs from '@component/dialog/CustomDialog';
-import DebounceInput from '@component/input/DebounceInput';
-import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import EmailIcon from '@mui/icons-material/Email';
-import PrintIcon from '@mui/icons-material/Print';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import DeletePopup from '@shared/DeletePopup';
-import { useDelete, useGet, usePatch, usePost } from '@shared/api/useApi';
-import Loader from '@shared/loader';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import PageTitle from '@shared/pageTitle';
-import toast from '@shared/toast';
-import { getNoOfPages } from '@utility/utility';
-import moment from 'moment';
-import React, { useEffect, useRef, useState } from 'react';
-import { CSVLink } from 'react-csv';
-import { useSelector } from 'react-redux';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import ReactToPrint from 'react-to-print';
-import Dropdown from '@component/dropdown/Dropdown';
-import { selectSchoolData } from '@shared/store/schoolSlice';
-import Button from '@component/button/button';
+import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
+import DatePicker from "@component/datepicker";
+import CustomizedDialogs from "@component/dialog/CustomDialog";
+import DebounceInput from "@component/input/DebounceInput";
+import { ReactComponent as Share } from "@images/pageHeaderIcons/share.svg";
+import EmailIcon from "@mui/icons-material/Email";
+import PrintIcon from "@mui/icons-material/Print";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import DeletePopup from "@shared/DeletePopup";
+import { useDelete, useGet, usePatch, usePost } from "@shared/api/useApi";
+import Loader from "@shared/loader";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
+import PageTitle from "@shared/pageTitle";
+import toast from "@shared/toast";
+import { getNoOfPages } from "@utility/utility";
+import moment from "moment";
+import React, { useEffect, useRef, useState } from "react";
+import { CSVLink } from "react-csv";
+import { useSelector } from "react-redux";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import ReactToPrint from "react-to-print";
+import Dropdown from "@component/dropdown/Dropdown";
+import { selectSchoolData } from "@shared/store/schoolSlice";
+import Button from "@component/button/button";
 
-import CustomPagination from '../../components/pagination/CustomPagination';
+import CustomPagination from "../../components/pagination/CustomPagination";
 import {
   COMPONENTS,
   RESULTS_PER_PAGE,
   TABLE_LABELS,
   TOOLBAR_LABELS,
   USER_TYPE,
-} from '../../constants/constants';
-import Wrapper from '../../shared/wrapper/Wrapper';
-import RouteLayout from '../layout/routeLayout';
+} from "../../constants/constants";
+import Wrapper from "../../shared/wrapper/Wrapper";
+import RouteLayout from "../layout/routeLayout";
 
 const printButton = () => <PrintIcon />;
 
@@ -65,62 +65,62 @@ const baseURL = import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL;
 const TableColumns = [
   {
     label: TABLE_LABELS?.SR_NO,
-    align: 'center',
+    align: "center",
   },
   {
     label: TABLE_LABELS?.ASSESSMENT_NAME,
-    mapper: 'assessment_name',
+    mapper: "assessment_name",
     isSort: true,
   },
   {
     label: TABLE_LABELS.COURSES,
     // isSort: true,
-    align: 'center',
-    mapper: 'subject_name',
+    align: "center",
+    mapper: "subject_name",
   },
   {
     label: TABLE_LABELS?.CLASS_STUDENTS,
-    align: 'center',
-    mapper: 'class_or_student',
+    align: "center",
+    mapper: "class_or_student",
   },
   {
     label: TABLE_LABELS?.START_DATE,
     isSort: true,
-    mapper: 'start_date',
-    format: 'DD-MM-YYYY',
+    mapper: "start_date",
+    format: "DD-MM-YYYY",
   },
   {
     label: TABLE_LABELS?.END_DATE,
     // isSort: true,
-    mapper: 'submission_date',
-    format: 'DD-MM-YYYY',
+    mapper: "submission_date",
+    format: "DD-MM-YYYY",
   },
   {
-    label: TABLE_LABELS?.CREATED_ON,
-    mapper: 'created_at',
-    format: 'DD-MM-YYYY',
+    label: TABLE_LABELS?.Assigned_ON,
+    mapper: "latest_assigned_at",
+    format: "DD-MM-YYYY",
     isSort: true,
   },
   {
     label: TABLE_LABELS?.TYPE,
     isSort: true,
-    mapper: 'is_printed',
+    mapper: "is_printed",
   },
   {
     label: TABLE_LABELS?.ACTION,
     colspan: 2,
-    align: 'center',
-    bodyAlign: 'right',
+    align: "center",
+    bodyAlign: "right",
     component: COMPONENTS?.view,
     showInHeader: false,
   },
   {
-    bodyAlign: 'center',
+    bodyAlign: "center",
     component: COMPONENTS?.edit,
     showInHeader: false,
   },
   {
-    bodyAlign: 'left',
+    bodyAlign: "left",
     component: COMPONENTS?.delete,
     showInHeader: false,
   },
@@ -128,38 +128,38 @@ const TableColumns = [
 
 const CompletedTableColumns = [
   {
-    label: 'First Name',
-    mapper: 'first_name',
+    label: "First Name",
+    mapper: "first_name",
   },
   {
-    label: 'Last Name',
-    mapper: 'last_name',
+    label: "Last Name",
+    mapper: "last_name",
   },
   {
-    label: 'Class',
-    mapper: 'class_name',
+    label: "Class",
+    mapper: "class_name",
   },
 ];
 
 const PendingTableColumns = [
   {
-    label: 'First Name',
-    mapper: 'first_name',
+    label: "First Name",
+    mapper: "first_name",
   },
   {
-    label: 'Last Name',
-    mapper: 'last_name',
+    label: "Last Name",
+    mapper: "last_name",
   },
   {
-    label: 'Class',
-    mapper: 'class_name',
+    label: "Class",
+    mapper: "class_name",
   },
 ];
 
 const ALL: Array<any> = [
   {
-    label: 'Select',
-    value: 'Select',
+    label: "Select",
+    value: "Select",
   },
 ];
 
@@ -196,12 +196,12 @@ export default function AssignedAssessments() {
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [popupData, setpopupData] = useState<any>({});
 
-  const [searchString, setSearchString] = useState('');
+  const [searchString, setSearchString] = useState("");
   const [playloadData, setPlayloadData] = useState<any | undefined>({});
-  const [order, setOrder] = useState<any>('desc');
-  const [orderBy, setOrderBy] = useState<any>('created_at');
-  const [fromDate, setFromDate] = useState<any>('');
-  const [toDate, setToDate] = useState<any>('');
+  const [order, setOrder] = useState<any>("desc");
+  const [orderBy, setOrderBy] = useState<any>("created_at");
+  const [fromDate, setFromDate] = useState<any>("");
+  const [toDate, setToDate] = useState<any>("");
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const completedAssignRef = useRef(null);
 
@@ -234,9 +234,9 @@ export default function AssignedAssessments() {
   const actionHandler = (data: any, handlername: string) => {
     const obeasses_id = data?.obeasses_id;
 
-    if (handlername === 'delete') {
+    if (handlername === "delete") {
       deleteHandler(data);
-    } else if (handlername === 'view') {
+    } else if (handlername === "view") {
       navigate(
         `/${schoolName}/assessments/preview_myassessment_question/${data?.assessment_id}`,
         {
@@ -247,7 +247,7 @@ export default function AssignedAssessments() {
           },
         }
       );
-    } else if (handlername === 'edit') {
+    } else if (handlername === "edit") {
       setEditAssessmentDialog(true);
       setEditAssessmentData(data);
     }
@@ -255,7 +255,7 @@ export default function AssignedAssessments() {
 
   const deleteHandler = (row: any) => {
     setPlayloadData({
-      id: (row?.assign_assessment_id || []).join(','),
+      id: (row?.assign_assessment_id || []).join(","),
     });
     setAdminDeleteDialog(true);
   };
@@ -271,19 +271,19 @@ export default function AssignedAssessments() {
   };
 
   const reset = () => {
-    setToDate('');
-    setFromDate('');
+    setToDate("");
+    setFromDate("");
   };
 
   // console.log('[Assigned assessments] selected grade =', selectedGrade)
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
-  const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
+  const ordering = order === "asc" ? orderBy : `-${orderBy}`;
   const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
     useGet({
       baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-      url: `assessments-service/get-assign-assessment-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&course_name=${currentCourse !== ALL[0].value ? currentCourse : ''}&class_name=${selectedGrade !== ALL[0].value ? selectedGrade : ''}&start_date=${fromDate ? moment(fromDate).format('YYYY-MM-DD') : ''}&submission_date=${toDate ? moment(toDate).format('YYYY-MM-DD') : ''}&user_id=${userData?.userId}&domain_name=${window?.location?.hostname}&order_by=${ordering}`,
+      url: `assessments-service/get-assign-assessment-list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&search=${searchString}&course_name=${currentCourse !== ALL[0].value ? currentCourse : ""}&class_name=${selectedGrade !== ALL[0].value ? selectedGrade : ""}&start_date=${fromDate ? moment(fromDate).format("YYYY-MM-DD") : ""}&submission_date=${toDate ? moment(toDate).format("YYYY-MM-DD") : ""}&user_id=${userData?.userId}&domain_name=${window?.location?.hostname}&order_by=${ordering}`,
       //    url: `assessments-service/alpha-assessment/activities/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&alpha_course=${currentCourse !== ALL[0].value ? currentCourse : ''}&grade_id=${selectedGrade !== ALL[0].value ? selectedGrade : ''}&is_paperscorer_type=${assmentFilter}&category_id=${selectedCategory !== ALL[0].value ? selectedCategory : ''}&user_id=${user?.userId}`,
 
       onSuccess: (res: any) => {
@@ -296,7 +296,7 @@ export default function AssignedAssessments() {
         const body: any = [];
         const newTableData = respData?.map((item: any) => {
           const joinedClasses = Array.isArray(item.class_name)
-            ? item.class_name?.filter((j: any) => j).join(' | ')
+            ? item.class_name?.filter((j: any) => j).join(" | ")
             : item.class_name;
 
           body.push([
@@ -306,7 +306,7 @@ export default function AssignedAssessments() {
             `${joinedClasses}(${item?.student_count})`,
             item?.start_date,
             item?.submission_date,
-            item?.is_printed ? 'Printed' : 'Online',
+            item?.is_printed ? "Printed" : "Online",
           ]);
 
           //   const assessmentName = data?.assessment_name?.props?.children?.props?.children || "";
@@ -349,7 +349,7 @@ export default function AssignedAssessments() {
                 onClick={() => handleDataPopup(item)}
               >{`${joinedClasses}(${item?.student_count})`}</span>
             ),
-            is_printed: item?.is_printed ? 'Printed' : 'Online',
+            is_printed: item?.is_printed ? "Printed" : "Online",
           };
           return temp;
         });
@@ -363,11 +363,11 @@ export default function AssignedAssessments() {
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/delete-assign-assessment/?assign_assessment_id=${playloadData?.id}`,
     onSuccess: (response: any) => {
-      toast('success', 'Record Deleted successfully');
+      toast("success", "Record Deleted successfully");
       fetchAssignedAssignments();
     },
     onError: ({ response }: any) => {
-      toast('error', response?.data?.message || 'Error');
+      toast("error", response?.data?.message || "Error");
     },
   });
 
@@ -381,12 +381,12 @@ export default function AssignedAssessments() {
     url: `assessments-service/assign-assessment-teacher-email/pdf-download/?user_id=${userData?.userId}`,
     onSuccess: (response: any) => {
       toast(
-        'success',
-        'Email sent successfully to you, please check your inbox'
+        "success",
+        "Email sent successfully to you, please check your inbox"
       );
     },
     onError: ({ response }: any) => {
-      toast('error', response?.data?.message || 'Error');
+      toast("error", response?.data?.message || "Error");
     },
     enabled: false,
   });
@@ -457,7 +457,7 @@ export default function AssignedAssessments() {
 
   const { isLoading: loadClassesForSchool, data: ClassesForSchool } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}&branch_name=${branchData?.name || ''}`,
+    url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}&branch_name=${branchData?.name || ""}`,
     enabled: !!(
       (userRole?.name === SCHOOL_ADMIN && schoolData?.id) ||
       userRole?.name === BRANCH_ADMIN ||
@@ -496,7 +496,7 @@ export default function AssignedAssessments() {
   }, [userRole, user]);
 
   const updateAssessment = () => {
-    const dueDate = moment(extendedDueDate).format('YYYY-MM-DD');
+    const dueDate = moment(extendedDueDate).format("YYYY-MM-DD");
 
     updateDueDate({
       due_date: dueDate,
@@ -541,7 +541,7 @@ export default function AssignedAssessments() {
             setCurrentCourse(d);
             setPage(1);
           }}
-          sxClass={{ width: '206px' }}
+          sxClass={{ width: "206px" }}
           loading={loadCourses}
         />
         <Dropdown
@@ -553,7 +553,7 @@ export default function AssignedAssessments() {
             setPage(1);
           }}
           loading={loadClassesForTeacher || loadClassesForSchool}
-          sxClass={{ width: '206px', marginRight: '5px' }}
+          sxClass={{ width: "206px", marginRight: "5px" }}
         />
         <div>
           <DatePicker
@@ -584,7 +584,7 @@ export default function AssignedAssessments() {
           value={rowsPerPage}
           dataArray={RESULTS_PER_PAGE}
           onChangeHandler={handlePerPage}
-          sxClass={{ width: '150px', marginRight: '5px' }}
+          sxClass={{ width: "150px", marginRight: "5px" }}
         />
         <div className="flex gap-2 justify-center items-center h-[36px]">
           {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}

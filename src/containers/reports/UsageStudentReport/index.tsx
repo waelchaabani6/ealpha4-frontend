@@ -151,23 +151,31 @@ export default function Index() {
   };
   const TableColumns: any = [
     { label: "Student Name", mapper: "student_name", align: "left" },
-    { label: "Class", mapper: "class", align: "left" },
-    { label: "First Login", mapper: "first_login", align: "left" },
-    { label: "Last Login", mapper: "last_login", align: "left" },
-    { label: "Total Logins", mapper: "total_logins", align: "left" },
+    { label: "Class", mapper: "class_name", align: "left" },
+    { label: "Teacher Name", mapper: "teacher_name", align: "left" },
     {
-      label: "Avg Time Per Login",
-      mapper: "avg_time_per_logins",
+      label: "Total Assignments Assigned",
+      mapper: "total_assignments",
       align: "left",
     },
     {
-      label: "Assignments Completed",
-      mapper: "assignments_completed",
+      label: "Assignments Submitted",
+      mapper: "assignments_submitted",
       align: "left",
     },
     {
-      label: "Assessments Submitted",
-      mapper: "assessments_submitted",
+      label: "Pending Assignments",
+      mapper: "assignments_pending",
+      align: "left",
+    },
+    {
+      label: "Total Assessments Assigned",
+      mapper: "total_assessments",
+      align: "left",
+    },
+    {
+      label: "Pending Assessments",
+      mapper: "assessments_pending",
       align: "left",
     },
     { label: "Courses", mapper: "courses", align: "left" },
@@ -247,38 +255,37 @@ export default function Index() {
       const ProgramData = res?.data?.response?.data;
       const body: any = [];
 
-      if (graph !== "yes") {
-        ProgramData?.forEach((i: any) => {
-          body.push({
-            ...i,
-            courses: (
-              <span>
-                {Object.entries(i?.courses || {}).map(
-                  ([courseName, courseId], index) => (
-                    <Link
-                      key={index}
-                      to={`/${schoolNameInURL}/reports/program-usage-detail/undefined/undefined/${courseId}/${encodeURIComponent(courseName)}`}
-                      className="text-accent underline cursor-pointer text-xs font-medium"
-                    >
-                      {courseName}
-                      {index < Object.entries(i?.courses || {}).length - 1
-                        ? ", "
-                        : ""}
-                      {/* Add a comma between course names */}
-                    </Link>
-                  )
-                )}
-              </span>
-            ),
-            first_login: i?.first_login?.replace(DateTimeRegex, "$1, $2"),
-            last_login: i?.last_login?.replace(DateTimeRegex, "$1, $2"),
-          });
+      ProgramData?.forEach((i: any) => {
+        body.push({
+          ...i,
+          total_assignments: i?.assignments?.total || 0,
+          assignments_submitted: i?.assignments?.submitted || 0,
+          assignments_pending: i?.assignments?.pending || 0,
+          total_assessments: i?.assessments?.total || 0,
+          assessments_pending: i?.assessments?.pending || 0,
+          courses: (
+            <span>
+              {Object.entries(i?.courses || {}).map(
+                ([courseName, courseId], index) => (
+                  <Link
+                    key={index}
+                    to={`/${schoolNameInURL}/reports/program-usage-detail/undefined/undefined/${courseId}/${encodeURIComponent(courseName)}`}
+                    className="text-accent underline cursor-pointer text-xs font-medium"
+                  >
+                    {courseName}
+                    {index < Object.entries(i?.courses || {}).length - 1
+                      ? ", "
+                      : ""}
+                    {/* Add a comma between course names */}
+                  </Link>
+                )
+              )}
+            </span>
+          ),
         });
+      });
 
-        setTableData(body); // Set the processed table data
-      } else {
-        // Handle the `graph === 'yes'` case here if needed
-      }
+      setTableData(body); // Set the processed table data
       setTotalData(res?.data?.response?.data);
 
       // Graph data
