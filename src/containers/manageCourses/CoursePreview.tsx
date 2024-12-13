@@ -311,6 +311,8 @@ const CoursePreview = () => {
     },
   });
 
+  console.log('locationState?.contentUrl', locationState);
+
   return (
     <RouteLayout
       navBack={true}
