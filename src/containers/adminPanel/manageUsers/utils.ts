@@ -7,7 +7,7 @@ export const TableColumns = [
   {
     label: TABLE_LABELS?.SR_NO,
     align: 'center',
-    mapper: 'id',
+    // mapper: 'id',
   },
   {
     label: TABLE_LABELS?.USER_NAME,
