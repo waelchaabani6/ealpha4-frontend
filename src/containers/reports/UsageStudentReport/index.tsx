@@ -157,12 +157,12 @@ export default function Index() {
     { label: "Last Login", mapper: "last_login", align: "left" },
     { label: "Total Time", mapper: "avg_time_per_logins", align: "left" },
     {
-      label: "Total Number of Assignments Assigned",
+      label: "Total No. of Assignments Assigned",
       mapper: "total_assignments",
       align: "left",
     },
     {
-      label: "Total Number of Assignments Submitted",
+      label: "Total No. of Assignments Submitted",
       mapper: "assignments_submitted",
       align: "left",
     },
@@ -172,12 +172,17 @@ export default function Index() {
       align: "left",
     },
     {
-      label: "Total Number of Assessments Assigned",
+      label: "Total No. of Assessments Assigned",
       mapper: "total_assessments",
       align: "left",
     },
     {
-      label: "Total Number of Pending Assessments",
+      label: "Total No. of Assessments Submitted",
+      mapper: "assessments_submitted",
+      align: "left",
+    },
+    {
+      label: "Pending Assessments",
       mapper: "assessments_pending",
       align: "left",
     },
@@ -263,11 +268,12 @@ export default function Index() {
           ...i,
           first_login: i?.first_login?.replace(DateTimeRegex, "$1, $2"),
           last_login: i?.last_login?.replace(DateTimeRegex, "$1, $2"),
-          avg_time_per_logins: i?.avg_time_per_logins || "00:00:00", // Ensure default format
+          avg_time_per_logins: i?.avg_time_per_logins || "00:00:00",
           total_assignments: i?.assignments?.total || 0,
           assignments_submitted: i?.assignments?.submitted || 0,
           assignments_pending: i?.assignments?.pending || 0,
           total_assessments: i?.assessments?.total || 0,
+          assessments_submitted: i?.assessments?.submitted || 0,
           assessments_pending: i?.assessments?.pending || 0,
           courses: (
             <span>
