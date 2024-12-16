@@ -153,13 +153,16 @@ export default function Index() {
     { label: "Student Name", mapper: "student_name", align: "left" },
     { label: "Class", mapper: "class_name", align: "left" },
     { label: "Teacher Name", mapper: "teacher_name", align: "left" },
+    { label: "First Login", mapper: "first_login", align: "left" },
+    { label: "Last Login", mapper: "last_login", align: "left" },
+    { label: "Total Time", mapper: "avg_time_per_logins", align: "left" },
     {
-      label: "Total Assignments Assigned",
+      label: "Total Number of Assignments Assigned",
       mapper: "total_assignments",
       align: "left",
     },
     {
-      label: "Assignments Submitted",
+      label: "Total Number of Assignments Submitted",
       mapper: "assignments_submitted",
       align: "left",
     },
@@ -169,12 +172,12 @@ export default function Index() {
       align: "left",
     },
     {
-      label: "Total Assessments Assigned",
+      label: "Total Number of Assessments Assigned",
       mapper: "total_assessments",
       align: "left",
     },
     {
-      label: "Pending Assessments",
+      label: "Total Number of Pending Assessments",
       mapper: "assessments_pending",
       align: "left",
     },
@@ -258,6 +261,9 @@ export default function Index() {
       ProgramData?.forEach((i: any) => {
         body.push({
           ...i,
+          first_login: i?.first_login?.replace(DateTimeRegex, "$1, $2"),
+          last_login: i?.last_login?.replace(DateTimeRegex, "$1, $2"),
+          avg_time_per_logins: i?.avg_time_per_logins || "00:00:00", // Ensure default format
           total_assignments: i?.assignments?.total || 0,
           assignments_submitted: i?.assignments?.submitted || 0,
           assignments_pending: i?.assignments?.pending || 0,
