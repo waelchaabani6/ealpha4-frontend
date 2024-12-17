@@ -499,7 +499,7 @@ export default function Index() {
                 />
               </div>
             )}
-            <div className="w-max">
+            {/* <div className="w-max">
               <DatePicker
                 value={fromDate}
                 label="From"
@@ -532,7 +532,7 @@ export default function Index() {
                   <RestartAltIcon />
                 </span>
               </div>
-            )}
+            )} */}
           </div>
         </>
         <div>
