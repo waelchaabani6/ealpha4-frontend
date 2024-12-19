@@ -275,6 +275,14 @@ export default function Index() {
           total_assessments: i?.assessments?.total || 0,
           assessments_submitted: i?.assessments?.submitted || 0,
           assessments_pending: i?.assessments?.pending || 0,
+          teacher_name: (
+            <Link
+              to={`/${schoolNameInURL}/reports/usage-for-teacher`}
+              className="text-accent underline cursor-pointer text-xs font-medium"
+            >
+              {i?.teacher_name}
+            </Link>
+          ),
           courses: (
             <span>
               {Object.entries(i?.courses || {}).map(
