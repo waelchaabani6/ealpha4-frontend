@@ -231,9 +231,11 @@ export default function Index() {
   const [PercengateData, setPerData] = useState([]);
   const [PerformanceData, SetPerformanceData] = useState([]);
 
-  const link = `/${schoolNameInURL}/reports/report-assignment-details`;
-
   const USER_ROLE = userData?.role?.name;
+  const link =
+    USER_ROLE === USER_TYPE.SUPER_ADMIN
+      ? `/school-management/school/${SCHOOL_ID}/reports/report-assignment-details`
+      : `/${schoolNameInURL}/reports/report-assignment-details`;
 
   const handleDialog = () => {
     setDialogOpen(!dialogOpen);
