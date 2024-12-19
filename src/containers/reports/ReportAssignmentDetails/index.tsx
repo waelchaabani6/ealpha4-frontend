@@ -442,7 +442,8 @@ export default function Index() {
   return (
     <RouteLayout
       state={location?.state ? { page: location?.state?.page } : {}}
-      path={`/${schoolName}/reports`}
+      // path={`/${schoolName}/reports`}
+      navBack={true}
     >
       <HeaderMenus
         title={`Report -  ${view === 'default' ? 'Assignments Details' : 'Multiple Assignments Student Level'}`}

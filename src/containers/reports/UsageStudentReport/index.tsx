@@ -1,75 +1,86 @@
+/* eslint-disable operator-linebreak */
+/* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable linebreak-style */
 /* eslint-disable comma-dangle */
-import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
-import React, { useState, useRef, useEffect, useMemo } from "react";
-import Dropdown from "@component/dropdown/Dropdown";
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import Dropdown from '@component/dropdown/Dropdown';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import {
   GRAPH_LABELS,
   RESULTS_PER_PAGE,
   TABLE_LABELS,
   TOOLBAR_LABELS,
   USER_TYPE,
-} from "@constants/constants";
-import EmailIcon from "@mui/icons-material/Email";
-import { CSVLink } from "react-csv";
-import PrintIcon from "@mui/icons-material/Print";
-import { ReactComponent as Share } from "@images/pageHeaderIcons/share.svg";
-import ReactToPrint from "react-to-print";
-import RouteLayout from "@layout/routeLayout";
-import DatePicker from "@component/datepicker";
-import ButtonToggle from "@component/ToggleButton/ToggleButton";
-import { NumberedPagination } from "@component/pagination/CustomPagination";
-import { Link, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { CustomInput } from "@component/input";
-import { selectSchoolData } from "@shared/store/schoolSlice";
-import { getNoOfPages, sortByName, userRole } from "@utility/utility";
-import { selectUser } from "@shared/store/userSlice";
-import { useGet } from "@shared/api/useApi";
-import Wrapper from "@shared/wrapper/Wrapper";
-import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
-import moment from "moment";
-import Loader from "@shared/loader";
-import toast from "@shared/toast";
-import ProgramUsageOverview from "../BarChart/ProgramUsageOverview";
-import TotalStudentGraph from "../BarChart/TotalStudentGraph";
-import AverageActiveStudent from "../BarChart/AverageActiveStudent";
-import BarChartType1 from "../BarChart/barChartType1";
-import TotalAssessment from "../BarChart/TotalAssessment";
-import TeacherGraphComponent from "../BarChart/TeacherGraphComponent";
+} from '@constants/constants';
+
+import { CSVLink } from 'react-csv';
+import PrintIcon from '@mui/icons-material/Print';
+import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
+import ReactToPrint from 'react-to-print';
+import RouteLayout from '@layout/routeLayout';
+import DatePicker from '@component/datepicker';
+
+import { Link, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
+import { selectSchoolData } from '@shared/store/schoolSlice';
+import { getNoOfPages, sortByName, userRole } from '@utility/utility';
+import { selectUser } from '@shared/store/userSlice';
+import { useGet } from '@shared/api/useApi';
+import Wrapper from '@shared/wrapper/Wrapper';
+import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
+import moment from 'moment';
+
+import toast from '@shared/toast';
+
+import TeacherGraphComponent from '../BarChart/TeacherGraphComponent';
 
 export default function Index() {
   const [csvData, setCsvData] = useState<[]>([]);
-  const [view, setView] = React.useState("default");
-  const [selectedteacher, setSelectedTeacher] = useState<any>("select");
-  const [selectedprogram, setSelectedProgram] = useState<any>("select");
-  const [selectedClass, setSelectedClass] = useState<any>("select");
-  const [selectedBranch, setselectedBranch] = useState("select");
+  const [view, setView] = React.useState('default');
+  const [selectedteacher, setSelectedTeacher] = useState<any>('select');
+  const [selectedprogram, setSelectedProgram] = useState<any>('select');
+  const [selectedClass, setSelectedClass] = useState<any>('select');
+  const [selectedBranch, setselectedBranch] = useState('select');
   const [page, setPage] = useState(1);
   const [fromDate, setFromDate] = useState<any>();
   const [toDate, setToDate] = useState<any>();
   const printButton = () => <PrintIcon />;
-  const [yaxis, setYaxis] = useState("option1");
-  const [xaxis, setXaxis] = useState("grade");
+  const [yaxis, setYaxis] = useState('option1');
+  const [xaxis, setXaxis] = useState('grade');
   const [totalDataCount, setTotalDataCount] = useState(0);
   const { role, user_profile_id: userId } = useSelector(selectUser);
   const { schoolData, branchData } = useSelector(selectSchoolData);
   const [totalData, setTotalData] = useState([]);
-  const [NoOfDaysArr, SetNoOfDaysArr] = useState([]);
+  // const [NoOfDaysArr, SetNoOfDaysArr] = useState([]);
   const componentRef = useRef(null);
-  const [graph, setGraph] = useState("");
+  const [graph, setGraph] = useState('');
   const location = useLocation();
   // const rowsPerPage = 10;
   const [rowsPerPage, setRowsPerPage] = useState<any>(RESULTS_PER_PAGE?.[0]);
   const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
-  const schoolNameInURL = decodeURIComponent(location.pathname.split("/")[1]);
-  const link = `/${schoolNameInURL}/reports/student-detail-view`;
+  const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
+  // const link = `/${schoolNameInURL}/reports/student-detail-view`;
   const [assignmentGraph, setAssignmentGraph] = useState([]);
   const [assessmentGraph, setAssessmentGraph] = useState([]);
   const [timeOpenedGraph, setTimeOpenedGraph] = useState([]);
   const [tableData, setTableData] = useState<any>([]);
+
+  const userData = useSelector((state: any) => state?.user);
+  const USER_ROLE = userData?.role?.name;
+  const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || '';
+
+  const link =
+    USER_ROLE === USER_TYPE.SUPER_ADMIN
+      ? `/school-management/school/${SCHOOL_ID}/reports/usage-for-teacher`
+      : `/${schoolNameInURL}/reports/usage-for-teacher`;
+
+  const linkForCourse =
+    USER_ROLE === USER_TYPE.SUPER_ADMIN
+      ? `/school-management/school/${SCHOOL_ID}/reports/program-usage-detail`
+      : `/${schoolNameInURL}/reports/program-usage-detail`;
 
   const csvSubHeaders = [
     TABLE_LABELS?.CLASS,
@@ -79,6 +90,7 @@ export default function Index() {
     TABLE_LABELS?.ACTIVE_STUDENT,
     TABLE_LABELS?.AVG_ACTIVE_PER_STUDENT,
   ];
+
   const {
     isRefetching: emailSendLoading,
     refetch: sendEmail,
@@ -87,17 +99,19 @@ export default function Index() {
     baseURL: ReportURL,
     url: `reports-service/usage-report-teacher_enhanced_details/send-email/?school_id=${schoolData?.id || branchData?.school_data?.id}`,
     onSuccess: () => {
-      toast("success", "Email sent successfully");
+      toast('success', 'Email sent successfully');
     },
     retry: false,
     onError: ({ response }: any) => {
-      toast("error", response?.data?.message || "Unable to send email");
+      toast('error', response?.data?.message || 'Unable to send email');
     },
     enabled: false,
   }) as any;
+
   const handelSendEmail = () => {
     sendEmail();
   };
+
   const ADMIN_TOOLBAR_MENU = [
     // {
     //   title: TOOLBAR_LABELS.EMAIL,
@@ -105,7 +119,7 @@ export default function Index() {
     //     emailSendLoading || emailLoad ? <Loader size={20} /> : <EmailIcon />,
     // },
     {
-      title: "Export",
+      title: 'Export',
       icon: (
         <CSVLink
           filename="Report Teacher Detail.csv"
@@ -118,7 +132,7 @@ export default function Index() {
       ),
     },
     {
-      title: "Print",
+      title: 'Print',
       icon: (
         <ReactToPrint
           trigger={printButton}
@@ -130,7 +144,7 @@ export default function Index() {
 
   const ADMIN_TOOLBAR_MENU_GRAPH = [
     {
-      title: "Export",
+      title: 'Export',
       icon: (
         <CSVLink
           filename="Usage Reports Teacher.csv"
@@ -149,44 +163,45 @@ export default function Index() {
       handelSendEmail();
     }
   };
+
   const TableColumns: any = [
-    { label: "Student Name", mapper: "student_name", align: "left" },
-    { label: "Class", mapper: "class_name", align: "left" },
-    { label: "Teacher Name", mapper: "teacher_name", align: "left" },
-    { label: "First Login", mapper: "first_login", align: "left" },
-    { label: "Last Login", mapper: "last_login", align: "left" },
-    { label: "Total Time", mapper: "avg_time_per_logins", align: "left" },
+    { label: 'Student Name', mapper: 'student_name', align: 'left' },
+    { label: 'Class', mapper: 'class_name', align: 'left' },
+    { label: 'Teacher Name', mapper: 'teacher_name', align: 'left' },
+    { label: 'First Login', mapper: 'first_login', align: 'left' },
+    { label: 'Last Login', mapper: 'last_login', align: 'left' },
+    { label: 'Total Time', mapper: 'avg_time_per_logins', align: 'left' },
     {
-      label: "Total No. of Assignments Assigned",
-      mapper: "total_assignments",
-      align: "left",
+      label: 'Total No. of Assignments Assigned',
+      mapper: 'total_assignments',
+      align: 'left',
     },
     {
-      label: "Total No. of Assignments Submitted",
-      mapper: "assignments_submitted",
-      align: "left",
+      label: 'Total No. of Assignments Submitted',
+      mapper: 'assignments_submitted',
+      align: 'left',
     },
     {
-      label: "Pending Assignments",
-      mapper: "assignments_pending",
-      align: "left",
+      label: 'Pending Assignments',
+      mapper: 'assignments_pending',
+      align: 'left',
     },
     {
-      label: "Total No. of Assessments Assigned",
-      mapper: "total_assessments",
-      align: "left",
+      label: 'Total No. of Assessments Assigned',
+      mapper: 'total_assessments',
+      align: 'left',
     },
     {
-      label: "Total No. of Assessments Submitted",
-      mapper: "assessments_submitted",
-      align: "left",
+      label: 'Total No. of Assessments Submitted',
+      mapper: 'assessments_submitted',
+      align: 'left',
     },
     {
-      label: "Pending Assessments",
-      mapper: "assessments_pending",
-      align: "left",
+      label: 'Pending Assessments',
+      mapper: 'assessments_pending',
+      align: 'left',
     },
-    { label: "Courses", mapper: "courses", align: "left" },
+    { label: 'Courses', mapper: 'courses', align: 'left' },
   ];
 
   const handlePagination = (currPage: any) => {
@@ -216,14 +231,14 @@ export default function Index() {
 
   const { isLoading: schoolClassLoading, data: schoolClassList } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}${branchData || selectedBranch !== "select" ? `&branch_name=${branchName}` : ""}`,
+    url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}${branchData || selectedBranch !== 'select' ? `&branch_name=${branchName}` : ''}`,
   });
   const SchooClassList =
     schoolClassList?.data?.response?.results?.sort(sortByName);
 
   const { data: teacherList, isLoading: teacherListLoading } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
-    url: `users-service/teachers-list/?limit=1000&ordering=-created_at&school_id=${schoolData?.id || branchData?.school_data?.id}${branchData || selectedBranch !== "select" ? `&branch_name=${branchName}` : ""}`,
+    url: `users-service/teachers-list/?limit=1000&ordering=-created_at&school_id=${schoolData?.id || branchData?.school_data?.id}${branchData || selectedBranch !== 'select' ? `&branch_name=${branchName}` : ''}`,
   });
   const { isLoading: subjectsLoading, data: subjectList } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
@@ -246,17 +261,17 @@ export default function Index() {
   const { isLoading, data } = useGet({
     baseURL: ReportURL,
     url: `reports-service/usage-report-student_enhanced_details/?school_id=${schoolData?.id || branchData?.school_data?.id}${
-      selectedBranch !== "select"
+      selectedBranch !== 'select'
         ? `&branch_id=${selectedBranch}`
         : userRole().isBranchAdmin || branchData
           ? `&branch_id=${branchData?.id}`
-          : ""
-    }${selectedClass !== "select" ? `&class_id=${selectedClass}` : ""}${
-      fromDate ? `&from_date=${moment(fromDate).format("yyyy-MM-DD")}` : ""
+          : ''
+    }${selectedClass !== 'select' ? `&class_id=${selectedClass}` : ''}${
+      fromDate ? `&from_date=${moment(fromDate).format('yyyy-MM-DD')}` : ''
     }${
-      toDate ? `&to_date=${moment(toDate).format("yyyy-MM-DD")}` : ""
+      toDate ? `&to_date=${moment(toDate).format('yyyy-MM-DD')}` : ''
     }&page=${page}&page_size=${rowsPerPage}&is_graph=${graph}${
-      selectedprogram !== "select" ? `&program=${selectedprogram}` : ""
+      selectedprogram !== 'select' ? `&program=${selectedprogram}` : ''
     }`,
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.total_records);
@@ -266,9 +281,9 @@ export default function Index() {
       ProgramData?.forEach((i: any) => {
         body.push({
           ...i,
-          first_login: i?.first_login?.replace(DateTimeRegex, "$1, $2"),
-          last_login: i?.last_login?.replace(DateTimeRegex, "$1, $2"),
-          avg_time_per_logins: i?.avg_time_per_logins || "00:00:00",
+          first_login: i?.first_login?.replace(DateTimeRegex, '$1, $2'),
+          last_login: i?.last_login?.replace(DateTimeRegex, '$1, $2'),
+          avg_time_per_logins: i?.avg_time_per_logins || '00:00:00',
           total_assignments: i?.assignments?.total || 0,
           assignments_submitted: i?.assignments?.submitted || 0,
           assignments_pending: i?.assignments?.pending || 0,
@@ -277,7 +292,7 @@ export default function Index() {
           assessments_pending: i?.assessments?.pending || 0,
           teacher_name: (
             <Link
-              to={`/${schoolNameInURL}/reports/usage-for-teacher`}
+              to={`${link}`}
               className="text-accent underline cursor-pointer text-xs font-medium"
             >
               {i?.teacher_name}
@@ -289,13 +304,13 @@ export default function Index() {
                 ([courseName, courseId], index) => (
                   <Link
                     key={index}
-                    to={`/${schoolNameInURL}/reports/program-usage-detail/undefined/undefined/${courseId}/${encodeURIComponent(courseName)}`}
+                    to={`${linkForCourse}/undefined/undefined/${courseId}/${encodeURIComponent(courseName)}`}
                     className="text-accent underline cursor-pointer text-xs font-medium"
                   >
                     {courseName}
                     {index < Object.entries(i?.courses || {}).length - 1
-                      ? ", "
-                      : ""}
+                      ? ', '
+                      : ''}
                     {/* Add a comma between course names */}
                   </Link>
                 )
@@ -341,7 +356,7 @@ export default function Index() {
 
   useEffect(() => {
     if (data) {
-      console.log("API Response:", data?.data?.response);
+      console.log('API Response:', data?.data?.response);
     }
   }, [data]);
 
@@ -360,14 +375,14 @@ export default function Index() {
   };
 
   const reset = () => {
-    setFromDate("");
-    setToDate("");
+    setFromDate('');
+    setToDate('');
   };
   useEffect(() => {
-    if (view === "secondary") {
-      setGraph("1");
+    if (view === 'secondary') {
+      setGraph('1');
     } else {
-      setGraph("");
+      setGraph('');
     }
     CSVDataFunction();
   }, [view, csvData]);
@@ -379,7 +394,7 @@ export default function Index() {
   }, []);
 
   const handlePerPage = (e: any) => {
-    if (e === "All") {
+    if (e === 'All') {
       setRowsPerPage(e);
       setPage(1);
     } else {
@@ -393,21 +408,21 @@ export default function Index() {
       <HeaderMenus
         title="Report - Student Usage Report"
         menuArray={
-          view === "default" ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
+          view === 'default' ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
         }
         handleToolbarAction={handleToolbarAction}
       />
       <div
-        className={`w-full grid grid-cols-1 ${userRole().isBranchAdmin ? "lg:grid-cols-7" : "lg:grid-cols-8"} my-2 gap-2 items-center justify-between`}
+        className={`w-full grid grid-cols-1 ${userRole().isBranchAdmin ? 'lg:grid-cols-7' : 'lg:grid-cols-8'} my-2 gap-2 items-center justify-between`}
       >
-        {view === "default" ? (
+        {view === 'default' ? (
           <>
             {!userRole().isBranchAdmin && (
               <Dropdown
                 title="Select Branch"
                 value={selectedBranch}
                 dataArray={[
-                  { label: "All", value: "select" },
+                  { label: 'All', value: 'select' },
                   ...(BranchArr?.map((item: any) => ({
                     label: item.name,
                     value: item.id,
@@ -415,11 +430,11 @@ export default function Index() {
                 ]}
                 onChangeHandler={(val) => {
                   setselectedBranch(val);
-                  setSelectedClass("select");
-                  setSelectedTeacher("select");
+                  setSelectedClass('select');
+                  setSelectedTeacher('select');
                 }}
                 loading={branchListLoading}
-                sxClass={{ width: "100%" }}
+                sxClass={{ width: '100%' }}
               />
             )}
 
@@ -428,14 +443,14 @@ export default function Index() {
               value={selectedClass}
               loading={schoolClassLoading}
               dataArray={[
-                { label: "All", value: "select" },
+                { label: 'All', value: 'select' },
                 ...(SchooClassList?.map((item: any) => ({
                   label: item.name,
                   value: item.id,
                 })) || []),
               ]}
               onChangeHandler={(val) => setSelectedClass(val)}
-              sxClass={{ width: "100%" }}
+              sxClass={{ width: '100%' }}
             />
           </>
         ) : (
@@ -443,14 +458,14 @@ export default function Index() {
             title="Select Course"
             value={selectedprogram}
             dataArray={[
-              { label: "Select", value: "select" },
+              { label: 'Select', value: 'select' },
               ...(SubjectArr?.map((itm: any) => ({
                 label: itm?.content,
                 value: itm?.content,
               })) || []),
             ]}
             onChangeHandler={(val) => setSelectedProgram(val)}
-            sxClass={{ width: "100%" }}
+            sxClass={{ width: '100%' }}
           />
         )}
 
@@ -485,7 +500,7 @@ export default function Index() {
           value={rowsPerPage}
           dataArray={RESULTS_PER_PAGE}
           onChangeHandler={handlePerPage}
-          sxClass={{ width: "100%" }}
+          sxClass={{ width: '100%' }}
         />
         <div className={` flex gap-x-4 items-center  pt-2 lg:pt-6`}>
           {(toDate || fromDate) && (
@@ -514,7 +529,7 @@ export default function Index() {
         /> */}
       </div>
       {/* Table Section */}
-      {view === "default" ? (
+      {view === 'default' ? (
         <div className="bg-white" ref={componentRef}>
           <Wrapper>
             <AdvanceTable
