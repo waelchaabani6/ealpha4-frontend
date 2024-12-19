@@ -140,6 +140,7 @@ function createData(
       ? `0%`
       : // : `${parseFloat(((Number(Correct) * 100) / Number(maxScore)).toFixed(2))}%`;
         `${parseFloat(((Number(Correct / total_pages) * 100) / Number(maxScore)).toFixed(2))}%`;
+
   const scormDataView =
     scormData && scormData?.length > 0 ? JSON.parse(scormData) : {};
 
@@ -190,7 +191,7 @@ function AssignmentDetails() {
   } = teacherData;
   const [jsonData, setJsonData] = useState([]);
   const [jsonCopyData, setJsonCopyData] = useState([]);
-  // const [assignmentPages, setAssignmentsPages] = useState([]);
+  const [assignmentPages, setAssignmentsPages] = useState([]);
 
   const [AttachmentMenuVisible, setAttachmentMenuVisible] = useState(false);
   const [assignReportId, setAssignReportId] = useState('');
@@ -454,12 +455,12 @@ function AssignmentDetails() {
       // jsonRespData.push(res?.data?.response?.assignment_progress?.lesson_id);
 
       if (jsonRespData && jsonRespData.length !== 0) {
-        // const pagesArray = jsonRespData.map((ele: any) => ({
-        //   label: ele.page_name,
-        //   value: ele.page_name,
-        // }));
-        // setAssignmentsPages(pagesArray);
-        // console.log(jsonRespData, '#jsonRespData');
+        const pagesArray = jsonRespData.map((ele: any) => ({
+          label: ele.page_name,
+          value: ele.page_name,
+        }));
+        setAssignmentsPages(pagesArray);
+        // console.log(jsonRespData[1].scormData, '#jsonRespData');
         jsonRespData =
           jsonRespData && jsonRespData.length !== 0
             ? jsonRespData.map((ele: any) =>
@@ -485,14 +486,14 @@ function AssignmentDetails() {
           setCsvData(jsonRespData.map((ele: any) => createExcellData(ele)));
         }
 
-        // const columnsHeader2 = columnsHeader.map((ele) => {
-        //   if (ele.component === 'Dropdown') {
-        //     return { ...ele, dataArray: pagesArray };
-        //   }
-        //   return ele;
-        // });
-        // setColumns(columnsHeader2);
-        // setColumnsCopy(columnsHeader2);
+        const columnsHeader2 = columnsHeader.map((ele) => {
+          if (ele.component === 'Dropdown') {
+            return { ...ele, dataArray: pagesArray };
+          }
+          return ele;
+        });
+        setColumns(columnsHeader2);
+        setColumnsCopy(columnsHeader2);
       }
 
       const tempArray: any = [];
@@ -538,20 +539,20 @@ function AssignmentDetails() {
               );
             }
 
-            const pagesArray = singlePages.map((ele: any) => ({
-              label: ele.page_name,
-              value: ele.page_name,
-            }));
+            // const pagesArray = jsonRespData.map((ele: any) => ({
+            //   label: ele.page_name,
+            //   value: ele.page_name,
+            // }));
 
-            const columnsHeader2 = columnsHeader.map((ele) => {
-              if (ele.component === 'Dropdown') {
-                return { ...ele, dataArray: pagesArray };
-              }
-              return ele;
-            });
+            // const columnsHeader2 = columnsHeader.map((ele) => {
+            //   if (ele.component === 'Dropdown') {
+            //     return { ...ele, dataArray: pagesArray };
+            //   }
+            //   return ele;
+            // });
 
-            setColumns(columnsHeader2);
-            setColumnsCopy(columnsHeader2);
+            // setColumns(columnsHeader2);
+            // setColumnsCopy(columnsHeader2);
             // setAssignmentsPages(pagesList);
             // scromPagesTemp.push({
             //   label: `${lesson.unit_name}`,
@@ -924,7 +925,7 @@ function AssignmentDetails() {
           <div className="flex-1" />
           <div className="flex">
             <div className="relative">
-              {/* <Dropdown
+              <Dropdown
                 dataArray={assignmentPages}
                 onChangeHandler={(val) => {
                   setSelectedScromPage(val);
@@ -941,8 +942,8 @@ function AssignmentDetails() {
                 title="Select Page"
                 sxClass={{ width: '206px', marginRight: '5px' }}
                 displayEmpty={false}
-              /> */}
-              <Dropdown
+              />
+              {/* <Dropdown
                 dataArray={scromPages}
                 onChangeHandler={(val) => {
                   setSelectedScromPage(val);
@@ -958,7 +959,7 @@ function AssignmentDetails() {
                 title="Select Page"
                 sxClass={{ width: '206px', marginRight: '5px' }}
                 displayEmpty={false}
-              />
+              /> */}
               {showSelectPageError ? (
                 <div className="absolute text-red-500 text-xs whitespace-nowrap">
                   Please select pages from dropdown

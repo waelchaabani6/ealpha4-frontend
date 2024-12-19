@@ -146,6 +146,7 @@ const CoursePreview = () => {
   };
 
   const receiveMessageHandler = (event: any) => {
+    // console.log(event, '#event');
     if (typeof event?.data === 'string' && event?.data.startsWith('RESIZE:')) {
       const values = event?.data.replace('RESIZE:', '').split(';');
       // eslint-disable-next-line no-restricted-globals

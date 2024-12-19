@@ -116,6 +116,7 @@ function createData(
         `${parseFloat(((Number(Correct / total_pages) * 100) / Number(maxScore)).toFixed(2))}%`;
   const scormDataView =
     scormData && scormData?.length > 0 ? JSON.parse(scormData) : {};
+
   return {
     Pages,
     page_name,
@@ -356,6 +357,7 @@ function AssignmentDetails(): JSX.Element {
       //         value: ele.page_name,
       //       }))
       //     : [];
+
       jsonRespData =
         jsonRespData && jsonRespData.length !== 0
           ? jsonRespData.map((ele: any) =>
@@ -387,6 +389,16 @@ function AssignmentDetails(): JSX.Element {
         // const assignmentMainList = res?.data?.response;
 
         res?.data?.response?.chapters?.forEach((chapter: any) => {
+          const result = chapter?.lessons.reduce(
+            (acc, { unit_id, unit_name }) => {
+              acc[unit_id] = unit_name;
+              return acc;
+            },
+            {}
+          );
+
+          console.log(result, 'result');
+
           chapter?.lessons?.forEach((lesson: any) => {
             const pageNumberArray: string[] = [];
             const pageNameArray: string[] = [];
@@ -516,7 +528,7 @@ function AssignmentDetails(): JSX.Element {
         });
       }
 
-      const pagesArray = tempSinglePages.map((ele: any) => ({
+      const pagesArray = jsonRespData.map((ele: any) => ({
         label: ele.page_name,
         value: ele.page_name,
       }));
