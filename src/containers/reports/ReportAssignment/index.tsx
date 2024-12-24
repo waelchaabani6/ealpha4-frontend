@@ -131,7 +131,7 @@ export default function Index() {
   const [csvData, setCsvData] = useState<[]>([]);
   const [tableData, setTableData] = useState<any>([]);
   const { schoolData, branchData } = useSelector(selectSchoolData);
-  const { SCHOOL_ADMIN, BRANCH_ADMIN, TEACHER } = USER_TYPE;
+  const { SCHOOL_ADMIN, BRANCH_ADMIN, TEACHER , SUPER_ADMIN} = USER_TYPE;
   const ALL = { label: "All", value: "All" };
   const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || "";
   const BRANCH_ID = branchData?.id || "";
@@ -316,7 +316,7 @@ export default function Index() {
       branchArray?.sort(sortData);
       setBranchArray(branchArray);
     },
-    enabled: USER_ROLE === SCHOOL_ADMIN || USER_ROLE === BRANCH_ADMIN,
+    enabled: USER_ROLE === SCHOOL_ADMIN || USER_ROLE === BRANCH_ADMIN || USER_ROLE === SUPER_ADMIN,
   });
 
   const branchid =
@@ -586,7 +586,7 @@ export default function Index() {
 
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
-          {userData && USER_ROLE === USER_TYPE.SCHOOL_ADMIN && (
+          {userData && (USER_ROLE === USER_TYPE.SCHOOL_ADMIN || USER_ROLE === USER_TYPE.SUPER_ADMIN) && (
             <Dropdown
               displayEmpty={false}
               title="Select Branch"
