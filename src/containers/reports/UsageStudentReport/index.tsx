@@ -122,10 +122,21 @@ export default function Index() {
     { label: "Courses", mapper: "courses", align: "left" },
   ];
 
-  const csvSubHeaders = TableColumns.map((col: any) => ({
-    label: col.label,
-    key: col.mapper,
-  }));
+  const csvSubHeaders = [
+    TABLE_LABELS?.STUDENT_NAME,
+    TABLE_LABELS?.CLASS,
+    TABLE_LABELS?.TEACHER,
+    TABLE_LABELS?.FIRST_LOGIN,
+    TABLE_LABELS?.LAST_LOGIN,
+    TABLE_LABELS?.TOTAL_TIME,
+    TABLE_LABELS?.TOTAL_ASSIGNMENTS,
+    TABLE_LABELS?.ASSIGNMENTS_SUBMITTED,
+    TABLE_LABELS?.PENDING_ASSIGNMENTS,
+    TABLE_LABELS?.TOTAL_ASSESSMENTS,
+    TABLE_LABELS?.ASSESSMENTS_SUBMITTED,
+    TABLE_LABELS?.PENDING_ASSESSMENTS,
+    TABLE_LABELS?.COURSES,
+  ];
 
   const {
     isRefetching: emailSendLoading,
@@ -317,6 +328,7 @@ export default function Index() {
       });
 
       setTableData(body); // Set the processed table data
+
       setTotalData(res?.data?.response?.data);
 
       // Graph data
@@ -358,32 +370,32 @@ export default function Index() {
 
   const CSVDataFunction = () => {
     const csvdata = tableData.map((row: any) => {
-      // 1) teacher_name can be an array of strings or a single string:
+      // Convert teacher_name (array) → comma-separated string
       const teacherNamesString = Array.isArray(row.teacher_name)
         ? row.teacher_name.join(", ")
         : row.teacher_name || "";
-
-      // 2) courses is an object → keys as comma-separated string:
+      debugger;
+      // Convert courses object → comma-separated string
       const coursesString =
         row.courses && typeof row.courses === "object"
           ? Object.keys(row.courses).join(", ")
           : "";
 
-      // Return your 13 columns in the correct order:
+      // Return each row in the same column order as csvSubHeaders
       return [
-        row.student_name,
-        row.class_name,
-        teacherNamesString,
-        row.first_login,
-        row.last_login,
-        row.avg_time_per_logins,
-        row.total_assignments,
-        row.assignments_submitted,
-        row.assignments_pending,
-        row.total_assessments,
-        row.assessments_submitted,
-        row.assessments_pending,
-        coursesString,
+        /* STUDENT_NAME            */ row.student_name,
+        /* CLASS                   */ row.class_name,
+        /* TEACHER                 */ teacherNamesString,
+        /* FIRST_LOGIN             */ row.first_login,
+        /* LAST_LOGIN              */ row.last_login,
+        /* TOTAL_TIME              */ row.avg_time_per_logins,
+        /* TOTAL_ASSIGNMENTS       */ row.assignments?.total || 0,
+        /* ASSIGNMENTS_SUBMITTED   */ row.assignments?.submitted || 0,
+        /* PENDING_ASSIGNMENTS     */ row.assignments?.pending || 0,
+        /* TOTAL_ASSESSMENTS       */ row.assessments?.total || 0,
+        /* ASSESSMENTS_SUBMITTED   */ row.assessments?.submitted || 0,
+        /* PENDING_ASSESSMENTS     */ row.assessments?.pending || 0,
+        /* COURSES                 */ coursesString,
       ];
     });
 
