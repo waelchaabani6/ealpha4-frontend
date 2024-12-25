@@ -168,6 +168,12 @@ export const TABLE_LABELS = {
   PUBLISHED_BY: "Published By",
   REMARK: "Remark",
   CLASSROOM_NAME: "Name of Classroom",
+  TOTAL_ASSIGNMENTS: "Total Assignments",
+  TOTAL_ASSESSMENTS: "Total Assessments",
+  ASSIGNMENTS_SUBMITTED: "Assignments Submitted",
+  ASSESSMENTS_SUBMITTED: "Assessments Submitted",
+  PENDING_ASSIGNMENTS: "Pending Assignments",
+  PENDING_ASSESSMENTS: "Pending Assessments",
 };
 
 // Manage Classes

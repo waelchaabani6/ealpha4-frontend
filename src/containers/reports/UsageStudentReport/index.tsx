@@ -122,10 +122,21 @@ export default function Index() {
     { label: "Courses", mapper: "courses", align: "left" },
   ];
 
-  const csvSubHeaders = TableColumns.map((col: any) => ({
-    label: col.label,
-    key: col.mapper,
-  }));
+  const csvSubHeaders = [
+    TABLE_LABELS?.STUDENT_NAME,
+    TABLE_LABELS?.CLASS,
+    TABLE_LABELS?.TEACHER,
+    TABLE_LABELS?.FIRST_LOGIN,
+    TABLE_LABELS?.LAST_LOGIN,
+    TABLE_LABELS?.TOTAL_TIME,
+    TABLE_LABELS?.TOTAL_ASSIGNMENTS,
+    TABLE_LABELS?.ASSIGNMENTS_SUBMITTED,
+    TABLE_LABELS?.PENDING_ASSIGNMENTS,
+    TABLE_LABELS?.TOTAL_ASSESSMENTS,
+    TABLE_LABELS?.ASSESSMENTS_SUBMITTED,
+    TABLE_LABELS?.PENDING_ASSESSMENTS,
+    TABLE_LABELS?.COURSES,
+  ];
 
   const {
     isRefetching: emailSendLoading,
@@ -277,8 +288,8 @@ export default function Index() {
       ProgramData?.forEach((i: any) => {
         body.push({
           ...i,
-          first_login: i?.first_login?.replace(DateTimeRegex, "$1, $2"),
-          last_login: i?.last_login?.replace(DateTimeRegex, "$1, $2"),
+          first_login: i?.first_login?.replace(DateTimeRegex, "$1- $2"),
+          last_login: i?.last_login?.replace(DateTimeRegex, "$1- $2"),
           avg_time_per_logins: i?.avg_time_per_logins || "00:00:00",
           total_assignments: i?.assignments?.total || 0,
           assignments_submitted: i?.assignments?.submitted || 0,
@@ -317,6 +328,7 @@ export default function Index() {
       });
 
       setTableData(body); // Set the processed table data
+
       setTotalData(res?.data?.response?.data);
 
       // Graph data
@@ -356,34 +368,58 @@ export default function Index() {
     }
   }, [data]);
 
+  const extractCourses = (data) => {
+    if (!data || !Array.isArray(data.children)) return "";
+    const courses = data.children.map(
+      (item) => item.props?.children?.[0] || ""
+    );
+    return courses.filter(Boolean).join(" - "); // Filter out any empty values
+  };
+
+  // Example: Formatting teacher_name from an array → comma-separated string,
+  // handling default values for assignments, converting dates, etc.
   const CSVDataFunction = () => {
-    const csvdata = tableData.map((row: any) => {
-      // 1) teacher_name can be an array of strings or a single string:
-      const teacherNamesString = Array.isArray(row.teacher_name)
-        ? row.teacher_name.join(", ")
-        : row.teacher_name || "";
+    const csvdata = tableData?.map((row: any) => {
+      // 1) Format teacher_name (assume it's an array of strings)
+      const teacherNames = row.teacher_name?.props?.children.join(" - ");
 
-      // 2) courses is an object → keys as comma-separated string:
-      const coursesString =
-        row.courses && typeof row.courses === "object"
-          ? Object.keys(row.courses).join(", ")
-          : "";
+      // 2) Format assignments to ensure no "undefined"
+      const totalAssignments = row?.assignments?.total ?? 0;
+      const submittedAssignments = row?.assignments?.submitted ?? 0;
+      const pendingAssignments = row?.assignments?.pending ?? 0;
+      const first_login = row?.first_login?.replace(DateTimeRegex, "$1- $2");
+      const last_login = row?.last_login?.replace(DateTimeRegex, "$1- $2");
+      // 3) Format assessments
+      const totalAssessments = row?.assessments?.total ?? 0;
+      const submittedAssessments = row?.assessments?.submitted ?? 0;
+      const pendingAssessments = row?.assessments?.pending ?? 0;
 
-      // Return your 13 columns in the correct order:
+      // 4) Convert courses object → comma-separated string (if needed)
+      //    (If row.courses is already a single string, skip this step)
+      const coursesString = extractCourses(row.courses?.props);
+
+      // 5) Date formatting example (using your own utils or moment)
+      //    If you want to parse row.first_login as a date string:
+      // const formattedFirstLogin = row.first_login
+      //   ? moment(row.first_login).format("YYYY-MM-DD HH:mm")
+      //   : "";
+      // etc.
+
+      // Finally, return the 13 columns in order:
       return [
-        row.student_name,
-        row.class_name,
-        teacherNamesString,
-        row.first_login,
-        row.last_login,
-        row.avg_time_per_logins,
-        row.total_assignments,
-        row.assignments_submitted,
-        row.assignments_pending,
-        row.total_assessments,
-        row.assessments_submitted,
-        row.assessments_pending,
-        coursesString,
+        row.student_name || "", // 1 Student Name
+        row.class_name || "", // 2 Class
+        teacherNames, // 3 Teacher Name
+        first_login, // 4 First Login
+        last_login, // 5 Last Login
+        row.avg_time_per_logins || "", // 6 Total Time
+        totalAssignments, // 7 Total Assignments
+        submittedAssignments, // 8 Assignments Submitted
+        pendingAssignments, // 9 Pending Assignments
+        totalAssessments, // 10 Total Assessments
+        submittedAssessments, // 11 Assessments Submitted
+        pendingAssessments, // 12 Pending Assessments
+        coursesString, // 13 Courses
       ];
     });
 
