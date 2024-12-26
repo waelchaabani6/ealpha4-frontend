@@ -302,7 +302,7 @@ export default function Index() {
               to={`${link}`}
               className="text-accent underline cursor-pointer text-xs font-medium"
             >
-              {i?.teacher_name}
+              {i?.teacher_name?.join("  , ")}
             </Link>
           ),
           courses: (
