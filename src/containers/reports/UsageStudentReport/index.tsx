@@ -381,7 +381,9 @@ export default function Index() {
   const CSVDataFunction = () => {
     const csvdata = tableData?.map((row: any) => {
       // 1) Format teacher_name (assume it's an array of strings)
-      const teacherNames = row.teacher_name?.props?.children.join(" - ");
+      const teacherNames = Array.isArray(row.teacher_name?.props?.children)
+        ? row.teacher_name.props.children.join(" - ")
+        : row.teacher_name?.props?.children || "";
 
       // 2) Format assignments to ensure no "undefined"
       const totalAssignments = row?.assignments?.total ?? 0;
