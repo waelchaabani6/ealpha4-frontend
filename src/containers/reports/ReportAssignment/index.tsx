@@ -112,6 +112,7 @@ const TableColumns: any = [
 const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
 
 const csvSubHeaders = [
+  TABLE_LABELS?.SR_NO,
   TABLE_LABELS?.CLASS_NAME,
   TABLE_LABELS?.TEACHER,
   TABLE_LABELS?.COURSES,
@@ -396,6 +397,7 @@ export default function Index() {
             ? i.cohort_score_in_percent.toFixed(2)
             : "";
           csvbody.push([
+            i.Sr_No,
             i.class_name,
             i.teacher_name,
             i.program,
