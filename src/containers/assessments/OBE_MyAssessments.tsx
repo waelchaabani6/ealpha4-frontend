@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 import Button from '@component/button/button';
 import { useSelector } from 'react-redux';
 import { useGet, usePost, useDelete } from '@shared/api/useApi';
-import encryptMessage from "@utility/encrypt";
+import encryptMessage from '@utility/encrypt';
 
 interface Message {
   key: string;
@@ -98,7 +98,6 @@ export default function MyAssessments() {
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const location = useLocation();
 
-
   const handlePagination = (currPage: any) => {
     if (currPage) setPage(currPage);
     else setPage(1);
@@ -124,7 +123,7 @@ export default function MyAssessments() {
         date_time: currentDate
       };
       const encryptedData = encryptMessage(JSON.stringify(message));
-      window.open(`http://localhost:3001/views/${assessId}?token=${encodeURIComponent(encryptedData)}`, '_blank');
+      window.open(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${assessId}?token=${encodeURIComponent(encryptedData)}`, '_blank');
     }
   };
 

@@ -163,7 +163,7 @@ export default function AssignedAssessments() {
         redirectionPath: location.pathname
       };
       const encryptedData = encryptMessage(JSON.stringify(message));
-      window.location.href = `http://localhost:3001/create-assessments/?token=${encodeURIComponent(encryptedData)}`;
+      window.location.href = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/create-assessments/?token=${encodeURIComponent(encryptedData)}`;
     }
   }, [dataValues, obeId]);
 

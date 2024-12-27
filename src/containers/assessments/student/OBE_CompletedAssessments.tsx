@@ -244,7 +244,7 @@ export default function OBE_CompletedAssessments() {
       user_ting
     };
     const encryptedData = encryptMessage(JSON.stringify(message));
-    window.open(`http://localhost:3001/student-reports/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`, '_blank');
+    window.open(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/student-reports/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`, '_blank');
   };
   // ----------------------------------------API-------------------------
   // Get Assessment List

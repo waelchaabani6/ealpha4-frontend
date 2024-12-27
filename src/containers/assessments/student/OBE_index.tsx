@@ -158,7 +158,7 @@ export default function OBE_Index() {
     const encryptedData = encryptMessage(JSON.stringify(message));
 
     // Change the URL to point to App B running on port 3001
-    window.location.href = `http://localhost:3001/player/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`;
+    window.location.href = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`;
   };
 
   function shouldDisableButton(startDateString: any) {

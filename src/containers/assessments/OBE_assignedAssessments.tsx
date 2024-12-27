@@ -222,7 +222,7 @@ export default function OBE_AssignedAssessments() {
         date_time: currentDate
       };
       const encryptedData = encryptMessage(JSON.stringify(message));
-      window.open(`http://localhost:3001/views/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`, '_blank');
+      window.open(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`, '_blank');
     }
   };
   const deleteHandler = (row: any) => {
