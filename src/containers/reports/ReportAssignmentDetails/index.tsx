@@ -4,16 +4,16 @@
 /* eslint-disable no-confusing-arrow */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable comma-dangle */
-import ButtonToggle from '@component/ToggleButton/ToggleButton';
-import { IconButton } from '@component/button/button';
-import DatePicker from '@component/datepicker';
-import Dropdown from '@component/dropdown/Dropdown';
-import { CustomInput } from '@component/input';
-import { NumberedPagination } from '@component/pagination/CustomPagination';
-import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import EmailIcon from '@mui/icons-material/Email';
-import PrintIcon from '@mui/icons-material/Print';
-import SettingsIcon from '@mui/icons-material/Settings';
+import ButtonToggle from "@component/ToggleButton/ToggleButton";
+import { IconButton } from "@component/button/button";
+import DatePicker from "@component/datepicker";
+import Dropdown from "@component/dropdown/Dropdown";
+import { CustomInput } from "@component/input";
+import { NumberedPagination } from "@component/pagination/CustomPagination";
+import { ReactComponent as Share } from "@images/pageHeaderIcons/share.svg";
+import EmailIcon from "@mui/icons-material/Email";
+import PrintIcon from "@mui/icons-material/Print";
+import SettingsIcon from "@mui/icons-material/Settings";
 import {
   FormControl,
   FormControlLabel,
@@ -25,36 +25,36 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from '@mui/material';
-import { useGet } from '@shared/api/useApi';
-import Loader from '@shared/loader';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import { selectSchoolData } from '@shared/store/schoolSlice';
-import { selectUser } from '@shared/store/userSlice';
-import toast from '@shared/toast';
-import moment from 'moment';
-import React, { useEffect, useRef, useState } from 'react';
-import { CSVLink } from 'react-csv';
-import { useDispatch, useSelector } from 'react-redux';
+} from "@mui/material";
+import { useGet } from "@shared/api/useApi";
+import Loader from "@shared/loader";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
+import { selectSchoolData } from "@shared/store/schoolSlice";
+import { selectUser } from "@shared/store/userSlice";
+import toast from "@shared/toast";
+import moment from "moment";
+import React, { useEffect, useRef, useState } from "react";
+import { CSVLink } from "react-csv";
+import { useDispatch, useSelector } from "react-redux";
 import {
   useLocation,
   useNavigate,
   useParams,
   useSearchParams,
-} from 'react-router-dom';
-import ReactToPrint from 'react-to-print';
+} from "react-router-dom";
+import ReactToPrint from "react-to-print";
 import {
   TABLE_LABELS,
   TOOLBAR_LABELS,
   USER_TYPE,
-} from '../../../constants/constants';
-import Wrapper from '../../../shared/wrapper/Wrapper';
-import RouteLayout from '../../layout/routeLayout';
-import StudentLeveAreaBar from '../BarChart/StudentLeveAreaBar';
-import StudentLeveBar from '../BarChart/StudentLeveBar';
-import StudentLevelChart from '../LineChart/StudentLevelChart';
-import Setting from '../setting';
-import StudentModal from './StudentModal';
+} from "../../../constants/constants";
+import Wrapper from "../../../shared/wrapper/Wrapper";
+import RouteLayout from "../../layout/routeLayout";
+import StudentLeveAreaBar from "../BarChart/StudentLeveAreaBar";
+import StudentLeveBar from "../BarChart/StudentLeveBar";
+import StudentLevelChart from "../LineChart/StudentLevelChart";
+import Setting from "../setting";
+import StudentModal from "./StudentModal";
 
 const printButton = () => <PrintIcon />;
 
@@ -68,40 +68,43 @@ export default function Index() {
   const { schoolId, userId } = useSelector(selectUser);
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
-  const [graph, setGraph] = useState('');
+  const [graph, setGraph] = useState("");
   const [totalRecords, setTotalRecords] = useState(0);
   const recordsPerPage = 10;
   const noOfpages = Math.ceil(totalRecords / recordsPerPage);
-  const [createdDate, setCreatedDate] = useState<any>('01-09-2022');
-  const [dueDate, setDueDate] = useState<any>('10-09-2022');
+  const [createdDate, setCreatedDate] = useState<any>("01-09-2022");
+  const [dueDate, setDueDate] = useState<any>("10-09-2022");
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [studentArr, setStudentArr] = useState<string[]>([]);
-  const [view, setView] = React.useState('default');
+  const [view, setView] = React.useState("default");
   const [details, SetDetails] = useState([]);
-  const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
+  const schoolNameInURL = decodeURIComponent(location.pathname.split("/")[1]);
+  const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || "";
+  const BRANCH_ID = branchData?.school_data?.id || "";
+  const USER_ROLE = userData?.role?.name;
   const link = `/${schoolNameInURL}/reports/assignment-question-level-student`;
+  const superAdminLink = `/${schoolNameInURL}/school/${SCHOOL_ID}/reports/assignment-question-level-student`;
+  const adjustedLink =
+    USER_ROLE === USER_TYPE.SUPER_ADMIN ? superAdminLink : link;
   const [ScoreArray, SetScoreArray] = useState([]);
   const [perArray, SetPerArray] = useState([]);
-  const [percentage, setPercentage] = useState('false');
+  const [percentage, setPercentage] = useState("false");
   const [performance, SetPerformanceData] = useState([]);
   const [linearr, setLineArray] = useState([]);
   const [SecondTabledata, setSecondTable] = useState<DataItem[]>([]);
   const { assignID, CourseID, ClassID, schoolName } = useParams();
   const [student, setStudentData] = useState([]);
-  const [studentid, setID] = useState('');
-  const [selectedstudent, setSelectedStudent] = useState<any>('');
-  const USER_ROLE = userData?.role?.name;
-  const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || '';
-  const BRANCH_ID = branchData?.school_data?.id || '';
+  const [studentid, setID] = useState("");
+  const [selectedstudent, setSelectedStudent] = useState<any>("");
 
   const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
 
-  const program = state?.program || '';
-  const assignmentName = state?.assignment || '';
-  const classname = state?.class || '';
-  const startData = state?.startData || '';
-  const endDate = state?.endDate || '';
+  const program = state?.program || "";
+  const assignmentName = state?.assignment || "";
+  const classname = state?.class || "";
+  const startData = state?.startData || "";
+  const endDate = state?.endDate || "";
   const [csvData, setCsvData] = useState<[]>([]);
 
   const {
@@ -112,11 +115,11 @@ export default function Index() {
     baseURL: ReportURL,
     url: `reports-service/assignment_details_report/send_email/?user_id=${userId}&school_id=${SCHOOL_ID}`,
     onSuccess: () => {
-      toast('success', 'Email sent successfully');
+      toast("success", "Email sent successfully");
     },
     retry: false,
     onError: ({ response }: any) => {
-      toast('error', response?.data?.message || 'Unable to send email');
+      toast("error", response?.data?.message || "Unable to send email");
     },
     enabled: false,
   }) as any;
@@ -139,7 +142,7 @@ export default function Index() {
     //   icon: (emailSendLoading || emailLoad) ? <Loader size={20} /> : <EmailIcon />
     // },
     {
-      title: 'Export',
+      title: "Export",
       icon: (
         <CSVLink
           filename="Report Assignment Details.csv"
@@ -152,7 +155,7 @@ export default function Index() {
       ),
     },
     {
-      title: 'Print',
+      title: "Print",
       icon: (
         <ReactToPrint
           trigger={printButton}
@@ -180,48 +183,48 @@ export default function Index() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      mapper: 'SR_NO',
-      align: 'center',
+      mapper: "SR_NO",
+      align: "center",
     },
     {
-      label: 'Student First Name',
-      mapper: 'StudentFirstName',
+      label: "Student First Name",
+      mapper: "StudentFirstName",
       isSort: true,
     },
     {
-      label: 'Student Last Name',
+      label: "Student Last Name",
       isSort: true,
-      mapper: 'StudentLastName',
+      mapper: "StudentLastName",
     },
     {
-      label: 'Date Submitted',
+      label: "Date Submitted",
       isSort: true,
-      mapper: 'DateSubmitted',
+      mapper: "DateSubmitted",
     },
     {
-      label: 'Score',
+      label: "Score",
       isSort: true,
-      mapper: 'Score',
+      mapper: "Score",
     },
     {
-      label: 'Percentage %',
+      label: "Percentage %",
       isSort: true,
-      mapper: 'Percentage',
+      mapper: "Percentage",
     },
     {
-      label: 'Time (HH:MM)',
+      label: "Time (HH:MM)",
       isSort: true,
-      mapper: 'Time',
+      mapper: "Time",
     },
     {
-      label: 'Checks',
+      label: "Checks",
       isSort: true,
-      mapper: 'Check',
+      mapper: "Check",
     },
     {
-      label: 'Performance Expectation',
+      label: "Performance Expectation",
       isSort: true,
-      mapper: 'PerformanceExpectation',
+      mapper: "PerformanceExpectation",
     },
   ];
 
@@ -250,7 +253,7 @@ export default function Index() {
 
   const { isFetching: reportLoading, refetch: AssignmentDetails } = useGet({
     baseURL: ReportURL,
-    url: `reports-service/assignment_details_report/?user_id=${userId}&school_id=${SCHOOL_ID}${graph ? `&is_graph=${graph}` : ''}${studentid ? `&selected_student=${studentid}` : ''}${page ? `&page=${page}` : ''}${startData ? `&from_date=${moment(startData).format('YYYY-MM-DD')}` : ''}${endDate ? `&to_date=${moment(endDate).format('YYYY-MM-DD')}` : ''}&selected_program=${CourseID}&selected_class=${ClassID}&selected_assignment=${assignID}`,
+    url: `reports-service/assignment_details_report/?user_id=${userId}&school_id=${SCHOOL_ID}${graph ? `&is_graph=${graph}` : ""}${studentid ? `&selected_student=${studentid}` : ""}${page ? `&page=${page}` : ""}${startData ? `&from_date=${moment(startData).format("YYYY-MM-DD")}` : ""}${endDate ? `&to_date=${moment(endDate).format("YYYY-MM-DD")}` : ""}&selected_program=${CourseID}&selected_class=${ClassID}&selected_assignment=${assignID}`,
     onSuccess: (res: any) => {
       const accData = res?.data?.response;
       const respData = accData?.data;
@@ -275,19 +278,19 @@ export default function Index() {
         const studentbody: any = [];
         respData?.map((i: any, index: any) => {
           const date = new Date(i.submitted_at);
-          const day = String(date.getDate()).padStart(2, '0');
-          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, "0");
+          const month = String(date.getMonth() + 1).padStart(2, "0");
           const year = date.getFullYear();
           const formattedDate = `${day}-${month}-${year}`;
           body.push({
             SR_NO: i.Sr_No,
             StudentFirstName: i.first_name,
             StudentLastName: i.last_name,
-            DateSubmitted: i.submitted_at ? formattedDate : '',
-            Score: `${i.score_value ? i.score_value : ''}/ ${i.total_score ? i.total_score : ''} `,
+            DateSubmitted: i.submitted_at ? formattedDate : "",
+            Score: `${i.score_value ? i.score_value : ""}/ ${i.total_score ? i.total_score : ""} `,
             Percentage: i.score_in_percent
               ? Number(i.score_in_percent).toFixed(2)
-              : '',
+              : "",
             Time: i.time,
             PerformanceExpectation: i.performance_expectation,
             Check: i.checks,
@@ -306,8 +309,8 @@ export default function Index() {
             i.assignment_name,
             i.first_name,
             i.last_name,
-            i.submitted_at ? formattedDate : '',
-            `${i.score_value ? i.score_value : ''}/ ${i.total_score ? i.total_score : ''} `,
+            i.submitted_at ? formattedDate : "",
+            `${i.score_value ? i.score_value : ""}/ ${i.total_score ? i.total_score : ""} `,
             i.score_in_percent,
             i.performance_expectation,
           ]);
@@ -315,7 +318,7 @@ export default function Index() {
         });
         const modifiedRows = body
           .map((row: any) => {
-            if (row.PerformanceExpectation === 'Meets') {
+            if (row.PerformanceExpectation === "Meets") {
               return {
                 ...row,
                 PerformanceExpectation: (
@@ -325,7 +328,7 @@ export default function Index() {
                 ),
               };
             }
-            if (row.PerformanceExpectation === 'Does Not Meet') {
+            if (row.PerformanceExpectation === "Does Not Meet") {
               return {
                 ...row,
                 PerformanceExpectation: (
@@ -335,7 +338,7 @@ export default function Index() {
                 ),
               };
             }
-            if (row.PerformanceExpectation === 'Exceeds') {
+            if (row.PerformanceExpectation === "Exceeds") {
               return {
                 ...row,
                 PerformanceExpectation: (
@@ -345,7 +348,7 @@ export default function Index() {
                 ),
               };
             }
-            if (row.PerformanceExpectation === 'Approaching') {
+            if (row.PerformanceExpectation === "Approaching") {
               return {
                 ...row,
                 PerformanceExpectation: (
@@ -367,7 +370,7 @@ export default function Index() {
       // second table
       if (SecondTable) {
         const modifiedRows = SecondTable?.map((row: any) => {
-          if (row.performance_status === 'Meets') {
+          if (row.performance_status === "Meets") {
             return {
               ...row,
               performance_status: (
@@ -377,7 +380,7 @@ export default function Index() {
               ),
             };
           }
-          if (row.performance_status === 'Does Not Meet') {
+          if (row.performance_status === "Does Not Meet") {
             return {
               ...row,
               performance_status: (
@@ -387,7 +390,7 @@ export default function Index() {
               ),
             };
           }
-          if (row.performance_status === 'Exceeds') {
+          if (row.performance_status === "Exceeds") {
             return {
               ...row,
               performance_status: (
@@ -397,7 +400,7 @@ export default function Index() {
               ),
             };
           }
-          if (row.performance_status === 'Approaching') {
+          if (row.performance_status === "Approaching") {
             return {
               ...row,
               performance_status: (
@@ -420,15 +423,15 @@ export default function Index() {
     setPercentage(event.target.value);
   };
   const reset = () => {
-    setPercentage('false');
-    setID('');
+    setPercentage("false");
+    setID("");
   };
 
   useEffect(() => {
-    if (view === 'secondary') {
-      setGraph('1');
+    if (view === "secondary") {
+      setGraph("1");
     } else {
-      setGraph('');
+      setGraph("");
     }
     reset();
   }, [view]);
@@ -446,21 +449,21 @@ export default function Index() {
       navBack={true}
     >
       <HeaderMenus
-        title={`Report -  ${view === 'default' ? 'Assignments Details' : 'Multiple Assignments Student Level'}`}
+        title={`Report -  ${view === "default" ? "Assignments Details" : "Multiple Assignments Student Level"}`}
         menuArray={
-          view === 'default' ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
+          view === "default" ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
         }
         handleToolbarAction={handleToolbarAction}
       />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
-        {view && view === 'default' ? (
+        {view && view === "default" ? (
           <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
             <div className="w-[150px]">
               <CustomInput
                 name="program"
                 label="Program"
                 size="small"
-                value={program || ''}
+                value={program || ""}
                 disabled={true}
               />
             </div>
@@ -469,7 +472,7 @@ export default function Index() {
                 name="assignment_name"
                 label="Assignment Name"
                 size="small"
-                value={assignmentName || ''}
+                value={assignmentName || ""}
                 disabled={true}
               />
             </div>
@@ -478,7 +481,7 @@ export default function Index() {
                 name="class"
                 label="Class"
                 size="small"
-                value={classname || ''}
+                value={classname || ""}
                 disabled={true}
               />
             </div>
@@ -502,7 +505,7 @@ export default function Index() {
                 disabled={true}
               />
             </div>
-            <IconButton onClick={handleDialog} sx={{ boxShadow: 'none' }}>
+            <IconButton onClick={handleDialog} sx={{ boxShadow: "none" }}>
               <SettingsIcon fontSize="small" />
             </IconButton>
           </div>
@@ -514,7 +517,7 @@ export default function Index() {
                   name="class"
                   label="Class"
                   size="small"
-                  value={classname || ''}
+                  value={classname || ""}
                   disabled={true}
                 />
               </div>
@@ -546,9 +549,9 @@ export default function Index() {
                   // sxType={1}
                   defaultStyle={true}
                   disabled={true}
-                />{' '}
+                />{" "}
               </div>
-              <IconButton onClick={handleDialog} sx={{ boxShadow: 'none' }}>
+              <IconButton onClick={handleDialog} sx={{ boxShadow: "none" }}>
                 <SettingsIcon fontSize="small" />
               </IconButton>
             </div>
@@ -559,11 +562,11 @@ export default function Index() {
         </div>
       </div>
       {/* Table Section */}
-      {view && view === 'default' ? (
+      {view && view === "default" ? (
         <>
           <div className="wrapperBorder mt-3" ref={componentRef}>
             <Wrapper>
-              <TableContainer className="relative" sx={{ maxHeight: '100%' }}>
+              <TableContainer className="relative" sx={{ maxHeight: "100%" }}>
                 <Table stickyHeader={true} aria-label="sticky table">
                   <TableHead>
                     <TableRow>
@@ -571,13 +574,13 @@ export default function Index() {
                         item?.label ? (
                           <TableCell
                             key={`${item?.label}-${index}`}
-                            align={item?.align || 'left'}
+                            align={item?.align || "left"}
                             colSpan={item?.colspan || 1}
                           >
                             {item?.label}
                           </TableCell>
                         ) : (
-                          ''
+                          ""
                         )
                       )}
                     </TableRow>
@@ -609,20 +612,20 @@ export default function Index() {
                                 Submitteddate: DateSubmitted,
                               };
                               navigate(
-                                `${link}/${row.StudentID}/${row.assignmentID}`,
+                                `${adjustedLink}/${row.StudentID}/${row.assignmentID}`,
                                 { state: { stateData2 } }
                               );
                             }}
                             key={`${row?.id}-${index}`}
                             sx={{
-                              '& > *': { borderBottom: 'unset' },
-                              cursor: 'pointer',
+                              "& > *": { borderBottom: "unset" },
+                              cursor: "pointer",
                             }}
                           >
                             {TableColumns?.map((item: any, inn: number) => (
                               <TableCell
                                 key={`${item?.label || row?.id}-${inn}`}
-                                align={item?.bodyAlign || item?.align || 'left'}
+                                align={item?.bodyAlign || item?.align || "left"}
                               >
                                 {row[item?.mapper]}
                               </TableCell>
@@ -649,7 +652,7 @@ export default function Index() {
               ) : null}
               <TableContainer
                 className="relative"
-                sx={{ maxHeight: '100%', paddingTop: '40px' }}
+                sx={{ maxHeight: "100%", paddingTop: "40px" }}
               >
                 <Table stickyHeader={true} aria-label="sticky table">
                   <TableHead>
@@ -677,8 +680,8 @@ export default function Index() {
                           </TableCell>
                           <TableCell align="center">
                             {row?.names?.length > 2
-                              ? `${row?.names?.slice(0, 2).join(', ')} `
-                              : row?.names?.join(', ')}
+                              ? `${row?.names?.slice(0, 2).join(", ")} `
+                              : row?.names?.join(", ")}
                             {row?.names?.length > 2 && (
                               <p
                                 className="text-green-500 underline"
@@ -721,9 +724,9 @@ export default function Index() {
                       control={
                         <Radio
                           sx={{
-                            color: 'var(--sunlight)',
-                            '&.Mui-checked': {
-                              color: 'var(--sunlight)',
+                            color: "var(--sunlight)",
+                            "&.Mui-checked": {
+                              color: "var(--sunlight)",
                             },
                           }}
                         />
@@ -735,9 +738,9 @@ export default function Index() {
                       control={
                         <Radio
                           sx={{
-                            color: 'var(--sunlight)',
-                            '&.Mui-checked': {
-                              color: 'var(--sunlight)',
+                            color: "var(--sunlight)",
+                            "&.Mui-checked": {
+                              color: "var(--sunlight)",
                             },
                           }}
                         />
