@@ -279,7 +279,7 @@ const AdvanceTable = forwardRef(
         <TableContainer
           className="relative"
           ref={ref}
-          sx={{ maxHeight: '100%' || props.maxHeight }}
+          sx={{ maxHeight: props.maxHeight || '100%' }}
         >
           <Table stickyHeader={true} aria-label="sticky table">
             <TableHead>

@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "vite",
-    "dev": "vite",
+    "start": "tsc && vite",
+    "dev": "tsc && vite",
     "preview": "vite preview",
     "build": "tsc && vite build",
     "build:uat": "tsc && vite build --mode uat",

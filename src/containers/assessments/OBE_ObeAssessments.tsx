@@ -287,7 +287,7 @@ export default function OBE_ObeAssessments() {
   };
 
   // Get Assessment List
-  const sort_by = `${orderBy}` ?? 'name';
+  const sort_by = orderBy ?? 'name';
   const directoon = order ?? 'asc';
   const fetchAssignments = () => {
     const requestOptions = {

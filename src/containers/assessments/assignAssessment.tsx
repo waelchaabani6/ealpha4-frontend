@@ -241,7 +241,7 @@ export default function AssignAssessment() {
       payload = {
         ...payload,
         student_id: selectedData,
-        class_id: [selectedClass] || '',
+        class_id: selectedClass ? [selectedClass] : [],
         class_name: className?.label || ''
       };
     } else if (currentCategory === CATEGORY_LIST[2].value) {
