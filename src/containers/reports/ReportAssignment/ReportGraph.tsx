@@ -1,3 +1,6 @@
+/* eslint-disable indent */
+/* eslint-disable operator-linebreak */
+/* eslint-disable linebreak-style */
 /* eslint-disable comma-dangle */
 import { GRAPH_LABELS, USER_TYPE } from '@constants/constants';
 import {
@@ -15,7 +18,7 @@ import MultipleAssignmentsBarGraph from '../BarChart/MultipleAssignmentsBarGraph
 import MultipleAssignmentLineChart from '../LineChart/MultipleAssignmentLineChart';
 import MultipleAssignmentAreaBar from '../BarChart/MultipleAssignmentAreaBar';
 
-const { SCHOOL_ADMIN } = USER_TYPE;
+const { SCHOOL_ADMIN, SUPER_ADMIN } = USER_TYPE;
 
 type ReportGraphProps = {
   componentRef: React.MutableRefObject<any>;
@@ -133,22 +136,23 @@ const ReportGraph = ({
               </p>
             </div>
             <div className="flex ml-auto p-2">
-              {userData && USER_ROLE === SCHOOL_ADMIN && (
-                <>
-                  <p className="m-4 mb-5">Select Branch :</p>
+              {userData &&
+                (USER_ROLE === SCHOOL_ADMIN || USER_ROLE === SUPER_ADMIN) && (
+                  <>
+                    <p className="m-4 mb-5">Select Branch :</p>
 
-                  <Dropdown
-                    value={selectedBranch}
-                    dataArray={BranchArray}
-                    border={true}
-                    onChangeHandler={(val) => {
-                      setselectedBranch(val);
-                    }}
-                    sxClass={{ width: '206px', marginRight: '10px' }}
-                    displayEmpty={true}
-                  />
-                </>
-              )}
+                    <Dropdown
+                      value={selectedBranch}
+                      dataArray={BranchArray}
+                      border={true}
+                      onChangeHandler={(val) => {
+                        setselectedBranch(val);
+                      }}
+                      sxClass={{ width: '206px', marginRight: '10px' }}
+                      displayEmpty={true}
+                    />
+                  </>
+                )}
               <p className="m-4 mb-5">Select Class :</p>
               <Dropdown
                 displayEmpty={true}
