@@ -490,13 +490,15 @@ export default function Index() {
           shouldDisableDate={() => false}
         />
 
-        <Dropdown
-          title="Result Of Pages"
-          value={rowsPerPage}
-          dataArray={RESULTS_PER_PAGE}
-          onChangeHandler={handlePerPage}
-          sxClass={{ width: '100%' }}
-        />
+        {view === 'default' && (
+          <Dropdown
+            title="Result Of Pages"
+            value={rowsPerPage}
+            dataArray={RESULTS_PER_PAGE}
+            onChangeHandler={handlePerPage}
+            sxClass={{ width: '100%' }}
+          />
+        )}
 
         <div className={` flex gap-x-4 items-center  pt-2 lg:pt-6`}>
           {(toDate || fromDate) && (
