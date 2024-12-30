@@ -15,7 +15,7 @@ export const api = (baseURL: string) => {
 
   instance.interceptors.request.use((req: any) => {
     req.headers.Authorization = localStorage.getItem("token");
-    req.headers["User-Timezone"] = userTimezone;
+    // req.headers["User-Timezone"] = userTimezone;
     return req;
   });
 
