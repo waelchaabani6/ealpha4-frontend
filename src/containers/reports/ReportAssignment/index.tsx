@@ -540,6 +540,8 @@ export default function Index() {
 
   useEffect(() => {
     setSelectedClass('All');
+    setPage(1);
+
     if (selectedBranch) {
       fetchClassList();
     }
