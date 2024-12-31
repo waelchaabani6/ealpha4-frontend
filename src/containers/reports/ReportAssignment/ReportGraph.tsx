@@ -2,21 +2,21 @@
 /* eslint-disable operator-linebreak */
 /* eslint-disable linebreak-style */
 /* eslint-disable comma-dangle */
-import { GRAPH_LABELS, USER_TYPE } from '@constants/constants';
+import { GRAPH_LABELS, USER_TYPE } from "@constants/constants";
 import {
   FormControl,
   FormControlLabel,
   Radio,
   RadioGroup,
-} from '@mui/material';
-import { useSelector } from 'react-redux';
+} from "@mui/material";
+import { useSelector } from "react-redux";
 
-import Wrapper from '@shared/wrapper/Wrapper';
-import Dropdown from '@component/dropdown/Dropdown';
+import Wrapper from "@shared/wrapper/Wrapper";
+import Dropdown from "@component/dropdown/Dropdown";
 
-import MultipleAssignmentsBarGraph from '../BarChart/MultipleAssignmentsBarGraph';
-import MultipleAssignmentLineChart from '../LineChart/MultipleAssignmentLineChart';
-import MultipleAssignmentAreaBar from '../BarChart/MultipleAssignmentAreaBar';
+import MultipleAssignmentsBarGraph from "../BarChart/MultipleAssignmentsBarGraph";
+import MultipleAssignmentLineChart from "../LineChart/MultipleAssignmentLineChart";
+import MultipleAssignmentAreaBar from "../BarChart/MultipleAssignmentAreaBar";
 
 const { SCHOOL_ADMIN, SUPER_ADMIN } = USER_TYPE;
 
@@ -64,7 +64,7 @@ const ReportGraph = ({
 
   return (
     <div ref={componentRef}>
-      <div className="py-4 h-full grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="p-4 bg-white border border-accent rounded-md ">
           <div className="flex flex-col items-center justify-center">
             <p className="font-semibold text-2xl">
@@ -87,9 +87,9 @@ const ReportGraph = ({
                     control={
                       <Radio
                         sx={{
-                          color: 'var(--sunlight)',
-                          '&.Mui-checked': {
-                            color: 'var(--sunlight)',
+                          color: "var(--sunlight)",
+                          "&.Mui-checked": {
+                            color: "var(--sunlight)",
                           },
                         }}
                       />
@@ -101,9 +101,9 @@ const ReportGraph = ({
                     control={
                       <Radio
                         sx={{
-                          color: 'var(--sunlight)',
-                          '&.Mui-checked': {
-                            color: 'var(--sunlight)',
+                          color: "var(--sunlight)",
+                          "&.Mui-checked": {
+                            color: "var(--sunlight)",
                           },
                         }}
                       />
@@ -141,18 +141,18 @@ const ReportGraph = ({
                   <>
                     <p className="m-4 mb-5">Select Branch :</p>
 
-                    <Dropdown
-                      value={selectedBranch}
-                      dataArray={BranchArray}
-                      border={true}
-                      onChangeHandler={(val) => {
-                        setselectedBranch(val);
-                      }}
-                      sxClass={{ width: '206px', marginRight: '10px' }}
-                      displayEmpty={true}
-                    />
-                  </>
-                )}
+                  <Dropdown
+                    value={selectedBranch}
+                    dataArray={BranchArray}
+                    border={true}
+                    onChangeHandler={(val) => {
+                      setselectedBranch(val);
+                    }}
+                    sxClass={{ width: "206px", marginRight: "10px" }}
+                    displayEmpty={true}
+                  />
+                </>
+              )}
               <p className="m-4 mb-5">Select Class :</p>
               <Dropdown
                 displayEmpty={true}
