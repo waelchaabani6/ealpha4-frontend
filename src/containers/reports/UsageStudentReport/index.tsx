@@ -263,6 +263,7 @@ export default function Index() {
   };
   const TeacherArr = teacherList?.data?.response?.results?.sort(compare);
   const DateTimeRegex = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})\.\d+Z$/;
+  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const { isLoading, data } = useGet({
     baseURL: ReportURL,
@@ -277,8 +278,8 @@ export default function Index() {
     }${
       toDate ? `&to_date=${moment(toDate).format('yyyy-MM-DD')}` : ''
     }&page=${page}&page_size=${rowsPerPage}&is_graph=${graph}${
-      selectedprogram !== 'select' ? `&program=${selectedprogram}` : ''
-    }`,
+      selectedprogram !== "select" ? `&program=${selectedprogram}` : ""
+    }&user_timezone=${userTimezone}`,
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.total_records);
       const ProgramData = res?.data?.response?.data;
