@@ -396,140 +396,114 @@ export default function Index() {
         }
         handleToolbarAction={handleToolbarAction}
       />
-      <div
-        className={`w-full grid grid-cols-1 ${userRole().isBranchAdmin ? "lg:grid-cols-7" : "lg:grid-cols-8"} my-2 gap-2 items-center justify-between`}
-      >
-        {view === "default" ? (
-          <>
-            {!userRole().isBranchAdmin && (
+      <div className="actions-wrapper flex justify-between items-center">
+        <div
+          className={`w-full grid grid-cols-1 ${userRole().isBranchAdmin ? "lg:grid-cols-7" : "lg:grid-cols-8"} my-2 gap-2 items-center justify-between`}
+        >
+          {view === "default" ? (
+            <>
+              {!userRole().isBranchAdmin && (
+                <Dropdown
+                  title="Select Branch"
+                  value={selectedBranch}
+                  dataArray={[
+                    { label: "All", value: "select" },
+                    ...(BranchArr?.map((item: any) => ({
+                      label: item.name,
+                      value: item.id,
+                    })) || []),
+                  ]}
+                  onChangeHandler={(val) => {
+                    setselectedBranch(val);
+                    setSelectedClass("select");
+                    setSelectedTeacher("select");
+                  }}
+                  loading={branchListLoading}
+                  sxClass={{ width: "100%" }}
+                />
+              )}
+
               <Dropdown
-                title="Select Branch"
-                value={selectedBranch}
+                title="Teacher Name"
+                loading={teacherListLoading}
+                value={selectedteacher}
                 dataArray={[
                   { label: "All", value: "select" },
-                  ...(BranchArr?.map((item: any) => ({
+                  ...(TeacherArr?.map((itm: any) => ({
+                    label: `${itm?.first_name} ${itm?.last_name}`,
+                    value: itm?.user_id,
+                  })) || []),
+                ]}
+                onChangeHandler={(val) => setSelectedTeacher(val)}
+                sxClass={{ width: "100%" }}
+              />
+              <Dropdown
+                title="Select a class"
+                value={selectedClass}
+                loading={schoolClassLoading}
+                dataArray={[
+                  { label: "All", value: "select" },
+                  ...(SchooClassList?.map((item: any) => ({
                     label: item.name,
                     value: item.id,
                   })) || []),
                 ]}
-                onChangeHandler={(val) => {
-                  setselectedBranch(val);
-                  setSelectedClass("select");
-                  setSelectedTeacher("select");
-                }}
-                loading={branchListLoading}
+                onChangeHandler={(val) => setSelectedClass(val)}
                 sxClass={{ width: "100%" }}
               />
-            )}
-
+            </>
+          ) : (
             <Dropdown
-              title="Teacher Name"
-              loading={teacherListLoading}
-              value={selectedteacher}
+              title="Select Course"
+              value={selectedprogram}
               dataArray={[
-                { label: "All", value: "select" },
-                ...(TeacherArr?.map((itm: any) => ({
-                  label: `${itm?.first_name} ${itm?.last_name}`,
-                  value: itm?.user_id,
+                { label: "Select", value: "select" },
+                ...(SubjectArr?.map((itm: any) => ({
+                  label: itm?.content,
+                  value: itm?.content,
                 })) || []),
               ]}
-              onChangeHandler={(val) => setSelectedTeacher(val)}
+              onChangeHandler={(val) => setSelectedProgram(val)}
               sxClass={{ width: "100%" }}
             />
-            <Dropdown
-              title="Select a class"
-              value={selectedClass}
-              loading={schoolClassLoading}
-              dataArray={[
-                { label: "All", value: "select" },
-                ...(SchooClassList?.map((item: any) => ({
-                  label: item.name,
-                  value: item.id,
-                })) || []),
-              ]}
-              onChangeHandler={(val) => setSelectedClass(val)}
-              sxClass={{ width: "100%" }}
-            />
-          </>
-        ) : (
-          <Dropdown
-            title="Select Course"
-            value={selectedprogram}
-            dataArray={[
-              { label: "Select", value: "select" },
-              ...(SubjectArr?.map((itm: any) => ({
-                label: itm?.content,
-                value: itm?.content,
-              })) || []),
-            ]}
-            onChangeHandler={(val) => setSelectedProgram(val)}
-            sxClass={{ width: "100%" }}
-          />
-        )}
-
-        <DatePicker
-          fullWidth={true}
-          sxType={1}
-          value={fromDate}
-          label="From"
-          disabled={false}
-          defaultStyle={true}
-          disablePast={false}
-          disableFuture={toDate} // disableOld={userRole().isTeacher ? minStartDate : currentUserAcademicDate()?.start || new Date()}
-          // disableFuture={new Date() <= currentUserAcademicDate()?.end ? new Date() : currentUserAcademicDate()?.end}
-          handlePickerChange={(date: string) => setFromDate(date)}
-          shouldDisableDate={() => false}
-        />
-        <DatePicker
-          fullWidth={true}
-          sxType={1}
-          value={toDate}
-          label="To"
-          disabled={false}
-          defaultStyle={true}
-          disablePast={false}
-          disableOld={fromDate} // disableOld={userRole().isTeacher ? minStartDate : currentUserAcademicDate()?.start || new Date()}
-          // disableFuture={new Date() <= currentUserAcademicDate()?.end ? new Date() : currentUserAcademicDate()?.end}
-          handlePickerChange={(date: string) => setToDate(date)}
-          shouldDisableDate={() => false}
-        />
-
-        {view === "default" && (
-          <Dropdown
-            title="Result Of Pages"
-            value={rowsPerPage}
-            dataArray={RESULTS_PER_PAGE}
-            onChangeHandler={handlePerPage}
-            sxClass={{ width: "100%" }}
-          />
-        )}
-
-        <div className={` flex gap-x-4 items-center  pt-2 lg:pt-6`}>
-          {(toDate || fromDate) && (
-            <span
-              tabIndex={0}
-              title="Clear dates"
-              onClick={() => reset()}
-              role="button"
-            >
-              <RestartAltIcon />
-            </span>
           )}
-        </div>
 
-        <div
-          className={`${view === "default" ? "lg:col-auto" : "lg:col-span-3"} mt-3 flex justify-end`}
-        >
-          <ButtonToggle view={view} setView={setView} />
-        </div>
+          {view === "default" && (
+            <Dropdown
+              title="Result Of Pages"
+              value={rowsPerPage}
+              dataArray={RESULTS_PER_PAGE}
+              onChangeHandler={handlePerPage}
+              sxClass={{ width: "100%" }}
+            />
+          )}
 
-        {/* <CustomInput
+          <div className={` flex gap-x-4 items-center  pt-2 lg:pt-6`}>
+            {(toDate || fromDate) && (
+              <span
+                tabIndex={0}
+                title="Clear dates"
+                onClick={() => reset()}
+                role="button"
+              >
+                <RestartAltIcon />
+              </span>
+            )}
+          </div>
+
+          {/* <CustomInput
           name="Branch Name"
           label="Branch Name"
           size="small"
           value={selectedBranch}
           disabled={true}
         /> */}
+        </div>
+        <div
+          className={`${view === "default" ? "lg:col-auto" : "lg:col-span-3"} mt-3 flex justify-end`}
+        >
+          <ButtonToggle view={view} setView={setView} />
+        </div>
       </div>
       {/* Table Section */}
       {view === "default" ? (
