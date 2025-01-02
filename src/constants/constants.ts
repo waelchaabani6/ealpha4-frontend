@@ -174,6 +174,7 @@ export const TABLE_LABELS = {
   ASSESSMENTS_SUBMITTED: "Assessments Submitted",
   PENDING_ASSIGNMENTS: "Pending Assignments",
   PENDING_ASSESSMENTS: "Pending Assessments",
+  TOTAL_CLASSES: "TOTAL_CLASSES",
 };
 
 // Manage Classes

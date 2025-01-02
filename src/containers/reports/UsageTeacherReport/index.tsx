@@ -84,12 +84,14 @@ export default function Index() {
       : `/${schoolNameInURL}/reports/program-usage-detail`;
 
   const csvSubHeaders = [
-    TABLE_LABELS?.CLASS,
     TABLE_LABELS?.TEACHER,
-    TABLE_LABELS?.STUDENT_IN_CLASS,
+    TABLE_LABELS?.FIRST_LOGIN,
+    TABLE_LABELS?.LAST_LOGIN,
+    TABLE_LABELS?.TOTAL_TIME,
+    TABLE_LABELS?.NO_OF_ASSIGNMENT,
+    TABLE_LABELS?.NO_OF_ASSESSMENT,
+    TABLE_LABELS?.CLASSES,
     TABLE_LABELS?.COURSES,
-    TABLE_LABELS?.ACTIVE_STUDENT,
-    TABLE_LABELS?.AVG_ACTIVE_PER_STUDENT,
   ];
 
   const {
@@ -327,15 +329,28 @@ export default function Index() {
   //   }
   // }, [data]);
 
+  const extractCourses = (data) => {
+    if (!data || !Array.isArray(data.children)) return "";
+    const courses = data.children.map(
+      (item) => item.props?.children?.[0] || ""
+    );
+    return courses.filter(Boolean).join(" - "); // Filter out any empty values
+  };
+
   const CSVDataFunction = () => {
-    const csvdata = tableData?.map((i: any) => [
-      i?.Class,
-      i?.Teacher?.props?.children?.props?.children || "",
-      i?.StudentInClass,
-      i?.Program,
-      i?.ActiveStudents,
-      i?.AvgActiveStudent,
-    ]);
+    const csvdata = tableData.map((row: any) => {
+      const coursesString = extractCourses(row.courses?.props);
+      return [
+        row.teacher_name,
+        row.first_login,
+        row.last_login,
+        row.avg_time_per_logins,
+        row.distinct_assignment,
+        row.distinct_assessment,
+        row.total_class,
+        coursesString,
+      ];
+    });
 
     setCsvData(csvdata);
   };
