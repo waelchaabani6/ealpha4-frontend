@@ -122,6 +122,7 @@ export const TABLE_LABELS = {
   ASSIGNMENT_NAME: "Assignment Name",
   CLASS: "Class",
   TEACHER: "Teacher",
+  TEACHER_NAME: "Teacher Name",
   PROGRAM: "Program",
   AVG_CLASS: "Class Average",
   AVG_COHORT: "Cohort Average",
@@ -175,6 +176,8 @@ export const TABLE_LABELS = {
   PENDING_ASSIGNMENTS: "Pending Assignments",
   PENDING_ASSESSMENTS: "Pending Assessments",
   TOTAL_CLASSES: "TOTAL_CLASSES",
+  NO_OF_ASSIGNMENTS_CREATED: "No. of Assignments Created",
+  NO_OF_ASSESSMENTS_CREATED: "No. of Assessments Created",
 };
 
 // Manage Classes

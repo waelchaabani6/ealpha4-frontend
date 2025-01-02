@@ -84,12 +84,12 @@ export default function Index() {
       : `/${schoolNameInURL}/reports/program-usage-detail`;
 
   const csvSubHeaders = [
-    TABLE_LABELS?.TEACHER,
+    TABLE_LABELS?.TEACHER_NAME,
     TABLE_LABELS?.FIRST_LOGIN,
     TABLE_LABELS?.LAST_LOGIN,
     TABLE_LABELS?.TOTAL_TIME,
-    TABLE_LABELS?.NO_OF_ASSIGNMENT,
-    TABLE_LABELS?.NO_OF_ASSESSMENT,
+    TABLE_LABELS?.NO_OF_ASSIGNMENTS_CREATED,
+    TABLE_LABELS?.NO_OF_ASSESSMENTS_CREATED,
     TABLE_LABELS?.CLASSES,
     TABLE_LABELS?.COURSES,
   ];
@@ -347,7 +347,7 @@ export default function Index() {
         row.avg_time_per_logins,
         row.distinct_assignment,
         row.distinct_assessment,
-        row.total_class,
+        row.classes,
         coursesString,
       ];
     });
