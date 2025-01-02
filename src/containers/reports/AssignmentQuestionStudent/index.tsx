@@ -2,12 +2,12 @@
 /* eslint-disable no-confusing-arrow */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable comma-dangle */
-import { IconButton } from "@component/button/button";
-import DatePicker from "@component/datepicker";
-import { CustomInput } from "@component/input";
-import EmailIcon from "@mui/icons-material/Email";
-import PrintIcon from "@mui/icons-material/Print";
-import SettingsIcon from "@mui/icons-material/Settings";
+import { IconButton } from '@component/button/button';
+import DatePicker from '@component/datepicker';
+import { CustomInput } from '@component/input';
+import EmailIcon from '@mui/icons-material/Email';
+import PrintIcon from '@mui/icons-material/Print';
+import SettingsIcon from '@mui/icons-material/Settings';
 import {
   Checkbox,
   FormControlLabel,
@@ -18,29 +18,29 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+} from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 // import { CSVLink } from 'react-csv';
-import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
-import ReactToPrint from "react-to-print";
+import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
+import ReactToPrint from 'react-to-print';
 // import PageTitle from '@shared/pageTitle';
-import ButtonToggle from "@component/ToggleButton/ToggleButton";
-import { NumberedPagination } from "@component/pagination/CustomPagination";
-import { useGet } from "@shared/api/useApi";
-import Loader from "@shared/loader";
-import { selectSchoolData } from "@shared/store/schoolSlice";
-import { selectUser } from "@shared/store/userSlice";
-import toast from "@shared/toast";
-import moment from "moment";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { CSVLink } from "react-csv";
-import { ReactComponent as Share } from "@images/pageHeaderIcons/share.svg";
-import { TABLE_LABELS, TOOLBAR_LABELS } from "../../../constants/constants";
-import Wrapper from "../../../shared/wrapper/Wrapper";
-import RouteLayout from "../../layout/routeLayout";
-import AssignQuestionLevel from "../LineChart/AssignQuestionLevel";
-import Setting from "../setting";
+import ButtonToggle from '@component/ToggleButton/ToggleButton';
+import { NumberedPagination } from '@component/pagination/CustomPagination';
+import { useGet } from '@shared/api/useApi';
+import Loader from '@shared/loader';
+import { selectSchoolData } from '@shared/store/schoolSlice';
+import { selectUser } from '@shared/store/userSlice';
+import toast from '@shared/toast';
+import moment from 'moment';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { CSVLink } from 'react-csv';
+import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
+import { TABLE_LABELS, TOOLBAR_LABELS } from '../../../constants/constants';
+import Wrapper from '../../../shared/wrapper/Wrapper';
+import RouteLayout from '../../layout/routeLayout';
+import AssignQuestionLevel from '../LineChart/AssignQuestionLevel';
+import Setting from '../setting';
 
 const printButton = () => <PrintIcon />;
 
@@ -53,29 +53,29 @@ export default function Index() {
   const [page, setPage] = useState(1);
   const { schoolData, branchData } = useSelector(selectSchoolData);
   const userData = useSelector((state: any) => state?.user);
-  const [createdDate, setCreatedDate] = useState<any>("01-09-2022");
+  const [createdDate, setCreatedDate] = useState<any>('01-09-2022');
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const [view, setView] = React.useState("default");
+  const [view, setView] = React.useState('default');
   const [checked, setChecked] = useState(false);
   const [TableColumn, setTableColumn] = useState([]);
   const [queData, SetQueData] = useState([]);
   const [linearr, SetLineArr] = useState([]);
   const componentRef = useRef(null);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [graph, setGraph] = useState("");
+  const [graph, setGraph] = useState('');
   const recordsPerPage = 10;
   const USER_ROLE = userData?.role?.name;
   const noOfpages = Math.ceil(totalRecords / recordsPerPage);
-  const assignmentName = linkState?.stateData2?.assignmentName || "";
-  const score = `${linkState?.stateData2?.Score} ${linkState?.stateData2?.percentage ? `${linkState?.stateData2?.percentage}%` : ""}`;
-  const Submitteddate = linkState?.stateData2?.Submitteddate || "";
-  const className = linkState?.stateData2?.className || "";
-  const percentage = linkState?.stateData2?.percentage || "";
-  const studentID = linkState?.stateData2?.studentID || "";
-  const studentName = linkState?.stateData2?.studentName || "";
-  const FinalSubmittedDate = Submitteddate?.split("-")?.reverse()?.join("-");
-  const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || "";
-  const BRANCH_ID = branchData?.school_data?.id || "";
+  const assignmentName = linkState?.stateData2?.assignmentName || '';
+  const score = `${linkState?.stateData2?.Score} ${linkState?.stateData2?.percentage ? `${linkState?.stateData2?.percentage}%` : ''}`;
+  const Submitteddate = linkState?.stateData2?.Submitteddate || '';
+  const className = linkState?.stateData2?.className || '';
+  const percentage = linkState?.stateData2?.percentage || '';
+  const studentID = linkState?.stateData2?.studentID || '';
+  const studentName = linkState?.stateData2?.studentName || '';
+  const FinalSubmittedDate = Submitteddate?.split('-')?.reverse()?.join('-');
+  const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || '';
+  const BRANCH_ID = branchData?.school_data?.id || '';
 
   const {
     isRefetching: emailSendLoading,
@@ -83,13 +83,13 @@ export default function Index() {
     isLoading: emailLoad,
   } = useGet({
     baseURL: import.meta.env.VITE_APP_REPORTS_SERVICE_URL,
-    url: `reports-service/question_level_assignments/send_email/?user_id=${userId}&school_id=${schoolId}${StudentID ? `&student_id=${StudentID}` : ""}`,
+    url: `reports-service/question_level_assignments/send_email/?user_id=${userId}&school_id=${schoolId}${StudentID ? `&student_id=${StudentID}` : ''}`,
     onSuccess: () => {
-      toast("success", "Email sent successfully");
+      toast('success', 'Email sent successfully');
     },
     retry: false,
     onError: ({ response }: any) => {
-      toast("error", response?.data?.message || "Unable to send email");
+      toast('error', response?.data?.message || 'Unable to send email');
     },
     enabled: false,
   }) as any;
@@ -109,7 +109,7 @@ export default function Index() {
     //     emailSendLoading || emailLoad ? <Loader size={20} /> : <EmailIcon />,
     // },
     {
-      title: "Export",
+      title: 'Export',
       icon: (
         <CSVLink
           filename="Assigned Students.csv"
@@ -122,7 +122,7 @@ export default function Index() {
       ),
     },
     {
-      title: "Print",
+      title: 'Print',
       icon: (
         <ReactToPrint
           trigger={printButton}
@@ -150,35 +150,35 @@ export default function Index() {
 
   const TableColumns: any = [
     {
-      label: "Question",
-      mapper: "Question",
+      label: 'Question',
+      mapper: 'Question',
     },
     {
-      label: "Points Scored",
-      mapper: "PointsScored",
+      label: 'Points Scored',
+      mapper: 'PointsScored',
     },
     {
-      label: "Percentage %",
-      mapper: "Percentage",
+      label: 'Percentage %',
+      mapper: 'Percentage',
     },
     {
-      label: "Check",
-      mapper: "Check",
+      label: 'Check',
+      mapper: 'Check',
     },
     {
-      label: "Performance Expectation",
+      label: 'Performance Expectation',
       isSort: true,
-      mapper: "PerformanceExpectation",
+      mapper: 'PerformanceExpectation',
     },
     {
-      label: "Class Average Points",
+      label: 'Class Average Points',
       isSort: true,
-      mapper: "ClassAveragePoints",
+      mapper: 'ClassAveragePoints',
     },
     {
-      label: "Class Average %",
+      label: 'Class Average %',
       isSort: true,
-      mapper: "ClassAverage",
+      mapper: 'ClassAverage',
     },
   ];
 
@@ -196,7 +196,7 @@ export default function Index() {
   };
   const { isFetching: loading, refetch: QuestionLevel } = useGet({
     baseURL: import.meta.env.VITE_APP_REPORTS_SERVICE_URL,
-    url: `reports-service/question_level_assignments/?user_id=${userId}&school_id=${SCHOOL_ID}${page ? `&page=${page}` : ""}${StudentID ? `&selected_student=${StudentID}` : ""}${AssignID ? `&selected_assignment=${AssignID}` : ""}${FinalSubmittedDate ? `&submitted_date=${FinalSubmittedDate}` : ""}${graph ? `&is_graph=${graph}` : ""}`,
+    url: `reports-service/question_level_assignments/?user_id=${userId}&school_id=${SCHOOL_ID}${page ? `&page=${page}` : ''}${StudentID ? `&selected_student=${StudentID}` : ''}${AssignID ? `&selected_assignment=${AssignID}` : ''}${FinalSubmittedDate ? `&submitted_date=${FinalSubmittedDate}` : ''}${graph ? `&is_graph=${graph}` : ''}`,
     onSuccess: (res: any) => {
       const respData = res?.data?.response;
       const astData = respData?.data;
@@ -208,30 +208,30 @@ export default function Index() {
         astData?.map((i: any, index: any) => {
           body.push({
             Question: i.page_number,
-            PointsScored: `${i.scores_val ? i.scores_val : ""}/ ${
-              i.max_scores ? i.max_scores : ""
+            PointsScored: `${i.scores_val ? i.scores_val : ''}/ ${
+              i.max_scores ? i.max_scores : ''
             } `,
-            Percentage: i.score_in_percent ? i.score_in_percent.toFixed(2) : "",
+            Percentage: i.score_in_percent ? i.score_in_percent.toFixed(2) : '',
             Check: i.checks_count,
             PerformanceExpectation: i.performance_expectation,
-            ClassAveragePoints: `${i.class_average_score ? i.class_average_score : ""}/ ${i.class_average_max_score ? i.class_average_max_score : ""} `,
+            ClassAveragePoints: `${i.class_average_score ? i.class_average_score : ''}/ ${i.class_average_max_score ? i.class_average_max_score : ''} `,
             ClassAverage: i.class_score_in_percent,
           });
           csvbody.push([
             index + 1,
-            `${i.scores_val ? i.scores_val : ""}/ ${
-              i.max_scores ? i.max_scores : ""
+            `${i.scores_val ? i.scores_val : ''}/ ${
+              i.max_scores ? i.max_scores : ''
             } `,
             i.score_in_percent,
-            "",
+            '',
             i.performance_expectation,
-            `${i.class_average_score ? i.class_average_score : ""}/ ${i.class_average_max_score ? i.class_average_max_score : ""} `,
+            `${i.class_average_score ? i.class_average_score : ''}/ ${i.class_average_max_score ? i.class_average_max_score : ''} `,
             i.class_score_in_percent,
           ]);
           return true;
         });
         const modifiedRows = body.map((row: any) => {
-          if (row.PerformanceExpectation === "Meets") {
+          if (row.PerformanceExpectation === 'Meets') {
             return {
               ...row,
               PerformanceExpectation: (
@@ -241,7 +241,7 @@ export default function Index() {
               ),
             };
           }
-          if (row.PerformanceExpectation === "Above") {
+          if (row.PerformanceExpectation === 'Above') {
             return {
               ...row,
               PerformanceExpectation: (
@@ -251,7 +251,7 @@ export default function Index() {
               ),
             };
           }
-          if (row.PerformanceExpectation === "Does Not Meet") {
+          if (row.PerformanceExpectation === 'Does Not Meet') {
             return {
               ...row,
               PerformanceExpectation: (
@@ -261,7 +261,7 @@ export default function Index() {
               ),
             };
           }
-          if (row.PerformanceExpectation === "Exceeds") {
+          if (row.PerformanceExpectation === 'Exceeds') {
             return {
               ...row,
               PerformanceExpectation: (
@@ -271,11 +271,11 @@ export default function Index() {
               ),
             };
           }
-          if (row.PerformanceExpectation === "Approaching") {
+          if (row.PerformanceExpectation === 'Approaching') {
             return {
               ...row,
               PerformanceExpectation: (
-                <div className="bg-[#FFF9BE] p-4">
+                <div className="bg-[#FFD6A5] p-4">
                   {row?.PerformanceExpectation}
                 </div>
               ),
@@ -327,10 +327,10 @@ export default function Index() {
   }, [checked, SCHOOL_ID, graph]);
 
   useEffect(() => {
-    if (view === "secondary") {
-      setGraph("1");
+    if (view === 'secondary') {
+      setGraph('1');
     } else {
-      setGraph("");
+      setGraph('');
     }
   }, [view]);
 
@@ -339,7 +339,7 @@ export default function Index() {
       <HeaderMenus
         title="Report -  Assignments Question Level for Students"
         menuArray={
-          view === "default" ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
+          view === 'default' ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
         }
         handleToolbarAction={handleToolbarAction}
       />
@@ -354,7 +354,7 @@ export default function Index() {
               disabled={true}
             />
           </div>
-          {view && view !== "default" && (
+          {view && view !== 'default' && (
             <div className="m-w-fit">
               <CustomInput
                 name="teacher"
@@ -401,7 +401,7 @@ export default function Index() {
               disabled={true}
             />
           </div>
-          <IconButton onClick={handleDialog} sx={{ boxShadow: "none" }}>
+          <IconButton onClick={handleDialog} sx={{ boxShadow: 'none' }}>
             <SettingsIcon fontSize="small" />
           </IconButton>
         </div>
@@ -410,7 +410,7 @@ export default function Index() {
         </div>
       </div>
       {/* Table Section */}
-      {view && view === "default" ? (
+      {view && view === 'default' ? (
         <>
           <div className="wrapperBorder mt-3" ref={componentRef}>
             <Wrapper>
@@ -422,14 +422,14 @@ export default function Index() {
                         color="success"
                         checked={checked}
                         onChange={handleCheckBox}
-                        inputProps={{ "aria-label": "checkbox" }}
+                        inputProps={{ 'aria-label': 'checkbox' }}
                       />
                     }
                     label="Select to see Class Average Score and Class Average in %"
                   />
                 </FormGroup>
               </div>
-              <TableContainer className="relative" sx={{ maxHeight: "100%" }}>
+              <TableContainer className="relative" sx={{ maxHeight: '100%' }}>
                 <Table stickyHeader={true} aria-label="sticky table">
                   <TableHead>
                     <TableRow>
@@ -443,7 +443,7 @@ export default function Index() {
                             {item?.label}
                           </TableCell>
                         ) : (
-                          ""
+                          ''
                         )
                       )}
                     </TableRow>
@@ -452,7 +452,7 @@ export default function Index() {
                     {queData.length ? (
                       queData?.map(
                         (row: any, index: number): JSX.Element => (
-                          <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+                          <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                             {TableColumn?.map((item: any, inn: number) => (
                               <TableCell key={`${row.id}`} align="center">
                                 {row[item?.mapper]}
@@ -574,7 +574,7 @@ export default function Index() {
                           color="success"
                           checked={checked}
                           onChange={handleCheckBox}
-                          inputProps={{ "aria-label": "checkbox" }}
+                          inputProps={{ 'aria-label': 'checkbox' }}
                         />
                       }
                       label="Select to see Class Average Score and Class Average in %"
