@@ -129,11 +129,11 @@ export default function Index() {
     TABLE_LABELS?.FIRST_LOGIN,
     TABLE_LABELS?.LAST_LOGIN,
     TABLE_LABELS?.TOTAL_TIME,
-    TABLE_LABELS?.TOTAL_ASSIGNMENTS,
-    TABLE_LABELS?.ASSIGNMENTS_SUBMITTED,
+    "Total No. of Assignments Assigned",
+    "Total No. of Assignments Submitted",
     TABLE_LABELS?.PENDING_ASSIGNMENTS,
-    TABLE_LABELS?.TOTAL_ASSESSMENTS,
-    TABLE_LABELS?.ASSESSMENTS_SUBMITTED,
+    "Total No. of Assessments Assigned",
+    "Total No. of Assessments Submitted",
     TABLE_LABELS?.PENDING_ASSESSMENTS,
     TABLE_LABELS?.COURSES,
   ];
@@ -376,6 +376,13 @@ export default function Index() {
     return courses.filter(Boolean).join(" - "); // Filter out any empty values
   };
 
+  const formatTeacherNames = (teacherString) => {
+    return teacherString
+      .split(",") // Split by commas
+      .map((name) => name.trim()) // Trim any whitespace around names
+      .join(" -"); // Join with " -"
+  };
+
   // Example: Formatting teacher_name from an array → comma-separated string,
   // handling default values for assignments, converting dates, etc.
   const CSVDataFunction = () => {
@@ -389,8 +396,6 @@ export default function Index() {
       const totalAssignments = row?.assignments?.total ?? 0;
       const submittedAssignments = row?.assignments?.submitted ?? 0;
       const pendingAssignments = row?.assignments?.pending ?? 0;
-      const first_login = row?.first_login?.replace(DateTimeRegex, "$1- $2");
-      const last_login = row?.last_login?.replace(DateTimeRegex, "$1- $2");
       // 3) Format assessments
       const totalAssessments = row?.assessments?.total ?? 0;
       const submittedAssessments = row?.assessments?.submitted ?? 0;
@@ -411,9 +416,9 @@ export default function Index() {
       return [
         row.student_name || "", // 1 Student Name
         row.class_name || "", // 2 Class
-        teacherNames, // 3 Teacher Name
-        first_login, // 4 First Login
-        last_login, // 5 Last Login
+        formatTeacherNames(teacherNames), // 3 Teacher Name
+        row?.first_login, // 4 First Login
+        row?.last_login, // 5 Last Login
         row.avg_time_per_logins || "", // 6 Total Time
         totalAssignments, // 7 Total Assignments
         submittedAssignments, // 8 Assignments Submitted
