@@ -25,7 +25,7 @@ import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
 import { selectSchoolData } from "@shared/store/schoolSlice";
 import toast from "@shared/toast";
 import Wrapper from "@shared/wrapper/Wrapper";
-import { getNoOfPages, sortData } from "@utility/utility";
+import { getNoOfPages, sortData, userRole } from "@utility/utility";
 import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import { CSVLink } from "react-csv";
@@ -128,7 +128,6 @@ export default function Index() {
 
   const { schoolData, branchData } = useSelector(selectSchoolData);
   const schoolNameInURL = decodeURIComponent(location.pathname.split("/")[1]);
-  const link = `/${schoolNameInURL}/reports/program-usage-detail`;
   const componentRef = useRef(null);
   const [rowsPerPage, setRowsPerPage] = useState<any>(RESULTS_PER_PAGE?.[0]);
   const USER_ROLE = userData?.role?.name;
@@ -155,6 +154,15 @@ export default function Index() {
 
   const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || "";
   const BRANCH_ID = branchData?.id || "";
+
+  const totalClassesRedirectLink =
+    USER_ROLE === USER_TYPE.SUPER_ADMIN
+      ? `/school-management/school/${SCHOOL_ID}/manage-classes`
+      : `/${schoolName}/dashboard/${schoolId}/manage-classes`;
+  const link =
+    USER_ROLE === USER_TYPE.SUPER_ADMIN
+      ? `/school-management/school/${SCHOOL_ID}/reports/program-usage-detail`
+      : `/${schoolNameInURL}/reports/program-usage-detail`;
 
   const noOfpages = getNoOfPages(totalRecords, rowsPerPage);
 
@@ -262,10 +270,7 @@ export default function Index() {
               </Link>
             ),
             Class: (
-              <Link
-                state={{ page }}
-                to={`/${schoolName}/dashboard/${schoolId}/manage-classes`}
-              >
+              <Link state={{ page }} to={totalClassesRedirectLink}>
                 <span className="text-accent underline cursor-pointer text-xs font-medium">
                   {i.total_classes}
                 </span>
@@ -442,7 +447,7 @@ export default function Index() {
   }, []);
 
   const handlePerPage = (e: any) => {
-    setPage(page);
+    setPage(1);
     setRowsPerPage(e);
   };
 
@@ -467,18 +472,21 @@ export default function Index() {
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">
         <>
           <div className="flex md:justify-start justify-center gap-2 lg:grow grow-0 items-end">
-            {userData && USER_ROLE === USER_TYPE.SCHOOL_ADMIN && (
-              <Dropdown
-                displayEmpty={false}
-                title="Select Branch"
-                value={selectedBranch || "All"}
-                dataArray={[{ label: "All", value: "All" }, ...BranchArray]}
-                onChangeHandler={(val) => {
-                  setselectedBranch(val);
-                }}
-                sxClass={{ width: "206px", marginRight: "10px" }}
-              />
-            )}
+            {userData &&
+              (USER_ROLE === USER_TYPE.SCHOOL_ADMIN ||
+                USER_ROLE === USER_TYPE.SUPER_ADMIN) && (
+                <Dropdown
+                  displayEmpty={false}
+                  title="Select Branch"
+                  value={selectedBranch || "All"}
+                  dataArray={[{ label: "All", value: "All" }, ...BranchArray]}
+                  onChangeHandler={(val) => {
+                    setPage(1);
+                    setselectedBranch(val);
+                  }}
+                  sxClass={{ width: "206px", marginRight: "10px" }}
+                />
+              )}
             <div>
               <Dropdown
                 title="Result Of Pages"
@@ -499,7 +507,7 @@ export default function Index() {
                 />
               </div>
             )}
-            <div className="w-max">
+            {/* <div className="w-max">
               <DatePicker
                 value={fromDate}
                 label="From"
@@ -532,7 +540,7 @@ export default function Index() {
                   <RestartAltIcon />
                 </span>
               </div>
-            )}
+            )} */}
           </div>
         </>
         <div>

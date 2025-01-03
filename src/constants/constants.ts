@@ -22,6 +22,9 @@ export const ACADEMIC_YEAR_DATA: Array<OBJECT> = [
   { label: "2020-21", value: "2020-2021" },
 ];
 export const RESULTS_PER_PAGE: Array<string | number> = [10, 20, 30, "All"];
+export const THOUSAND_RESULTS_PER_PAGE: Array<string | number> = [
+  10, 20, 30, 1000,
+];
 export const COMPONENTS = {
   switch: "switch",
   longmenu: "longmenu",
@@ -113,11 +116,13 @@ export const TABLE_LABELS = {
   STUDENT_NAME: "Student Name",
   TYPE: "Type",
   Assigned_By: "Assigned By",
+  Assigned_ON: "Assigned On",
   DUE_DATE: "Due Date",
   ASSESSMENT_NAME: "Assessment Name",
   ASSIGNMENT_NAME: "Assignment Name",
   CLASS: "Class",
   TEACHER: "Teacher",
+  TEACHER_NAME: "Teacher Name",
   PROGRAM: "Program",
   AVG_CLASS: "Class Average",
   AVG_COHORT: "Cohort Average",
@@ -164,6 +169,15 @@ export const TABLE_LABELS = {
   PUBLISHED_BY: "Published By",
   REMARK: "Remark",
   CLASSROOM_NAME: "Name of Classroom",
+  TOTAL_ASSIGNMENTS: "Total Assignments",
+  TOTAL_ASSESSMENTS: "Total Assessments",
+  ASSIGNMENTS_SUBMITTED: "Assignments Submitted",
+  ASSESSMENTS_SUBMITTED: "Assessments Submitted",
+  PENDING_ASSIGNMENTS: "Pending Assignments",
+  PENDING_ASSESSMENTS: "Pending Assessments",
+  TOTAL_CLASSES: "TOTAL_CLASSES",
+  NO_OF_ASSIGNMENTS_CREATED: "No. of Assignments Created",
+  NO_OF_ASSESSMENTS_CREATED: "No. of Assessments Created",
 };
 
 // Manage Classes

@@ -1,3 +1,6 @@
+/* eslint-disable operator-linebreak */
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable linebreak-style */
 /* eslint-disable comma-dangle */
 import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
@@ -65,19 +68,32 @@ export default function Index() {
   const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const schoolNameInURL = decodeURIComponent(location.pathname.split("/")[1]);
-  const link = `/${schoolNameInURL}/reports/student-detail-view`;
+  // const link = `/${schoolNameInURL}/reports/student-detail-view`;
   const [assignmentGraph, setAssignmentGraph] = useState([]);
   const [assessmentGraph, setAssessmentGraph] = useState([]);
   const [timeOpenedGraph, setTimeOpenedGraph] = useState([]);
 
+  const userData = useSelector((state: any) => state?.user);
+
+  const USER_ROLE = userData?.role?.name;
+  const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || "";
+
+  const link =
+    USER_ROLE === USER_TYPE.SUPER_ADMIN
+      ? `/school-management/school/${SCHOOL_ID}/reports/program-usage-detail`
+      : `/${schoolNameInURL}/reports/program-usage-detail`;
+
   const csvSubHeaders = [
-    TABLE_LABELS?.CLASS,
-    TABLE_LABELS?.TEACHER,
-    TABLE_LABELS?.STUDENT_IN_CLASS,
+    TABLE_LABELS?.TEACHER_NAME,
+    TABLE_LABELS?.FIRST_LOGIN,
+    TABLE_LABELS?.LAST_LOGIN,
+    TABLE_LABELS?.TOTAL_TIME,
+    TABLE_LABELS?.NO_OF_ASSIGNMENTS_CREATED,
+    TABLE_LABELS?.NO_OF_ASSESSMENTS_CREATED,
+    TABLE_LABELS?.CLASSES,
     TABLE_LABELS?.COURSES,
-    TABLE_LABELS?.ACTIVE_STUDENT,
-    TABLE_LABELS?.AVG_ACTIVE_PER_STUDENT,
   ];
+
   const {
     isRefetching: emailSendLoading,
     refetch: sendEmail,
@@ -94,9 +110,11 @@ export default function Index() {
     },
     enabled: false,
   }) as any;
+
   const handelSendEmail = () => {
     sendEmail();
   };
+
   const ADMIN_TOOLBAR_MENU = [
     // {
     //   title: TOOLBAR_LABELS.EMAIL,
@@ -128,19 +146,19 @@ export default function Index() {
   ];
 
   const ADMIN_TOOLBAR_MENU_GRAPH = [
-    {
-      title: "Export",
-      icon: (
-        <CSVLink
-          filename="Usage Reports Teacher.csv"
-          data={csvData}
-          headers={csvSubHeaders}
-          enclosingCharacter=""
-        >
-          <Share />
-        </CSVLink>
-      ),
-    },
+    // {
+    //   title: "Export",
+    //   icon: (
+    //     <CSVLink
+    //       filename="Usage Reports Teacher.csv"
+    //       data={csvData}
+    //       headers={csvSubHeaders}
+    //       enclosingCharacter=""
+    //     >
+    //       <Share />
+    //     </CSVLink>
+    //   ),
+    // },
   ];
 
   const handleToolbarAction = async (title: string) => {
@@ -148,6 +166,7 @@ export default function Index() {
       handelSendEmail();
     }
   };
+
   const TableColumns: any = [
     { label: "Teacher Name", mapper: "teacher_name", align: "left" },
     { label: "First Login", mapper: "first_login", align: "left" },
@@ -161,6 +180,16 @@ export default function Index() {
     {
       label: "No of Assessments Created",
       mapper: "distinct_assessment",
+      align: "left",
+    },
+    {
+      label: "Classes",
+      mapper: "classes",
+      align: "left",
+    },
+    {
+      label: "Courses",
+      mapper: "courses",
       align: "left",
     },
   ];
@@ -194,8 +223,8 @@ export default function Index() {
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
     url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}${branchData || selectedBranch !== "select" ? `&branch_name=${branchName}` : ""}`,
   });
-  const SchooClassList =
-    schoolClassList?.data?.response?.results?.sort(sortByName);
+
+  const SchooClassList = schoolClassList?.data?.response?.results;
 
   const { data: teacherList, isLoading: teacherListLoading } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
@@ -228,9 +257,13 @@ export default function Index() {
     }
     return "";
   }, [selectedteacher]) as string;
+  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   const { isLoading, data } = useGet({
     baseURL: ReportURL,
-    url: `reports-service/usage-report-teacher_enhanced_details/?school_id=${schoolData?.id || branchData?.school_data?.id}${selectedBranch !== "select" ? `&branch_id=${selectedBranch}` : userRole().isBranchAdmin || branchData ? `&branch_id=${branchData?.id}` : ""}${selectedteacher !== "select" ? `&teacher=${teacherName}` : ""}${selectedClass !== "select" ? `&class_id=${selectedClass}` : ""}${fromDate ? `&from_date=${moment(fromDate).format("yyyy-MM-DD")}` : ""}${toDate ? `&to_date=${moment(toDate).format("yyyy-MM-DD")}` : ""}&page=${page}&page_size=${rowsPerPage}&is_graph=${graph}${selectedprogram !== "select" ? `&program=${selectedprogram}` : ""}`,
+    url: `reports-service/usage-report-teacher_enhanced_details/?school_id=${schoolData?.id || branchData?.school_data?.id}${selectedBranch !== "select" ? `&branch_id=${selectedBranch}` : userRole().isBranchAdmin || branchData ? `&branch_id=${branchData?.id}` : ""}${selectedteacher !== "select" ? `&teacher=${teacherName}` : ""}${selectedClass !== "select" ? `&class_id=${selectedClass}` : ""}${fromDate ? `&from_date=${moment(fromDate).format("yyyy-MM-DD")}` : ""}${toDate ? `&to_date=${moment(toDate).format("yyyy-MM-DD")}` : ""}&page=${page}&page_size=${rowsPerPage}&is_graph=${graph}${selectedprogram !== "select" ? `&program=${selectedprogram}` : ""}
+    &user_timezone=${userTimezone}
+    `,
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.total_records);
       setTotalData(res?.data?.response?.data);
@@ -242,38 +275,82 @@ export default function Index() {
       setTimeOpenedGraph(Graph2);
     },
   });
+
   const tableData = useMemo(() => {
+    const displayData = (dt: any, ele: number) => {
+      let dtValue = "";
+      dt?.map((element: any) => {
+        const label: any = Object.keys(element)[0];
+        const value: any = Object.values(element)[ele];
+
+        dtValue += `${value} ${label !== "total" ? " | " : ""}`;
+        return dtValue;
+      });
+
+      const numbers = dtValue.split(" | ");
+      const joinedNum = numbers.join(" | ");
+      return dtValue ? `${joinedNum}` : "";
+    };
+
     if (!data?.data?.response?.data) return []; // Safely handle if data is undefined or empty
     return data?.data.response.data.map((itm: any) => ({
       teacher_name: itm.teacher_name,
       total_class: itm.total_class,
-      distinct_assignment:
-        itm.distinct_assignment?.[itm.distinct_assignment.length - 1]?.total ||
-        0,
+      distinct_assignment: itm?.total_assignments,
       first_login: itm?.first_login?.replace(DateTimeRegex, "$1, $2"),
       last_login: itm.last_login?.replace(DateTimeRegex, "$1, $2"),
       avg_time_per_logins: itm.avg_time_per_logins,
-      distinct_assessment:
-        itm.distinct_assessment?.[itm.distinct_assessment.length - 1]?.total ||
-        0,
+      distinct_assessment: itm?.total_assessments,
+      classes: displayData(itm?.classes, 1),
+      courses: (
+        <span>
+          {Object.entries(itm?.courses || {}).map(
+            ([courseName, courseId], index) => (
+              <Link
+                key={index}
+                to={`${link}/undefined/undefined/${courseId}/${encodeURIComponent(courseName)}`}
+                className="text-accent underline cursor-pointer text-xs font-medium"
+              >
+                {courseName}
+                {index < Object.entries(itm?.courses || {}).length - 1
+                  ? ", "
+                  : ""}
+              </Link>
+            )
+          )}
+        </span>
+      ),
     }));
   }, [data]);
 
-  useEffect(() => {
-    if (data) {
-      console.log("API Response:", data?.data?.response);
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data) {
+  //     console.log('API Response:', data?.data?.response);
+  //   }
+  // }, [data]);
+
+  const extractCourses = (data) => {
+    if (!data || !Array.isArray(data.children)) return "";
+    const courses = data.children.map(
+      (item) => item.props?.children?.[0] || ""
+    );
+    return courses.filter(Boolean).join(" - "); // Filter out any empty values
+  };
 
   const CSVDataFunction = () => {
-    const csvdata = tableData?.map((i: any) => [
-      i?.Class,
-      i?.Teacher?.props?.children?.props?.children || "",
-      i?.StudentInClass,
-      i?.Program,
-      i?.ActiveStudents,
-      i?.AvgActiveStudent,
-    ]);
+    const csvdata = tableData.map((row: any) => {
+      const coursesString = extractCourses(row.courses?.props);
+      return [
+        row.teacher_name,
+        row.first_login,
+        row.last_login,
+        row.avg_time_per_logins,
+        row.distinct_assignment,
+        row.distinct_assessment,
+        row.classes,
+        coursesString,
+      ];
+    });
 
     setCsvData(csvdata);
   };
@@ -316,8 +393,13 @@ export default function Index() {
   }, []);
 
   const handlePerPage = (e: any) => {
-    setPage(page);
-    setRowsPerPage(e);
+    if (e === "All") {
+      setRowsPerPage(e);
+      setPage(1);
+    } else {
+      setRowsPerPage(e);
+      setPage(page);
+    }
   };
 
   return (
@@ -329,32 +411,79 @@ export default function Index() {
         }
         handleToolbarAction={handleToolbarAction}
       />
-      <div
-        className={`w-full grid grid-cols-1 ${userRole().isBranchAdmin ? "lg:grid-cols-7" : "lg:grid-cols-8"} my-2 gap-2 items-center justify-between`}
-      >
-        {view === "default" ? (
-          <>
-            {!userRole().isBranchAdmin && (
+      <div className="actions-wrapper flex justify-between items-center">
+        <div
+          className={`w-full grid grid-cols-1 ${userRole().isBranchAdmin ? "lg:grid-cols-7" : "lg:grid-cols-8"} my-2 gap-2 items-center justify-between`}
+        >
+          {view === "default" ? (
+            <>
+              {!userRole().isBranchAdmin && (
+                <Dropdown
+                  title="Select Branch"
+                  value={selectedBranch}
+                  dataArray={[
+                    { label: "All", value: "select" },
+                    ...(BranchArr?.map((item: any) => ({
+                      label: item.name,
+                      value: item.id,
+                    })) || []),
+                  ]}
+                  onChangeHandler={(val) => {
+                    setselectedBranch(val);
+                    setSelectedClass("select");
+                    setSelectedTeacher("select");
+                  }}
+                  loading={branchListLoading}
+                  sxClass={{ width: "100%" }}
+                />
+              )}
+
               <Dropdown
-                title="Select Branch"
-                value={selectedBranch}
+                title="Teacher Name"
+                loading={teacherListLoading}
+                value={selectedteacher}
                 dataArray={[
                   { label: "All", value: "select" },
-                  ...(BranchArr?.map((item: any) => ({
+                  ...(TeacherArr?.map((itm: any) => ({
+                    label: `${itm?.first_name} ${itm?.last_name}`,
+                    value: itm?.user_id,
+                  })) || []),
+                ]}
+                onChangeHandler={(val) => setSelectedTeacher(val)}
+                sxClass={{ width: "100%" }}
+              />
+              <Dropdown
+                title="Select a class"
+                value={selectedClass}
+                loading={schoolClassLoading}
+                dataArray={[
+                  { label: "All", value: "select" },
+                  ...(SchooClassList?.map((item: any) => ({
                     label: item.name,
                     value: item.id,
                   })) || []),
                 ]}
-                onChangeHandler={(val) => {
-                  setselectedBranch(val);
-                  setSelectedClass("select");
-                  setSelectedTeacher("select");
-                }}
-                loading={branchListLoading}
+                onChangeHandler={(val) => setSelectedClass(val)}
                 sxClass={{ width: "100%" }}
               />
-            )}
+            </>
+          ) : (
+            <Dropdown
+              title="Select Course"
+              value={selectedprogram}
+              dataArray={[
+                { label: "Select", value: "select" },
+                ...(SubjectArr?.map((itm: any) => ({
+                  label: itm?.content,
+                  value: itm?.content,
+                })) || []),
+              ]}
+              onChangeHandler={(val) => setSelectedProgram(val)}
+              sxClass={{ width: "100%" }}
+            />
+          )}
 
+          {view === "default" && (
             <Dropdown
               title="Result Of Pages"
               value={rowsPerPage}
@@ -362,102 +491,34 @@ export default function Index() {
               onChangeHandler={handlePerPage}
               sxClass={{ width: "100%" }}
             />
-            <Dropdown
-              title="Teacher Name"
-              loading={teacherListLoading}
-              value={selectedteacher}
-              dataArray={[
-                { label: "All", value: "select" },
-                ...(TeacherArr?.map((itm: any) => ({
-                  label: `${itm?.first_name} ${itm?.last_name}`,
-                  value: itm?.user_id,
-                })) || []),
-              ]}
-              onChangeHandler={(val) => setSelectedTeacher(val)}
-              sxClass={{ width: "100%" }}
-            />
-            <Dropdown
-              title="Select a class"
-              value={selectedClass}
-              loading={schoolClassLoading}
-              dataArray={[
-                { label: "All", value: "select" },
-                ...(SchooClassList?.map((item: any) => ({
-                  label: item.name,
-                  value: item.id,
-                })) || []),
-              ]}
-              onChangeHandler={(val) => setSelectedClass(val)}
-              sxClass={{ width: "100%" }}
-            />
-          </>
-        ) : (
-          <Dropdown
-            title="Select Course"
-            value={selectedprogram}
-            dataArray={[
-              { label: "Select", value: "select" },
-              ...(SubjectArr?.map((itm: any) => ({
-                label: itm?.content,
-                value: itm?.content,
-              })) || []),
-            ]}
-            onChangeHandler={(val) => setSelectedProgram(val)}
-            sxClass={{ width: "100%" }}
-          />
-        )}
-
-        <DatePicker
-          fullWidth={true}
-          sxType={1}
-          value={fromDate}
-          label="From"
-          disabled={false}
-          defaultStyle={true}
-          disablePast={false}
-          disableFuture={toDate} // disableOld={userRole().isTeacher ? minStartDate : currentUserAcademicDate()?.start || new Date()}
-          // disableFuture={new Date() <= currentUserAcademicDate()?.end ? new Date() : currentUserAcademicDate()?.end}
-          handlePickerChange={(date: string) => setFromDate(date)}
-          shouldDisableDate={() => false}
-        />
-        <DatePicker
-          fullWidth={true}
-          sxType={1}
-          value={toDate}
-          label="To"
-          disabled={false}
-          defaultStyle={true}
-          disablePast={false}
-          disableOld={fromDate} // disableOld={userRole().isTeacher ? minStartDate : currentUserAcademicDate()?.start || new Date()}
-          // disableFuture={new Date() <= currentUserAcademicDate()?.end ? new Date() : currentUserAcademicDate()?.end}
-          handlePickerChange={(date: string) => setToDate(date)}
-          shouldDisableDate={() => false}
-        />
-        <div className={` flex gap-x-4 items-center  pt-2 lg:pt-6`}>
-          {(toDate || fromDate) && (
-            <span
-              tabIndex={0}
-              title="Clear dates"
-              onClick={() => reset()}
-              role="button"
-            >
-              <RestartAltIcon />
-            </span>
           )}
-        </div>
-        <div
-          className={`${view === "default" ? "lg:col-auto" : "lg:col-span-3"} mt-3 flex justify-end`}
-        >
-          <ButtonToggle view={view} setView={setView} />
-        </div>
 
-        {/* <CustomInput
+          <div className={` flex gap-x-4 items-center  pt-2 lg:pt-6`}>
+            {(toDate || fromDate) && (
+              <span
+                tabIndex={0}
+                title="Clear dates"
+                onClick={() => reset()}
+                role="button"
+              >
+                <RestartAltIcon />
+              </span>
+            )}
+          </div>
+
+          {/* <CustomInput
           name="Branch Name"
           label="Branch Name"
           size="small"
           value={selectedBranch}
           disabled={true}
         /> */}
+        </div>
+        <div
+          className={`${view === "default" ? "lg:col-auto" : "lg:col-span-3"} mt-3 flex justify-end`}
+        >
+          <ButtonToggle view={view} setView={setView} />
+        </div>
       </div>
       {/* Table Section */}
       {view === "default" ? (

@@ -211,8 +211,7 @@ export default function Index() {
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
     url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}${branchData || selectedBranch !== 'select' ? `&branch_name=${branchName}` : ''}`,
   });
-  const SchooClassList =
-    schoolClassList?.data?.response?.results?.sort(sortByName);
+  const SchooClassList = schoolClassList?.data?.response?.results;
 
   const { data: teacherList, isLoading: teacherListLoading } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,

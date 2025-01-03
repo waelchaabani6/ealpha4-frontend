@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable linebreak-style */
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable operator-linebreak */
@@ -80,7 +81,13 @@ export default function Index() {
   const [view, setView] = React.useState('default');
   const [details, SetDetails] = useState([]);
   const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
+  const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || '';
+  const BRANCH_ID = branchData?.school_data?.id || '';
+  const USER_ROLE = userData?.role?.name;
   const link = `/${schoolNameInURL}/reports/assignment-question-level-student`;
+  const superAdminLink = `/${schoolNameInURL}/school/${SCHOOL_ID}/reports/assignment-question-level-student`;
+  const adjustedLink =
+    USER_ROLE === USER_TYPE.SUPER_ADMIN ? superAdminLink : link;
   const [ScoreArray, SetScoreArray] = useState([]);
   const [perArray, SetPerArray] = useState([]);
   const [percentage, setPercentage] = useState('false');
@@ -91,9 +98,6 @@ export default function Index() {
   const [student, setStudentData] = useState([]);
   const [studentid, setID] = useState('');
   const [selectedstudent, setSelectedStudent] = useState<any>('');
-  const USER_ROLE = userData?.role?.name;
-  const SCHOOL_ID = schoolData?.id || branchData?.school_data?.id || '';
-  const BRANCH_ID = branchData?.school_data?.id || '';
 
   const ReportURL = import.meta.env.VITE_APP_REPORTS_SERVICE_URL;
 
@@ -319,7 +323,17 @@ export default function Index() {
               return {
                 ...row,
                 PerformanceExpectation: (
-                  <div className="bg-[#BECCFF] p-4">
+                  <div className="bg-[#FFF9BE] p-4">
+                    {row?.PerformanceExpectation}
+                  </div>
+                ),
+              };
+            }
+            if (row.PerformanceExpectation === 'Above') {
+              return {
+                ...row,
+                PerformanceExpectation: (
+                  <div className="bg-[#d9ffc8] p-4">
                     {row?.PerformanceExpectation}
                   </div>
                 ),
@@ -339,7 +353,7 @@ export default function Index() {
               return {
                 ...row,
                 PerformanceExpectation: (
-                  <div className="bg-[#d9ffc8] p-4">
+                  <div className="bg-[#BECCFF] p-4">
                     {row?.PerformanceExpectation}
                   </div>
                 ),
@@ -349,7 +363,7 @@ export default function Index() {
               return {
                 ...row,
                 PerformanceExpectation: (
-                  <div className="bg-[#FFF9BE] p-4">
+                  <div className="bg-[#FFD6A5] p-4">
                     {row?.PerformanceExpectation}
                   </div>
                 ),
@@ -371,7 +385,17 @@ export default function Index() {
             return {
               ...row,
               performance_status: (
-                <div className="bg-[#BECCFF] p-4">
+                <div className="bg-[#FFF9BE] p-4">
+                  {row?.performance_status}
+                </div>
+              ),
+            };
+          }
+          if (row.performance_status === 'Above') {
+            return {
+              ...row,
+              performance_status: (
+                <div className="bg-[#d9ffc8] p-4">
                   {row?.performance_status}
                 </div>
               ),
@@ -391,7 +415,7 @@ export default function Index() {
             return {
               ...row,
               performance_status: (
-                <div className="bg-[#d9ffc8] p-4">
+                <div className="bg-[#BECCFF] p-4">
                   {row?.performance_status}
                 </div>
               ),
@@ -401,7 +425,7 @@ export default function Index() {
             return {
               ...row,
               performance_status: (
-                <div className="bg-[#FFF9BE] p-4">
+                <div className="bg-[#FFD6A5] p-4">
                   {row?.performance_status}
                 </div>
               ),
@@ -442,10 +466,11 @@ export default function Index() {
   return (
     <RouteLayout
       state={location?.state ? { page: location?.state?.page } : {}}
-      path={`/${schoolName}/reports`}
+      // path={`/${schoolName}/reports`}
+      navBack={true}
     >
       <HeaderMenus
-        title={`Report -  ${view === 'default' ? 'Assignments Details' : 'Multiple Assignments Student Level'}`}
+        title={`Report -  ${view === 'default' ? 'Assignments Details ' : 'Multiple Assignments Student Level'}`}
         menuArray={
           view === 'default' ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
         }
@@ -608,7 +633,7 @@ export default function Index() {
                                 Submitteddate: DateSubmitted,
                               };
                               navigate(
-                                `${link}/${row.StudentID}/${row.assignmentID}`,
+                                `${adjustedLink}/${row.StudentID}/${row.assignmentID}`,
                                 { state: { stateData2 } }
                               );
                             }}
