@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ReactComponent as Search } from '@images/search.svg';
 import Radio from '@mui/material/Radio';
@@ -17,7 +18,7 @@ type Props = {
   error: string;
   seterror: React.SetStateAction<any>;
   codeType?: string;
-}
+};
 
 export default function AdvanceFilter(props: Props) {
   const { codeType } = props;
@@ -29,7 +30,7 @@ export default function AdvanceFilter(props: Props) {
   const [open, setOpen] = useState<boolean>(false);
   const [value, setvalue] = useState<string>('');
   const { control, watch } = useForm({
-    resolver: yupResolver(schema)
+    resolver: yupResolver(schema),
   });
 
   const focusHandler = () => {
@@ -47,25 +48,30 @@ export default function AdvanceFilter(props: Props) {
     }
   };
 
-  const onCheckboxToggle = useCallback((checkValue: string) => {
-    const exists = props.selectedCourse.includes(checkValue);
-    if (exists) {
-      const tmp = props.selectedCourse.filter((course: string) => course !== checkValue);
-      if (tmp.length > 0) {
+  const onCheckboxToggle = useCallback(
+    (checkValue: string) => {
+      const exists = props.selectedCourse.includes(checkValue);
+      if (exists) {
+        const tmp = props.selectedCourse.filter(
+          (course: string) => course !== checkValue
+        );
+        if (tmp.length > 0) {
+          props.seterror('');
+        } else {
+          props.seterror('required');
+        }
+        props.setToggleCourse(tmp);
+      } else {
         props.seterror('');
-      } else {
-        props.seterror('required');
+        if (codeType === 'single') {
+          props.setToggleCourse([checkValue]);
+        } else {
+          props.setToggleCourse([...props.selectedCourse, checkValue]);
+        }
       }
-      props.setToggleCourse(tmp);
-    } else {
-      props.seterror('');
-      if (codeType === 'single') {
-        props.setToggleCourse([checkValue]);
-      } else {
-        props.setToggleCourse([...props.selectedCourse, checkValue]);
-      }
-    }
-  }, [props.selectedCourse, value]);
+    },
+    [props.selectedCourse, value]
+  );
 
   const radioBoxes = (
     <RadioGroup
@@ -73,27 +79,39 @@ export default function AdvanceFilter(props: Props) {
       name="radio-buttons-group"
       onChange={(ele) => onCheckboxToggle(ele.target.value)}
     >
-      {
-        courseDataArray?.map((ele: any) => <FormControlLabel key={ele?.value} value={ele?.value} control={<Radio color="success" />} label={ele?.label} />)
-      }
+      {courseDataArray?.map((ele: any) => (
+        <FormControlLabel
+          key={ele?.value}
+          value={ele?.value}
+          control={<Radio color="success" />}
+          label={ele?.label}
+        />
+      ))}
     </RadioGroup>
   );
 
-  const checkboxes = courseDataArray.map((ele: { label: string; value: string }) => {
-    const selected = props.selectedCourse.includes(ele.value);
-    return (
-      <FormControlLabel
-        key={ele.value}
-        control={<Checkbox checked={selected} onChange={() => onCheckboxToggle(ele.value)} />}
-        label={ele.label}
-      />
-    );
-  });
+  const checkboxes = courseDataArray.map(
+    (ele: { label: string; value: string }) => {
+      const selected = props.selectedCourse.includes(ele.value);
+      return (
+        <FormControlLabel
+          key={ele.value}
+          control={
+            <Checkbox
+              checked={selected}
+              onChange={() => onCheckboxToggle(ele.value)}
+            />
+          }
+          label={ele.label}
+        />
+      );
+    }
+  );
 
   // -----------------API---------------------------
   const { isLoading: courseLoading, refetch: fetchCourses } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/?limit=100&offset=0${watch('select_category') ? `&Category=${categoryDataArray.find((obj: any) => obj.value === watch('select_category')).label}` : ''}${watch('select_subject') ? `&Course=${subjectDataArray.find((obj: any) => obj.value === watch('select_subject')).label}` : ''}${watch('select_grade') ? `&Grade=${gradeDataArray.find((obj: any) => obj.value === watch('select_grade')).label}` : ''}&search=${value}`,
+    url: `course-code-service/courses/?limit=100&offset=0&selection=Component${watch('select_category') ? `&category=${categoryDataArray.find((obj: any) => obj.value === watch('select_category')).label}` : ''}${watch('select_subject') ? `&course_id=${subjectDataArray.find((obj: any) => obj.value === watch('select_subject')).value}` : ''}${watch('select_grade') ? `&grade=${gradeDataArray.find((obj: any) => obj.value === watch('select_grade')).label}` : ''}&search=${value}`,
     cacheTime: 2000,
     onSuccess: (res: any) => {
       const resp = res?.data?.response?.results || [];
@@ -104,7 +122,7 @@ export default function AdvanceFilter(props: Props) {
       });
       setCourseDataArray(temp);
     },
-    enabled: false
+    enabled: false,
   });
 
   const { isLoading: subjectLoading, data: subjectArray } = useGet({
@@ -117,8 +135,9 @@ export default function AdvanceFilter(props: Props) {
         temp.push({ label: item?.content, value: item?.id });
         return temp;
       });
+      console.log(temp, 'subjectArray');
       setSubjectDataArray(temp);
-    }
+    },
   });
   const { isLoading: gradeLoading, data: gradeArray } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
@@ -131,7 +150,7 @@ export default function AdvanceFilter(props: Props) {
         return temp;
       });
       setGradeDataArray(temp);
-    }
+    },
   });
   const { isLoading: categoryLoading, data: categoryArray } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
@@ -144,7 +163,7 @@ export default function AdvanceFilter(props: Props) {
         return temp;
       });
       setCategoryDataArray(temp);
-    }
+    },
   });
 
   // ---------------END------------------------------
@@ -155,12 +174,21 @@ export default function AdvanceFilter(props: Props) {
 
   useEffect(() => {
     fetchCourses();
-  }, [watch('select_category'), watch('select_subject'), watch('select_grade'), value]);
+  }, [
+    watch('select_category'),
+    watch('select_subject'),
+    watch('select_grade'),
+    value,
+  ]);
 
   return (
     <div ref={ref} className="w-full h-full flex flex-col relative">
-      <p className={`text-xs pb-4 ${props.error !== '' ? 'text-red-500' : ''}`}>Select Course</p>
-      <div className={`flex-1 flex bg-white border-2 rounded px-0.5 ${props.error !== '' ? 'border-red-500' : ''}`}>
+      <p className={`text-xs pb-4 ${props.error !== '' ? 'text-red-500' : ''}`}>
+        Select Course
+      </p>
+      <div
+        className={`flex-1 flex bg-white border-2 rounded px-0.5 ${props.error !== '' ? 'border-red-500' : ''}`}
+      >
         <div className="flex-1">
           <input
             type="text"
@@ -175,49 +203,46 @@ export default function AdvanceFilter(props: Props) {
           <Search className="p-px pl-1" />
         </div>
       </div>
-      {
-        (open) && (
-          (courseLoading)
-            ? <div className="pt-8 bg-gray-100 pb-6"><Loader size={20} /></div>
-            : (
-              <div className={`border-2 p-4 border-t-0 border-sandgray rounded 
+      {open &&
+        (courseLoading ? (
+          <div className="pt-8 bg-gray-100 pb-6">
+            <Loader size={20} />
+          </div>
+        ) : (
+          <div
+            className={`border-2 p-4 border-t-0 border-sandgray rounded 
               ${props.error !== '' ? 'border-red-500' : ''}`}
-              >
-                <div className="flex flex-col md:grid md:grid-cols-3 gap-4">
-                  <Select
-                    control={control}
-                    name="select_category"
-                    label="Select Category"
-                    dataArray={categoryDataArray || []}
-                  />
-                  <Select
-                    control={control}
-                    name="select_subject"
-                    label="Select Course"
-                    dataArray={subjectDataArray || []}
-                  />
-                  <Select
-                    control={control}
-                    name="select_grade"
-                    label="Select Grade"
-                    dataArray={gradeDataArray || []}
-                  />
-                </div>
-                <div className="overflow-auto h-[200px] mt-4">
-                  <FormGroup>
-                    {codeType === 'single' ? radioBoxes : checkboxes}
-                  </FormGroup>
-                </div>
-              </div>
-            )
-        )
-      }
-      {
-        props.error !== '' && (
-          <p className="text-xs pt-2 text-red-500">{props.error}</p>
-        )
-      }
-
+          >
+            <div className="flex flex-col md:grid md:grid-cols-3 gap-4">
+              <Select
+                control={control}
+                name="select_category"
+                label="Select Category"
+                dataArray={categoryDataArray || []}
+              />
+              <Select
+                control={control}
+                name="select_subject"
+                label="Select Course"
+                dataArray={subjectDataArray || []}
+              />
+              <Select
+                control={control}
+                name="select_grade"
+                label="Select Grade"
+                dataArray={gradeDataArray || []}
+              />
+            </div>
+            <div className="overflow-auto h-[200px] mt-4">
+              <FormGroup>
+                {codeType === 'single' ? radioBoxes : checkboxes}
+              </FormGroup>
+            </div>
+          </div>
+        ))}
+      {props.error !== '' && (
+        <p className="text-xs pt-2 text-red-500">{props.error}</p>
+      )}
     </div>
   );
 }
