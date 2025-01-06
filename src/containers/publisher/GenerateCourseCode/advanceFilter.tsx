@@ -111,7 +111,7 @@ export default function AdvanceFilter(props: Props) {
   // -----------------API---------------------------
   const { isLoading: courseLoading, refetch: fetchCourses } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/?limit=100&offset=0&selection=Component${watch('select_category') ? `&category=${categoryDataArray.find((obj: any) => obj.value === watch('select_category')).label}` : ''}${watch('select_subject') ? `&course_id=${subjectDataArray.find((obj: any) => obj.value === watch('select_subject')).value}` : ''}${watch('select_grade') ? `&grade=${gradeDataArray.find((obj: any) => obj.value === watch('select_grade')).label}` : ''}&search=${value}`,
+    url: `course-code-service/courses/?limit=100&offset=0&selection=Component${watch('select_category') ? `&category=${categoryDataArray.find((obj: any) => obj.value === watch('select_category')).label}` : ''}${watch('select_subject') ? `&course_id=${subjectDataArray.find((obj: any) => obj.value === watch('select_subject')).value}` : ''}${watch('select_grade') ? `&grade=${gradeDataArray.find((obj: any) => obj.value === watch('select_grade')).label}` : ''}&search=${value}&status=1`,
     cacheTime: 2000,
     onSuccess: (res: any) => {
       const resp = res?.data?.response?.results || [];
