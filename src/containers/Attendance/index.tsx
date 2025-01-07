@@ -1,3 +1,5 @@
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable linebreak-style */
 /* eslint-disable operator-linebreak */
 /* eslint-disable indent */
 /* eslint-disable comma-dangle */
@@ -6,7 +8,7 @@ import Dropdown from '@component/dropdown/Dropdown';
 import DatePicker from '@component/datepicker';
 import Button from '@component/button/button';
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Component, useEffect, useMemo, useRef, useState } from 'react';
 import {
   TABLE_LABELS,
   COMPONENTS,
@@ -34,6 +36,7 @@ import DebounceInput from '@component/input/DebounceInput';
 import toast from '@shared/toast';
 import moment from 'moment';
 import { selectUser } from '@shared/store/userSlice';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const printButton = () => <PrintIcon />;
 
@@ -46,25 +49,7 @@ const TableColumns = [
     label: TABLE_LABELS?.SR_NO,
     align: 'center',
   },
-  {
-    label: 'Select',
-    mapper: 'Select',
-    component: COMPONENTS?.checkbox,
-    selector: 'id',
-    showInHeader: true,
-    sx: {
-      display: 'flex',
-      alignItems: 'center',
-    },
-    cellSx: {
-      // display: 'flex',
-      justifyContent: 'flex-start',
-      position: 'relative',
-      left: '0px',
-    },
-    elementClass: 'flex items-center',
-    // component: COMPONENTS?.checkbox
-  },
+
   {
     label: 'Student First Name',
     mapper: 'StudentFirstName',
@@ -78,10 +63,30 @@ const TableColumns = [
     label: 'Grade',
     mapper: 'Grade',
   },
+  // {
+  //   label: 'Status',
+  //   mapper: 'Status',
+  //   align: 'center',
+  // },
   {
-    label: 'Status',
-    mapper: 'Status',
+    label: '',
+    mapper: 'Select',
+    component: 'custom-checkbox',
+    selector: 'id',
+    showInHeader: true,
     align: 'center',
+    sx: {
+      display: 'flex',
+      alignItems: 'center',
+    },
+    cellSx: {
+      // display: 'flex',
+      justifyContent: 'flex-start',
+      position: 'relative',
+      left: '0px',
+    },
+    elementClass: 'flex items-center',
+    // component: COMPONENTS?.checkbox
   },
 ];
 
@@ -115,6 +120,9 @@ function Attendance() {
   const noOfpages = getNoOfPages(totalDataCount, RESULTS_PER_PAGE?.[0]);
   const componentRef = useRef(null);
   const [courses, setCourses] = useState<any>([]);
+
+  const navigate = useNavigate();
+  const { schoolName } = useParams();
 
   const SchoolURL = import.meta.env.VITE_APP_SCHOOL_SERVICE_URL;
   const { data: data1, isLoading: isLoading1 } = useGet({
@@ -248,13 +256,14 @@ function Attendance() {
           ? 'All present success'
           : 'success';
       toast('success', 'Attendance Updated Successfully!');
-      setAbsentLoader(false);
-      setPresentLoader(false);
+      // setAbsentLoader(false);
+      // setPresentLoader(false);
       setBulkSelect([]);
+      navigate(`/${schoolName}/attandance/reports`);
     },
     onError: (error: any) => {
-      setAbsentLoader(false);
-      setPresentLoader(false);
+      // setAbsentLoader(false);
+      // setPresentLoader(false);
       toast('error', error?.response?.data?.message);
     },
   });
@@ -321,9 +330,11 @@ function Attendance() {
       if (oldD !== newD) {
         setBulkSelect(
           Array.from(new Set([...bulkSelect, tmpTableData[index].id]))
+          // Array.from(new Set([...bulkSelect, tmpTableData[index]]))
         );
       } else {
         setBulkSelect((prev: number[]) =>
+          // prev?.filter((ids: number) => ids !== tmpTableData[index])
           prev?.filter((ids: number) => ids !== tmpTableData[index].id)
         );
       }
@@ -347,6 +358,15 @@ function Attendance() {
             aria-labelledby="demo-row-radio-buttons-group-label"
             name="row-radio-buttons-group"
             value={itm?.isPresent}
+            // value={
+            //   bulkSelect?.length > 0
+            //     ? bulkSelect.find((i: any) => i === itm?.id)
+            //     : itm?.isPresent
+            // }
+            // value={
+            //   itm?.isPresent ||
+            //   bulkSelect.some((item) => item.student === itm?.id)
+            // }
             onChange={() => handleOnchange(itm?.id)}
           >
             <FormControlLabel
@@ -364,8 +384,16 @@ function Attendance() {
         </div>
       ),
     }));
+    tmpTableData.map((itm) => {
+      // console.log(bulkSelect);
+      // const x = bulkSelect.some((item) => item.student == itm?.id);
+      // console.log(x);
+      // console.log(bulkSelect.includes.call(itm?.id));
+      // const i = bulkSelect.find((i: any) => i.student === itm?.id).present;
+      // console.log(i);
+    });
     setTableData(bb || []);
-  }, [tmpTableData]);
+  }, [tmpTableData, bulkSelect]);
 
   useEffect(() => {
     if (data) {
@@ -389,8 +417,12 @@ function Attendance() {
   };
 
   const submitHandler = () => {
+    console.log(bulkSelect, 'bulkSelect');
     const dt = bulkSelect?.map((item: any) => {
       const idx = tmpTableData.find((itm: any) => itm.id === item);
+      // console.log(idx);
+      // console.log(item);
+      // // console.log(idx);
       if (idx) {
         const tmp = {
           student: item,
@@ -410,6 +442,7 @@ function Attendance() {
       }
       return null;
     });
+    console.log('submit data', dt);
     mutate(dt);
   };
 
@@ -432,7 +465,13 @@ function Attendance() {
       }
       return tmp;
     });
-    mutate(dt);
+
+    // console.log(dt, 'dt');
+    // const ids = data?.data?.response?.result?.map((item: any) => item?.id);
+    // bulkSelect.find((i: any) => i.student === itm?.id)?.isPresent
+    // console.log(ids, 'ids');
+    // setBulkSelect(ids);
+    // mutate(dt);
   };
 
   const handleSearch = (value: any) => {
@@ -549,7 +588,7 @@ function Attendance() {
               shouldDisableDate={() => false}
             />
           </div>
-          <div className="sm:mt-[1.6rem]">
+          {/* <div className="sm:mt-[1.6rem]">
             <Button
               className="h-[38px] w-full text-[16px]"
               type="button"
@@ -562,13 +601,13 @@ function Attendance() {
               }
               onClick={() => {
                 toggleAllHandler();
-                setPresentLoader(true);
+                // setPresentLoader(true);
               }}
             >
               Present All
             </Button>
-          </div>
-          <div className="sm:mt-[1.6rem]">
+          </div> */}
+          {/* <div className="sm:mt-[1.6rem]">
             <Button
               className="h-[38px] w-full text-[16px]"
               type="button"
@@ -581,12 +620,12 @@ function Attendance() {
               }
               onClick={() => {
                 toggleAllHandler(false);
-                setAbsentLoader(true);
+                // setAbsentLoader(true);
               }}
             >
               Absent All
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
 
