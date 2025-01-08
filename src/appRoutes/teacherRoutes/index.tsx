@@ -13,6 +13,7 @@ import OBE_PreviewMyAssessmentQuestions from '@containers/assessments/OBE_Previe
 import OBE_ObeAssessments from '@containers/assessments/OBE_ObeAssessments';
 import OBE_AssignAssessment from '@containers/assessments/OBE_assignAssessment';
 import OBE_AssignedAssessments from '@containers/assessments/OBE_assignedAssessments';
+import OBE_CreateAssessments from '@containers/assessments/OBE_createNewAssessment';
 import OBE_MyAssessments from '@containers/assessments/OBE_MyAssessments';
 import myGroupRoutes from './myGroupRoutes';
 import AuthPathHandler from '../helper';
@@ -235,6 +236,10 @@ export default createBrowserRouter([
               {
                 path: 'assigned',
                 element: <OBE_AssignedAssessments />,
+              },
+              {
+                path: 'create-new-assessment',
+                element: <OBE_CreateAssessments />,
               },
 
               {

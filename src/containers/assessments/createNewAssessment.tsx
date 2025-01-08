@@ -10,10 +10,9 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { USER_TYPE } from '@constants/constants';
-import {useLocation, useNavigate} from 'react-router-dom';
-import {sortData, userRole} from '@utility/utility';
+import { useNavigate } from 'react-router-dom';
+import { sortData } from '@utility/utility';
 import axios from 'axios';
-import encryptMessage from '@utility/encrypt';
 import RouteLayout from '../layout/routeLayout';
 import schema from './schema';
 
@@ -21,13 +20,10 @@ export default function AssignedAssessments() {
   const navigate = useNavigate();
   const { SCHOOL_ADMIN, BRANCH_ADMIN, TEACHER } = USER_TYPE;
   const { schoolData, branchData } = useSelector(selectSchoolData);
-  const [dataValues, setDataValues] = useState<any>();
-  const [obeId, setObeId] = useState<string | null>(null);
   const { user } = useSelector((state: any) => state);
   const role = user?.role?.name;
   const [courseArray, setcourseArray] = useState<any>([]);
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
-  const location = useLocation();
   const {
     handleSubmit,
     control
@@ -38,8 +34,9 @@ export default function AssignedAssessments() {
 
   // ----------API Call--------------------------------------------------------------------
   const { isLoading: LoadAssesment, mutate: mutateAssesment } = usePost({
-    baseURL: import.meta.env.VITE_APP_OBE_ASSESSMENT_SERVICE_URL,
+    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/create-assessment/`,
+    // url: `assessments-service/create-assessment/assessment_name=${data.assessment_name}`,
     onSuccess: (response: any) => {
       const data = response?.data?.response;
       navigate(`create/${data?.id}`);
@@ -57,48 +54,36 @@ export default function AssignedAssessments() {
       toast('error', errMessage || 'Error');
     }
   });
-  const { isLoading: LoadObeAssesment, mutate: mutateObeAssesment } = usePost({
-    baseURL: import.meta.env.VITE_APP_OBE_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/create-assessment/`,
-    onSuccess: (response: any) => {
-      const data = response?.data?.response;
-      setDataValues(data);
-      // navigate(`create/${data?.id}`);
-    },
-    onError: ({ response }: any) => {
-      const errorObj = response?.data?.errors;
-      let errMessage = '';
-      if (Object.keys(errorObj).length) {
-        Object.keys(errorObj).forEach((key1: any) => {
-          errMessage = `${key1}:${errorObj?.[key1][0]}`;
-        });
-      } else {
-        errMessage = response?.statusText;
-      }
-      toast('error', errMessage || 'Error');
-    }
-  });
 
-  const { isLoading: loadCourses, refetch: getCourses } = useGet({
-    baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/assigned_courses/${user?.userId}/details`,
-    onSuccess: (response: any) => {
-      const data = response?.data?.response;
-      const arr: any = [];
-      data?.map((item: any) => {
-        arr.push(
-          {
-            label: item?.short_name,
-            value: item?.id
-          }
-        );
-        arr.sort(sortData);
-        return arr;
-      });
-      setcourseArray(arr);
-    },
-    enabled: false
+  // const { isLoading: loadCourses, refetch: getCourses } = useGet({
+  //   baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
+  //   url: `course-code-service/courses/assigned_courses/${user?.userId}/details`,
+  //   onSuccess: (response: any) => {
+  //     const data = response?.data?.response;
+  //     const arr: any = [];
+  //     data?.map((item: any) => {
+  //       arr.push(
+  //         {
+  //           label: item?.short_name,
+  //           value: item?.id
+  //         }
+  //       );
+  //       arr.sort(sortData);
+  //       return arr;
+  //     });
+  //     setcourseArray(arr);
+  //   },
+  //   enabled: false
+  // });
+
+  // Get Courses
+  const { isLoading: loadCourses, data: Courses, refetch: getCourses } = useGet({
+    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+    url: `assessments-service/alpha-assessment/courses/`,
   });
+  const filteredCourses =
+    Courses?.data?.map((ele: any) => ({ label: ele.name, value: ele.id })) ||
+    [];
 
   const { isLoading: loadClassesForSchool, data: ClassesForSchool } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
@@ -120,100 +105,55 @@ export default function AssignedAssessments() {
   // eslint-disable-next-line consistent-return
   const getConfigAssessments = async (name: any, subject_id: any, grade_id: any) => {
     const config = {
-      apiKey: `${import.meta.env.VITE_OBESASS_API_KEY}`,
+      apiKey: `${import.meta.env.VITE_APP_SDK}`,
       name,
       subject_id,
       grade_id,
       user: `${user?.first_name} ${user?.last_name}`,
-      role: user?.role?.name,
-      user_ting: user?.user_ting
+      role: user?.role?.name
     };
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_APP_OBEASSESS_SDK_URL}sdk-assessments`,
-        { name: config?.name, subject_id: config?.subject_id },
+      const [response] = await Promise.all([axios.post(
+        `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config/assessments`,
+        JSON.stringify(config),
         {
           headers: {
-            'X-Authorization': `${config?.apiKey}`,
-            Accept: 'application/json',
-            User: config?.user,
-            Role: config?.role,
-            User_ting: config?.user_ting
+            Origin: '*',
+            'Content-Type': 'application/json'
           }
         }
-      );
-      if (response.status === 200 || response.status === 201) {
-        // const obeasses_id = await res?.data?.data?.item?.id;
-
+      )]);
+      if (response.status === 200) {
         return response;
       } /* empty */
-    } catch (error) {
-    }
+    } catch (error) { /* empty */ }
   };
-  useEffect(() => {
-    if (dataValues) {
-      const currentDate = new Date();
-      const message: any = {
-        key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
-        user_name: `${user?.first_name} ${user?.last_name}`,
-        user_id: user?.user_ting,
-        assessment_id: obeId,
-        date_time: currentDate,
-        redirectionPath: location.pathname
-      };
-      const encryptedData = encryptMessage(JSON.stringify(message));
-      window.location.href = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/create-assessments/?token=${encodeURIComponent(encryptedData)}`;
-    }
-  }, [dataValues, obeId]);
-
-  // async function createAssessments(config) {
-  //   console.log(config)
-  //   let data = { name : config?.name ,subject_id: config?.subject_id }
-  //   try {
-  //     return await axios.post(`${process.env.REACT_APP_API_URL}/apiv2/sdk-assessments`,
-  //         data,
-  //         {
-  //           headers: {
-  //             'X-Authorization': `${config?.apiKey}`,
-  //             Accept: 'application/json',
-  //             User: config?.user,
-  //             Role: config?.role,
-  //             User_ting: config?.user_ting
-  //           }
-  //         },
-  //     );
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
 
   // ----------END APIs-------------------------------------------------------------------------
   const CLASS_ARRAY = (role === TEACHER ? TeacherClassesArray : formatSchoolClasses) || [];
   CLASS_ARRAY.sort(sortData);
   const onSubmit = async (values: any) => {
     // const getCourse = courseArray.find((i: any) => Number(i?.value) === Number(values?.select_course));
+    const getCourse = filteredCourses.find((i: any) => Number(i?.value) === Number(values?.select_course));
     const getGrade = CLASS_ARRAY.find((i: any) => Number(i?.value) === Number(values?.select_grade));
-    const res = await getConfigAssessments(values?.assignment_name, '', getGrade?.value);
 
-    const obeasses_id = await res?.data?.item?.id;
-    // console.log(await res?.data?.item?.id, 'sadasdasdas')
-    setObeId(obeasses_id);
+    const res = await getConfigAssessments(values?.assignment_name, '', getGrade?.value);
+    const obeasses_id = await res?.data?.data?.item?.id;
+
     const payload = {
       assessment_name: values?.assignment_name,
-      // courses: getCourse?.value,
-      // courses_name: getCourse?.label,
-      grade: getGrade?.value,
-      grade_name: getGrade?.label,
+      courses: getCourse?.value,
+      courses_name: getCourse?.label,
+      // grade: getGrade?.value,
+      // grade_name: getGrade?.label,
       school_id: schoolData?.id || branchData?.school_data?.id || '',
       branch_id: branchData?.id || null,
       created_by: user.userId,
       updated_by: user?.userId,
       obeasses_id
     };
-    // mutateAssesment(payload);
-    const response = mutateObeAssesment(payload);
-    setDataValues(response);
+    mutateAssesment(payload);
   };
 
   useEffect(() => {
@@ -236,7 +176,7 @@ export default function AssignedAssessments() {
         <PageTitle title="Create Assessments" />
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-5 w-full overflow-auto rounded-md h-max border border-accent bg-white">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-y-3 md:gap-x-6 p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 md:gap-x-6 p-4">
           <Input control={control} name="assignment_name" label="Assessment Name" />
           <Select
             displayEmpty={true}
@@ -244,10 +184,11 @@ export default function AssignedAssessments() {
             control={control}
             name="select_course"
             label="Select Course"
-            dataArray={courseArray}
+            // dataArray={courseArray}
+            dataArray={filteredCourses}
             loading={loadCourses}
           />
-          <Select
+          {/* <Select
             displayEmpty={true}
             disablePlaceholderValue={true}
             control={control}
@@ -255,7 +196,7 @@ export default function AssignedAssessments() {
             label="Select Class"
             dataArray={CLASS_ARRAY}
             loading={loadClassesForTeacher || loadClassesForSchool}
-          />
+          /> */}
         </div>
         <div className="py-8 float-right space-x-5 px-5">
           <Button loading={LoadAssesment}>
