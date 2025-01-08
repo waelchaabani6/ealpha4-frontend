@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import { GRAPH_LABELS, STRINGS } from '@constants/constants';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -8,21 +9,18 @@ import {
   YAxis,
   Legend,
   ResponsiveContainer,
-  Tooltip
+  Tooltip,
 } from 'recharts';
 
 type DataType = {
   name?: string;
   count1?: number;
 };
-type Props={
-  // eslint-disable-next-line react/no-unused-prop-types
-  xaxis?:string;
-  // eslint-disable-next-line react/no-unused-prop-types
-  yaxis?:string;
-  // eslint-disable-next-line react/no-unused-prop-types
+type Props = {
+  xaxis?: string;
+  yaxis?: string;
   barData?: (string | number)[];
-}
+};
 
 const CustomBar = (props: any) => {
   const { fill, x, y, width, height } = props;
@@ -30,11 +28,19 @@ const CustomBar = (props: any) => {
   const barColor = isFirstGraph ? '#E53945' : fill;
 
   return (
-    <rect x={x} y={y} width={width} height={height} fill={barColor} rx="5" ry="5" />
+    <rect
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      fill={barColor}
+      rx="5"
+      ry="5"
+    />
   );
 };
 
-function ProgramUsageOverview(props:Props) {
+function ProgramUsageOverview(props: Props) {
   const { xaxis, barData, yaxis } = props;
   const [dataarr, setData] = useState<any>([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -44,12 +50,12 @@ function ProgramUsageOverview(props:Props) {
   }, [barData]);
 
   useEffect(() => {
-    const body:any = [];
+    const body: any = [];
     if (yaxis === STRINGS.OPTION1) {
       dataarr?.map((i: any, index: any) => {
         body.push({
           name: i?.name,
-          value: i?.students
+          value: i?.students,
         });
         setFilteredData(body);
         setValue('Students');
@@ -60,7 +66,7 @@ function ProgramUsageOverview(props:Props) {
       barData?.map((i: any, index: any) => {
         body.push({
           name: i?.name,
-          value: i.teachers
+          value: i.teachers,
         });
         setFilteredData(body);
         setValue('Teachers');
@@ -71,7 +77,7 @@ function ProgramUsageOverview(props:Props) {
       barData?.map((i: any, index: any) => {
         body.push({
           name: i?.name,
-          value: i?.total_time_students
+          value: i?.total_time_students,
         });
         setFilteredData(body);
         setValue('Total Time - Students (Days)');
@@ -82,7 +88,7 @@ function ProgramUsageOverview(props:Props) {
       barData?.map((i: any, index: any) => {
         body.push({
           name: i?.name,
-          value: i.total_time_teachers
+          value: i.total_time_teachers,
         });
         setFilteredData(body);
         setValue('Total Time - Teachers (Days)');
@@ -93,7 +99,7 @@ function ProgramUsageOverview(props:Props) {
       barData?.map((i: any, index: any) => {
         body.push({
           name: i?.name,
-          value: i.total_time_teachers_and_students
+          value: i.total_time_teachers_and_students,
         });
         setFilteredData(body);
         setValue('Total Time -  Student + Teachers (Days');

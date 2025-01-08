@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable no-shadow */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable curly */
@@ -139,7 +140,10 @@ function createData(
       ? `0%`
       : // : `${parseFloat(((Number(Correct) * 100) / Number(maxScore)).toFixed(2))}%`;
         `${parseFloat(((Number(Correct / total_pages) * 100) / Number(maxScore)).toFixed(2))}%`;
-  const scormDataView = scormData ? JSON.parse(scormData) : {};
+
+  const scormDataView =
+    scormData && scormData?.length > 0 ? JSON.parse(scormData) : {};
+
   return {
     Pages,
     page_name,
@@ -187,7 +191,7 @@ function AssignmentDetails() {
   } = teacherData;
   const [jsonData, setJsonData] = useState([]);
   const [jsonCopyData, setJsonCopyData] = useState([]);
-  // const [assignmentPages, setAssignmentsPages] = useState([]);
+  const [assignmentPages, setAssignmentsPages] = useState([]);
 
   const [AttachmentMenuVisible, setAttachmentMenuVisible] = useState(false);
   const [assignReportId, setAssignReportId] = useState('');
@@ -212,6 +216,8 @@ function AssignmentDetails() {
     Nmeet2: '',
     exceed1: '',
     exceed2: '',
+    above1: '',
+    above2: '',
     meet1: '',
     meet2: '',
     approching1: '',
@@ -326,6 +332,9 @@ function AssignmentDetails() {
       const meetObj = fetchedRecords?.find(
         (obj: any) => obj.status === 'Meets'
       );
+      const aboveObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Above'
+      );
       const AppObj = fetchedRecords?.find(
         (obj: any) => obj.status === 'Approaching'
       );
@@ -335,10 +344,13 @@ function AssignmentDetails() {
       const ExceedsObj = fetchedRecords?.find(
         (obj: any) => obj.status === 'Exceeds'
       );
+
       setValue((prevState: any) => ({
         ...prevState,
         meet1: meetObj?.from_value,
         meet2: meetObj?.to_value,
+        above1: aboveObj?.from_value,
+        above2: aboveObj?.to_value,
         exceed1: ExceedsObj?.from_value,
         exceed2: ExceedsObj?.to_value,
         approching1: AppObj?.from_value,
@@ -361,28 +373,39 @@ function AssignmentDetails() {
     if (score !== null && !isNaN(score)) {
       if (score >= val.exceed1 && score <= val.exceed2) {
         // Exceeds
-        return { bg: '#d9ffc8', color: '#6CA463' }[type]; // blue
+        // return { bg: '#d9ffc8', color: '#6CA463' }[type]; // green
+        return { bg: '#BECCFF', color: '#132E90 ' }[type]; // blue
+      }
+      if (score >= val.above1 && score <= val.above2) {
+        /// Above
+        return { bg: '#d9ffc8', color: '#6CA463' }[type]; // green
       }
       if (score >= val.meet1 && score <= val.meet2) {
         /// Meets
-        return { bg: '#BECCFF', color: '#132E90 ' }[type]; // green
+        // return { bg: '#BECCFF', color: '#132E90 ' }[type]; // blue
+        return { bg: '#FFF9BE', color: '#C7B551' }[type]; // yellow
       }
       if (score >= val.approching1 && score <= val.approching2) {
         // Approaching
-        return { bg: '#FFF9BE', color: '#C7B551' }[type];
+        // return { bg: '#FFF9BE', color: '#C7B551' }[type]; // yellow
+        return { bg: '#FFD6A5', color: '#FF9E4F' }[type]; // orange
       }
       if (score >= val.Nmeet1 && score <= val.Nmeet2) {
         // Does not Meet
-        return { bg: '#FCD4C6', color: '#E36B6B' }[type];
+        // return { bg: '#FCD4C6', color: '#E36B6B' }[type];
+        return { bg: '#FFD6A5', color: '#FF9E4F' }[type]; // orange
       }
     } else {
-      return { bg: '#FCD4C6', color: '#E36B6B' }[type];
+      return { bg: '#FFD6A5', color: '#FF9E4F' }[type];
     }
   }
 
   function getPerformanceText(score: any) {
     if (score >= val.exceed1 && score <= val.exceed2) {
       return 'Exceeds';
+    }
+    if (score >= val.above1 && score <= val.above2) {
+      return 'Above';
     }
     if (score >= val.meet1 && score <= val.meet2) {
       return 'Meets';
@@ -432,12 +455,12 @@ function AssignmentDetails() {
       // jsonRespData.push(res?.data?.response?.assignment_progress?.lesson_id);
 
       if (jsonRespData && jsonRespData.length !== 0) {
-        // const pagesArray = jsonRespData.map((ele: any) => ({
-        //   label: ele.page_name,
-        //   value: ele.page_name,
-        // }));
-        // setAssignmentsPages(pagesArray);
-        // console.log(jsonRespData, '#jsonRespData');
+        const pagesArray = jsonRespData.map((ele: any) => ({
+          label: ele.page_name,
+          value: ele.page_name,
+        }));
+        setAssignmentsPages(pagesArray);
+        // console.log(jsonRespData[1].scormData, '#jsonRespData');
         jsonRespData =
           jsonRespData && jsonRespData.length !== 0
             ? jsonRespData.map((ele: any) =>
@@ -463,14 +486,14 @@ function AssignmentDetails() {
           setCsvData(jsonRespData.map((ele: any) => createExcellData(ele)));
         }
 
-        // const columnsHeader2 = columnsHeader.map((ele) => {
-        //   if (ele.component === 'Dropdown') {
-        //     return { ...ele, dataArray: pagesArray };
-        //   }
-        //   return ele;
-        // });
-        // setColumns(columnsHeader2);
-        // setColumnsCopy(columnsHeader2);
+        const columnsHeader2 = columnsHeader.map((ele) => {
+          if (ele.component === 'Dropdown') {
+            return { ...ele, dataArray: pagesArray };
+          }
+          return ele;
+        });
+        setColumns(columnsHeader2);
+        setColumnsCopy(columnsHeader2);
       }
 
       const tempArray: any = [];
@@ -495,7 +518,7 @@ function AssignmentDetails() {
                   pageNameArray.push(name);
 
                   pagesList.push({
-                    label: `${lesson.unit_name}`,
+                    label: `${lesson.unit_name}  - ${name}`,
                     value: `${lesson.unit_name}`,
                   });
 
@@ -516,20 +539,20 @@ function AssignmentDetails() {
               );
             }
 
-            const pagesArray = singlePages.map((ele: any) => ({
-              label: ele.page_name,
-              value: ele.page_name,
-            }));
+            // const pagesArray = jsonRespData.map((ele: any) => ({
+            //   label: ele.page_name,
+            //   value: ele.page_name,
+            // }));
 
-            const columnsHeader2 = columnsHeader.map((ele) => {
-              if (ele.component === 'Dropdown') {
-                return { ...ele, dataArray: pagesArray };
-              }
-              return ele;
-            });
+            // const columnsHeader2 = columnsHeader.map((ele) => {
+            //   if (ele.component === 'Dropdown') {
+            //     return { ...ele, dataArray: pagesArray };
+            //   }
+            //   return ele;
+            // });
 
-            setColumns(columnsHeader2);
-            setColumnsCopy(columnsHeader2);
+            // setColumns(columnsHeader2);
+            // setColumnsCopy(columnsHeader2);
             // setAssignmentsPages(pagesList);
             // scromPagesTemp.push({
             //   label: `${lesson.unit_name}`,
@@ -577,9 +600,11 @@ function AssignmentDetails() {
         // console.log(scromPagesTemp);
       }
 
-      console.log(jsonRespData, '#jsonRespData');
-      setSinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
-      setCopySinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
+      // setSinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
+      // setCopySinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
+
+      setSinglePages(jsonRespData);
+      setCopySinglePages(jsonRespData);
 
       const pagesListprev: any = [];
       if (tempArray.length !== 0) {
@@ -900,7 +925,7 @@ function AssignmentDetails() {
           <div className="flex-1" />
           <div className="flex">
             <div className="relative">
-              {/* <Dropdown
+              <Dropdown
                 dataArray={assignmentPages}
                 onChangeHandler={(val) => {
                   setSelectedScromPage(val);
@@ -917,8 +942,8 @@ function AssignmentDetails() {
                 title="Select Page"
                 sxClass={{ width: '206px', marginRight: '5px' }}
                 displayEmpty={false}
-              /> */}
-              <Dropdown
+              />
+              {/* <Dropdown
                 dataArray={scromPages}
                 onChangeHandler={(val) => {
                   setSelectedScromPage(val);
@@ -934,7 +959,7 @@ function AssignmentDetails() {
                 title="Select Page"
                 sxClass={{ width: '206px', marginRight: '5px' }}
                 displayEmpty={false}
-              />
+              /> */}
               {showSelectPageError ? (
                 <div className="absolute text-red-500 text-xs whitespace-nowrap">
                   Please select pages from dropdown

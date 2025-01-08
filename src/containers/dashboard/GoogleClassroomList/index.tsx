@@ -4,12 +4,12 @@
 import * as React from 'react';
 
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import { TABLE_LABELS } from '@constants/constants';
+import { COMPONENTS, TABLE_LABELS } from '@constants/constants';
 import Wrapper from '@shared/wrapper/Wrapper';
 import Button from '@component/button/button';
 import toast from '@shared/toast';
 import { usePost } from '@shared/api/useApi';
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectSchoolData } from '@shared/store/schoolSlice';
 
@@ -17,6 +17,7 @@ export default function GoogleClassroomList({ data }: any) {
   const { schoolData } = useSelector(selectSchoolData);
 
   const [tableData, setTableData] = React.useState<any>([]);
+  const [bulkSelect, setBulkSelect] = React.useState<any>([]);
 
   const schoolServiceBaseURL = import.meta.env.VITE_APP_SCHOOL_SERVICE_URL;
 
@@ -29,6 +30,23 @@ export default function GoogleClassroomList({ data }: any) {
       mapper: 'id',
     },
     {
+      label: 'Select',
+      mapper: 'Select',
+      component: COMPONENTS?.checkbox,
+      selector: 'id',
+      showInHeader: true,
+      sx: {
+        display: 'flex',
+        alignItems: 'center',
+      },
+      cellSx: {
+        justifyContent: 'flex-start',
+        position: 'relative',
+        left: '0px',
+      },
+      elementClass: 'flex items-center',
+    },
+    {
       label: TABLE_LABELS?.CLASSROOM_NAME,
       mapper: 'name',
       isSort: true,
@@ -37,7 +55,7 @@ export default function GoogleClassroomList({ data }: any) {
   ];
 
   React.useEffect(() => {
-    console.log('object', data);
+    // console.log('object', data);
     setTableData(data);
   }, [data]);
 
@@ -59,39 +77,31 @@ export default function GoogleClassroomList({ data }: any) {
       return toast('error', 'Please enter class name');
     }
 
-    const body: any = [];
-    // data?.map((i: any) => {
-    //   body.push({
-    //     name: i.name,
-    //     school_id: schoolData.id,
-    //     class_source: 'google_classroom',
-    //   });
-    //   return true;
-    // });
-
     data?.map((i: any) => {
-      const dt = {
-        name: i.name,
-        school_id: schoolData.id,
-        class_source: 'google_classroom',
-      };
-      mutateAddClass(dt);
+      let dt = {};
+      const obj = bulkSelect.find((bid: any) => i?.id === bid);
+      if (obj) {
+        dt = {
+          name: i.name,
+          school_id: schoolData.id,
+          class_source: 'google_classroom',
+        };
+        mutateAddClass(dt);
+      }
+
       return true;
     });
 
-    // const dt = {
-    //   name: data[0].name,
-    //   school_id: schoolData.id,
-    //   class_source: 'google_classroom',
-    // };
-    // mutateAddClass(dt);
-    // mutateAddClass(body);
     return false;
+  };
+
+  const handleSelection = (params: any) => {
+    setBulkSelect(params);
   };
 
   return (
     <div className=" m-auto">
-      <div className="mt-3" ref={componentRef}>
+      <div className="wrapperBorder mt-3" ref={componentRef}>
         <Wrapper>
           <AdvanceTable
             tableData={tableData}
@@ -107,13 +117,17 @@ export default function GoogleClassroomList({ data }: any) {
             // setOrder={setOrder}
             // actionHandler={actionHandler}
             // isLoading={assignmentLoading}
+            setBulkSelect={handleSelection}
+            maxHeight={620}
+            bulkSelect={bulkSelect}
           />
         </Wrapper>
       </div>
-
-      <div className="text-right">
-        <Button onClick={addClassHandler}>Submit</Button>
-      </div>
+      {tableData && tableData.length > 0 && (
+        <div className="text-right mt-4">
+          <Button onClick={addClassHandler}>Import classrooms</Button>
+        </div>
+      )}
     </div>
   );
 }

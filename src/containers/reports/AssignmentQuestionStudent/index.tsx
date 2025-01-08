@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable no-confusing-arrow */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable comma-dangle */
@@ -96,7 +97,6 @@ export default function Index() {
   const headers = [
     TABLE_LABELS?.QUESTIONS,
     TABLE_LABELS?.PERCENTAGE,
-    TABLE_LABELS?.STANDARD,
     TABLE_LABELS.PERFORMANCE_EXPECTATION,
     TABLE_LABELS?.CLASS_AVG,
     TABLE_LABELS?.ClassAverage,
@@ -132,6 +132,22 @@ export default function Index() {
     },
   ];
 
+  const ADMIN_TOOLBAR_MENU_GRAPH = [
+    // {
+    //   title: 'Export',
+    //   icon: (
+    //     <CSVLink
+    //       filename="Assigned Students.csv"
+    //       data={csvData}
+    //       headers={headers}
+    //       enclosingCharacter=""
+    //     >
+    //       <Share />
+    //     </CSVLink>
+    //   ),
+    // },
+  ];
+
   const TableColumns: any = [
     {
       label: 'Question',
@@ -144,10 +160,6 @@ export default function Index() {
     {
       label: 'Percentage %',
       mapper: 'Percentage',
-    },
-    {
-      label: 'Standard',
-      mapper: 'Standard',
     },
     {
       label: 'Check',
@@ -200,7 +212,6 @@ export default function Index() {
               i.max_scores ? i.max_scores : ''
             } `,
             Percentage: i.score_in_percent ? i.score_in_percent.toFixed(2) : '',
-            Standard: '',
             Check: i.checks_count,
             PerformanceExpectation: i.performance_expectation,
             ClassAveragePoints: `${i.class_average_score ? i.class_average_score : ''}/ ${i.class_average_max_score ? i.class_average_max_score : ''} `,
@@ -224,7 +235,17 @@ export default function Index() {
             return {
               ...row,
               PerformanceExpectation: (
-                <div className="bg-[#BECCFF] p-4">
+                <div className="bg-[#FFF9BE] p-4">
+                  {row?.PerformanceExpectation}
+                </div>
+              ),
+            };
+          }
+          if (row.PerformanceExpectation === 'Above') {
+            return {
+              ...row,
+              PerformanceExpectation: (
+                <div className="bg-[#d9ffc8] p-4">
                   {row?.PerformanceExpectation}
                 </div>
               ),
@@ -244,7 +265,7 @@ export default function Index() {
             return {
               ...row,
               PerformanceExpectation: (
-                <div className="bg-[#d9ffc8] p-4">
+                <div className="bg-[#BECCFF] p-4">
                   {row?.PerformanceExpectation}
                 </div>
               ),
@@ -254,7 +275,7 @@ export default function Index() {
             return {
               ...row,
               PerformanceExpectation: (
-                <div className="bg-[#FFF9BE] p-4">
+                <div className="bg-[#FFD6A5] p-4">
                   {row?.PerformanceExpectation}
                 </div>
               ),
@@ -317,7 +338,9 @@ export default function Index() {
     <RouteLayout>
       <HeaderMenus
         title="Report -  Assignments Question Level for Students"
-        menuArray={ADMIN_TOOLBAR_MENU}
+        menuArray={
+          view === 'default' ? ADMIN_TOOLBAR_MENU : ADMIN_TOOLBAR_MENU_GRAPH
+        }
         handleToolbarAction={handleToolbarAction}
       />
       <div className="flex gap-2 mt-7 lg:items-end items-center lg:flex-row flex-col ">

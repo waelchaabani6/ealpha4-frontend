@@ -149,6 +149,7 @@ export default function AssignmentDetails({ setSelectedCourseObj, selectedCourse
           disablePast={watch('assignment_start_date')}
           required={true}
           disableOld={!!watch('assignment_start_date')}
+          autoComplete='off'
         />
       </div>
       <div className="flex flex-col md:flex-row justify-between gap-y-3 md:gap-x-6">

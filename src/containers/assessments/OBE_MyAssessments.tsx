@@ -24,7 +24,7 @@ interface Message {
   date_time: Date;
 }
 
-export default function MyAssessments() {
+export default function OBE_MyAssessments() {
   const { SCHOOL_ADMIN, BRANCH_ADMIN, TEACHER } = USER_TYPE;
   const userRole = useSelector((state: any) => state?.user?.role);
   const { schoolName } = useParams();
@@ -256,7 +256,7 @@ export default function MyAssessments() {
     <RouteLayout navBack={true}>
       <div className="flex flex-col mb-4">
         <div className="h-max py-4">
-          <PageTitle title="My Assessments" />
+          <PageTitle title="My OBE Assessments" />
         </div>
         <div className="flex justify-between flex-col md:flex-row items-center gap-y-4 md:gap-y-0">
           <div className="flex flex-col md:flex-row items-center gap-4">

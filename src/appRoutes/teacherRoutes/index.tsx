@@ -6,6 +6,9 @@ import LayoutTwo from '@layout/appLayout/layoutTwo';
 import publicRoutes from '@routes/publicRoutes';
 import ObeAssessments from '@containers/assessments/ObeAssessments';
 import GoogleClassroom from '@containers/googleClassroom';
+
+import PreviewMyAssessmentQuestionsLearnosity from '@containers/assessments/PreviewAssessmentQuestionLearnosity';
+
 import OBE_CompletedAssessments from '@containers/assessments/OBE_CompletedAssessments';
 import OBE_StudentCompletedAssessmentList from '@containers/assessments/OBE_StudentCompletedAssessmentList';
 import OBE_SingleReportAssessment from '@containers/assessments/OBE_StudentReportAssessment';
@@ -86,6 +89,9 @@ const AssignmentQuestionStudent = React.lazy(
 const CreateQuestions = React.lazy(
   () => import('@containers/assessments/CreateQuestions')
 );
+const CreateQuestionsLearnosity = React.lazy(
+  () => import('@containers/assessments/CreateQuestionsLearnosity')
+);
 const PreviewQuestions = React.lazy(
   () => import('@containers/assessments/PreviewQuestions')
 );
@@ -93,7 +99,8 @@ const PreviewMyAssessmentQuestions = React.lazy(
   () => import('@containers/assessments/PreviewAssessmentQuestion')
 );
 
-// const ReportAssessment = React.lazy(() => import('@containers/assessments/ReportAssessment'));
+const ReportAssessment = React.lazy(() => import('@containers/assessments/assessmentReprot'));
+
 const QuestionAnswer = React.lazy(
   () => import('@containers/assessments/QuestionAnswer')
 );
@@ -105,6 +112,9 @@ const StudentCompletedAssessmentList = React.lazy(
 );
 const StudentReportAssessment = React.lazy(
   () => import('@containers/assessments/StudentReportAssessment')
+);
+const StudentReportAssessmentLearnosity = React.lazy(
+  () => import('@containers/assessments/StudentReportAssessmentLearnosity')
 );
 const CoursePreview = React.lazy(
   () => import('@containers/manageCourses/CoursePreview')
@@ -155,12 +165,12 @@ export default createBrowserRouter([
             children: [
               {
                 index: true,
+                element: <Assessments />,
+              },
+              {
+                path: 'assessments-obe',
                 element: <ObeAssessments />,
               },
-              // {
-              //   path: 'obe-assessments',
-              //   element: <ObeAssessments />,
-              // },
               {
                 path: 'assign/:aid',
                 element: <AssignAssessment />,
@@ -186,8 +196,12 @@ export default createBrowserRouter([
                 element: <CreateAssessment />,
               },
               {
-                path: 'create-new-assessment/create/:LID',
+                path: 'create-new-assessment-obe/create/:LID',
                 element: <CreateQuestions />,
+              },
+              {
+                path: 'create-new-assessment/create/:LID',
+                element: <CreateQuestionsLearnosity />,
               },
               {
                 path: 'preview_question/:LID',
@@ -195,6 +209,10 @@ export default createBrowserRouter([
               },
               {
                 path: 'preview_myassessment_question/:LID',
+                element: <PreviewMyAssessmentQuestionsLearnosity />,
+              },
+              {
+                path: 'preview_myassessment_question-obe/:LID',
                 element: <PreviewMyAssessmentQuestions />,
               },
               {
@@ -215,7 +233,12 @@ export default createBrowserRouter([
               },
               {
                 path: 'assigned/completed_assessments/completed_assessment_student_list/student_report/:aid',
-                element: <StudentReportAssessment />,
+                // element: <StudentReportAssessment />,
+                element: <StudentReportAssessmentLearnosity />,
+              },
+              {
+                path: 'assigned/assessment-report/:aid',
+                element: <AssessmentsReport />,
               },
             ],
           },
@@ -241,6 +264,10 @@ export default createBrowserRouter([
                 path: 'create-new-assessment',
                 element: <OBE_CreateAssessments />,
               },
+              {
+                path: 'my-assessments',
+                element: <OBE_MyAssessments />,
+              },
 
               {
                 path: 'preview_myassessment_question/:LID',
@@ -258,10 +285,6 @@ export default createBrowserRouter([
               {
                 path: 'assigned/completed_assessments/completed_assessment_student_list/student_report/:aid',
                 element: <OBE_SingleReportAssessment />,
-              },
-              {
-                path: 'myAssessments',
-                element: <OBE_MyAssessments />
               }
             ],
           },

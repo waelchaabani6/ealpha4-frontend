@@ -1,23 +1,23 @@
-import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import Button from '@component/button/button';
-import Dropdown from '@component/dropdown/Dropdown';
-import CustomPagination from '@component/pagination/CustomPagination';
+import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
+import Button from "@component/button/button";
+import Dropdown from "@component/dropdown/Dropdown";
+import CustomPagination from "@component/pagination/CustomPagination";
 import {
   ASSESSMENT_TYPE,
   COMPONENTS,
   RESULTS_PER_PAGE,
   TABLE_LABELS,
-} from '@constants/constants';
-import RouteLayout from '@layout/routeLayout';
-import DeletePopup from '@shared/DeletePopup';
-import { useDelete, useGet } from '@shared/api/useApi';
-import PageTitle from '@shared/pageTitle';
-import toast from '@shared/toast';
-import Wrapper from '@shared/wrapper/Wrapper';
-import { getNoOfPages, sortData } from '@utility/utility';
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+} from "@constants/constants";
+import RouteLayout from "@layout/routeLayout";
+import DeletePopup from "@shared/DeletePopup";
+import { useDelete, useGet } from "@shared/api/useApi";
+import PageTitle from "@shared/pageTitle";
+import toast from "@shared/toast";
+import Wrapper from "@shared/wrapper/Wrapper";
+import { getNoOfPages, sortData } from "@utility/utility";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
 export default function Index() {
   const { user } = useSelector((state: any) => state);
@@ -25,18 +25,18 @@ export default function Index() {
   const { schoolName } = useParams();
   const ALL: Array<any> = [
     {
-      label: 'Select',
-      value: 'Select',
+      label: "Select",
+      value: "Select",
     },
   ];
 
   const handleNavigate = (data: any, type: string) => {
-    const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
+    const schoolNameInURL = decodeURIComponent(location.pathname.split("/")[1]);
     const navState = {
-      assignType: type === 'printed' ? 'print-assessment' : '',
+      assignType: type === "printed" ? "print-assessment" : "",
     };
     navigate(
-      `/${schoolNameInURL}/assessments/assign/${data?.assessment_id}?name=${data?.assessment_name}${type === 'printed' ? '&type=print-assessment' : ''}`,
+      `/${schoolNameInURL}/assessments/assign/${data?.assessment_id}?name=${data?.assessment_name}${type === "printed" ? "&type=print-assessment" : ""}`,
       { state: { navState, page, path: `/${schoolName}/assessments` } }
     );
   };
@@ -44,33 +44,29 @@ export default function Index() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center',
+      align: "center",
     },
     {
       label: TABLE_LABELS?.ASSESSMENT_NAME,
-      mapper: 'assessment_name',
+      mapper: "assessment_name",
       isSort: true,
     },
     {
-      label: 'Online',
-      mapper: 'online',
-      align: 'center',
+      label: "Online",
+      mapper: "online",
+      align: "center",
     },
-    {
-      label: 'Printed',
-      mapper: 'printed',
-      align: 'center',
-    },
+
     {
       label: TABLE_LABELS?.ACTION,
       colspan: 2,
-      align: 'center',
-      bodyAlign: 'right',
+      align: "center",
+      bodyAlign: "right",
       component: COMPONENTS?.view,
       showInHeader: false,
     },
     {
-      bodyAlign: 'left',
+      bodyAlign: "left",
       component: COMPONENTS?.delete,
       showInHeader: false,
     },
@@ -87,8 +83,8 @@ export default function Index() {
   const [playloadData, setPlayloadData] = useState<any | undefined>({});
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [page, setPage] = useState(1);
-  const [order, setOrder] = useState<any>('desc');
-  const [orderBy, setOrderBy] = useState<any>('assessment_name');
+  const [order, setOrder] = useState<any>("desc");
+  const [orderBy, setOrderBy] = useState<any>("assessment_name");
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const location = useLocation();
@@ -99,9 +95,9 @@ export default function Index() {
   };
 
   const actionHandler = (data: any, handlername: string) => {
-    if (handlername === 'delete') {
+    if (handlername === "delete") {
       deleteHandler(data);
-    } else if (handlername === 'view') {
+    } else if (handlername === "view") {
       navigate(`preview_question/${data?.id}`, {
         state: { page, path: `/${schoolName}/assessments` },
       });
@@ -126,11 +122,11 @@ export default function Index() {
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/delete-assessment/${playloadData?.id}/`,
     onSuccess: (response: any) => {
-      toast('success', 'Record Deleted successfully');
+      toast("success", "Record Deleted successfully");
       fetchAssignments();
     },
     onError: ({ response }: any) => {
-      toast('error', response?.data?.message || 'Error');
+      toast("error", response?.data?.message || "Error");
     },
   });
 
@@ -180,14 +176,14 @@ export default function Index() {
   let CategoryArr = categoryArrays?.sort(sortData);
 
   // Get Assessment List
-  const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
+  const ordering = order === "asc" ? orderBy : `-${orderBy}`;
   const assmentFilter =
     assessmentType === ASSESSMENT_TYPE[0].value
-      ? ''
+      ? ""
       : assessmentType !== ASSESSMENT_TYPE[1].value;
   const { isLoading: assignmentLoading, refetch: fetchAssignments } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/alpha-assessment/activities/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&alpha_course=${currentCourse !== ALL[0].value ? currentCourse : ''}&grade_id=${selectedGrade !== ALL[0].value ? selectedGrade : ''}&is_paperscorer_type=${assmentFilter}&category_id=${selectedCategory !== ALL[0].value ? selectedCategory : ''}&user_id=${user?.userId}`,
+    url: `assessments-service/alpha-assessment/activities/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&alpha_course=${currentCourse !== ALL[0].value ? currentCourse : ""}&grade_id=${selectedGrade !== ALL[0].value ? selectedGrade : ""}&is_paperscorer_type=${assmentFilter}&category_id=${selectedCategory !== ALL[0].value ? selectedCategory : ""}&user_id=${user?.userId}`,
     onSuccess: (res: any) => {
       const accData = res?.data?.response;
       const respData = accData?.results;
@@ -196,12 +192,12 @@ export default function Index() {
         const temp = {
           ...item,
           online: (
-            <Button onClick={() => handleNavigate(item, 'online')}>
+            <Button onClick={() => handleNavigate(item, "online")}>
               Assign
             </Button>
           ),
           printed: item?.is_paperscorer_type ? (
-            <Button onClick={() => handleNavigate(item, 'printed')}>
+            <Button onClick={() => handleNavigate(item, "printed")}>
               Assign
             </Button>
           ) : null,
@@ -288,7 +284,7 @@ export default function Index() {
                 setCurrentCourse(d);
                 setPage(1);
               }}
-              sxClass={{ width: '206px' }}
+              sxClass={{ width: "206px" }}
               loading={loadCourses}
             />
             <Dropdown
@@ -297,7 +293,7 @@ export default function Index() {
               dataArray={[...ALL, ...filteredGrades]}
               onChangeHandler={(d: any) => setselectedGrade(d)}
               loading={loadGrades || refetchingGrades}
-              sxClass={{ width: '206px' }}
+              sxClass={{ width: "206px" }}
             />
             <Dropdown
               title="Select Category"
@@ -308,7 +304,7 @@ export default function Index() {
                 setPage(1);
               }}
               loading={loadCategories || refetchingCategories}
-              sxClass={{ width: '206px' }}
+              sxClass={{ width: "206px" }}
             />
             <Dropdown
               title="Assessment Type"
@@ -318,14 +314,14 @@ export default function Index() {
                 setassessmentType(d);
                 setPage(1);
               }}
-              sxClass={{ width: '206px' }}
+              sxClass={{ width: "206px" }}
             />
             <Dropdown
               title="Result Of Pages"
               value={rowsPerPage}
               dataArray={RESULTS_PER_PAGE}
               onChangeHandler={handlePerPage}
-              sxClass={{ width: '206px' }}
+              sxClass={{ width: "206px" }}
             />
             <div className="pt-4 md:pt-8 h-full flex items-center">
               <Link

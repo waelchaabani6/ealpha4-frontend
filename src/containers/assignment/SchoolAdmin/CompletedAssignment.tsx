@@ -1,74 +1,82 @@
-import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import DatePicker from '@component/datepicker';
-import CustomizedDialogs from '@component/dialog/CustomDialog';
-import DebounceInput from '@component/input/DebounceInput';
-import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import AddIcon from '@mui/icons-material/Add';
-import EmailIcon from '@mui/icons-material/Email';
-import PrintIcon from '@mui/icons-material/Print';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import Divider from '@mui/material/Divider/Divider';
-import { useGet } from '@shared/api/useApi';
-import Loader from '@shared/loader';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import PageTitle from '@shared/pageTitle';
-import { selectUser } from '@shared/store/userSlice';
-import toast from '@shared/toast';
-import { getNoOfPages } from '@utility/utility';
-import moment from 'moment';
-import { useEffect, useRef, useState } from 'react';
-import { CSVLink } from 'react-csv';
-import { useSelector } from 'react-redux';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import ReactToPrint from 'react-to-print';
-import DeletePopup from '@shared/DeletePopup';
-import Dropdown from '@component/dropdown/Dropdown';
+// External Libraries
+import { useEffect, useRef, useState } from "react";
+import { CSVLink } from "react-csv";
+import { useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import moment from "moment";
+import ReactToPrint from "react-to-print";
+import toast from "@shared/toast";
+
+// Third-Party UI Components
+import AddIcon from "@mui/icons-material/Add";
+import PrintIcon from "@mui/icons-material/Print";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import Divider from "@mui/material/Divider/Divider";
+
+// Project-Specific Aliases
+import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
+import DatePicker from "@component/datepicker";
+import CustomizedDialogs from "@component/dialog/CustomDialog";
+import DebounceInput from "@component/input/DebounceInput";
+import { ReactComponent as Share } from "@images/pageHeaderIcons/share.svg";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
+import PageTitle from "@shared/pageTitle";
+import { selectUser } from "@shared/store/userSlice";
+import { selectSchoolData } from "@shared/store/schoolSlice";
+import DeletePopup from "@shared/DeletePopup";
+import Dropdown from "@component/dropdown/Dropdown";
+import { getNoOfPages } from "@utility/utility";
+import { useGet, usePost } from "@shared/api/useApi";
+import Wrapper from "../../../shared/wrapper/Wrapper";
+import RouteLayout from "../../layout/routeLayout";
+
+// Internal Imports (Relative paths)
 import {
   RESULTS_PER_PAGE,
   TABLE_LABELS,
   TOOLBAR_LABELS,
-} from '../../../constants/constants';
-import Wrapper from '../../../shared/wrapper/Wrapper';
-import RouteLayout from '../../layout/routeLayout';
+  USER_TYPE,
+} from "../../../constants/constants";
 
 const printButton = () => <PrintIcon />;
 const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
 
+const ALL: Array<any> = [
+  {
+    label: "Select",
+    value: "Select",
+  },
+];
+
 export default function CompletedAssignment() {
   const navigate = useNavigate();
   const location = useLocation();
-  const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
+  const schoolNameInURL = decodeURIComponent(location.pathname.split("/")[1]);
 
-  const [allClasses, setClasses] = useState('');
+  const [allClasses, setClasses] = useState("");
   const [ClassesPopup, setClassesPopup] = useState(false);
 
-  const {
-    role,
-    schoolId,
-    branchId,
-    user_profile_id: userID,
-    userId,
-  } = useSelector(selectUser);
+  const { schoolId, branchId, userId } = useSelector(selectUser);
 
   const CompletedTableColumns = [
     {
-      label: 'First Name',
-      mapper: 'FirstName',
+      label: "First Name",
+      mapper: "FirstName",
     },
     {
-      label: 'Last Name',
-      mapper: 'LastName',
+      label: "Last Name",
+      mapper: "LastName",
     },
   ];
 
   const PendingTableColumns = [
     {
-      label: 'First Name',
-      mapper: 'FirstName',
+      label: "First Name",
+      mapper: "FirstName",
     },
     {
-      label: 'Last Name',
-      mapper: 'LastName',
+      label: "Last Name",
+      mapper: "LastName",
     },
   ];
 
@@ -89,67 +97,76 @@ export default function CompletedAssignment() {
   const [assignmentList, setAssignmentList] = useState<any>([]);
   const [StudentAssignmentData, setStudentAssignmentData] = useState<any>([]);
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
-  const [selectedState, setSelectedState] = useState('Submitted');
 
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center',
+      align: "center",
     },
     {
       label: TABLE_LABELS?.ASSIGNMET_NAME,
-      mapper: 'name',
+      mapper: "name",
       isSort: true,
     },
     {
       label: TABLE_LABELS?.COURSES,
       isSort: true,
-      mapper: 'subject_name',
+      mapper: "subject_name",
     },
     {
       label: TABLE_LABELS?.COMPONENT,
-      mapper: 'component_name',
+      mapper: "component_name",
     },
     {
       label: TABLE_LABELS?.LESSONS,
-      mapper: 'Lessons',
+      mapper: "Lessons",
     },
     {
       label: TABLE_LABELS?.CLASS,
-      mapper: 'class_name',
-      sx: { maxWidth: '220px' },
+      mapper: "class_name",
+      sx: { maxWidth: "220px" },
       isSort: true,
     },
     {
       label: TABLE_LABELS?.STUDENTS,
-      mapper: 'Students',
+      mapper: "Students",
     },
     {
       label: TABLE_LABELS?.START_DATE,
       isSort: true,
-      sx: { width: '110px' },
-      mapper: 'start_date',
+      sx: { width: "110px" },
+      mapper: "start_date",
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
-      align: 'center',
+      align: "center",
       isSort: true,
-      sx: { width: '110px' },
-      mapper: 'end_date',
+      sx: { width: "110px" },
+      mapper: "end_date",
     },
   ];
 
   const [page, setPage] = useState(1);
   const [totalDataCount, setTotalDataCount] = useState(0);
 
-  const [order, setOrder] = useState<any>('desc');
-  const [orderBy, setOrderBy] = useState<any>('created_at');
+  const [order, setOrder] = useState<any>("desc");
+  const [orderBy, setOrderBy] = useState<any>("created_at");
   const [fromDate, setFromDate] = useState<any>();
   const [toDate, setToDate] = useState<any>();
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<number>(-1);
-  const [searchVal, setSearchVal] = useState('');
+  const [searchVal, setSearchVal] = useState("");
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
+
+  const [currentCourse, setCurrentCourse] = useState(ALL[0].value);
+  const [selectedGrade, setselectedGrade] = useState(ALL[0].value);
+
+  const userRole = useSelector((state: any) => state?.user?.role);
+  const { SCHOOL_ADMIN, BRANCH_ADMIN, TEACHER } = USER_TYPE;
+  const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
+  const { user } = useSelector((state: any) => state);
+
+  const { schoolData, branchData } = useSelector(selectSchoolData);
 
   const componentRef = useRef(null);
   const completedAssignRef = useRef(null);
@@ -158,19 +175,15 @@ export default function CompletedAssignment() {
     sendEmail();
   };
 
-  const {
-    isRefetching: emailSendLoading,
-    refetch: sendEmail,
-    isLoading: emailLoaded,
-  } = useGet({
+  const { refetch: sendEmail } = useGet({
     baseURL,
     url: `assignments-service/pdf-download-1/?school_id=${schoolId}&status=Completed&user_id=${userId}`,
     onSuccess: () => {
-      toast('success', 'Email sent successfully');
+      toast("success", "Email sent successfully");
     },
     retry: false,
-    onError: ({ response }: any) => {
-      toast('error', response?.data?.message || 'Unable to send email');
+    onError: ({ response }) => {
+      toast("error", response?.data?.message || "Unable to send email");
     },
     enabled: false,
   }) as any;
@@ -225,16 +238,14 @@ export default function CompletedAssignment() {
     }
   };
 
-  const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
+  const ordering = order === "asc" ? orderBy : `-${orderBy}`;
   const {
     isLoading,
-    data,
     refetch: refetchAssignmentList,
-    error,
     isRefetching,
   }: any = useGet({
     baseURL,
-    url: `assignments-service/assignment/list/?school_id=${schoolId}${branchId !== null ? `&branch_id=${branchId}` : ''}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&user_id=${userId}${searchVal !== '' ? `&search=${searchVal}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&end_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}&all_assignments=Completed&limit=${rowsPerPage}`,
+    url: `assignments-service/assignment/list/?school_id=${schoolId}${branchId !== null ? `&branch_id=${branchId}` : ""}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&user_id=${userId}${searchVal !== "" ? `&search=${searchVal}` : ""}${fromDate ? `&start_date=${moment(fromDate).format("YYYY-MM-DD")}` : ""}${toDate ? `&end_date=${moment(toDate).format("YYYY-MM-DD")}` : ""}${selectedGrade && selectedGrade !== "Select" ? `&class_name=${selectedGrade}` : ""}${currentCourse && currentCourse !== "Select" ? `&course_name=${currentCourse}` : ""}&all_assignments=Completed&limit=${rowsPerPage}`,
     onSuccess: (res: any) => {
       const assignmentListData = res?.data?.response?.results;
       setAssignmentList(assignmentListData);
@@ -245,17 +256,17 @@ export default function CompletedAssignment() {
         assignmentEle.grade_name,
         assignmentEle.lesson_name
           .map((chapterName: any) => chapterName.chapter_name)
-          .join(' ')
+          .join(" ")
           .substring(0, 50),
         assignmentEle.student_count,
         assignmentEle.start_date,
         assignmentEle.end_date,
-        assignmentEle.score === null ? 'N/A' : assignmentEle.score,
+        assignmentEle.score === null ? "N/A" : assignmentEle.score,
       ]);
       setCsvData(csvEleData);
     },
     onError: ({ response }: any) => {
-      // setAssignmentList(Resp.response);
+      toast("error", response?.data?.message || "Unable to fetch data");
     },
     enabled: false,
   });
@@ -289,30 +300,38 @@ export default function CompletedAssignment() {
         inde: number
       ) => {
         const link = `/${schoolNameInURL}/assignment/assigned-students/`;
-        const subjectLink = `/${schoolNameInURL}/MySubject/${ele.course_name.split(':')[0]}/${ele.grade_name}/${ele.course_table_id}`;
+        const subjectLink = `/${schoolNameInURL}/MySubject/${ele.course_name.split(":")[0]}/${ele.grade_name}/${ele.course_table_id}`;
         const Lessons = ele.lesson_name
           .map((chapterName: any) => chapterName.chapter_name)
-          .join(' ')
+          .join(" ")
           .substring(0, 50);
         const classes = ele.class_name;
         let classElement;
-        if (classes && classes.length && classes.split(',').length > 2) {
+        if (classes && classes.length && classes.split(",").length > 2) {
           classElement = (
             <div>
-              {' '}
-              {classes.split(',')[0]}, {classes.split(',')[1]}{' '}
+              {" "}
+              {classes.split(",")[0]}
+              ,
+              {classes.split(",")[1]}
+              {" "}
               <span
                 role="contentinfo"
                 className="ml-2 text-accent cursor-pointer"
                 onClick={() => openClass(classes)}
               >
+                {" "}
+                +
                 {' '}
-                + {`${classes.split(',').length - 2}`} more{' '}
+                {`${classes.split(",").length - 2}`}
+                {' '}
+                more
+                {" "}
               </span>
             </div>
           );
         } else {
-          classElement = <div> {classes}</div>;
+          classElement = `${classes}`;
         }
         return {
           ...ele,
@@ -358,18 +377,18 @@ export default function CompletedAssignment() {
               to={subjectLink}
             >
               <span
-                className={`${ele.state === 'Submitted' ? 'text-accent' : ''} underline cursor-pointer`}
+                className={`${ele.state === "Submitted" ? "text-accent" : ""} underline cursor-pointer`}
               >
                 {ele.course_name}
               </span>
             </Link>
           ),
           State: ele.state,
-          end_date: moment(ele.start_date.replace('Z', '')).format(
-            'DD-MM-YYYY'
+          end_date: moment(ele.start_date.replace("Z", "")).format(
+            "DD-MM-YYYY"
           ),
-          start_date: moment(ele.end_date.replace('Z', '')).format(
-            'DD-MM-YYYY'
+          start_date: moment(ele.end_date.replace("Z", "")).format(
+            "DD-MM-YYYY"
           ),
           SR_NO: inde + 1,
           score: ele.score,
@@ -397,13 +416,14 @@ export default function CompletedAssignment() {
     refetchAssignmentList();
   }, [
     rowsPerPage,
-    selectedState,
     fromDate,
     toDate,
     orderBy,
     order,
     page,
     searchVal,
+    currentCourse,
+    selectedGrade,
   ]);
 
   const handleDialog = () => {
@@ -411,18 +431,18 @@ export default function CompletedAssignment() {
   };
 
   const reset = () => {
-    setToDate('');
-    setFromDate('');
+    setToDate("");
+    setFromDate("");
     refetchAssignmentList();
   };
 
-  const { isLoading: studentAssignmentStatusLoading }: any = useGet({
+  useGet({
     baseURL,
     url: `assignments-service/assignment/assigned-students/${selectedAssignmentId}/list/?limit=1000`,
     onSuccess: (res: any) => {
       setStudentAssignmentData(res?.data?.response?.results);
     },
-    onError: ({ response }: any) => {},
+    onError: () => {},
     enabled: selectedAssignmentId !== -1,
   });
 
@@ -430,10 +450,52 @@ export default function CompletedAssignment() {
     setRowsPerPage(e);
   };
 
+  const { isLoading: loadCourses, data: Courses } = useGet({
+    baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
+    url: `course-code-service/courses/assigned_courses/${user?.userId}/details`,
+  });
+  const filteredCourses = Courses?.data?.response
+    ?.filter((i: any) => i?.short_name)
+    ?.map((ele: any) => ({ label: ele.short_name, value: ele.short_name }))
+    || [];
+  const { isLoading: loadClassesForSchool, data: ClassesForSchool } = useGet({
+    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+    url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}&branch_name=${branchData?.name || ""}`,
+    enabled: !!(
+      (userRole?.name === SCHOOL_ADMIN && schoolData?.id)
+      || userRole?.name === BRANCH_ADMIN
+      || branchData?.school_id?.id
+    ),
+  });
+  const formatSchoolClasses = ClassesForSchool?.data?.response?.results?.map((ele: any) => ({
+    label: ele.name,
+    value: ele.name,
+  })) || [];
+  const CLASS_ARRAY = (userRole?.name === TEACHER ? TeacherClassesArray : formatSchoolClasses)
+    || [];
+
+  const { isLoading: loadClassesForTeacher, mutate: ClassesForTeacher } = usePost({
+    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+    url: `schools-service/school-classes/teacher/assigned-class`,
+    onSuccess: (resp: any) => {
+      const res = resp?.data?.response;
+      const formatArr = res?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
+      setTeacherClassesArray(formatArr);
+    },
+  });
+
+  useEffect(() => {
+    if (userRole?.name === TEACHER && user?.user_profile_id) {
+      ClassesForTeacher({
+        teacher_id: user?.user_profile_id,
+      });
+    }
+  }, [userRole, user]);
+
   return (
     <RouteLayout>
       <HeaderMenus
-        title="Completed Assignments"
+        title="Completed Assignmentss"
         menuArray={ADMIN_TOOLBAR_MENU}
         handleToolbarAction={handleToolbarAction}
       />
@@ -445,7 +507,28 @@ export default function CompletedAssignment() {
               loading={isLoading}
             />
           </div>
-
+          <Dropdown
+            title="Select Course"
+            value={currentCourse}
+            dataArray={[...ALL, ...filteredCourses]}
+            onChangeHandler={(d: any) => {
+              setCurrentCourse(d);
+              setPage(1);
+            }}
+            sxClass={{ width: "206px" }}
+            loading={loadCourses}
+          />
+          <Dropdown
+            title="Select Class"
+            value={selectedGrade}
+            dataArray={[...ALL, ...CLASS_ARRAY]}
+            onChangeHandler={(d: any) => {
+              setselectedGrade(d);
+              setPage(1);
+            }}
+            loading={loadClassesForTeacher || loadClassesForSchool}
+            sxClass={{ width: "206px", marginRight: "5px" }}
+          />
           <div>
             <DatePicker
               value={fromDate}
@@ -473,7 +556,7 @@ export default function CompletedAssignment() {
             value={rowsPerPage}
             dataArray={RESULTS_PER_PAGE}
             onChangeHandler={handlePerPage}
-            sxClass={{ width: '206px', marginRight: '5px' }}
+            sxClass={{ width: "206px", marginRight: "5px" }}
           />
           <div className="flex gap-2 justify-center items-center h-[36px]">
             <span
@@ -536,10 +619,10 @@ export default function CompletedAssignment() {
             <Wrapper>
               <AdvanceTable
                 tableData={
-                  StudentAssignmentData &&
-                  StudentAssignmentData.length &&
-                  StudentAssignmentData.filter(
-                    (ele: any) => ele.state === 'Completed'
+                  StudentAssignmentData
+                  && StudentAssignmentData.length
+                  && StudentAssignmentData.filter(
+                    (ele: any) => ele.state === "Completed"
                   ).map((ele: any) => ({
                     FirstName: ele.first_name,
                     LastName: ele.last_name,
@@ -556,10 +639,10 @@ export default function CompletedAssignment() {
             <Wrapper>
               <AdvanceTable
                 tableData={
-                  StudentAssignmentData &&
-                  StudentAssignmentData.length &&
-                  StudentAssignmentData.filter(
-                    (ele: any) => ele.state !== 'Completed'
+                  StudentAssignmentData
+                  && StudentAssignmentData.length
+                  && StudentAssignmentData.filter(
+                    (ele: any) => ele.state !== "Completed"
                   ).map((ele: any) => ({
                     FirstName: ele.first_name,
                     LastName: ele.last_name,

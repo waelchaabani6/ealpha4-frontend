@@ -1,8 +1,9 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable comma-dangle */
 /* eslint-disable indent */
 /* eslint-disable operator-linebreak */
 import Logo2 from '@images/logo2.svg';
-import { usePost } from '@shared/api/useApi';
+import { usePatch, usePost } from '@shared/api/useApi';
 import { useState, useEffect, useRef } from 'react';
 import toast from '@shared/toast';
 import { USER_TYPE } from '@constants/constants';
@@ -11,6 +12,11 @@ import { selectUser } from '@shared/store/userSlice';
 import RouteLayout from '@layout/routeLayout';
 import Loader from '@shared/loader';
 import { useLocation, useNavigate } from 'react-router-dom';
+import CustomizedDialogs from '@component/dialog/CustomDialog';
+import Button from '@component/button/button';
+import CoursesFilter from './CourseFilters';
+
+const baseURL = import.meta.env.VITE_APP_ASSIGNMENT_SERVICE_URL;
 
 const CoursePreview = () => {
   const ref = useRef<HTMLIFrameElement | null>(null);
@@ -18,6 +24,9 @@ const CoursePreview = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [resizeContent, setResizeContent] = useState([900, 1000]);
+  const [actionConfirmPopup, setActionConfirmPopup] = useState(false);
+  const [formObject, setFormObject] = useState<any>(null);
+
   const {
     schoolId,
     role,
@@ -137,6 +146,7 @@ const CoursePreview = () => {
   };
 
   const receiveMessageHandler = (event: any) => {
+    // console.log(event, '#event');
     if (typeof event?.data === 'string' && event?.data.startsWith('RESIZE:')) {
       const values = event?.data.replace('RESIZE:', '').split(';');
       // eslint-disable-next-line no-restricted-globals
@@ -144,9 +154,11 @@ const CoursePreview = () => {
         setResizeContent(values.map((val: any) => parseInt(val, 10)));
       }
     }
+
     if (event?.data === 'PAGE_LOADED') {
       setShowIframe(true);
     }
+
     if (isValidJson(event?.data) && 'course_data' in JSON.parse(event?.data)) {
       //  Once the scores are received call the API to store the data.
       if (locationState.moduleName === 'mycourse') {
@@ -243,6 +255,18 @@ const CoursePreview = () => {
   };
 
   const onSaveAndExitHandler = () => {
+    if (
+      locationState?.moduleName === 'assignment' &&
+      locationState?.isSingleAccess
+    ) {
+      setActionConfirmPopup(true);
+      return;
+    }
+
+    saveAndExit();
+  };
+
+  const saveAndExit = () => {
     const message = 'save';
     const iframe = document.querySelector('iframe');
     iframe?.contentWindow?.postMessage(message, '*');
@@ -258,12 +282,49 @@ const CoursePreview = () => {
     navigate(-1);
   };
 
+  const statusChange = async (Status: string) => {
+    const passObj: { state: string } = { state: Status };
+    const userFd = new FormData();
+    userFd.append('state', passObj.state);
+    setFormObject(userFd);
+
+    saveAndExit();
+  };
+
+  useEffect(() => {
+    if (formObject !== null && locationState?.studentId !== -1) {
+      updateStatus(formObject);
+
+      setTimeout(() => {
+        navigateBack();
+      }, 2000);
+    }
+  }, [formObject]);
+
+  const { isLoading: updateLoading, mutate: updateStatus } = usePatch({
+    baseURL,
+    url: `assignments-service/assignments/student/${locationState?.studentId}/change-status/`,
+    onSuccess: (response: any) => {
+      toast('success', response?.data?.message);
+    },
+    onError: (response: any) => {
+      toast('error', response?.response?.data?.message);
+    },
+  });
+
+  console.log('locationState?.contentUrl', locationState);
+
   return (
     <RouteLayout
       navBack={true}
       state={{ prevPage: location.state?.identifire }}
       path={location?.state?.identifire ? location?.state?.identifire : ``}
     >
+      <CoursesFilter
+        shortName={locationState?.shortName}
+        grade={locationState?.grade}
+      />
+
       <div className="previewWrapper pt-2">
         <div id="learnosity_assess" />
         {role?.name !== USER_TYPE.SUPER_ADMIN &&
@@ -364,6 +425,38 @@ const CoursePreview = () => {
           </p>
         </div>
       </div>
+
+      <CustomizedDialogs
+        open={actionConfirmPopup}
+        maxwidth="sm"
+        setOpen={(parameter: any) => {
+          setActionConfirmPopup(false);
+        }}
+        title="Select Action"
+      >
+        <div>Are you sure you want to submit the assignment ?</div>
+
+        <div className="flex justify-end items-center mt-12">
+          <Button
+            onClick={async () => {
+              setActionConfirmPopup(false);
+              statusChange('Submitted');
+              // onsubmitHandler();
+            }}
+            sx={{ marginRight: '10px' }}
+          >
+            Yes
+          </Button>
+
+          <Button
+            onClick={() => {
+              setActionConfirmPopup(false);
+            }}
+          >
+            No
+          </Button>
+        </div>
+      </CustomizedDialogs>
     </RouteLayout>
   );
 };

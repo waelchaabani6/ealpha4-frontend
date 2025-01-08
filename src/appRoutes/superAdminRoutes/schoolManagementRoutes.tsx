@@ -1,3 +1,5 @@
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable linebreak-style */
 import AssignClasses from '@containers/schoolManagement/components/assignClasses';
 import BranchDataLoad from '@shared/store/initialDataLoaders/branchDataLoad';
 import SchoolDataLoad from '@shared/store/initialDataLoaders/schoolDataLoad';
@@ -5,25 +7,75 @@ import attendenceRoutes from '@routes/schoolAdminRoutes/attendenceRoutes';
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import notificationRoutes from './notificationRoutes';
+import reportsRoutes from './reportsRoutes';
 
-const SchoolManagement = React.lazy(() => import('@containers/schoolManagement'));
-const SchoolPanel = React.lazy(() => import('@containers/schoolManagement/school'));
-const SchoolTabs = React.lazy(() => import('@containers/schoolManagement/NewSchool'));
-const EditSchool = React.lazy(() => import('@containers/schoolManagement/components/editSchool'));
-const CreateBranch = React.lazy(() => import('@containers/schoolManagement/components/branch/createBranch'));
-const SchoolAdminList = React.lazy(() => import('@containers/schoolManagement/components/panels/schoolAdmin/schoolAdminList'));
-const ManageClasses = React.lazy(() => import('@containers/schoolManagement/components/panels/classes'));
+const SchoolManagement = React.lazy(
+  () => import('@containers/schoolManagement')
+);
+const SchoolPanel = React.lazy(
+  () => import('@containers/schoolManagement/school')
+);
+const SchoolTabs = React.lazy(
+  () => import('@containers/schoolManagement/NewSchool')
+);
+const EditSchool = React.lazy(
+  () => import('@containers/schoolManagement/components/editSchool')
+);
+const CreateBranch = React.lazy(
+  () => import('@containers/schoolManagement/components/branch/createBranch')
+);
+const SchoolAdminList = React.lazy(
+  () =>
+    import(
+      '@containers/schoolManagement/components/panels/schoolAdmin/schoolAdminList'
+    )
+);
+const ManageClasses = React.lazy(
+  () => import('@containers/schoolManagement/components/panels/classes')
+);
 
-const ManageMembers = React.lazy(() => import('@containers/schoolManagement/school/manageMembers'));
-const TeacherForm = React.lazy(() => import('@containers/schoolManagement/components/forms/manageMembers/AddEditTeacher'));
-const StudentForm = React.lazy(() => import('@containers/schoolManagement/components/forms/manageMembers/AddEditStudent'));
-const ParentForm = React.lazy(() => import('@containers/schoolManagement/components/forms/manageMembers/AddEditParent'));
-const Branchs = React.lazy(() => import('@containers/schoolManagement/school/branch/Branches'));
-const BranchPanel = React.lazy(() => import('@containers/schoolManagement/school/branch'));
-const EditBranch = React.lazy(() => import('@containers/schoolManagement/components/branch/editBranch'));
-const ImportMember = React.lazy(() => import('@containers/schoolManagement/components/panels/members/importMember/ImportMember'));
-const StudentPromote = React.lazy(() => import('@containers/schoolManagement/components/promote/StudentPromote'));
-const TimeTable = React.lazy(() => import('@containers/timeTable/SuperAdminTimetable'));
+const ManageMembers = React.lazy(
+  () => import('@containers/schoolManagement/school/manageMembers')
+);
+const TeacherForm = React.lazy(
+  () =>
+    import(
+      '@containers/schoolManagement/components/forms/manageMembers/AddEditTeacher'
+    )
+);
+const StudentForm = React.lazy(
+  () =>
+    import(
+      '@containers/schoolManagement/components/forms/manageMembers/AddEditStudent'
+    )
+);
+const ParentForm = React.lazy(
+  () =>
+    import(
+      '@containers/schoolManagement/components/forms/manageMembers/AddEditParent'
+    )
+);
+const Branchs = React.lazy(
+  () => import('@containers/schoolManagement/school/branch/Branches')
+);
+const BranchPanel = React.lazy(
+  () => import('@containers/schoolManagement/school/branch')
+);
+const EditBranch = React.lazy(
+  () => import('@containers/schoolManagement/components/branch/editBranch')
+);
+const ImportMember = React.lazy(
+  () =>
+    import(
+      '@containers/schoolManagement/components/panels/members/importMember/ImportMember'
+    )
+);
+const StudentPromote = React.lazy(
+  () => import('@containers/schoolManagement/components/promote/StudentPromote')
+);
+const TimeTable = React.lazy(
+  () => import('@containers/timeTable/SuperAdminTimetable')
+);
 // const ImportedDetailCsv = React.lazy(() => import('@/'))
 export const commonRoutes = [
   { index: true, element: <ManageMembers /> },
@@ -33,7 +85,7 @@ export const commonRoutes = [
   { path: 'add-student', element: <StudentForm /> },
   { path: 'edit-student/:userID', element: <StudentForm /> },
   { path: 'add-parent', element: <ParentForm /> },
-  { path: 'edit-parent/:userID', element: <ParentForm /> }
+  { path: 'edit-parent/:userID', element: <ParentForm /> },
 ];
 export default {
   path: 'school-management',
@@ -57,18 +109,19 @@ export default {
         // { path: 'bulk-upload/details/:moduleId', element: <ImportedDetailCsv /> },
         {
           path: 'manage-members',
-          children: commonRoutes
+          children: commonRoutes,
         },
         {
           path: 'manage-classes',
           children: [
             { index: true, element: <ManageClasses /> },
-            { path: 'assign-classes/:classID', element: <AssignClasses /> }
-          ]
+            { path: 'assign-classes/:classID', element: <AssignClasses /> },
+          ],
         },
         notificationRoutes,
-        attendenceRoutes
-      ]
+        attendenceRoutes,
+        reportsRoutes,
+      ],
     },
     {
       path: 'branch/:branchId',
@@ -80,18 +133,18 @@ export default {
         // { path: 'bulk-upload/details/:moduleId', element: <ImportedDetailCsv /> },
         {
           path: 'manage-members',
-          children: commonRoutes
+          children: commonRoutes,
         },
         {
           path: 'manage-classes',
           children: [
             { index: true, element: <ManageClasses /> },
-            { path: 'assign-classes/:classID', element: <AssignClasses /> }
-          ]
+            { path: 'assign-classes/:classID', element: <AssignClasses /> },
+          ],
         },
         notificationRoutes,
-        attendenceRoutes
-      ]
-    }
-  ]
+        attendenceRoutes,
+      ],
+    },
+  ],
 };

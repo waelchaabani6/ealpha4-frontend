@@ -1,3 +1,5 @@
+/* eslint-disable operator-linebreak */
+/* eslint-disable linebreak-style */
 /* eslint-disable comma-dangle */
 /* eslint-disable no-confusing-arrow */
 /* eslint-disable implicit-arrow-linebreak */
@@ -30,7 +32,7 @@ export default function StickyHeadTable({
 }: StickyHeadTableProps) {
   const location = useLocation();
   const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   /*  const navigatToPreview = (state: any) => {
     console.log('from nagivate to preview action');
@@ -86,18 +88,24 @@ export default function StickyHeadTable({
                   const value = row[column.id];
                   return column.id === 'page_name' ? (
                     <TableCell key={column.id}>
-                      <Link
-                        state={{
-                          ...row?.scormDataView,
-                          isDueDatedExceeded: true,
-                          pageNumber: row?.pageNumber,
-                        }}
-                        to={`/${schoolNameInURL}/course-preview`}
-                      >
-                        <span className="underline cursor-pointer font-medium">
-                          {value}
-                        </span>
-                      </Link>
+                      {(row?.scormDataView && row?.scormDataView.length > 0) ||
+                      Object.keys(row?.scormDataView)?.length > 0 ? (
+                        <Link
+                          state={{
+                            ...row?.scormDataView,
+                            isDueDatedExceeded: true,
+                            pageNumber: row?.pageNumber,
+                          }}
+                          to={`/${schoolNameInURL}/course-preview`}
+                        >
+                          <span className="underline cursor-pointer font-medium">
+                            {value}
+                          </span>
+                        </Link>
+                      ) : (
+                        <span className="font-medium">{value}</span>
+                      )}
+
                       {/* <button
                         onClick={
                           () =>

@@ -1,32 +1,32 @@
-import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import Button from '@component/button/button';
-import DatePicker from '@component/datepicker';
-import Dropdown from '@component/dropdown/Dropdown';
-import DebounceInput from '@component/input/DebounceInput';
-import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import EmailIcon from '@mui/icons-material/Email';
-import PrintIcon from '@mui/icons-material/Print';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { useGet } from '@shared/api/useApi';
-import Loader from '@shared/loader';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import { selectUser } from '@shared/store/userSlice';
-import toast from '@shared/toast';
-import { getNoOfPages } from '@utility/utility';
-import moment from 'moment';
-import { useEffect, useRef, useState } from 'react';
-import { CSVLink } from 'react-csv';
-import { useSelector } from 'react-redux';
-import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
-import ReactToPrint from 'react-to-print';
-import CustomPagination from '../../../components/pagination/CustomPagination';
+import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
+import Button from "@component/button/button";
+import DatePicker from "@component/datepicker";
+import Dropdown from "@component/dropdown/Dropdown";
+import DebounceInput from "@component/input/DebounceInput";
+import { ReactComponent as Share } from "@images/pageHeaderIcons/share.svg";
+import EmailIcon from "@mui/icons-material/Email";
+import PrintIcon from "@mui/icons-material/Print";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import { useGet } from "@shared/api/useApi";
+import Loader from "@shared/loader";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
+import { selectUser } from "@shared/store/userSlice";
+import toast from "@shared/toast";
+import { getNoOfPages } from "@utility/utility";
+import moment from "moment";
+import { useEffect, useRef, useState } from "react";
+import { CSVLink } from "react-csv";
+import { useSelector } from "react-redux";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
+import ReactToPrint from "react-to-print";
+import CustomPagination from "../../../components/pagination/CustomPagination";
 import {
   RESULTS_PER_PAGE,
   TABLE_LABELS,
   TOOLBAR_LABELS,
-} from '../../../constants/constants';
-import Wrapper from '../../../shared/wrapper/Wrapper';
-import RouteLayout from '../../layout/routeLayout';
+} from "../../../constants/constants";
+import Wrapper from "../../../shared/wrapper/Wrapper";
+import RouteLayout from "../../layout/routeLayout";
 
 const printButton = () => <PrintIcon />;
 
@@ -37,7 +37,7 @@ export default function CompletedAssessments() {
 
   const headers = [
     TABLE_LABELS?.SR_NO,
-    TABLE_LABELS?.ASSIGNMET_NAME,
+    TABLE_LABELS?.ASSESSMENT_NAME,
     TABLE_LABELS?.TEACHER,
     TABLE_LABELS?.START_DATE,
     TABLE_LABELS?.DUE_DATE,
@@ -49,54 +49,54 @@ export default function CompletedAssessments() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center',
+      align: "center",
     },
     {
       label: TABLE_LABELS?.ASSESSMENT_NAME,
-      mapper: 'assessment_name',
+      mapper: "assessment_name",
       isSort: true,
     },
     {
       label: TABLE_LABELS?.TEACHERS,
       isSort: true,
-      mapper: 'teacher',
+      mapper: "teacher",
     },
     {
       label: TABLE_LABELS?.START_DATE,
       isSort: true,
-      mapper: 'start_date',
-      format: 'DD-MM-YYYY',
+      mapper: "start_date",
+      format: "DD-MM-YYYY",
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
-      align: 'center',
-      mapper: 'submission_date',
-      format: 'DD-MM-YYYY',
+      align: "center",
+      mapper: "submission_date",
+      format: "DD-MM-YYYY",
     },
     {
       label: TABLE_LABELS?.ACTION,
-      mapper: 'action',
+      mapper: "action",
     },
   ];
 
   const statusArray = [
-    { label: 'All', value: 'All' },
-    { label: 'Ongoing', value: 'Ongoing' },
-    { label: 'Submitted', value: 'Submitted' },
-    { label: 'Yet to Start', value: 'Yet to start' },
+    { label: "All", value: "All" },
+    { label: "Ongoing", value: "Ongoing" },
+    { label: "Submitted", value: "Submitted" },
+    { label: "Yet to Start", value: "Yet to start" },
   ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
   const [page, setPage] = useState(1);
   const [totalDataCount, setTotalDataCount] = useState(0);
 
-  const [searchString, setSearchString] = useState('');
-  const [order, setOrder] = useState<any>('desc');
-  const [orderBy, setOrderBy] = useState<any>('created_at');
-  const [fromDate, setFromDate] = useState<any>('');
-  const [toDate, setToDate] = useState<any>('');
-  const [selectedStatus, setSelectedStatus] = useState<string>('All');
-  const [selectedChild, setSelectedChild] = useState('');
+  const [searchString, setSearchString] = useState("");
+  const [order, setOrder] = useState<any>("desc");
+  const [orderBy, setOrderBy] = useState<any>("created_at");
+  const [fromDate, setFromDate] = useState<any>("");
+  const [toDate, setToDate] = useState<any>("");
+  const [selectedStatus, setSelectedStatus] = useState<string>("All");
+  const [selectedChild, setSelectedChild] = useState("");
   const [childrenData, setChildrenData] = useState<any>([]);
   const { userId } = useSelector(selectUser);
 
@@ -121,8 +121,11 @@ export default function CompletedAssessments() {
   };
 
   const reset = () => {
-    setToDate('');
-    setFromDate('');
+    setToDate("");
+    setFromDate("");
+  };
+  const handlePerPage = (e: any) => {
+    setRowsPerPage(e);
   };
 
   // Toolbar Email
@@ -134,10 +137,10 @@ export default function CompletedAssessments() {
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/assign-assessment-student-list/pdf-download/?student_id=${selectedChild}`,
     onSuccess: (response: any) => {
-      toast('success', 'Email sent successfully');
+      toast("success", "Email sent successfully");
     },
     onError: ({ response }: any) => {
-      toast('error', response?.data?.message || 'Error');
+      toast("error", response?.data?.message || "Error");
     },
     enabled: false,
   });
@@ -147,7 +150,7 @@ export default function CompletedAssessments() {
       (i: any) => i.value === selectedChild
     );
     navigate(
-      `/${schoolName}/assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${data?.assessment_name}&user_ting=${selectedChildId?.user_ting || ''}`,
+      `/${schoolName}/assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${data?.assessment_name}&user_ting=${selectedChildId?.user_ting || ""}`,
       {
         state: {
           page,
@@ -188,11 +191,20 @@ export default function CompletedAssessments() {
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
-  const ordering = orderBy ? (order === 'asc' ? orderBy : `-${orderBy}`) : '';
+  const ordering = !orderBy.includes("teacher")
+    ? order === "asc"
+      ? orderBy
+      : `-${orderBy}`
+    : "";
+  const endpointOrderBy = orderBy.includes("teacher")
+    ? order === "asc"
+      ? orderBy
+      : `-${orderBy}`
+    : "";
   const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
     useGet({
       baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-      url: `assessments-service/completed-assign-assessment-student-list/?student_id=${selectedChild}&limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}${searchString ? `&search=${searchString}` : ''}${selectedStatus !== 'All' ? `&status=${selectedStatus}` : ''}${fromDate ? `&start_date=${moment(fromDate).format('YYYY-MM-DD')}` : ''}${toDate ? `&submission_date=${moment(toDate).format('YYYY-MM-DD')}` : ''}`,
+      url: `assessments-service/completed-assign-assessment-student-list/?student_id=${selectedChild}&limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&orderBy=${endpointOrderBy}${searchString ? `&search=${searchString}` : ""}${selectedStatus !== "All" ? `&status=${selectedStatus}` : ""}${fromDate ? `&start_date=${moment(fromDate).format("YYYY-MM-DD")}` : ""}${toDate ? `&submission_date=${moment(toDate).format("YYYY-MM-DD")}` : ""}`,
       onSuccess: (res: any) => {
         const accData = res?.data?.response;
         const respData = accData?.results;
@@ -255,7 +267,7 @@ export default function CompletedAssessments() {
   ];
 
   useEffect(() => {
-    if (selectedChild && selectedChild !== '') {
+    if (selectedChild && selectedChild !== "") {
       fetchAssignedAssignments();
     }
   }, [
@@ -298,6 +310,9 @@ export default function CompletedAssessments() {
             value={selectedStatus}
             dataArray={statusArray}
             onChangeHandler={(value) => setSelectedStatus(value)}
+            sxClass={{
+              width: "200px",
+            }}
           />
           <Dropdown
             title="Select Child"
@@ -306,6 +321,9 @@ export default function CompletedAssessments() {
             displayEmpty={true}
             onChangeHandler={(value) => setSelectedChild(value)}
             loading={childrenLoading}
+            sxClass={{
+              width: "230px",
+            }}
           />
           <div>
             <DatePicker
@@ -331,6 +349,13 @@ export default function CompletedAssessments() {
               disableOld={fromDate}
             />
           </div>
+          <Dropdown
+            title="Result Of Pages"
+            value={rowsPerPage}
+            dataArray={RESULTS_PER_PAGE}
+            onChangeHandler={handlePerPage}
+            sxClass={{ width: "100px", marginRight: "5px" }}
+          />
           <div className="flex gap-2 justify-center items-center h-[36px]">
             <span
               tabIndex={0}
@@ -346,7 +371,7 @@ export default function CompletedAssessments() {
               to={`/${schoolName}/assessments`}
               className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent"
             >
-              Assessments
+              Assigned Assessments
             </Link>
           </div>
         </div>

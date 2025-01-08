@@ -19,18 +19,18 @@ export default function AssessmentReprot() {
   const userData = useSelector((state: any) => state?.user);
   const { aid } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const status = useScript(`https://reports.learnosity.com/?v2021.2.LTS`, {
-    removeOnUnmount: false
+  const status = useScript(`https://reports.learnosity.com/?v2023.1.LTS`, {
+    removeOnUnmount: false,
   });
   const notCompletedStudentColumns = [
     {
       label: 'First Name',
-      mapper: 'first_name'
+      mapper: 'first_name',
     },
     {
       label: 'Last Name',
-      mapper: 'last_name'
-    }
+      mapper: 'last_name',
+    },
   ];
 
   const [incompleteStudentArray, setincompleteStudentArray] = useState([]);
@@ -43,14 +43,16 @@ export default function AssessmentReprot() {
   const ADMIN_TOOLBAR_MENU = [
     {
       title: TOOLBAR_LABELS.PRINT,
-      icon: <ReactToPrint
-        trigger={printButton}
-        content={() => componentRef.current}
-      />
-    }
+      icon: (
+        <ReactToPrint
+          trigger={printButton}
+          content={() => componentRef.current}
+        />
+      ),
+    },
   ];
 
-  const handleToolbarAction = async (title: string) => { };
+  const handleToolbarAction = async (title: string) => {};
 
   const { isLoading: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
@@ -62,16 +64,19 @@ export default function AssessmentReprot() {
       const callbacks = {
         errorListener(e: any) {
           setError(e.msg || '');
-        }
+        },
       };
       setTimeout(() => {
-        (window as any)?.LearnosityReports?.init(resp?.learnosity_obj, callbacks);
+        (window as any)?.LearnosityReports?.init(
+          resp?.learnosity_obj,
+          callbacks
+        );
       }, 1000);
     },
     onError: ({ response }: any) => {
       setError(response?.data?.message || 'Technical Error');
     },
-    enabled: false
+    enabled: false,
   });
 
   useEffect(() => {
@@ -81,49 +86,42 @@ export default function AssessmentReprot() {
   }, [status, aid]);
 
   if (LearnosityObjLoad) {
-    return (<Loader />);
+    return <Loader />;
   }
 
   return (
-    <RouteLayout
-      navBack={true}
-    >
-      <HeaderMenus title={`${pageData?.data?.[0]?.assessment_name || searchParams.get('assessment') || 'Test'}`} menuArray={ADMIN_TOOLBAR_MENU} handleToolbarAction={handleToolbarAction} />
-      {
-        pageData?.learnosity_obj?.request?.reports?.length && !error
-          ? (
-            <div className="wrapperBorder mt-3" ref={componentRef}>
-              <div className="p-[13px]">
-                <PageTitle title="Quick View Report" />
-              </div>
-              <Wrapper>
-                <>
-                  <span className="learnosity-report" id="lastscore-list-item" />
-                  <span className="learnosity-report" id="response-analysis" />
-                </>
-
-              </Wrapper>
-              <div className="p-[13px]">
-                <PageTitle title="Not Completed Students" />
-              </div>
-              <Wrapper>
-                <AdvanceTable
-                  tableData={incompleteStudentArray || []}
-                  headerRows={notCompletedStudentColumns || []}
-                />
-              </Wrapper>
-            </div>
-          )
-          : (
-            <div className="mt-5 h-max w-full rounded-md border bg-white p-4">
-              {
-                error
-                  ? <h2>{`${error}`}</h2>
-                  : 'Loading...'
-              }
-            </div>
-          )
-      }
+    <RouteLayout navBack={true}>
+      <HeaderMenus
+        title={`${pageData?.data?.[0]?.assessment_name || searchParams.get('assessment') || 'Test'}`}
+        menuArray={ADMIN_TOOLBAR_MENU}
+        handleToolbarAction={handleToolbarAction}
+      />
+      {pageData?.learnosity_obj?.request?.reports?.length && !error ? (
+        <div className="wrapperBorder mt-3" ref={componentRef}>
+          <div className="p-[13px]">
+            <PageTitle title="Quick View Report" />
+          </div>
+          <Wrapper>
+            <>
+              <span className="learnosity-report" id="lastscore-list-item" />
+              <span className="learnosity-report" id="response-analysis" />
+            </>
+          </Wrapper>
+          <div className="p-[13px]">
+            <PageTitle title="Not Completed Students" />
+          </div>
+          <Wrapper>
+            <AdvanceTable
+              tableData={incompleteStudentArray || []}
+              headerRows={notCompletedStudentColumns || []}
+            />
+          </Wrapper>
+        </div>
+      ) : (
+        <div className="mt-5 h-max w-full rounded-md border bg-white p-4">
+          {error ? <h2>{`${error}`}</h2> : 'Loading...'}
+        </div>
+      )}
     </RouteLayout>
   );
 }

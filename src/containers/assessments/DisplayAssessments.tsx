@@ -31,7 +31,10 @@ interface PageData {
 export default function DisplayAssessment() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { obeasses_id, duration } = (location?.state || {}) as { obeasses_id?: string; duration?: string };
+  const { obeasses_id, duration } = (location?.state || {}) as {
+    obeasses_id?: string;
+    duration?: string;
+  };
   const userData = useSelector((state: any) => state?.user) as UserData;
   const { aid } = useParams<{ aid: string }>();
   const [apiRes, setApiRes] = useState<ApiResponse>({});
@@ -43,20 +46,18 @@ export default function DisplayAssessment() {
   const user = useSelector((state: any) => state?.user);
   const userRole = useSelector((state: any) => state?.user?.role);
 
-  // const status = useScript(`https://items.learnosity.com/?v2021.2.LTS`, {
+  // const status = useScript(`https://items.learnosity.com/?v2023.1.LTS`, {
   //   removeOnUnmount: false
   // });
 
   const { isLoading: loadSync, refetch: sync } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&obeasses_id=${obeasses_id}&assessment_id=${aid}`,
-    enabled: false
+    enabled: false,
   });
 
   const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
   const schoolNameInURL = `${window?.location?.origin}/${schoolName}/assessments`;
-
-
 
   useEffect(() => {
     if (apiRes?.data?.assessment_ting) {
@@ -78,14 +79,14 @@ export default function DisplayAssessment() {
         user: `${user?.first_name} ${user?.last_name}`,
         user_ting: userData?.user_ting,
         role: user?.role?.name,
-        duration
+        duration,
       };
       fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(config)
+        body: JSON.stringify(config),
       })
         .then((response) => {
           if (!response.ok) {
@@ -127,21 +128,26 @@ export default function DisplayAssessment() {
   useEffect(() => {
     // Function to generate a unique query parameter
     const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
+    // event on learnosity to listen on 
+    // learnosity submit answer help.learnosity.com
 
     // URL of the iframe source
     let baseUrl = '';
 
-    if (userRole?.name === 'Teacher') baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${obeasses_id}`;
-    else if (userRole?.name === 'Student') baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${obeasses_id}`;
+    if (userRole?.name === 'Teacher')
+      baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${obeasses_id}`;
+    else if (userRole?.name === 'Student')
+      baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${obeasses_id}`;
     // Set the iframe URL with the cache buster parameter
     setIframeUrl(baseUrl + generateCacheBuster());
   }, [obeasses_id]);
 
-
   return (
     <RouteLayout navBack={true}>
       <div className="h-max py-4">
-        <PageTitle title={`${pageData?.data?.assessment_name || 'Assessment'}`} />
+        <PageTitle
+          title={`${pageData?.data?.assessment_name || 'Assessment'}`}
+        />
       </div>
       <div className="mt-5 w-full overflow-auto rounded-md h-max border bg-white p-4">
         <div style={{ width: '100%', height: '100vh' }}>

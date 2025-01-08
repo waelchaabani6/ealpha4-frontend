@@ -66,7 +66,7 @@ function MultipleAssignmentsBarGraph(props: Props) {
       setData(tabledata);
       SetValue('Score');
     }
-  }, [Per]);
+  }, [Per, tabledata, PerData]);
   const datagraph = data?.map((ele: any) => {
     const obj: any = { name: ele?.name, score: ele?.score, cohort: ele?.cohort };
     const key = Object.keys(ele)[0];

@@ -96,7 +96,26 @@ input[type='number'] {
   justify-content: space-between;
   overflow-y: auto;
 } */
+@media print {
+  @page {
+    size: A3; /* Set the page size to A3 */
+    margin: 0; /* No margins */
+  }
 
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: white;
+    -webkit-print-color-adjust: exact; 
+    print-color-adjust: exact; 
+  }
+
+  .content {
+    width: 297mm; 
+    height: 420mm; 
+    overflow: hidden; 
+  }
+}
 .sm-container .card-container {
   display: flex;
   justify-content: center;

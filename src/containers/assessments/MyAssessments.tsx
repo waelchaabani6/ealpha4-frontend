@@ -1,19 +1,25 @@
-import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import Dropdown from '@component/dropdown/Dropdown';
-import { useNavigate, Link, useLocation, useParams } from 'react-router-dom';
-import CustomPagination from '@component/pagination/CustomPagination';
-import { COMPONENTS, TABLE_LABELS, ASSESSMENT_TYPE, USER_TYPE, RESULTS_PER_PAGE } from '@constants/constants';
-import RouteLayout from '@layout/routeLayout';
-import { selectSchoolData } from '@shared/store/schoolSlice';
-import PageTitle from '@shared/pageTitle';
-import toast from '@shared/toast';
-import Wrapper from '@shared/wrapper/Wrapper';
-import DeletePopup from '@shared/DeletePopup';
-import { getNoOfPages } from '@utility/utility';
-import { useEffect, useState } from 'react';
-import Button from '@component/button/button';
-import { useSelector } from 'react-redux';
-import { useGet, usePost, useDelete } from '@shared/api/useApi';
+import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
+import Dropdown from "@component/dropdown/Dropdown";
+import { useNavigate, Link, useLocation, useParams } from "react-router-dom";
+import CustomPagination from "@component/pagination/CustomPagination";
+import {
+  COMPONENTS,
+  TABLE_LABELS,
+  ASSESSMENT_TYPE,
+  USER_TYPE,
+  RESULTS_PER_PAGE,
+} from "@constants/constants";
+import RouteLayout from "@layout/routeLayout";
+import { selectSchoolData } from "@shared/store/schoolSlice";
+import PageTitle from "@shared/pageTitle";
+import toast from "@shared/toast";
+import Wrapper from "@shared/wrapper/Wrapper";
+import DeletePopup from "@shared/DeletePopup";
+import { getNoOfPages } from "@utility/utility";
+import { useEffect, useState } from "react";
+import Button from "@component/button/button";
+import { useSelector } from "react-redux";
+import { useGet, usePost, useDelete } from "@shared/api/useApi";
 
 export default function MyAssessments() {
   const { SCHOOL_ADMIN, BRANCH_ADMIN, TEACHER } = USER_TYPE;
@@ -24,67 +30,80 @@ export default function MyAssessments() {
   const navigate = useNavigate();
   const ALL: Array<any> = [
     {
-      label: 'All',
-      value: 'Select'
-    }
+      label: "All",
+      value: "Select",
+    },
   ];
 
   const handleNavigate = (data: any, type: string) => {
-    const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
+    const schoolNameInURL = decodeURIComponent(location.pathname.split("/")[1]);
     const navState = {
-      assignType: type === 'printed' ? 'print-assessment' : ''
+      assignType: type === "printed" ? "print-assessment" : "",
     };
-    navigate(`/${schoolNameInURL}/assessments/assign/${data?.id}?name=${data?.assessment_name}${type === 'printed' ? '&type=print-assessment' : ''}`, { state: { navState, page, path: `/${schoolName}/assessments/my-assessments` } });
+    navigate(
+      `/${schoolNameInURL}/assessments/assign/${data?.id}?name=${data?.assessment_name}${type === "printed" ? "&type=print-assessment" : ""}`,
+      {
+        state: {
+          navState,
+          page,
+          path: `/${schoolName}/assessments/my-assessments`,
+        },
+      }
+    );
   };
 
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: 'center'
+      align: "center",
     },
     {
       label: TABLE_LABELS?.ASSESSMENT_NAME,
-      mapper: 'assessment_name',
-      isSort: true
+      mapper: "assessment_name",
+      isSort: true,
     },
     {
-      label: 'Online',
-      mapper: 'online',
-      align: 'center'
+      label: TABLE_LABELS?.COURSES,
+      mapper: "courses_name",
+      align: "center",
     },
     {
-      label: 'Printed',
-      mapper: 'printed',
-      align: 'center'
+      label: "Online",
+      mapper: "online",
+      align: "center",
     },
     {
       label: TABLE_LABELS?.ACTION,
       colspan: 2,
-      align: 'center',
-      bodyAlign: 'right',
+      align: "center",
+      bodyAlign: "right",
       component: COMPONENTS?.view,
-      showInHeader: false
+      showInHeader: false,
     },
     {
-      bodyAlign: 'left',
+      bodyAlign: "left",
       component: COMPONENTS?.delete,
-      showInHeader: false
-    }
+      showInHeader: false,
+    },
   ];
   const [tableData, setTableData] = useState<any>([]);
   const [adminDeleteDialog, setAdminDeleteDialog] = useState(false);
 
-  const [currentCourse, setCurrentCourse] = useState('Select');
-  const [selectedGrade, setselectedGrade] = useState('Select');
-  const [selectedCategory, setselectedCategory] = useState('Select');
-  const [assessmentType, setassessmentType] = useState(ASSESSMENT_TYPE[0]?.value);
+  // console.log('tableData =', tableData)
+
+  const [currentCourse, setCurrentCourse] = useState("Select");
+  const [selectedGrade, setselectedGrade] = useState("Select");
+  const [selectedCategory, setselectedCategory] = useState("Select");
+  const [assessmentType, setassessmentType] = useState(
+    ASSESSMENT_TYPE[0]?.value
+  );
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
   const [playloadData, setPlayloadData] = useState<any | undefined>({});
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
-  const [order, setOrder] = useState<any>('desc');
-  const [orderBy, setOrderBy] = useState<any>('created_at');
+  const [order, setOrder] = useState<any>("desc");
+  const [orderBy, setOrderBy] = useState<any>("created_at");
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const location = useLocation();
 
@@ -96,16 +115,25 @@ export default function MyAssessments() {
   const actionHandler = (data: any, handlername: string) => {
     const obeasses_id = data?.obeasses_id;
 
-    if (handlername === 'delete') {
+    if (handlername === "delete") {
       deleteHandler(data);
-    } else if (handlername === 'view') {
-      navigate(`/${schoolName}/assessments/preview_myassessment_question/${data?.id}`, { state: { page, obeasses_id, path: `/${schoolName}/assessments/my-assessments` } });
+    } else if (handlername === "view") {
+      navigate(
+        `/${schoolName}/assessments/preview_myassessment_question/${data?.id}`,
+        {
+          state: {
+            page,
+            obeasses_id,
+            path: `/${schoolName}/assessments/my-assessments`,
+          },
+        }
+      );
     }
   };
 
   const deleteHandler = (row: any) => {
     setPlayloadData({
-      id: row?.id
+      id: row?.id,
     });
     setAdminDeleteDialog(true);
   };
@@ -121,49 +149,86 @@ export default function MyAssessments() {
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
     url: `assessments-service/delete-assessment/${playloadData?.id}/?type=hard`,
     onSuccess: (response: any) => {
-      toast('success', 'Record Deleted successfully');
+      toast("success", "Record Deleted successfully");
       fetchAssignments();
     },
     onError: ({ response }: any) => {
-      toast('error', response?.data?.message || 'Error');
-    }
+      toast("error", response?.data?.message || "Error");
+    },
   });
 
+  // Get Courses
+  //  const { isLoading: loadCourses, data: Courses, refetch: getCourses } = useGet({
+  //   baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+  //   url: `assessments-service/alpha-assessment/courses/`,
+  // });
+  // const filteredCourses =
+  //   Courses?.data?.map((ele: any) => ({ label: ele.name, value: ele.id })) ||
+  //   [];
+
   const { isLoading: loadCourses, data: Courses } = useGet({
-    baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/assigned_courses/${user?.userId}/details/?all_courses=all`
+    // baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
+    baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
+    // url: `course-code-service/courses/assigned_courses/${user?.userId}/details/?all_courses=all`
+    url: `assessments-service/alpha-assessment/courses/`,
   });
-  const filteredCourses = Courses?.data?.response?.filter((i: any) => i?.name)?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
+
+  // const filteredCourses = Courses?.data?.response?.filter((i: any) => i?.name)?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
+  const filteredCourses =
+    Courses?.data
+      .filter((i: any) => i?.name)
+      ?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
 
   const { isLoading: loadCategories, data: Categories } = useGet({
     baseURL: import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL,
-    url: `course-code-service/courses/content/?ordering=-created_at&limit=500&selection=Category`
+    url: `course-code-service/courses/content/?ordering=-created_at&limit=500&selection=Category`,
   });
-  const categoryArrays = Categories?.data?.response?.results?.map((ele: any) => ({ label: ele.content, value: ele.content })) || [];
+  const categoryArrays =
+    Categories?.data?.response?.results?.map((ele: any) => ({
+      label: ele.content,
+      value: ele.content,
+    })) || [];
 
   const { isLoading: loadClassesForSchool, data: ClassesForSchool } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}&branch_name=${branchData?.name || ''}`,
-    enabled: !!((userRole?.name === SCHOOL_ADMIN && schoolData?.id) || (userRole?.name === BRANCH_ADMIN || branchData?.school_id?.id))
+    url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id}&branch_name=${branchData?.name || ""}`,
+    enabled: !!(
+      (userRole?.name === SCHOOL_ADMIN && schoolData?.id) ||
+      userRole?.name === BRANCH_ADMIN ||
+      branchData?.school_id?.id
+    ),
   });
-  const formatSchoolClasses = ClassesForSchool?.data?.response?.results?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
+  const formatSchoolClasses =
+    ClassesForSchool?.data?.response?.results?.map((ele: any) => ({
+      label: ele.name,
+      value: ele.name,
+    })) || [];
 
-  const { isLoading: loadClassesForTeacher, mutate: ClassesForTeacher } = usePost({
-    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/school-classes/teacher/assigned-class`,
-    onSuccess: (resp: any) => {
-      const res = resp?.data?.response;
-      const formatArr = res?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
-      setTeacherClassesArray(formatArr);
-    }
-  });
+  const { isLoading: loadClassesForTeacher, mutate: ClassesForTeacher } =
+    usePost({
+      baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+      url: `schools-service/school-classes/teacher/assigned-class`,
+      onSuccess: (resp: any) => {
+        const res = resp?.data?.response;
+        const formatArr =
+          res?.map((ele: any) => ({ label: ele.name, value: ele.name })) || [];
+        setTeacherClassesArray(formatArr);
+      },
+    });
 
   // Get Assessment List
-  const ordering = order === 'asc' ? orderBy : `-${orderBy}`;
-  const assmentFilter = assessmentType === ASSESSMENT_TYPE[0].value ? '' : (assessmentType !== ASSESSMENT_TYPE[1].value);
-  const { isLoading: assignmentLoading, isRefetching, refetch: fetchAssignments } = useGet({
+  const ordering = order === "asc" ? orderBy : `-${orderBy}`;
+  const assmentFilter =
+    assessmentType === ASSESSMENT_TYPE[0].value
+      ? ""
+      : assessmentType !== ASSESSMENT_TYPE[1].value;
+  const {
+    isLoading: assignmentLoading,
+    isRefetching,
+    refetch: fetchAssignments,
+  } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/my_assessments_list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&courses_name=${currentCourse !== 'Select' ? currentCourse : ''}&grade_name=${selectedGrade !== 'Select' ? selectedGrade : ''}&is_paperscorer_type=${assmentFilter}&category=${selectedCategory !== 'Select' ? selectedCategory : ''}&user_id=${user?.userId}`,
+    url: `assessments-service/my_assessments_list/?limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&ordering=${ordering}&courses_name=${currentCourse !== "Select" ? currentCourse : ""}&grade_name=${selectedGrade !== "Select" ? selectedGrade : ""}&is_paperscorer_type=${assmentFilter}&category=${selectedCategory !== "Select" ? selectedCategory : ""}&user_id=${user?.userId}`,
     onSuccess: (res: any) => {
       const accData = res?.data?.response;
       const respData = accData?.results;
@@ -171,15 +236,23 @@ export default function MyAssessments() {
       const newTableData = respData?.map((item: any) => {
         const temp = {
           ...item,
-          online: <Button onClick={() => handleNavigate(item, 'online')}>Assign</Button>,
-          printed: (item?.is_paperscorer_type) ? <Button onClick={() => handleNavigate(item, 'printed')}>Assign</Button> : null
+          online: (
+            <Button onClick={() => handleNavigate(item, "online")}>
+              Assign
+            </Button>
+          ),
+          printed: item?.is_paperscorer_type ? (
+            <Button onClick={() => handleNavigate(item, "printed")}>
+              Assign
+            </Button>
+          ) : null,
         };
         return temp;
       });
 
       setTotalDataCount(accData.count);
       setTableData(newTableData);
-    }
+    },
   });
   const { isLoading: loadSync, refetch: sync } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
@@ -187,14 +260,14 @@ export default function MyAssessments() {
     enabled: false,
     onSuccess: (resp: any) => {
       fetchAssignments();
-    }
+    },
   });
   // ------------------END API's-----------------------------------------------
 
   useEffect(() => {
     if (userRole?.name === TEACHER && user?.user_profile_id) {
       ClassesForTeacher({
-        teacher_id: user?.user_profile_id
+        teacher_id: user?.user_profile_id,
       });
     }
   }, [userRole, user]);
@@ -209,9 +282,19 @@ export default function MyAssessments() {
   useEffect(() => {
     // sync();
     fetchAssignments();
-  }, [rowsPerPage, page, orderBy, order, currentCourse, selectedGrade, assessmentType]);
+  }, [
+    rowsPerPage,
+    page,
+    orderBy,
+    order,
+    currentCourse,
+    selectedGrade,
+    assessmentType,
+  ]);
 
-  const CLASS_ARRAY = (userRole?.name === TEACHER ? TeacherClassesArray : formatSchoolClasses) || [];
+  const CLASS_ARRAY =
+    (userRole?.name === TEACHER ? TeacherClassesArray : formatSchoolClasses) ||
+    [];
 
   const compare = (a: any, b: any) => {
     if (a.label < b.label) {
@@ -245,9 +328,9 @@ export default function MyAssessments() {
                 setPage(1);
               }}
               loading={loadCourses}
-              sxClass={{ width: '206px', marginRight: '5px' }}
+              sxClass={{ width: "206px", marginRight: "5px" }}
             />
-            <Dropdown
+            {/* <Dropdown
               title="Select Class"
               value={selectedGrade}
               dataArray={[...ALL, ...CLASS_ARRAY]}
@@ -257,7 +340,7 @@ export default function MyAssessments() {
               }}
               loading={loadClassesForTeacher || loadClassesForSchool}
               sxClass={{ width: '206px', marginRight: '5px' }}
-            />
+            /> */}
             <Dropdown
               title="Select Category"
               value={selectedCategory}
@@ -267,7 +350,7 @@ export default function MyAssessments() {
                 setPage(1);
               }}
               loading={loadCategories}
-              sxClass={{ width: '206px', marginRight: '5px' }}
+              sxClass={{ width: "206px", marginRight: "5px" }}
             />
             <Dropdown
               title="Assessment Type"
@@ -277,20 +360,26 @@ export default function MyAssessments() {
                 setassessmentType(d);
                 setPage(1);
               }}
-              sxClass={{ width: '206px', marginRight: '5px' }}
+              sxClass={{ width: "206px", marginRight: "5px" }}
             />
             <Dropdown
               title="Result Of Pages"
               value={rowsPerPage}
               dataArray={RESULTS_PER_PAGE}
               onChangeHandler={handlePerPage}
-              sxClass={{ width: '206px', marginRight: '5px' }}
+              sxClass={{ width: "206px", marginRight: "5px" }}
             />
             <div className="pt-4 md:pt-8 h-full flex items-center">
-              <Link to={`/${schoolName}/assessments/create-new-assessment`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
+              <Link
+                to={`/${schoolName}/assessments/create-new-assessment`}
+                className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent"
+              >
                 Create Assessment
               </Link>
-              <Link to={`/${schoolName}/assessments/assigned`} className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent">
+              <Link
+                to={`/${schoolName}/assessments/assigned`}
+                className="cursor-pointer h-full font-medium underline flex items-center md:border-l-2 px-2 border-gray-300 text-accent"
+              >
                 Assigned Assessments
               </Link>
             </div>
@@ -320,7 +409,9 @@ export default function MyAssessments() {
             order={order}
             setOrder={setOrder}
             actionHandler={actionHandler}
-            isLoading={assignmentLoading || loadSync || isRefetching || loadingDelete}
+            isLoading={
+              assignmentLoading || loadSync || isRefetching || loadingDelete
+            }
             setPage={setPage}
           />
         </Wrapper>

@@ -25,12 +25,26 @@ type dropdownProps = {
   required?: boolean;
   labelParentClass?: string;
   IconParentClass?: string;
-  border?:boolean;
-  padding?:boolean;
-}
+  border?: boolean;
+  padding?: boolean;
+};
 
 export default function dropdown(props: dropdownProps) {
-  const { onChangeHandler, title, dataArray, value, sxClass, displayEmpty, loading, parentStyle, showCancel, disabled, required, labelParentClass = '', IconParentClass = '' } = props;
+  const {
+    onChangeHandler,
+    title,
+    dataArray,
+    value,
+    sxClass,
+    displayEmpty,
+    loading,
+    parentStyle,
+    showCancel,
+    disabled,
+    required,
+    labelParentClass = '',
+    IconParentClass = '',
+  } = props;
   const [open, setOpen] = React.useState(false);
 
   const handleChange = (event: any) => {
@@ -67,7 +81,18 @@ export default function dropdown(props: dropdownProps) {
         )}
       </Typography>
       <MuiSelect
-        endAdornment={<IconButton sx={{ display: showCancel === true ? 'block' : 'none', position: 'relative', left: '13px' }} onClick={props.handleClearClick}><ClearIcon /></IconButton>}
+        endAdornment={
+          <IconButton
+            sx={{
+              display: showCancel === true ? 'block' : 'none',
+              position: 'relative',
+              left: '13px',
+            }}
+            onClick={props.handleClearClick}
+          >
+            <ClearIcon />
+          </IconButton>
+        }
         labelId="demo-controlled-open-select-label"
         id="demo-controlled-open-select"
         open={open}
@@ -77,7 +102,12 @@ export default function dropdown(props: dropdownProps) {
         displayEmpty={displayEmpty || false}
         value={value}
         onChange={handleChange}
-        IconComponent={() => <KeyboardArrowDownIcon onClick={handleOpen} className={`cursor-pointer ${IconParentClass}`} />}
+        IconComponent={() => (
+          <KeyboardArrowDownIcon
+            onClick={handleOpen}
+            className={`cursor-pointer ${IconParentClass}`}
+          />
+        )}
         sx={{
           background: `${disabled ? 'var(--fishgray)' : 'var(--white)'}`,
           '#demo-controlled-open-select': {
@@ -85,46 +115,47 @@ export default function dropdown(props: dropdownProps) {
             fontWeight: 400,
             fontSize: '12px',
             lineHeight: '15px',
-            fontFamily: 'Montserrat-500'
+            fontFamily: 'Montserrat-500',
           },
           '& fieldset': {
-            border: props?.border ? '1px solid grey' : '1px solid white'
+            border: props?.border ? '1px solid grey' : '1px solid white',
           },
           width: '130px',
           boxShadow: open
-            ? '0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%)' : 'none',
-          ...sxClass
-
+            ? '0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%)'
+            : 'none',
+          ...sxClass,
         }}
       >
-        {
-          (!displayEmpty && dataArray?.length < 1) && (
-            <MenuItem sx={{ fontSize: 'smaller' }} disabled={true} value="">
-              <em>No Data</em>
+        {!displayEmpty && dataArray?.length < 1 && (
+          <MenuItem sx={{ fontSize: 'smaller' }} disabled={true} value="">
+            <em>No Data</em>
+          </MenuItem>
+        )}
+        {displayEmpty && (
+          <MenuItem sx={{ fontSize: 'smaller' }} disabled={true} value="">
+            <em>Select</em>
+          </MenuItem>
+        )}
+        {dataArray?.map(
+          (e: any): JSX.Element => (
+            <MenuItem
+              disabled={e.disable === true}
+              key={e?.value || e}
+              value={e?.value || e}
+              sx={{ fontSize: 'smaller' }}
+            >
+              {e?.label || e}
             </MenuItem>
           )
-        }
-        {
-          displayEmpty && (
-            <MenuItem sx={{ fontSize: 'smaller' }} disabled={true} value="">
-              <em>Select</em>
-            </MenuItem>
-          )
-        }
-        {
-          dataArray?.map((e: any): JSX.Element => (
-            <MenuItem disabled={e.disable === true} key={e?.value || e} value={e?.value || e} sx={{ fontSize: 'smaller' }}>{e?.label || e}</MenuItem>
-          ))
-        }
-        {
-          loading && (
-            <MenuItem disabled={true}>
-              <div className="text-center w-full">
-                <CircularProgress color="success" size="20px" />
-              </div>
-            </MenuItem>
-          )
-        }
+        )}
+        {loading && (
+          <MenuItem disabled={true}>
+            <div className="text-center w-full">
+              <CircularProgress color="success" size="20px" />
+            </div>
+          </MenuItem>
+        )}
       </MuiSelect>
     </div>
   );

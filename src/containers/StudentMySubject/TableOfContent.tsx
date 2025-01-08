@@ -14,7 +14,6 @@ import { useSelector } from 'react-redux';
 import { selectUser } from '@shared/store/userSlice';
 import { useGet } from '@shared/api/useApi';
 import { useState, useEffect } from 'react';
-import CoursesFilter from '@containers/manageCourses/CourseFilters';
 
 function Volume() {
   const [courseFullNameDetails, setCourseFullNameDetails] = useState<any>({});
@@ -68,7 +67,9 @@ function Volume() {
     urlCourseId: number,
     urlLessonId: number,
     contentUrl: string,
-    pages: any
+    pages: any,
+    shortName: string,
+    grade: string
   ) => {
     const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
     navigate(`/${schoolNameInURL}/course-preview`, {
@@ -86,6 +87,8 @@ function Volume() {
           pages?.length > 0
             ? pages?.map((obj: any) => obj?.page_number).join(',')
             : '1',
+        shortName,
+        grade,
       },
     });
   };
@@ -110,11 +113,6 @@ function Volume() {
         path={location?.state?.path || ``}
       >
         <PageTitle title={courseFullNameDetails?.name} />
-
-        <CoursesFilter
-          shortName={courseFullNameDetails?.short_name}
-          grade={courseFullNameDetails?.grade}
-        />
 
         <div className="bg-white p-5 border border-[var(--linegray)] rounded-lg mt-4">
           <div className="mb-5"> Table of content</div>
@@ -153,7 +151,7 @@ function Volume() {
                     </div>
                   </AccordionSummary>
                   <AccordionDetails>
-                    <div>
+                    <div className="hover:bg-gray-100 transition-all duration-300 rounded-md">
                       {item?.visible_lessons?.map((ele: any, ind: any) => (
                         <div
                           key={ind}
@@ -169,7 +167,9 @@ function Volume() {
                                 courseFullNameDetails.course_id,
                                 ele?.lesson_id,
                                 ele?.content_url,
-                                ele?.pages
+                                ele?.pages,
+                                courseFullNameDetails?.short_name,
+                                courseFullNameDetails?.grade
                               )
                             }
                           >

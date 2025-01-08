@@ -2,12 +2,12 @@
 /* eslint-disable indent */
 /* eslint-disable operator-linebreak */
 /* eslint-disable react/jsx-indent-props */
-import React from 'react';
-import { USER_TYPE } from '@constants/constants';
-import { useParams } from 'react-router-dom';
-import { selectUser } from '@shared/store/userSlice';
-import { useSelector } from 'react-redux';
-import TopBarLinks from './topBarLinks';
+import React from "react";
+import { USER_TYPE } from "@constants/constants";
+import { useParams } from "react-router-dom";
+import { selectUser } from "@shared/store/userSlice";
+import { useSelector } from "react-redux";
+import TopBarLinks from "./topBarLinks";
 
 export default function Index() {
   const { schoolName } = useParams();
@@ -32,10 +32,10 @@ export default function Index() {
           path={`/${schoolName}/assessments`}
           dropdown={true}
           childs={[
-            { label: 'Assigned Assessments', path: 'assessments' },
+            { label: "Assigned Assessments", path: "assessments" },
             {
-              label: 'Completed Assessments',
-              path: 'assessments/completed-assessments',
+              label: "Completed Assessments",
+              path: "assessments/completed-assessments",
             },
           ]}
         />
@@ -53,11 +53,16 @@ export default function Index() {
           path={`/${schoolName}/assessments`}
           dropdown={true}
           childs={[
-            { label: 'Assessments', path: 'assessments' },
-            { label: 'Assigned Assessments', path: 'assessments/assigned' },
+            { label: "Assessments", path: "assessments" },
             {
-              label: 'Completed Assessments',
-              path: 'assessments/assigned/completed_assessments',
+              label: "Create Assessment",
+              path: "assessments/create-new-assessment",
+            },
+            { label: "My Assessments", path: "assessments/my-assessments" },
+            { label: "Assigned Assessments", path: "assessments/assigned" },
+            {
+              label: "Completed Assessments",
+              path: "assessments/assigned/completed_assessments",
             },
           ]}
         />
@@ -78,12 +83,12 @@ export default function Index() {
       {!(role === USER_TYPE.PARENTS) ? (
         <TopBarLinks title="My Courses" path={`/${schoolName}/MySubject`} />
       ) : (
-        ''
+        ""
       )}
       {!(role === USER_TYPE.PARENTS || role === USER_TYPE.STUDENT) ? (
         <TopBarLinks title="My Groups" path={`/${schoolName}/my-group`} />
       ) : (
-        ''
+        ""
       )}
       {/* <TopBarLinks
         title="Connections"
@@ -99,21 +104,21 @@ export default function Index() {
             ? []
             : role === USER_TYPE.STUDENT
               ? [
-                  { label: 'Assigned Assignments', path: 'assignment' },
+                  { label: "Assigned Assignments", path: "assignment" },
                   {
-                    label: 'Completed Assignments',
-                    path: 'assignment/completed-assignments',
+                    label: "Completed Assignments",
+                    path: "assignment/completed-assignments",
                   },
                 ]
               : [
-                  { label: 'View Assignments', path: 'assignment' },
+                  { label: "View Assignments", path: "assignment" },
                   {
-                    label: 'Create Assignment',
-                    path: 'assignment/create-assignment',
+                    label: "Create Assignment",
+                    path: "assignment/create-assignment",
                   },
                   {
-                    label: 'Completed Assignments',
-                    path: 'assignment/completed-assignments',
+                    label: "Completed Assignments",
+                    path: "assignment/completed-assignments",
                   },
                 ]
         }
@@ -128,22 +133,27 @@ export default function Index() {
           childs={
             role === USER_TYPE.SCHOOL_ADMIN || role === USER_TYPE.BRANCH_ADMIN
               ? [
-                  { label: 'Report - Assignments', path: 'reports' },
+                  { label: "Report - Assignments", path: "reports" },
                   {
-                    label: 'Reports Program Usage',
-                    path: 'reports/program-usage-reports',
+                    label: "Reports Course Usage",
+                    path: "reports/program-usage-reports",
+                  },
+
+                  {
+                    label: "Usage Reports Teacher",
+                    path: "reports/usage-for-teacher",
                   },
                   {
-                    label: 'Usage Reports Teacher/Student',
-                    path: 'reports/usage-for-teacher',
+                    label: "Usage Reports Student",
+                    path: "reports/usage-for-student",
                   },
                   {
-                    label: 'Report - Usage - Teacher 1',
-                    path: 'reports/teacher-program-usage',
+                    label: "Report - Usage - Teacher 1",
+                    path: "reports/teacher-program-usage",
                   },
                   {
-                    label: 'Report - Usage - Teacher 2',
-                    path: 'reports/teacher-reports',
+                    label: "Report - Usage - Teacher 2",
+                    path: "reports/teacher-reports",
                   },
 
                   // will be enable when functionality come
@@ -155,7 +165,7 @@ export default function Index() {
           path={`/${schoolName}/reports`}
         />
       ) : (
-        ''
+        ""
       )}
       <TopBarLinks
         title="school TimeTable"
@@ -169,8 +179,8 @@ export default function Index() {
         childs={
           role !== USER_TYPE.STUDENT && role !== USER_TYPE.PARENTS
             ? [
-                { label: 'Mark Attendance', path: 'attandance/mark' },
-                { label: 'Attendance Reports', path: 'attandance/reports' },
+                { label: "Mark Attendance", path: "attandance/mark" },
+                { label: "Attendance Reports", path: "attandance/reports" },
               ]
             : []
         }

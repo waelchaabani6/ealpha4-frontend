@@ -22,12 +22,33 @@ type Props = {
   logo: any;
 };
 
-const backgroundColor = [
-  'var(--light-accent)',
-  '#BECCFF',
-  '#FFF9BE',
-  '#FCD4C6',
-  '#B4DEFF',
+const componentsBackgroundColor = [
+  { component: 'Student Book', bgColor: '#E5F8E2', borderColor: '#6DC95F' },
+  { component: 'Practice Book', bgColor: '#BECCFF', borderColor: '#6A82D7' },
+  { component: 'Work Book', bgColor: '#FFF9BE', borderColor: '#ECDD4D' },
+  {
+    component: 'Teacher_Resources',
+    bgColor: '#FCD4C6',
+    borderColor: '#E66335',
+  },
+  { component: 'Ancillaries', bgColor: '#B4DEFF', borderColor: '#3D9AE4' },
+  { component: 'Alpha Clips', bgColor: '#FFD6A5', borderColor: '#FF9E4F' },
+  { component: 'Alpha Sims', bgColor: '#9BF6FF4A', borderColor: '#5DD7E3' },
+  {
+    component: 'Alpha Sims Student',
+    bgColor: '#BDB2FF4A',
+    borderColor: '#BDB2FF4A',
+  },
+  {
+    component: 'Student Sidekicks',
+    bgColor: '#366776',
+    borderColor: '#0DBDF3',
+  },
+  {
+    component: 'Student Editions',
+    bgColor: '#F5F7E1',
+    borderColor: '#E2F81F',
+  },
 ];
 
 function SmallCard({ ind, shortName, courseContents, image, logo }: Props) {
@@ -74,16 +95,23 @@ function SmallCard({ ind, shortName, courseContents, image, logo }: Props) {
       if (res?.length) {
         const componetsAndVolumes: any = [];
         res?.forEach((element: any, i: any) => {
-          componetsAndVolumes.push({
-            component: element?.value?.component,
-            bgColor: backgroundColor[i],
-            courseID: element?.value?.courses_id,
-            volumeData: Array.isArray(
-              element?.value?.volumeData?.data?.response
-            )
-              ? element?.value?.volumeData?.data?.response
-              : [],
-          });
+          if (element?.value?.component !== 'Assessments') {
+            componetsAndVolumes.push({
+              component: element?.value?.component,
+              bgColor: componentsBackgroundColor?.find(
+                (obj: any) => obj?.component === element?.value?.component
+              )?.bgColor,
+              borderColor: componentsBackgroundColor?.find(
+                (obj: any) => obj?.component === element?.value?.component
+              )?.borderColor,
+              courseID: element?.value?.courses_id,
+              volumeData: Array.isArray(
+                element?.value?.volumeData?.data?.response
+              )
+                ? element?.value?.volumeData?.data?.response
+                : [],
+            });
+          }
         });
         setComponetDetails(componetsAndVolumes);
       }
@@ -152,8 +180,10 @@ function SmallCard({ ind, shortName, courseContents, image, logo }: Props) {
             onMouseLeave={() => setIndex(-1)}
           >
             <AccordionSummary
+              className="border"
               sx={{
                 backgroundColor: ele?.bgColor,
+                borderColor: ele?.borderColor,
                 cursor: 'pointer',
               }}
               // expandIcon={<ExpandMoreIcon />}
@@ -166,19 +196,23 @@ function SmallCard({ ind, shortName, courseContents, image, logo }: Props) {
               }
             >
               <span
-                className="w-full text-[14px] text-center font-semibold"
-                style={{ backgroundColor: ele?.bgColor }}
+                className="w-full text-[14px] text-center font-semibold "
+                // style={{
+                //   backgroundColor: ele?.bgColor,
+                //   borderColor: ele?.borderColor,
+                // }}
               >
                 {ele?.component}
               </span>
             </AccordionSummary>
+
             <AccordionDetails>
               <div className="text-[12px]  cursor-pointer">
                 {ele?.volumeData?.map((innerEle: any, i: any) => (
                   // eslint-disable-next-line jsx-a11y/no-static-element-interactions
                   <div
                     key={i}
-                    className="w-full text-[14px] text-center p-1"
+                    className="w-full text-[14px] text-center p-1 hover:bg-slate-100 rounded-sm transition-all duration-300"
                     onClick={() => {
                       navigate(`${redirectUrl}/${innerEle?.courses_id}`);
                     }}

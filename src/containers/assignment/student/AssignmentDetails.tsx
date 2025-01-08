@@ -1,3 +1,5 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable no-restricted-globals */
 /* eslint-disable no-console */
 /* eslint-disable react/jsx-curly-newline */
 /* eslint-disable no-shadow */
@@ -112,7 +114,9 @@ function createData(
       ? `0%`
       : // : `${parseFloat(((Number(Correct) * 100) / Number(maxScore)).toFixed(2))}%`;
         `${parseFloat(((Number(Correct / total_pages) * 100) / Number(maxScore)).toFixed(2))}%`;
-  const scormDataView = scormData ? JSON.parse(scormData) : {};
+  const scormDataView =
+    scormData && scormData?.length > 0 ? JSON.parse(scormData) : {};
+
   return {
     Pages,
     page_name,
@@ -163,6 +167,8 @@ function AssignmentDetails(): JSX.Element {
   const [val, setValue] = React.useState({
     Nmeet1: '',
     Nmeet2: '',
+    above1: '',
+    above2: '',
     exceed1: '',
     exceed2: '',
     meet1: '',
@@ -200,6 +206,7 @@ function AssignmentDetails(): JSX.Element {
     const columnsHeader2 = columnsHeader.map((ele, index) => {
       if (ele.component === 'Dropdown' && cIndex === index) {
         setJsonData(jsonCopyData.filter((page: any) => page.Pages === val));
+        console.log(copysinglePages, 'copysinglePages');
         setSinglePages(
           copysinglePages.filter((page: any) => page.page_name === val)
         );
@@ -233,10 +240,6 @@ function AssignmentDetails(): JSX.Element {
   };
 
   const ADMIN_TOOLBAR_MENU = [
-    {
-      type: HEADERMENUS.BUTTON,
-      title: 'Preview',
-    },
     {
       title: TOOLBAR_LABELS.EXPORT,
       icon: (
@@ -276,28 +279,42 @@ function AssignmentDetails(): JSX.Element {
 
   // eslint-disable-next-line consistent-return
   function colorCode(score: any, type: string) {
-    if (score >= val.exceed1 && score <= val.exceed2) {
-      // Exceeds
-      return { bg: '#d9ffc8', color: '#6CA463' }[type]; // blue
+    if (score !== null && !isNaN(score)) {
+      if (score >= val.exceed1 && score <= val.exceed2) {
+        // Exceeds
+        // return { bg: '#d9ffc8', color: '#6CA463' }[type]; // green
+        return { bg: '#BECCFF', color: '#132E90 ' }[type]; // blue
+      }
+      if (score >= val.above1 && score <= val.above2) {
+        /// Above
+        return { bg: '#d9ffc8', color: '#6CA463' }[type]; // green
+      }
+      if (score >= val.meet1 && score <= val.meet2) {
+        /// Meets
+        // return { bg: '#BECCFF', color: '#132E90 ' }[type]; // blue
+        return { bg: '#FFF9BE', color: '#C7B551' }[type]; // yellow
+      }
+      if (score >= val.approching1 && score <= val.approching2) {
+        // Approaching
+        // return { bg: '#FFF9BE', color: '#C7B551' }[type]; // yellow
+        return { bg: '#FFD6A5', color: '#FF9E4F' }[type]; // orange
+      }
+      if (score >= val.Nmeet1 && score <= val.Nmeet2) {
+        // Does not Meet
+        // return { bg: '#FCD4C6', color: '#E36B6B' }[type];
+        return { bg: '#FFD6A5', color: '#FF9E4F' }[type]; // orange
+      }
+    } else {
+      return { bg: '#FFD6A5', color: '#FF9E4F' }[type];
     }
-    if (score >= val.meet1 && score <= val.meet2) {
-      /// Meets
-      return { bg: '#BECCFF', color: '#132E90 ' }[type]; // green
-    }
-    if (score >= val.approching1 && score <= val.approching2) {
-      // Approaching
-      return { bg: '#FFF9BE', color: '#C7B551' }[type];
-    }
-    if (score >= val.Nmeet1 && score <= val.Nmeet2) {
-      // Does not Meet
-      return { bg: '#FCD4C6', color: '#E36B6B' }[type];
-    }
-    return { bg: '#e5e7eb', color: '#E36B6B' }[type];
   }
 
   function getPerformanceText(score: any) {
     if (score >= val.exceed1 && score <= val.exceed2) {
       return 'Exceeds';
+    }
+    if (score >= val.above1 && score <= val.above2) {
+      return 'Above';
     }
     if (score >= val.meet1 && score <= val.meet2) {
       return 'Meets';
@@ -305,9 +322,14 @@ function AssignmentDetails(): JSX.Element {
     if (score >= val.approching1 && score <= val.approching2) {
       return 'Approaching';
     }
-    if (score >= val.Nmeet1 && score <= val.Nmeet2) {
+    if (
+      (score >= val.Nmeet1 && score <= val.Nmeet2) ||
+      score == null ||
+      isNaN(score)
+    ) {
       return 'Does not Meet';
     }
+    return '';
   }
 
   const {
@@ -335,6 +357,7 @@ function AssignmentDetails(): JSX.Element {
       //         value: ele.page_name,
       //       }))
       //     : [];
+
       jsonRespData =
         jsonRespData && jsonRespData.length !== 0
           ? jsonRespData.map((ele: any) =>
@@ -354,7 +377,7 @@ function AssignmentDetails(): JSX.Element {
           : [];
       setJsonData(jsonRespData);
       setJsonCopyData(jsonRespData);
-      console.log('jsonRespData', jsonRespData);
+      // console.log("jsonRespData", jsonRespData);
 
       if (jsonRespData && jsonRespData.length !== 0) {
         setCsvData(jsonRespData.map((ele: any) => createExcellData(ele)));
@@ -366,6 +389,16 @@ function AssignmentDetails(): JSX.Element {
         // const assignmentMainList = res?.data?.response;
 
         res?.data?.response?.chapters?.forEach((chapter: any) => {
+          const result = chapter?.lessons.reduce(
+            (acc, { unit_id, unit_name }) => {
+              acc[unit_id] = unit_name;
+              return acc;
+            },
+            {}
+          );
+
+          console.log(result, 'result');
+
           chapter?.lessons?.forEach((lesson: any) => {
             const pageNumberArray: string[] = [];
             const pageNameArray: string[] = [];
@@ -386,36 +419,24 @@ function AssignmentDetails(): JSX.Element {
                     value: `${lesson.unit_name}`,
                   });
 
-                  jsonRespData.forEach((ele: any) => {
-                    const tempObj = ele;
-                    if (
-                      ele?.scormDataView.urlLessonId === lesson?.unit_id &&
-                      ele?.Pages === name
-                    ) {
-                      tempObj.page_name = `${lesson.unit_name} - ${ele.Pages}`;
-                      tempArray.push(tempObj);
-                    } else if (ele?.scormDataView.urlLessonId === undefined) {
-                      tempObj.page_name = `${ele.Pages}`;
-                      tempArray.push(tempObj);
-                    }
-                  });
+                  // jsonRespData.forEach((ele: any) => {
+                  //   const tempObj = ele;
+                  //   console.log('ele', ele);
+                  //   if (
+                  //     ele?.scormDataView.urlLessonId === lesson?.unit_id &&
+                  //     ele?.Pages === name
+                  //   ) {
+                  //     tempObj.page_name = `${lesson.unit_name} - ${ele.Pages}`;
+                  //     tempArray.push(tempObj);
+                  //   } else if (ele?.scormDataView.urlLessonId === undefined) {
+                  //     tempObj.page_name = `${ele.Pages}`;
+                  //     tempArray.push(tempObj);
+                  //   }
+                  // });
                 }
               );
             }
 
-            const pagesArray = singlePages.map((ele: any) => ({
-              label: ele.page_name,
-              value: ele.page_name,
-            }));
-
-            const columnsHeader2 = columnsHeader.map((ele) => {
-              if (ele.component === 'Dropdown') {
-                return { ...ele, dataArray: pagesArray };
-              }
-              return ele;
-            });
-
-            setColumns(columnsHeader2);
             // setColumnsCopy(columnsHeader2);
             // setAssignmentsPages(pagesList);
             // scromPagesTemp.push({
@@ -464,8 +485,29 @@ function AssignmentDetails(): JSX.Element {
         // console.log(scromPagesTemp);
       }
 
-      setSinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
-      setCopySinglePages(tempArray.length !== 0 ? tempArray : jsonRespData);
+      const tempSinglePages = tempArray.length !== 0 ? tempArray : jsonRespData;
+      // setSinglePages((prev) => tempSinglePages);
+
+      // setCopySinglePages((prev) => tempSinglePages);
+      console.log(tempArray, 'tempArray');
+      setSinglePages(jsonRespData);
+      setCopySinglePages(jsonRespData);
+
+      // const pagesArray = singlePages.map((ele: any) => ({
+      //   label: ele.page_name,
+      //   value: ele.page_name,
+      // }));
+
+      // const columnsHeader2 = columnsHeader.map((ele) => {
+      //   if (ele.component === 'Dropdown') {
+      //     return { ...ele, dataArray: pagesArray };
+      //   }
+      //   return ele;
+      // });
+
+      console.log(columnsHeader, 'columnsHeader2 ');
+
+      // setColumns(columnsHeader2);
 
       const pagesListprev: any = [];
       if (tempArray.length !== 0) {
@@ -486,7 +528,7 @@ function AssignmentDetails(): JSX.Element {
         });
       }
 
-      const pagesArray = singlePages.map((ele: any) => ({
+      const pagesArray = jsonRespData.map((ele: any) => ({
         label: ele.page_name,
         value: ele.page_name,
       }));
@@ -535,6 +577,9 @@ function AssignmentDetails(): JSX.Element {
       const meetObj = fetchedRecords?.find(
         (obj: any) => obj.status === 'Meets'
       );
+      const aboveObj = fetchedRecords?.find(
+        (obj: any) => obj.status === 'Above'
+      );
       const AppObj = fetchedRecords?.find(
         (obj: any) => obj.status === 'Approaching'
       );
@@ -544,10 +589,13 @@ function AssignmentDetails(): JSX.Element {
       const ExceedsObj = fetchedRecords?.find(
         (obj: any) => obj.status === 'Exceeds'
       );
+
       setValue((prevState: any) => ({
         ...prevState,
         meet1: meetObj?.from_value,
         meet2: meetObj?.to_value,
+        above1: aboveObj?.from_value,
+        above2: aboveObj?.to_value,
         exceed1: ExceedsObj?.from_value,
         exceed2: ExceedsObj?.to_value,
         approching1: AppObj?.from_value,
@@ -595,17 +643,22 @@ function AssignmentDetails(): JSX.Element {
               </div>
 
               <div className="flex">
-                <span className="rounded-full border-2 flex justify-center items-center p-2 relative bg-[#FFF8C1] h-[3px] w-[3px]" />
+                <span className="rounded-full border-2 flex justify-center items-center p-2 relative bg-[#FFD6A5] h-[3px] w-[3px]" />
                 <span className="mx-2 text-left">{`Approaching (Score: ${val.approching1}% - ${val.approching2}%)`}</span>
               </div>
 
               <div className="flex">
-                <span className="rounded-full border-2 flex justify-center items-center p-2 relative bg-[#BFCDFD] h-[3px] w-[3px]" />
+                <span className="rounded-full border-2 flex justify-center items-center p-2 relative bg-[#FFF8C1] h-[3px] w-[3px]" />
                 <span className="mx-2 text-left">{`Meets (Score: ${val.meet1}% - ${val.meet2}%)`}</span>
               </div>
 
               <div className="flex">
                 <span className="rounded-full border-2 flex justify-center items-center p-2 relative bg-[#DAFECA] h-[3px] w-[3px]" />
+                <span className="mx-2 text-left">{`Above (Score: ${val.above1}% - ${val.above2}%)`}</span>
+              </div>
+
+              <div className="flex">
+                <span className="rounded-full border-2 flex justify-center items-center p-2 relative bg-[#BFCDFD] h-[3px] w-[3px]" />
                 <span className="mx-2 text-left">{`Exceeds (Score: ${val.exceed1}% - ${val.exceed2}%)`}</span>
               </div>
             </div>
@@ -710,7 +763,13 @@ function AssignmentDetails(): JSX.Element {
                 handleClearClick={() => {
                   setJsonData(jsonCopyData);
                   setSinglePages(copysinglePages);
-                  setColumns(columns);
+                  const columnsHeader2 = columnsHeader.map((ele) => {
+                    if (ele.component === 'Dropdown') {
+                      return { ...ele, selectedValue: '' };
+                    }
+                    return ele;
+                  });
+                  setColumns(columnsHeader2);
                 }}
                 fullHeight={fullHeight}
               />
