@@ -267,11 +267,11 @@ export default function () {
       setCourses([...temp3]);
     },
   });
+  const classId = selectedClass !== 'select' ? selectedClass : user?.class_id || '';
   const { isLoading: subLoading, refetch: refectSubject } = useGet({
     baseURL: SchoolUrl,
-    url: `schools-service/school-classes/subject/get?user_id=${user?.userId}&class_id=${
-      selectedClass !== 'select' ? selectedClass : '' || user?.class_id
-    }`,
+    url: `schools-service/school-classes/subject/get?user_id=${user?.userId}&class_id=${classId}`,
+
     enabled: false,
     onSuccess: (resp: any) => {
       const respData = resp?.data?.response;

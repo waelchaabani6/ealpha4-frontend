@@ -45,37 +45,6 @@ export default function PreviewMyAssessmentQuestions() {
     // Set the iframe URL with the cache buster parameter
     setIframeUrl(baseUrl + generateCacheBuster());
   }, [location.state?.obeasses_id]);
-  // const { isRefetching: LearnosityObjLoad, refetch: fetchLearnosityObj } = useGet({
-  //   baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-  //   url: `assessments-service/get_activity_before_assign/${LID}/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}`,
-  //   onSuccess: (res: any) => {
-  //     const resp = res?.data?.response;
-  //     setPageData(resp);
-  //     const callbacks = {
-  //       errorListener(e: any) {
-  //         setError(e.msg || '');
-  //       }
-  //     };
-  //     if (resp?.learnosity_obj?.request?.items?.length) {
-  //       setitemsData(resp?.data?.assessment_items);
-  //       (window as any)?.LearnosityItems?.init(resp?.learnosity_obj, callbacks);
-  //     }
-  //   },
-  //   onError: ({ response }: any) => {
-  //     setError(response?.data?.message || response?.statusText || '');
-  //   },
-  //   enabled: false
-  // });
-
-  // useEffect(() => {
-  //   if (status === 'ready' && LID && userData?.user_ting) {
-  //     fetchLearnosityObj();
-  //   }
-  // }, [status, LID, userData]);
-
-  // if (LearnosityObjLoad) {
-  //   return (<Loader />);
-  // }
 
   const setConfig = () => {
     const user = userData;

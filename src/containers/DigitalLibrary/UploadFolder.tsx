@@ -74,7 +74,7 @@ const UploadFolder = ({
     onError: ({ response }: any) => {
       resetState();
       setLoading(false);
-      toast('error', 'Not Found' || 'Error');
+      toast('error', 'Not Found');
     },
     enabled: false
   });

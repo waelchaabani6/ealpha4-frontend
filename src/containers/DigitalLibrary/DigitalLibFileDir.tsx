@@ -237,7 +237,7 @@ export default function DigitalLibFileDir() {
         });
       } else {
         setSelectedAction('Select');
-        toast('error', 'Please select data' || 'Error');
+        toast('error', 'Please select data');
       }
     }
     if (selectedAction === MULTIPLE_SELECT_OPTIONS.DELETE) {
@@ -254,7 +254,7 @@ export default function DigitalLibFileDir() {
         }
       } else {
         setSelectedAction('Select');
-        toast('error', 'Please select data' || 'Error');
+        toast('error', 'Please select data');
       }
     }
   }, [selectedAction]);
@@ -678,7 +678,7 @@ export default function DigitalLibFileDir() {
     onError: ({ response }: any) => {
       setSelectedAction('Select');
       setBulkSelect([]);
-      toast('error', 'Download Request failed' || 'Erro');
+      toast('error', 'Download Request failed');
     },
     enabled: false
   });
@@ -698,7 +698,7 @@ export default function DigitalLibFileDir() {
     },
     onError: ({ response }: any) => {
       setSelectedAction('Select');
-      toast('error', 'Not Found' || 'Erro');
+      toast('error', 'Not Found');
     },
     enabled: false
   });
@@ -718,7 +718,7 @@ export default function DigitalLibFileDir() {
     },
     onError: ({ response }: any) => {
       setSelectedAction('Select');
-      toast('error', 'Not Found' || 'Erro');
+      toast('error', 'Not Found');
     },
     enabled: false
   });
