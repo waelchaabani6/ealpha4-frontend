@@ -3,27 +3,27 @@
 /* eslint-disable operator-linebreak */
 /* eslint-disable indent */
 /* eslint-disable comma-dangle */
-import RouteLayout from '@layout/routeLayout';
-import Dropdown from '@component/dropdown/Dropdown';
-import DatePicker from '@component/datepicker';
-import Button from '@component/button/button';
-import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import { Component, useEffect, useMemo, useRef, useState } from 'react';
+import RouteLayout from "@layout/routeLayout";
+import Dropdown from "@component/dropdown/Dropdown";
+import DatePicker from "@component/datepicker";
+import Button from "@component/button/button";
+import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   TABLE_LABELS,
   COMPONENTS,
   TOOLBAR_LABELS,
   RESULTS_PER_PAGE,
   USER_TYPE,
-} from '@constants/constants';
-import Wrapper from '@shared/wrapper/Wrapper';
-import { RadioGroup, FormControlLabel, Radio } from '@mui/material';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import { useSelector } from 'react-redux';
-import { selectSchoolData } from '@shared/store/schoolSlice';
-import ReactToPrint from 'react-to-print';
-import PrintIcon from '@mui/icons-material/Print';
-import { useGet, usePost } from '@shared/api/useApi';
+} from "@constants/constants";
+import Wrapper from "@shared/wrapper/Wrapper";
+import { RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
+import { useSelector } from "react-redux";
+import { selectSchoolData } from "@shared/store/schoolSlice";
+import ReactToPrint from "react-to-print";
+import PrintIcon from "@mui/icons-material/Print";
+import { useGet, usePost } from "@shared/api/useApi";
 import {
   currentUserAcademicDate,
   getNoOfPages,
@@ -31,12 +31,13 @@ import {
   userRole,
   sortData,
   sortByName,
-} from '@utility/utility';
-import DebounceInput from '@component/input/DebounceInput';
-import toast from '@shared/toast';
-import moment from 'moment';
-import { selectUser } from '@shared/store/userSlice';
-import { useNavigate, useParams } from 'react-router-dom';
+} from "@utility/utility";
+import DebounceInput from "@component/input/DebounceInput";
+import toast from "@shared/toast";
+import moment from "moment";
+import { selectUser } from "@shared/store/userSlice";
+import SearchInputWithResults from "@component/input/SearchInputWithResults";
+import { useNavigate, useParams } from "react-router-dom";
 
 const printButton = () => <PrintIcon />;
 
@@ -47,21 +48,39 @@ const TableColumns = [
     //   selector: 'id',
     //   showInHeader: true
     label: TABLE_LABELS?.SR_NO,
-    align: 'center',
+    align: "center",
   },
-
   {
-    label: 'Student First Name',
-    mapper: 'StudentFirstName',
+    label: "Select",
+    mapper: "Select",
+    component: COMPONENTS?.checkbox,
+    selector: "id",
+    showInHeader: true,
+    sx: {
+      display: "flex",
+      alignItems: "center",
+    },
+    cellSx: {
+      // display: 'flex',
+      justifyContent: "flex-start",
+      position: "relative",
+      left: "0px",
+    },
+    elementClass: "flex items-center",
+    // component: COMPONENTS?.checkbox
+  },
+  {
+    label: "Student First Name",
+    mapper: "StudentFirstName",
     isSort: false,
   },
   {
-    label: 'Student Last Name',
-    mapper: 'StudentLastName',
+    label: "Student Last Name",
+    mapper: "StudentLastName",
   },
   {
-    label: 'Grade',
-    mapper: 'Grade',
+    label: "Grade",
+    mapper: "Grade",
   },
   // {
   //   label: 'Status',
@@ -69,50 +88,41 @@ const TableColumns = [
   //   align: 'center',
   // },
   {
-    label: '',
-    mapper: 'Select',
-    component: 'custom-checkbox',
-    selector: 'id',
-    showInHeader: true,
-    align: 'center',
-    sx: {
-      display: 'flex',
-      alignItems: 'center',
-    },
-    cellSx: {
-      // display: 'flex',
-      justifyContent: 'flex-start',
-      position: 'relative',
-      left: '0px',
-    },
-    elementClass: 'flex items-center',
-    // component: COMPONENTS?.checkbox
+    label: "Status",
+    mapper: "Status",
+    align: "center",
   },
 ];
 
+type Student = {
+  student_id: number;
+  user_id: number;
+  first_name: string;
+  last_name: string;
+};
 function Attendance() {
   const { TEACHER } = USER_TYPE;
   const usersRole = useSelector((state: any) => state?.user?.role);
   const { user } = useSelector((state: any) => state);
   const [tableData, setTableData] = useState<any>([]);
   const [page, setPage] = useState(1);
-  const [orderBy, setOrderBy] = useState<any>('created_at');
-  const [order, setOrder] = useState<any>('asc');
+  const [orderBy, setOrderBy] = useState<any>("created_at");
+  const [order, setOrder] = useState<any>("asc");
   const [bulkSelect, setBulkSelect] = useState<any>([]);
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
   const [selectedBranch, setSelectedBranch] = useState<
-    number | null | 'select'
-  >('select');
-  const [selectedClass, setSelectedClass] = useState<number | null | 'select'>(
-    'select'
-  );
+    number | null | "select"
+  >("select");
+  const [selectedClass, setSelectedClass] = useState<
+    string | number | null | "select"
+  >("select");
 
   const { role, branchId, schoolId } = useSelector(selectUser);
-  const [searchString, setSearchString] = useState('');
+  const [searchString, setSearchString] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<
-    number | null | 'select' | ''
-  >('select');
+    number | null | "select" | ""
+  >("select");
   const { schoolData, branchData } = useSelector(selectSchoolData);
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [absentLoader, setAbsentLoader] = useState<boolean>();
@@ -120,6 +130,83 @@ function Attendance() {
   const noOfpages = getNoOfPages(totalDataCount, RESULTS_PER_PAGE?.[0]);
   const componentRef = useRef(null);
   const [courses, setCourses] = useState<any>([]);
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState<Student[]>([]);
+
+  // Define state for selected course
+  const [selectedCourse, setSelectedCourse] = useState<string | number>(
+    "select"
+  );
+
+  // Simulated loading states
+  const [loadCoursesForTeacher, setLoadCoursesForTeacher] = useState(false);
+  const [loadClassesForCourse, setLoadClassesForCourse] = useState(false);
+
+  // Fake array of courses
+  const coursesArray = [
+    { label: "Math", value: 1 },
+    { label: "Science", value: 2 },
+    { label: "English", value: 3 },
+    { label: "History", value: 4 },
+    { label: "Geography", value: 5 },
+  ];
+  const classesByCourse = {
+    1: [
+      { label: "Algebra 101", value: "algebra_101" },
+      { label: "Geometry Basics", value: "geometry_basics" },
+    ],
+    2: [
+      { label: "Physics Intro", value: "physics_intro" },
+      { label: "Chemistry Basics", value: "chemistry_basics" },
+    ],
+    3: [
+      { label: "Grammar 101", value: "grammar_101" },
+      { label: "Literature Basics", value: "literature_basics" },
+    ],
+    4: [
+      { label: "World History", value: "world_history" },
+      { label: "Medieval Times", value: "medieval_times" },
+    ],
+    5: [
+      { label: "Physical Geography", value: "physical_geography" },
+      { label: "Human Geography", value: "human_geography" },
+    ],
+  };
+
+  const handleInputSearch = (value: string) => {
+    setLoading(true);
+    // Simulate an API call
+    setTimeout(() => {
+      const mockResponse = {
+        students: [
+          {
+            student_id: 101,
+            user_id: 1001,
+            first_name: "Alice",
+            last_name: "Johnson",
+          },
+          {
+            student_id: 102,
+            user_id: 1002,
+            first_name: "Bob",
+            last_name: "Smith",
+          },
+        ],
+      };
+      setResults(
+        mockResponse.students.filter((student) =>
+          `${student.first_name} ${student.last_name}`
+            .toLowerCase()
+            .includes(value.toLowerCase())
+        )
+      );
+      setLoading(false);
+    }, 500);
+  };
+  const handleCourseChange = (currentCourse: number | string) => {
+    setSelectedCourse(currentCourse);
+    setSelectedClass("select"); // Reset class selection when a course changes
+  };
 
   const navigate = useNavigate();
   const { schoolName } = useParams();
@@ -137,7 +224,7 @@ function Attendance() {
   const { isLoading: subjectLoading, refetch: refetchSubjects } = useGet({
     baseURL: SchoolURL,
     url: `schools-service/schools/subject/list/?class_id=${
-      selectedClass || ''
+      selectedClass || ""
     }`,
     enabled: false,
     onSuccess: (resp: any) => {
@@ -153,9 +240,9 @@ function Attendance() {
 
   const { isLoading: subLoading, refetch: refectSubject } = useGet({
     baseURL: SchoolURL,
-    url: `schools-service/school-classes/subject/get?user_id=${user?.userId}&class_id=${
-      selectedClass || ''
-    }`,
+    url: `schools-service/school-classes/subject/get?user_id=${
+      user?.userId
+    }&class_id=${selectedClass || ""}`,
     enabled: false,
     onSuccess: (resp: any) => {
       const respData = resp?.data?.response;
@@ -174,10 +261,10 @@ function Attendance() {
       USER_TYPE.BRANCH_ADMIN,
       USER_TYPE.SUPER_ADMIN,
     ].includes(usersRole?.name);
-    if (selectedClass !== 'select' && isAdmin) {
+    if (selectedClass !== "select" && isAdmin) {
       refetchSubjects();
     } else if (
-      selectedClass !== 'select' &&
+      selectedClass !== "select" &&
       usersRole?.name === USER_TYPE.TEACHER
     ) {
       refectSubject();
@@ -194,7 +281,13 @@ function Attendance() {
 
   const { data: data2, isLoading: isLoading2 } = useGet({
     baseURL: SchoolURL,
-    url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id} ${branchData || selectedBranch !== 'select' ? `&branch_name=${branchName}` : ''}`,
+    url: `schools-service/school-classes/?limit=1000&school_id=${
+      schoolData?.id || branchData?.school_data?.id
+    } ${
+      branchData || selectedBranch !== "select"
+        ? `&branch_name=${branchName}`
+        : ""
+    }`,
     enabled: !!(schoolData?.id || branchData?.school_data?.id),
   });
 
@@ -221,24 +314,36 @@ function Attendance() {
   }, [selectedSubject]);
 
   const formatSelectedDate = useMemo(
-    () => moment(selectedDate).format('yyyy-MM-DD'),
+    () => moment(selectedDate).format("yyyy-MM-DD"),
     [selectedDate]
   );
 
-  const generatedUrl = `roster-service/student-attendance-list?limit=${10}&school_id=${schoolData?.id || branchData?.school_data?.id}&subject=${subjectName || ''}&class_name=${className}${selectedDate ? `&date=${formatSelectedDate}` : ''}${branchData ? `&branch_id=${branchData?.id}` : selectedBranch !== 'select' ? `&branch_id=${selectedBranch}` : ''}&offset=${(page - 1) * Number(noOfpages)}${searchString ? `&search=${searchString}` : ''}`;
-  const cleanedUrl = generatedUrl.trim().replace(/\s+/g, ' ');
+  const generatedUrl = `roster-service/student-attendance-list?limit=${10}&school_id=${
+    schoolData?.id || branchData?.school_data?.id
+  }&subject=${subjectName || ""}&class_name=${className}${
+    selectedDate ? `&date=${formatSelectedDate}` : ""
+  }${
+    branchData
+      ? `&branch_id=${branchData?.id}`
+      : selectedBranch !== "select"
+      ? `&branch_id=${selectedBranch}`
+      : ""
+  }&offset=${(page - 1) * Number(noOfpages)}${
+    searchString ? `&search=${searchString}` : ""
+  }`;
+  const cleanedUrl = generatedUrl.trim().replace(/\s+/g, " ");
 
   const { data, isLoading, refetch } = useGet({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
     url: `${cleanedUrl}`,
     enabled: Boolean(
-      (selectedClass !== 'select' &&
-        selectedSubject !== 'select' &&
+      (selectedClass !== "select" &&
+        selectedSubject !== "select" &&
         selectedDate) ||
-        (selectedClass !== 'select' &&
-          selectedSubject !== 'select' &&
+        (selectedClass !== "select" &&
+          selectedSubject !== "select" &&
           selectedDate &&
-          selectedBranch !== 'select')
+          selectedBranch !== "select")
     ),
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.count);
@@ -247,24 +352,24 @@ function Attendance() {
 
   const { isLoading: isLoading3, mutate } = usePost({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
-    url: 'roster-service/create-attendance-data',
+    url: "roster-service/create-attendance-data",
     onSuccess: () => {
       refetch();
       const msg = absentLoader
-        ? 'All absent success'
+        ? "All absent success"
         : presentLoader
-          ? 'All present success'
-          : 'success';
-      toast('success', 'Attendance Updated Successfully!');
-      // setAbsentLoader(false);
-      // setPresentLoader(false);
+        ? "All present success"
+        : "success";
+      toast("success", "Attendance Updated Successfully!");
+      setAbsentLoader(false);
+      setPresentLoader(false);
       setBulkSelect([]);
       navigate(`/${schoolName}/attandance/reports`);
     },
     onError: (error: any) => {
-      // setAbsentLoader(false);
-      // setPresentLoader(false);
-      toast('error', error?.response?.data?.message);
+      setAbsentLoader(false);
+      setPresentLoader(false);
+      toast("error", error?.response?.data?.message);
     },
   });
 
@@ -373,7 +478,7 @@ function Attendance() {
               value={true}
               control={<Radio color="success" size="small" />}
               label="Present"
-              sx={{ marginRight: '20px' }}
+              sx={{ marginRight: "20px" }}
             />
             <FormControlLabel
               value={false}
@@ -417,7 +522,7 @@ function Attendance() {
   };
 
   const submitHandler = () => {
-    console.log(bulkSelect, 'bulkSelect');
+    console.log(bulkSelect, "bulkSelect");
     const dt = bulkSelect?.map((item: any) => {
       const idx = tmpTableData.find((itm: any) => itm.id === item);
       // console.log(idx);
@@ -428,21 +533,21 @@ function Attendance() {
           student: item,
           school_id: schoolData?.id || branchData?.school_data?.id,
           school_class: selectedClass,
-          subject: subjectName || '',
+          subject: subjectName || "",
           present: idx?.isPresent,
           present_on_date: formatSelectedDate,
         } as any;
         if (branchId) {
           tmp.branch_id = branchId;
         }
-        if (selectedBranch !== 'select') {
+        if (selectedBranch !== "select") {
           tmp.branch_id = selectedBranch;
         }
         return tmp;
       }
       return null;
     });
-    console.log('submit data', dt);
+    console.log("submit data", dt);
     mutate(dt);
   };
 
@@ -452,7 +557,7 @@ function Attendance() {
         student: item?.id,
         school_id: schoolData?.id || branchData?.school_data?.id,
         school_class: selectedClass,
-        subject: subjectName || '',
+        subject: subjectName || "",
         present: flag,
         present_on_date: formatSelectedDate,
       } as any;
@@ -460,7 +565,7 @@ function Attendance() {
         tmp.branch_id = branchId;
       }
 
-      if (selectedBranch !== 'select') {
+      if (selectedBranch !== "select") {
         tmp.branch_id = selectedBranch;
       }
       return tmp;
@@ -480,7 +585,7 @@ function Attendance() {
 
   const branchSelectHandler = (currentBranch: number) => {
     setSelectedBranch(currentBranch);
-    setSelectedClass('select');
+    setSelectedClass("select");
     setTableData([]);
   };
 
@@ -518,16 +623,29 @@ function Attendance() {
                   ? schoolData?.school_name
                   : branchData?.school_data.school_name
               }`
-            : ''
+            : ""
         }
-        subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ''}
+        subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ""}
         menuArray={ADMIN_TOOLBAR_MENU}
         // handleToolbarAction={handleToolbarAction}
       />
 
       <div className="w-full grid grid-cols-1 lg:grid-cols-4 my-2 gap-2 items-center justify-between">
         <div className="pt-6 w-full">
-          <DebounceInput onChange={handleSearch} />
+          {/* <DebounceInput onChange={handleSearch} /> */}
+          <SearchInputWithResults
+            onChange={handleInputSearch}
+            loading={loading}
+            results={results}
+            renderResultItem={(student: Student) => (
+              <span>
+                {student.first_name} {student.last_name}
+              </span>
+            )}
+            onResultSelect={(student) =>
+              console.log(`Selected student:`, student)
+            }
+          />
         </div>
         <div className="md:col-span-3 grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {!branchData && !userRole().isTeacher && (
@@ -536,32 +654,56 @@ function Attendance() {
               value={selectedBranch}
               loading={isLoading1}
               dataArray={[
-                { label: 'Select', value: 'select' },
+                { label: "Select", value: "select" },
                 ...(branchArr?.map((item: any) => ({
                   label: item.name,
                   value: item.id,
                 })) || []),
               ]}
               onChangeHandler={branchSelectHandler}
-              sxClass={{ width: '100%' }}
+              sxClass={{ width: "100%" }}
             />
           )}
-          <Dropdown
+          {/* <Dropdown
             title="Select Class"
             value={selectedClass}
             loading={loadClassesForTeacher}
-            dataArray={[{ label: 'Select', value: 'select' }, ...ClassArray]}
+            dataArray={[{ label: "Select", value: "select" }, ...ClassArray]}
             onChangeHandler={(currentClass: number) =>
               setSelectedClass(currentClass)
             }
-            sxClass={{ width: '100%' }}
+            sxClass={{ width: "100%" }}
+          /> */}
+          <Dropdown
+            title="Select Course"
+            value={selectedCourse}
+            loading={loadCoursesForTeacher}
+            dataArray={[{ label: "Select", value: "select" }, ...coursesArray]}
+            onChangeHandler={(currentCourse: number | string) =>
+              setSelectedCourse(currentCourse)
+            }
+            sxClass={{ width: "100%" }}
           />
           <Dropdown
+            title="Select Class"
+            value={selectedClass}
+            loading={loadClassesForCourse}
+            dataArray={[
+              { label: "Select", value: "select" },
+              ...(classesByCourse[selectedCourse] || []),
+            ]}
+            onChangeHandler={(currentClass: string | number) =>
+              setSelectedClass(currentClass)
+            }
+            sxClass={{ width: "100%" }}
+            disabled={selectedCourse === "select"} // Disable if no course selected
+          />
+          {/* <Dropdown
             title="Select Subject"
             value={selectedSubject}
             loading={subjectLoading || subLoading}
             dataArray={[
-              { label: 'Select', value: 'select' },
+              { label: "Select", value: "select" },
               ...(SubjectData?.map((item: any) => ({
                 label: item.label,
                 value: item?.value,
@@ -570,8 +712,8 @@ function Attendance() {
             onChangeHandler={(currentSubject: number) =>
               setSelectedSubject(currentSubject)
             }
-            sxClass={{ width: '100%' }}
-          />
+            sxClass={{ width: "100%" }}
+          /> */}
           <div className="pb-[5px]">
             <DatePicker
               fullWidth={true}
