@@ -154,13 +154,18 @@ export default function OBE_CreateAssessments() {
   useEffect(() => {
     if (dataValues) {
       const currentDate = new Date();
+      const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
+      const targetPagePath = `/${schoolName}/obe-assessments/my-assessments`; // Update this to the path of the page you want to redirect to
+      const targetPageUrl = `${window.location.origin}${targetPagePath}`; // Constructs the full URL
+
       const message: any = {
         key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
         user_name: `${user?.first_name} ${user?.last_name}`,
         user_id: user?.user_ting,
         assessment_id: obeId,
         date_time: currentDate,
-        redirectionPath: location.pathname
+        role: user?.role?.name,
+        redirectionPath: targetPageUrl
       };
       const encryptedData = encryptMessage(JSON.stringify(message));
       window.location.href = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/create-assessments/?token=${encodeURIComponent(encryptedData)}`;

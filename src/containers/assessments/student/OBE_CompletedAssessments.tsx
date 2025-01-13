@@ -38,9 +38,9 @@ interface Message {
   user_id: string;
   obeasses_id: string | null;
   date_time: Date;
-  originPath: string;
-  page: number;
-  user_ting: string;
+  role: String;
+  redirectionPath: String;
+  user_ting: String;
 }
 export default function OBE_CompletedAssessments() {
   const { schoolName } = useParams();
@@ -231,16 +231,18 @@ export default function OBE_CompletedAssessments() {
     const obeasses_id = data?.obeasses_id;
     const user_ting = data?.user_ting;
     setConfig(user_ting);
-    const originPath = window.location.href;
     const currentDate = new Date();
+    const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
+    const targetPagePath = `/${schoolName}/obe-assessments/assigned/completed_assessments`; // Update this to the path of the page you want to redirect to
+    const targetPageUrl = `${window.location.origin}${targetPagePath}`; // Constructs the full URL
     const message: Message = {
       key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
       user_name: `${user?.first_name} ${user?.last_name}`,
       user_id: user?.user_ting,
       obeasses_id: obeasses_id || null,
       date_time: currentDate,
-      originPath,
-      page,
+      role: user?.role?.name,
+      redirectionPath: targetPageUrl,
       user_ting
     };
     const encryptedData = encryptMessage(JSON.stringify(message));

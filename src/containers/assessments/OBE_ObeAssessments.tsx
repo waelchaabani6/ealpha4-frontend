@@ -29,6 +29,8 @@ interface Message {
   user_id: string;
   assessment_id: string | null;
   date_time: Date;
+  role: String;
+  redirectionPath: String;
 }
 export default function OBE_ObeAssessments() {
   const { user } = useSelector((state: any) => state);
@@ -142,12 +144,18 @@ export default function OBE_ObeAssessments() {
       deleteHandler(data);
     } else if (handlername === 'view') {
       const currentDate = new Date();
+      const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
+      const targetPagePath = `/${schoolName}/obe-assessments`; // Update this to the path of the page you want to redirect to
+      const targetPageUrl = `${window.location.origin}${targetPagePath}`; // Constructs the full URL
       const message: Message = {
         key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
         user_name: `${user?.first_name} ${user?.last_name}`,
         user_id: user?.user_ting,
         assessment_id: assessId || null,
         date_time: currentDate,
+        role: user?.role?.name,
+        redirectionPath: targetPageUrl
+
       };
       const encryptedData = encryptMessage(JSON.stringify(message));
       console.log('helloe heree ', encodeURIComponent(encryptedData))
