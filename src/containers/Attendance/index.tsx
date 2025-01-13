@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable linebreak-style */
 /* eslint-disable operator-linebreak */
@@ -32,7 +31,6 @@ import {
   userRole,
   sortData,
   sortByName,
-
 } from "@utility/utility";
 import DebounceInput from "@component/input/DebounceInput";
 import toast from "@shared/toast";
@@ -42,13 +40,6 @@ import SearchInputWithResults from "@component/input/SearchInputWithResults";
 import { useNavigate, useParams } from "react-router-dom";
 
 const printButton = () => <PrintIcon />;
-
-type Student = {
-  student_id: number;
-  user_id: number;
-  first_name: string;
-  last_name: string;
-};
 
 const TableColumns = [
   {
@@ -120,12 +111,11 @@ function Attendance() {
   const [bulkSelect, setBulkSelect] = useState<any>([]);
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
   const [selectedBranch, setSelectedBranch] = useState<
-    number | null | 'select'
-  >('select');
+    number | null | "select"
+  >("select");
   const [selectedClass, setSelectedClass] = useState<
-    string | number | null | 'select'
-  >('select');
-
+    string | number | null | "select"
+  >("select");
 
   const { role, branchId, schoolId } = useSelector(selectUser);
   const [searchString, setSearchString] = useState("");
@@ -216,80 +206,6 @@ function Attendance() {
   const handleCourseChange = (currentCourse: number | string) => {
     setSelectedCourse(currentCourse);
     setSelectedClass("select"); // Reset class selection when a course changes
-  };
-
-  const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<Student[]>([]);
-  // Define state for selected course
-  const [selectedCourse, setSelectedCourse] = useState<string | number>(
-    'select'
-  );
-  // Simulated loading states
-  const [loadCoursesForTeacher, setLoadCoursesForTeacher] = useState(false);
-  const [loadClassesForCourse, setLoadClassesForCourse] = useState(false);
-  // Fake array of courses
-  const coursesArray = [
-    { label: 'Math', value: 1 },
-    { label: 'Science', value: 2 },
-    { label: 'English', value: 3 },
-    { label: 'History', value: 4 },
-    { label: 'Geography', value: 5 },
-  ];
-  const classesByCourse = {
-    1: [
-      { label: 'Algebra 101', value: 'algebra_101' },
-      { label: 'Geometry Basics', value: 'geometry_basics' },
-    ],
-    2: [
-      { label: 'Physics Intro', value: 'physics_intro' },
-      { label: 'Chemistry Basics', value: 'chemistry_basics' },
-    ],
-    3: [
-      { label: 'Grammar 101', value: 'grammar_101' },
-      { label: 'Literature Basics', value: 'literature_basics' },
-    ],
-    4: [
-      { label: 'World History', value: 'world_history' },
-      { label: 'Medieval Times', value: 'medieval_times' },
-    ],
-    5: [
-      { label: 'Physical Geography', value: 'physical_geography' },
-      { label: 'Human Geography', value: 'human_geography' },
-    ],
-  };
-  const handleInputSearch = (value: string) => {
-    setLoading(true);
-    // Simulate an API call
-    setTimeout(() => {
-      const mockResponse = {
-        students: [
-          {
-            student_id: 101,
-            user_id: 1001,
-            first_name: 'Alice',
-            last_name: 'Johnson',
-          },
-          {
-            student_id: 102,
-            user_id: 1002,
-            first_name: 'Bob',
-            last_name: 'Smith',
-          },
-        ],
-      };
-      setResults(
-        mockResponse.students.filter((student) =>
-          `${student.first_name} ${student.last_name}`
-            .toLowerCase()
-            .includes(value.toLowerCase())
-        )
-      );
-      setLoading(false);
-    }, 500);
-  };
-  const handleCourseChange = (currentCourse: number | string) => {
-    setSelectedCourse(currentCourse);
-    setSelectedClass('select'); // Reset class selection when a course changes
   };
 
   const navigate = useNavigate();
@@ -796,34 +712,8 @@ function Attendance() {
             onChangeHandler={(currentSubject: number) =>
               setSelectedSubject(currentSubject)
             }
-            sxClass={{ width: '100%' }}
+            sxClass={{ width: "100%" }}
           /> */}
-
-          <Dropdown
-            title="Select Course"
-            value={selectedCourse}
-            loading={loadCoursesForTeacher}
-            dataArray={[{ label: 'Select', value: 'select' }, ...coursesArray]}
-            onChangeHandler={(currentCourse: number | string) =>
-              setSelectedCourse(currentCourse)
-            }
-            sxClass={{ width: '100%' }}
-          />
-          <Dropdown
-            title="Select Class"
-            value={selectedClass}
-            loading={loadClassesForCourse}
-            dataArray={[
-              { label: 'Select', value: 'select' },
-              ...(classesByCourse[selectedCourse] || []),
-            ]}
-            onChangeHandler={(currentClass: string | number) =>
-              setSelectedClass(currentClass)
-            }
-            sxClass={{ width: '100%' }}
-            disabled={selectedCourse === 'select'} // Disable if no course selected
-          />
-
           <div className="pb-[5px]">
             <DatePicker
               fullWidth={true}
