@@ -103,24 +103,24 @@ export default function Index() {
           role === USER_TYPE.PARENTS
             ? []
             : role === USER_TYPE.STUDENT
-              ? [
-                  { label: "Assigned Assignments", path: "assignment" },
-                  {
-                    label: "Completed Assignments",
-                    path: "assignment/completed-assignments",
-                  },
-                ]
-              : [
-                  { label: "View Assignments", path: "assignment" },
-                  {
-                    label: "Create Assignment",
-                    path: "assignment/create-assignment",
-                  },
-                  {
-                    label: "Completed Assignments",
-                    path: "assignment/completed-assignments",
-                  },
-                ]
+            ? [
+                { label: "Assigned Assignments", path: "assignment" },
+                {
+                  label: "Completed Assignments",
+                  path: "assignment/completed-assignments",
+                },
+              ]
+            : [
+                { label: "View Assignments", path: "assignment" },
+                {
+                  label: "Create Assignment",
+                  path: "assignment/create-assignment",
+                },
+                {
+                  label: "Completed Assignments",
+                  path: "assignment/completed-assignments",
+                },
+              ]
         }
       />
       {renderAssessment()}
@@ -177,10 +177,18 @@ export default function Index() {
         path={`/${schoolName}/attandance`}
         dropdown={true}
         childs={
-          role !== USER_TYPE.STUDENT && role !== USER_TYPE.PARENTS
+          role !== USER_TYPE.STUDENT &&
+          role !== USER_TYPE.PARENTS &&
+          role !== USER_TYPE.SCHOOL_ADMIN
             ? [
                 { label: "Mark Attendance", path: "attandance/mark" },
                 { label: "Attendance Reports", path: "attandance/reports" },
+              ]
+            : role === USER_TYPE.SCHOOL_ADMIN
+            ? [
+                { label: "Mark Attendance", path: "attandance/mark" },
+                { label: "Attendance Reports", path: "attandance/reports" },
+                { label: "School Holidays", path: "attandance/holidays" },
               ]
             : []
         }
