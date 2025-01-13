@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable linebreak-style */
 /* eslint-disable operator-linebreak */
@@ -37,8 +38,16 @@ import toast from '@shared/toast';
 import moment from 'moment';
 import { selectUser } from '@shared/store/userSlice';
 import { useNavigate, useParams } from 'react-router-dom';
+import SearchInputWithResults from '@component/input/SearchInputWithResults';
 
 const printButton = () => <PrintIcon />;
+
+type Student = {
+  student_id: number;
+  user_id: number;
+  first_name: string;
+  last_name: string;
+};
 
 const TableColumns = [
   {
@@ -103,9 +112,9 @@ function Attendance() {
   const [selectedBranch, setSelectedBranch] = useState<
     number | null | 'select'
   >('select');
-  const [selectedClass, setSelectedClass] = useState<number | null | 'select'>(
-    'select'
-  );
+  const [selectedClass, setSelectedClass] = useState<
+    string | number | null | 'select'
+  >('select');
 
   const { role, branchId, schoolId } = useSelector(selectUser);
   const [searchString, setSearchString] = useState('');
@@ -120,6 +129,80 @@ function Attendance() {
   const noOfpages = getNoOfPages(totalDataCount, RESULTS_PER_PAGE?.[0]);
   const componentRef = useRef(null);
   const [courses, setCourses] = useState<any>([]);
+
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState<Student[]>([]);
+  // Define state for selected course
+  const [selectedCourse, setSelectedCourse] = useState<string | number>(
+    'select'
+  );
+  // Simulated loading states
+  const [loadCoursesForTeacher, setLoadCoursesForTeacher] = useState(false);
+  const [loadClassesForCourse, setLoadClassesForCourse] = useState(false);
+  // Fake array of courses
+  const coursesArray = [
+    { label: 'Math', value: 1 },
+    { label: 'Science', value: 2 },
+    { label: 'English', value: 3 },
+    { label: 'History', value: 4 },
+    { label: 'Geography', value: 5 },
+  ];
+  const classesByCourse = {
+    1: [
+      { label: 'Algebra 101', value: 'algebra_101' },
+      { label: 'Geometry Basics', value: 'geometry_basics' },
+    ],
+    2: [
+      { label: 'Physics Intro', value: 'physics_intro' },
+      { label: 'Chemistry Basics', value: 'chemistry_basics' },
+    ],
+    3: [
+      { label: 'Grammar 101', value: 'grammar_101' },
+      { label: 'Literature Basics', value: 'literature_basics' },
+    ],
+    4: [
+      { label: 'World History', value: 'world_history' },
+      { label: 'Medieval Times', value: 'medieval_times' },
+    ],
+    5: [
+      { label: 'Physical Geography', value: 'physical_geography' },
+      { label: 'Human Geography', value: 'human_geography' },
+    ],
+  };
+  const handleInputSearch = (value: string) => {
+    setLoading(true);
+    // Simulate an API call
+    setTimeout(() => {
+      const mockResponse = {
+        students: [
+          {
+            student_id: 101,
+            user_id: 1001,
+            first_name: 'Alice',
+            last_name: 'Johnson',
+          },
+          {
+            student_id: 102,
+            user_id: 1002,
+            first_name: 'Bob',
+            last_name: 'Smith',
+          },
+        ],
+      };
+      setResults(
+        mockResponse.students.filter((student) =>
+          `${student.first_name} ${student.last_name}`
+            .toLowerCase()
+            .includes(value.toLowerCase())
+        )
+      );
+      setLoading(false);
+    }, 500);
+  };
+  const handleCourseChange = (currentCourse: number | string) => {
+    setSelectedCourse(currentCourse);
+    setSelectedClass('select'); // Reset class selection when a course changes
+  };
 
   const navigate = useNavigate();
   const { schoolName } = useParams();
@@ -527,7 +610,20 @@ function Attendance() {
 
       <div className="w-full grid grid-cols-1 lg:grid-cols-4 my-2 gap-2 items-center justify-between">
         <div className="pt-6 w-full">
-          <DebounceInput onChange={handleSearch} />
+          {/* <DebounceInput onChange={handleSearch} /> */}
+          <SearchInputWithResults
+            onChange={handleInputSearch}
+            loading={loading}
+            results={results}
+            renderResultItem={(student: Student) => (
+              <span>
+                {student.first_name} {student.last_name}
+              </span>
+            )}
+            onResultSelect={(student) =>
+              console.log(`Selected student:`, student)
+            }
+          />
         </div>
         <div className="md:col-span-3 grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {!branchData && !userRole().isTeacher && (
@@ -546,7 +642,7 @@ function Attendance() {
               sxClass={{ width: '100%' }}
             />
           )}
-          <Dropdown
+          {/* <Dropdown
             title="Select Class"
             value={selectedClass}
             loading={loadClassesForTeacher}
@@ -571,6 +667,31 @@ function Attendance() {
               setSelectedSubject(currentSubject)
             }
             sxClass={{ width: '100%' }}
+          /> */}
+
+          <Dropdown
+            title="Select Course"
+            value={selectedCourse}
+            loading={loadCoursesForTeacher}
+            dataArray={[{ label: 'Select', value: 'select' }, ...coursesArray]}
+            onChangeHandler={(currentCourse: number | string) =>
+              setSelectedCourse(currentCourse)
+            }
+            sxClass={{ width: '100%' }}
+          />
+          <Dropdown
+            title="Select Class"
+            value={selectedClass}
+            loading={loadClassesForCourse}
+            dataArray={[
+              { label: 'Select', value: 'select' },
+              ...(classesByCourse[selectedCourse] || []),
+            ]}
+            onChangeHandler={(currentClass: string | number) =>
+              setSelectedClass(currentClass)
+            }
+            sxClass={{ width: '100%' }}
+            disabled={selectedCourse === 'select'} // Disable if no course selected
           />
           <div className="pb-[5px]">
             <DatePicker
