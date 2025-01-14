@@ -2,24 +2,24 @@
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable comma-dangle */
 /* eslint-disable indent */
-import { useMemo, useRef, useState, useEffect } from 'react';
-import RouteLayout from '@layout/routeLayout';
-import Dropdown from '@component/dropdown/Dropdown';
-import DatePicker from '@component/datepicker';
-import SimpleTableAttendanceReport from '@component/SimpleTableAttendanceReport';
-import { useSelector } from 'react-redux';
-import { selectSchoolData } from '@shared/store/schoolSlice';
-import { useGet } from '@shared/api/useApi';
-import toast from '@shared/toast';
-import Loader from '@shared/loader';
-import EmailIcon from '@mui/icons-material/Email';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import { RESULTS_PER_PAGE, TOOLBAR_LABELS } from '@constants/constants';
-import ReactToPrint from 'react-to-print';
-import PrintIcon from '@mui/icons-material/Print';
-import { getNoOfPages, sortData, userRole } from '@utility/utility';
-import { selectUser } from '@shared/store/userSlice';
-import moment from 'moment';
+import { useMemo, useRef, useState, useEffect } from "react";
+import RouteLayout from "@layout/routeLayout";
+import Dropdown from "@component/dropdown/Dropdown";
+import DatePicker from "@component/datepicker";
+import SimpleTableAttendanceReport from "@component/SimpleTableAttendanceReport";
+import { useSelector } from "react-redux";
+import { selectSchoolData } from "@shared/store/schoolSlice";
+import { useGet } from "@shared/api/useApi";
+import toast from "@shared/toast";
+import Loader from "@shared/loader";
+import EmailIcon from "@mui/icons-material/Email";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
+import { RESULTS_PER_PAGE, TOOLBAR_LABELS } from "@constants/constants";
+import ReactToPrint from "react-to-print";
+import PrintIcon from "@mui/icons-material/Print";
+import { getNoOfPages, sortData, userRole } from "@utility/utility";
+import { selectUser } from "@shared/store/userSlice";
+import moment from "moment";
 
 const printButton = () => <PrintIcon />;
 
@@ -28,20 +28,20 @@ type DateNavigation = {
   end_date: string;
   flag: boolean;
 };
-type SortByType = 'Present' | 'Absent' | 'All';
+type SortByType = "Present" | "Absent" | "All";
 
 function formatData(data: any, page: number, subject: string) {
   const cData = [] as any;
   const headerDates = [] as any;
   let isNext = {
-    start_date: '',
-    end_date: '',
+    start_date: "",
+    end_date: "",
     flag: false,
   } as DateNavigation;
 
   let isPrev = {
-    start_date: '',
-    end_date: '',
+    start_date: "",
+    end_date: "",
     flag: false,
   } as DateNavigation;
   // eslint-disable-next-line array-callback-return, consistent-return
@@ -53,7 +53,7 @@ function formatData(data: any, page: number, subject: string) {
 
   const newData: [] = SubjectArr?.map((item: any) => {
     const objectKey = Object.keys(item).find(
-      (key) => typeof item[key] === 'object' && item[key] !== null
+      (key) => typeof item[key] === "object" && item[key] !== null
     );
     if (objectKey) {
       const newObj = {
@@ -73,8 +73,8 @@ function formatData(data: any, page: number, subject: string) {
         const prevUrl = new URL(item.Subject.previous);
         const searchParams = new URLSearchParams(prevUrl.search);
         isPrev = {
-          start_date: searchParams.get('start_date') || '',
-          end_date: searchParams.get('end_date') || '',
+          start_date: searchParams.get("start_date") || "",
+          end_date: searchParams.get("end_date") || "",
           flag: true,
         };
       }
@@ -82,8 +82,8 @@ function formatData(data: any, page: number, subject: string) {
         const nextUrl = new URL(item?.Subject?.next);
         const searchParams = new URLSearchParams(nextUrl.search);
         isNext = {
-          start_date: searchParams.get('start_date') || '',
-          end_date: searchParams.get('end_date') || '',
+          start_date: searchParams.get("start_date") || "",
+          end_date: searchParams.get("end_date") || "",
           flag: true,
         };
       }
@@ -99,14 +99,14 @@ function formatData(data: any, page: number, subject: string) {
             headerDates.push(dt);
           }
           return itm.present
-            ? 'Checked'
+            ? "Checked"
             : itm.is_weekend
-              ? 'Weekend'
-              : itm.is_holiday
-                ? 'HoliDay'
-                : itm.present === null
-                  ? 'UnChecked'
-                  : 'Absent';
+            ? "Weekend"
+            : itm.is_holiday
+            ? "HoliDay"
+            : itm.present === null
+            ? "UnChecked"
+            : "Absent";
         }),
         subject: item?.SubjectName,
       } as any;
@@ -121,20 +121,20 @@ export default function () {
   const componentRef = useRef(null);
   const [page, setPage] = useState(1);
   const [datesPerPage, setDatesPerPage] = useState(1);
-  const [sortBy, setSortBy] = useState<SortByType>('All');
-  const [recordsPerPage, setRecordsPerPage] = useState<number | 'all'>(10);
-  const [selectedSubject, setSelectedSubject] = useState<number | 'select'>(
-    'select'
+  const [sortBy, setSortBy] = useState<SortByType>("All");
+  const [recordsPerPage, setRecordsPerPage] = useState<number | "all">(10);
+  const [selectedSubject, setSelectedSubject] = useState<number | "select">(
+    "select"
   );
   const [selectedTeacher, setSelectedTeacher] = useState<
-    number | null | 'select'
-  >('select');
-  const [fromDate, setFromDate] = useState<any>('');
-  const [toDate, setToDate] = useState<any>('');
+    number | null | "select"
+  >("select");
+  const [fromDate, setFromDate] = useState<any>("");
+  const [toDate, setToDate] = useState<any>("");
   const [totalDataCount, setTotalDataCount] = useState(0);
   const { userId } = useSelector(selectUser);
   const { schoolData, branchData } = useSelector(selectSchoolData);
-  const [selectedChild, setSelectedChild] = useState('');
+  const [selectedChild, setSelectedChild] = useState("");
   const [childrenData, setChildrenData] = useState<any>([]);
   const noOfpages = getNoOfPages(totalDataCount, RESULTS_PER_PAGE?.[0]);
   const [courses, setCourses] = useState<any>([]);
@@ -146,8 +146,8 @@ export default function () {
         fetchEmailApi();
       } else {
         toast(
-          'error',
-          'Please select from date and to date to send the email.'
+          "error",
+          "Please select from date and to date to send the email."
         );
       }
     }
@@ -199,7 +199,9 @@ export default function () {
 
   const { isLoading: subLoading, refetch: refectSubject } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/school-classes/subject/get?user_id=${StudentUserID}&class_id=${AssignedID?.assignClassID || ''}`,
+    url: `schools-service/school-classes/subject/get?user_id=${StudentUserID}&class_id=${
+      AssignedID?.assignClassID || ""
+    }`,
     enabled: false,
     onSuccess: (resp: any) => {
       const respData = resp?.data?.response;
@@ -250,7 +252,9 @@ export default function () {
 
   const { isLoading: isLoadingTeacher, refetch: dataTeacher } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
-    url: `users-service/teachers/list/dropdown/?school_id=${schoolID}${BranchID ? `&branch_id=${BranchID}` : ''}`,
+    url: `users-service/teachers/list/dropdown/?school_id=${schoolID}${
+      BranchID ? `&branch_id=${BranchID}` : ""
+    }`,
     enabled: false,
     onSuccess: (resp: any) => {
       const respData = resp?.data?.response?.results;
@@ -280,14 +284,22 @@ export default function () {
   } = useGet({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
     // url: `roster-service/parent-child-attendance-report-list/?offset=${(datesPerPage - 1) * Number(noOfpages)}&limit=7&student_id=${71 || selectedChild}&start_date=${formatFromDate}&end_date=${formatToDate}${selectedSubject !== 'select' ? `&subject=${subjectName}` : ''}${selectedTeacher !== 'select' ? `&teacher_id=${14229 || teacherId}` : ''}`,
-    url: `roster-service/parent-child-attendance-report-list/?offset=${(datesPerPage - 1) * Number(noOfpages)}&limit=7&student_id=${selectedChild || ''}&class_id=${ClassId}&start_date=${moment(fromDate).format('yyyy-MM-DD')}&end_date=${moment(toDate).format('yyyy-MM-DD')}${selectedSubject !== 'select' ? `&subject_name=${subjectName}` : ''}${selectedTeacher !== 'select' ? `&teacher_id=${teacherId}` : ''}`,
+    url: `roster-service/parent-child-attendance-report-list/?offset=${
+      (datesPerPage - 1) * Number(noOfpages)
+    }&limit=7&student_id=${
+      selectedChild || ""
+    }&class_id=${ClassId}&start_date=${moment(fromDate).format(
+      "yyyy-MM-DD"
+    )}&end_date=${moment(toDate).format("yyyy-MM-DD")}${
+      selectedSubject !== "select" ? `&subject_name=${subjectName}` : ""
+    }${selectedTeacher !== "select" ? `&teacher_id=${teacherId}` : ""}`,
     enabled: !!(fromDate && toDate && selectedChild),
     retry: 0,
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.count);
     },
     onError: ({ response }: any) => {
-      toast('error', response?.data?.message || 'Error');
+      toast("error", response?.data?.message || "Error");
     },
   });
 
@@ -298,15 +310,21 @@ export default function () {
     isRefetching: refetchEmail,
   } = useGet({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
-    url: `roster-service/parent-child-attendance-report-list?student_id=${selectedChild}&start_date=${moment(fromDate).format('yyyy-MM-DD')}&end_date=${moment(toDate).format('yyyy-MM-DD')}${selectedSubject !== 'select' ? `&subject=${subjectName}` : ''}${selectedTeacher !== 'select' ? `&teacher_id=${teacherId}` : ''}&is_email=true`,
+    url: `roster-service/parent-child-attendance-report-list?student_id=${selectedChild}&start_date=${moment(
+      fromDate
+    ).format("yyyy-MM-DD")}&end_date=${moment(toDate).format("yyyy-MM-DD")}${
+      selectedSubject !== "select" ? `&subject=${subjectName}` : ""
+    }${
+      selectedTeacher !== "select" ? `&teacher_id=${teacherId}` : ""
+    }&is_email=true`,
     onSuccess: (response: any) => {
       toast(
-        'success',
-        'Email sent successfully to you, please check your inbox'
+        "success",
+        "Email sent successfully to you, please check your inbox"
       );
     },
     onError: ({ response }: any) => {
-      toast('error', response?.data?.message || 'Error');
+      toast("error", response?.data?.message || "Error");
     },
     enabled: false,
   });
@@ -332,7 +350,7 @@ export default function () {
     [page, fromDate, toDate, data2, selectedSubject]
   );
 
-  const rowsPerPageHandler = (val: number | 'all') => {
+  const rowsPerPageHandler = (val: number | "all") => {
     setRecordsPerPage(val);
   };
 
@@ -350,24 +368,24 @@ export default function () {
   const columns = useMemo(
     () => [
       {
-        label: 'Sr No.',
-        id: 'sr_no',
+        label: "Sr No.",
+        id: "sr_no",
       },
       {
-        id: 'subject',
-        label: 'Subject',
+        id: "subject",
+        label: "Subject",
       },
       {
-        id: 'AttendanceReport',
+        id: "AttendanceReport",
         label: headerDates,
       },
       {
-        id: 'TotalPresent',
-        label: 'Total Present',
+        id: "TotalPresent",
+        label: "Total Present",
       },
       {
-        id: 'TotalAbsent',
-        label: 'Total Absent',
+        id: "TotalAbsent",
+        label: "Total Absent",
       },
     ],
     [headerDates]
@@ -392,9 +410,9 @@ export default function () {
                     ? schoolData?.school_name
                     : branchData?.school_data.school_name
                 }`
-              : ''
+              : ""
           }
-          subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ''}
+          subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ""}
           menuArray={ADMIN_TOOLBAR_MENU}
           handleToolbarAction={handleToolbarAction}
         />
@@ -406,14 +424,14 @@ export default function () {
             displayEmpty={true}
             onChangeHandler={(value) => setSelectedChild(value)}
             loading={childrenLoading}
-            sxClass={{ width: '100%' }}
+            sxClass={{ width: "100%" }}
           />
           <Dropdown
             title="Select Teacher"
             value={selectedTeacher}
             loading={isLoadingTeacher}
             dataArray={[
-              { label: 'Select', value: 'select' },
+              { label: "Select", value: "select" },
               ...(TeacherData?.map((item: any) => ({
                 label: `${item.first_name} ${item.last_name}`,
                 value: item.user_id,
@@ -422,14 +440,14 @@ export default function () {
             onChangeHandler={(currentTeacher: number) =>
               setSelectedTeacher(currentTeacher)
             }
-            sxClass={{ width: '100%' }}
+            sxClass={{ width: "100%" }}
           />
           <Dropdown
             title="Select Subject"
             value={selectedSubject}
             loading={subLoading}
             dataArray={[
-              { label: 'Select', value: 'select' },
+              { label: "Select", value: "select" },
               ...(courses?.map((item: any) => ({
                 label: item.label,
                 value: item?.value,
@@ -438,7 +456,7 @@ export default function () {
             onChangeHandler={(currentSubject: number) =>
               setSelectedSubject(currentSubject)
             }
-            sxClass={{ width: '100%' }}
+            sxClass={{ width: "100%" }}
           />
           <div className="pb-[5px]">
             <DatePicker

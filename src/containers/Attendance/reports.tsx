@@ -2,29 +2,29 @@
 /* eslint-disable operator-linebreak */
 /* eslint-disable comma-dangle */
 /* eslint-disable implicit-arrow-linebreak */
-import { useEffect, useMemo, useRef, useState } from 'react';
-import RouteLayout from '@layout/routeLayout';
-import Dropdown from '@component/dropdown/Dropdown';
-import DatePicker from '@component/datepicker';
-import SimpleTableAttendanceReport from '@component/SimpleTableAttendanceReport';
-import { useSelector } from 'react-redux';
-import { selectSchoolData } from '@shared/store/schoolSlice';
-import { useGet, usePost } from '@shared/api/useApi';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
+import { useEffect, useMemo, useRef, useState } from "react";
+import RouteLayout from "@layout/routeLayout";
+import Dropdown from "@component/dropdown/Dropdown";
+import DatePicker from "@component/datepicker";
+import SimpleTableAttendanceReport from "@component/SimpleTableAttendanceReport";
+import { useSelector } from "react-redux";
+import { selectSchoolData } from "@shared/store/schoolSlice";
+import { useGet, usePost } from "@shared/api/useApi";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
 import {
   RESULTS_PER_PAGE,
   TOOLBAR_LABELS,
   USER_TYPE,
-} from '@constants/constants';
-import ReactToPrint from 'react-to-print';
-import PrintIcon from '@mui/icons-material/Print';
+} from "@constants/constants";
+import ReactToPrint from "react-to-print";
+import PrintIcon from "@mui/icons-material/Print";
 import {
   getNoOfPages,
   userRole,
   currentUserAcademicDate,
-} from '@utility/utility';
-import { selectUser } from '@shared/store/userSlice';
-import moment from 'moment';
+} from "@utility/utility";
+import { selectUser } from "@shared/store/userSlice";
+import moment from "moment";
 
 const printButton = () => <PrintIcon />;
 
@@ -33,20 +33,20 @@ type DateNavigation = {
   end_date: string;
   flag: boolean;
 };
-type SortByType = 'Present' | 'Absent' | 'All';
+type SortByType = "Present" | "Absent" | "All";
 
 function formatData(data: any, page: number, subject: string | undefined) {
   const cData = [] as any;
   const headerDates = [] as any;
   let isNext = {
-    start_date: '',
-    end_date: '',
+    start_date: "",
+    end_date: "",
     flag: false,
   } as DateNavigation;
 
   let isPrev = {
-    start_date: '',
-    end_date: '',
+    start_date: "",
+    end_date: "",
     flag: false,
   } as DateNavigation;
   data?.data?.response?.results?.forEach((item: any, index: number) => {
@@ -55,8 +55,8 @@ function formatData(data: any, page: number, subject: string | undefined) {
         const prevUrl = new URL(item.attendence_recors.previous);
         const searchParams = new URLSearchParams(prevUrl.search);
         isPrev = {
-          start_date: searchParams.get('start_date') || '',
-          end_date: searchParams.get('end_date') || '',
+          start_date: searchParams.get("start_date") || "",
+          end_date: searchParams.get("end_date") || "",
           flag: true,
         };
       }
@@ -64,8 +64,8 @@ function formatData(data: any, page: number, subject: string | undefined) {
         const nextUrl = new URL(item.attendence_recors.next);
         const searchParams = new URLSearchParams(nextUrl.search);
         isNext = {
-          start_date: searchParams.get('start_date') || '',
-          end_date: searchParams.get('end_date') || '',
+          start_date: searchParams.get("start_date") || "",
+          end_date: searchParams.get("end_date") || "",
           flag: true,
         };
       }
@@ -139,14 +139,14 @@ function formatData(data: any, page: number, subject: string | undefined) {
           }
 
           return itm.present
-            ? 'Checked'
+            ? "Checked"
             : itm.is_weekend
-              ? 'Weekend'
-              : itm.is_holiday
-                ? 'HoliDay'
-                : itm.present === null
-                  ? 'UnChecked'
-                  : 'Absent';
+            ? "Weekend"
+            : itm.is_holiday
+            ? "HoliDay"
+            : itm.present === null
+            ? "UnChecked"
+            : "Absent";
         }),
         subject,
       } as any;
@@ -164,14 +164,14 @@ function formatData(data: any, page: number, subject: string | undefined) {
           }
 
           return itm.present
-            ? 'Checked'
+            ? "Checked"
             : itm.is_weekend
-              ? 'Weekend'
-              : itm.is_holiday
-                ? 'HoliDay'
-                : itm.present === null
-                  ? 'UnChecked'
-                  : 'Absent';
+            ? "Weekend"
+            : itm.is_holiday
+            ? "HoliDay"
+            : itm.present === null
+            ? "UnChecked"
+            : "Absent";
         }),
         StudentFirstname: item.first_name,
         StudentLastname: item.last_name,
@@ -190,17 +190,17 @@ export default function () {
   const componentRef = useRef(null);
   const [page, setPage] = useState(1);
   const [datesPerPage, setDatesPerPage] = useState(1);
-  const [sortBy, setSortBy] = useState<SortByType>('All');
-  const [recordsPerPage, setRecordsPerPage] = useState<number | 'all'>(10);
+  const [sortBy, setSortBy] = useState<SortByType>("All");
+  const [recordsPerPage, setRecordsPerPage] = useState<number | "all">(10);
   const [selectedBranch, setSelectedBranch] = useState<
-    number | null | 'select'
-  >('select');
-  const [selectedClass, setSelectedClass] = useState<number | 'select'>(
-    'select'
+    number | null | "select"
+  >("select");
+  const [selectedClass, setSelectedClass] = useState<number | "select">(
+    "select"
   );
   const [selectedSubject, setSelectedSubject] = useState<
-    number | null | 'select'
-  >('select');
+    number | null | "select"
+  >("select");
   const [fromDate, setFromDate] = useState<any>();
   const [toDate, setToDate] = useState<any>();
   const [totalDataCount, setTotalDataCount] = useState(0);
@@ -243,18 +243,18 @@ export default function () {
     },
   ];
   const formatFromDate = useMemo(
-    () => moment(fromDate).format('yyyy-MM-DD'),
+    () => moment(fromDate).format("yyyy-MM-DD"),
     [fromDate]
   );
   const formatToDate = useMemo(
-    () => moment(toDate).format('yyyy-MM-DD'),
+    () => moment(toDate).format("yyyy-MM-DD"),
     [toDate]
   );
 
   const { isLoading: subjectLoading1, refetch: refetchSubjects } = useGet({
     baseURL: SchoolUrl,
     url: `schools-service/schools/subject/list/?class_id=${
-      selectedClass || ''
+      selectedClass || ""
     }`,
     enabled: false,
     onSuccess: (resp: any) => {
@@ -267,7 +267,8 @@ export default function () {
       setCourses([...temp3]);
     },
   });
-  const classId = selectedClass !== 'select' ? selectedClass : user?.class_id || '';
+  const classId =
+    selectedClass !== "select" ? selectedClass : user?.class_id || "";
   const { isLoading: subLoading, refetch: refectSubject } = useGet({
     baseURL: SchoolUrl,
     url: `schools-service/school-classes/subject/get?user_id=${user?.userId}&class_id=${classId}`,
@@ -286,22 +287,22 @@ export default function () {
 
   useEffect(() => {
     if (
-      selectedClass !== 'select' &&
+      selectedClass !== "select" &&
       usersRole?.name === USER_TYPE.SCHOOL_ADMIN
     ) {
       refetchSubjects();
     } else if (
-      selectedClass !== 'select' &&
+      selectedClass !== "select" &&
       usersRole?.name === USER_TYPE.BRANCH_ADMIN
     ) {
       refetchSubjects();
     } else if (
-      selectedClass !== 'select' &&
+      selectedClass !== "select" &&
       usersRole?.name === USER_TYPE.SUPER_ADMIN
     ) {
       refetchSubjects();
     } else if (
-      selectedClass !== 'select' &&
+      selectedClass !== "select" &&
       usersRole?.name === USER_TYPE.TEACHER
     ) {
       refectSubject();
@@ -317,7 +318,9 @@ export default function () {
 
   const { data, isLoading } = useGet({
     baseURL: SchoolUrl,
-    url: `schools-service/school-branches/?limit=100&school_id=${schoolData?.id || branchData?.school_data?.id}`,
+    url: `schools-service/school-branches/?limit=100&school_id=${
+      schoolData?.id || branchData?.school_data?.id
+    }`,
     enabled: !branchId,
   });
   const branchName = useMemo(
@@ -329,7 +332,13 @@ export default function () {
   );
   const { data: data1, isLoading: isLoading1 } = useGet({
     baseURL: SchoolUrl,
-    url: `schools-service/school-classes/?limit=1000&school_id=${schoolData?.id || branchData?.school_data?.id} ${branchData || selectedBranch !== 'select' ? `&branch_name=${branchName?.name || branchData?.name}` : ''}`,
+    url: `schools-service/school-classes/?limit=1000&school_id=${
+      schoolData?.id || branchData?.school_data?.id
+    } ${
+      branchData || selectedBranch !== "select"
+        ? `&branch_name=${branchName?.name || branchData?.name}`
+        : ""
+    }`,
     enabled: !!(schoolData?.id || branchData?.school_data?.id),
   });
 
@@ -350,12 +359,32 @@ export default function () {
 
   const { data: data2, isLoading: isLoading2 } = useGet({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
-    url: `roster-service/attendance-report-list?school_id=${schoolData?.id || branchData?.school_data?.id}${userRole().isStudent && subjectName !== 'select' ? (subjectName ? `&subject=${subjectName}` : '') : `&subject=${subjectName}`}${branchId ? `&branch_id=${branchId}` : selectedBranch !== 'select' ? `&branch_id=${selectedBranch}` : ''}&class_name=${userRole().isStudent ? userClassName : className}&offset=${(page - 1) * Number(noOfpages)}&child_limit=7&child_offset=${(datesPerPage - 1) * Number(noOfpages)}&start_date=${formatFromDate}${toDate ? `&end_date=${formatToDate}` : ''}${userRole().isStudent ? `&single_students_id=${userId}` : ''}&role_name=${usersRole?.name}&class_id=${
-      selectedClass !== 'select' ? selectedClass : ''
+    url: `roster-service/attendance-report-list?school_id=${
+      schoolData?.id || branchData?.school_data?.id
+    }${
+      userRole().isStudent && subjectName !== "select"
+        ? subjectName
+          ? `&subject=${subjectName}`
+          : ""
+        : `&subject=${subjectName}`
+    }${
+      branchId
+        ? `&branch_id=${branchId}`
+        : selectedBranch !== "select"
+        ? `&branch_id=${selectedBranch}`
+        : ""
+    }&class_name=${userRole().isStudent ? userClassName : className}&offset=${
+      (page - 1) * Number(noOfpages)
+    }&child_limit=7&child_offset=${
+      (datesPerPage - 1) * Number(noOfpages)
+    }&start_date=${formatFromDate}${toDate ? `&end_date=${formatToDate}` : ""}${
+      userRole().isStudent ? `&single_students_id=${userId}` : ""
+    }&role_name=${usersRole?.name}&class_id=${
+      selectedClass !== "select" ? selectedClass : ""
     }`,
     enabled: !!(
-      (selectedClass !== 'select' && fromDate && toDate) ||
-      (selectedClass !== 'select' &&
+      (selectedClass !== "select" && fromDate && toDate) ||
+      (selectedClass !== "select" &&
         subjectName &&
         fromDate &&
         toDate &&
@@ -384,7 +413,7 @@ export default function () {
     () => formatData(data2, page, subjectName),
     [page, fromDate, toDate, data2, selectedSubject]
   );
-  const rowsPerPageHandler = (val: number | 'all') => {
+  const rowsPerPageHandler = (val: number | "all") => {
     setRecordsPerPage(val);
   };
   const handlePagination = (currPage: any) => {
@@ -402,51 +431,51 @@ export default function () {
     if (role.name === USER_TYPE.STUDENT) {
       return [
         {
-          label: 'Sr No.',
-          id: 'sr_no',
+          label: "Sr No.",
+          id: "sr_no",
         },
         {
-          id: 'subject',
-          label: 'Subject',
+          id: "subject",
+          label: "Subject",
         },
         {
-          id: 'AttendanceReport',
+          id: "AttendanceReport",
           label: headerDates,
         },
         {
-          id: 'TotalPresent',
-          label: 'Total Days Present',
+          id: "TotalPresent",
+          label: "Total Days Present",
         },
         {
-          id: 'TotalAbsent',
-          label: 'Total Days Absent',
+          id: "TotalAbsent",
+          label: "Total Days Absent",
         },
       ];
     }
     return [
       {
-        label: 'Sr No.',
-        id: 'sr_no',
+        label: "Sr No.",
+        id: "sr_no",
       },
       {
-        id: 'StudentFirstname',
-        label: 'Student First name',
+        id: "StudentFirstname",
+        label: "Student First name",
       },
       {
-        id: 'StudentLastname',
-        label: 'Student Last name',
+        id: "StudentLastname",
+        label: "Student Last name",
       },
       {
-        id: 'AttendanceReport',
+        id: "AttendanceReport",
         label: headerDates,
       },
       {
-        id: 'TotalPresent',
-        label: 'Total Present',
+        id: "TotalPresent",
+        label: "Total Present",
       },
       {
-        id: 'TotalAbsent',
-        label: 'Total Absent',
+        id: "TotalAbsent",
+        label: "Total Absent",
       },
     ];
   }, [role, headerDates]);
@@ -458,7 +487,7 @@ export default function () {
   };
   const branchSelectHandler = (currentBranch: number) => {
     setSelectedBranch(currentBranch);
-    setSelectedClass('select');
+    setSelectedClass("select");
   };
 
   const CLASS_ARRAY =
@@ -491,10 +520,14 @@ export default function () {
           title="Attendance"
           subtitle={
             userRole().isSuperAdmin
-              ? `School : ${schoolData ? schoolData?.school_name : branchData?.school_data.school_name}`
-              : ''
+              ? `School : ${
+                  schoolData
+                    ? schoolData?.school_name
+                    : branchData?.school_data.school_name
+                }`
+              : ""
           }
-          subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ''}
+          subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ""}
           menuArray={ADMIN_TOOLBAR_MENU}
           // handleToolbarAction={handleToolbarAction}
         />
@@ -508,14 +541,14 @@ export default function () {
               value={selectedBranch}
               loading={isLoading}
               dataArray={[
-                { label: 'Select', value: 'select' },
+                { label: "Select", value: "select" },
                 ...(data?.data?.response?.results?.map((item: any) => ({
                   label: item.name,
                   value: item.id,
                 })) || []),
               ]}
               onChangeHandler={branchSelectHandler}
-              sxClass={{ width: '100%' }}
+              sxClass={{ width: "100%" }}
             />
           )}
           {!userRole().isStudent && (
@@ -523,11 +556,11 @@ export default function () {
               title="Select Class"
               value={selectedClass}
               loading={isLoading1}
-              dataArray={[{ label: 'Select', value: 'select' }, ...CLASS_ARRAY]}
+              dataArray={[{ label: "Select", value: "select" }, ...CLASS_ARRAY]}
               onChangeHandler={(currentClass: number) =>
                 setSelectedClass(currentClass)
               }
-              sxClass={{ width: '100%' }}
+              sxClass={{ width: "100%" }}
             />
           )}
           <Dropdown
@@ -535,7 +568,7 @@ export default function () {
             value={selectedSubject}
             loading={subjectLoading1 || subLoading}
             dataArray={[
-              { label: 'Select', value: 'select' },
+              { label: "Select", value: "select" },
               ...(courses?.map((item: any) => ({
                 label: item.label,
                 value: item?.value,
@@ -544,7 +577,7 @@ export default function () {
             onChangeHandler={(currentSubject: number) =>
               setSelectedSubject(currentSubject)
             }
-            sxClass={{ width: '100%' }}
+            sxClass={{ width: "100%" }}
           />
           <div className="pb-[5px]">
             <DatePicker
@@ -590,9 +623,9 @@ export default function () {
             <Dropdown
               title="Sort By"
               value={sortBy}
-              dataArray={['All', 'Absent', 'Present']}
+              dataArray={["All", "Absent", "Present"]}
               onChangeHandler={(val: SortByType) => setSortBy(val)}
-              sxClass={{ width: '100%' }}
+              sxClass={{ width: "100%" }}
             />
           )}
         </div>

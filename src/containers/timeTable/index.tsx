@@ -214,7 +214,7 @@ export default function Index() {
       <RouteLayout
         navBack={true}
       >
-        <PageTitle title="School timetable" />
+        <PageTitle title="School timetablee" />
 
         <CustomizedDialogs
           open={schoolTimetableEvent}
