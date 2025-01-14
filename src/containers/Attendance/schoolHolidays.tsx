@@ -1,22 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import dayjs from "dayjs";
 import "./customTimetable.css";
-import CustomizedDialogs from "@component/dialog/CustomDialog";
-import { CustomInput } from "@component/input";
 import Button from "@component/button/button";
-import Checkbox from "@mui/material/Checkbox";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import Loader from "@shared/loader";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "moment/locale/en-gb";
-import Dropdown from "@component/dropdown/Dropdown";
 import RouteLayout from "@layout/routeLayout";
 import { useGet, usePost, usePatch, useDelete } from "@shared/api/useApi";
 import { selectSchoolData } from "@shared/store/schoolSlice";
 import { useSelector } from "react-redux";
 import { selectUser } from "@shared/store/userSlice";
-import FileSelect from "@component/fileUpload";
 import toast from "@shared/toast";
 import PrintIcon from "@mui/icons-material/Print";
 import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
@@ -27,15 +21,12 @@ import {
   START_TIME,
 } from "@constants/constants";
 import ReactToPrint from "react-to-print";
-import { debounce } from "@constants/helperMethods";
-import DatePicker from "@component/datepicker";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { useParams } from "react-router-dom";
 import { sortData } from "@utility/utility";
 import events from "./events";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
-import CustomeTimePicker from "../../components/TimePicker";
-import CustomeDateRange from "@containers/timeTable/CustomeDateRange";
+import AddHolidayModal from "./components/add_holiday_modal";
 
 const SCHOOL_SERVICE = import.meta.env.VITE_APP_SCHOOL_SERVICE_URL;
 const ROASTER_SERVICE = import.meta.env.VITE_APP_ROSTER_SERVICE_URL;
@@ -73,14 +64,10 @@ export default function Index() {
   const [desiderPopup, SetDesiderPopup] = useState(false);
   const [PrevEventObj, setPrevEventObj] = useState<any>(null);
 
-  const [isHolidayCheck, setHolidayCheck] = useState(false);
   const [isSchollTimetableCheck, setSchollTimetableCheck] = useState(false);
 
   const [resonForHoliday, setResonForHoliday] = useState("");
   const [markAsHolidayPopup, setMarkAsHolidayPopup] = useState(false);
-  const [BranchArray, setBranchArray] = useState<any>([]);
-  const [ClassesArray, setClassesArray] = useState<any>([]);
-  const [selectedClass, setSelectedClass] = useState("Select");
   const [selectedBranch, setselectedBranch] = useState<string>("Select");
   const {
     schoolId,
@@ -120,6 +107,7 @@ export default function Index() {
   const fileRef = useRef<any>();
   const userData = useSelector((state: any) => state?.user);
   const UserRole = userData?.role?.name;
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const [startTime, setStartTime] = useState(START_TIME);
 
@@ -302,7 +290,6 @@ export default function Index() {
       delete patchEvent.branch_id;
       delete patchEvent.time_blocks[0].branch_id;
     }
-    patchTimeTableEvent(patchEvent);
     setUpdateHolidayPopup(false);
   };
 
@@ -387,7 +374,6 @@ export default function Index() {
       delete postEvent.branch_id;
       delete postEvent.time_blocks[0].branch_id;
     }
-    postTimeTableEvent(postEvent);
 
     setSelectedCourse("");
     setSelectedCourseId(null);
@@ -397,302 +383,6 @@ export default function Index() {
     setSelectedTimeFrom(null);
     setSelectedTimeTo(null);
   };
-
-  const updateHolidayForSelectedDay = () => {
-    patchTimeTableEvent({
-      ...selectedEvent,
-      reason: resonForHoliday,
-    });
-    setMarkAsHolidayPopup(false);
-    setUpdateHolidayPopup(false);
-    setSelectedTimeFrom(null);
-    setSelectedTimeTo(null);
-  };
-
-  const submitHolidayForSelectedDay = () => {
-    setHolidayCheck(false);
-    setSchollTimetableCheck(false);
-    setMarkAsHolidayPopup(false);
-
-    // Add Event for whole day
-    const start = timeStart;
-    start.setHours(6);
-    start.setMinutes(0);
-
-    const end = new Date(timeStart);
-    end.setHours(18);
-    end.setMinutes(0);
-
-    setResonForHoliday("");
-    // 17, 30
-    const postEvent: any = {
-      is_holiday: true,
-      reason: resonForHoliday,
-      for_date: moment(start).format("YYYY-MM-DD"),
-      created_by: userID,
-      updated_by: userID,
-      class_id: classId,
-      school_id:
-        role.name === USER_TYPE.SCHOOL_ADMIN
-          ? schoolId
-          : branchData?.school_data?.id,
-      branch_id: branchId,
-      time_blocks: [
-        {
-          subject: 0,
-          branch_id: branchId,
-          course: 0,
-          school_class: classId,
-          teacher: 0,
-          time_from: moment(start).format("YYYY-MM-DD hh:mm"),
-          time_to: moment(end).format("YYYY-MM-DD HH:mm"),
-        },
-      ],
-    };
-    if (branchId === -1) {
-      delete postEvent.branch_id;
-      delete postEvent.time_blocks[0].branch_id;
-    }
-    postTimeTableEvent(postEvent);
-  };
-  useGet({
-    baseURL: SCHOOL_SERVICE,
-    url: `schools-service/school-branches/?school_id=${
-      role.name === USER_TYPE.SCHOOL_ADMIN
-        ? schoolId
-        : branchData?.school_data?.id
-    }&offset=0&ordering=asc&limit=100`,
-    onSuccess: (resp: any) => {
-      const accData = resp?.data?.response;
-      const respData = accData?.results;
-
-      const branchArray: never[] = respData.map((i: any) => ({
-        label: i?.name,
-        value: i?.name,
-        id: i?.id,
-      }));
-      branchArray.sort(sortData);
-      if (branchArray.length) {
-        setBranchArray([
-          { label: "Select", value: "Select", id: null },
-          ...branchArray,
-        ]);
-      } else {
-        setBranchArray([
-          { label: schoolName, value: schoolName, id: null },
-          ...branchArray,
-        ]);
-        setselectedBranch(schoolName);
-        setDisableBranchButton(true);
-      }
-    },
-  });
-
-  //  Get Timetable
-  const {
-    isLoading: timetableLoading,
-    data,
-    refetch: refetchTimetable,
-    isRefetching,
-  } = useGet({
-    baseURL: ROASTER_SERVICE,
-    url: dateApplied
-      ? `roster-service/time_tables?class_id=${classId}${
-          branchId && branchId === -1 ? "" : `&branch_id=${branchId}`
-        }&start_date=${startDate}&end_date=${endDate}`
-      : `roster-service/time_tables?class_id=${classId}${
-          branchId && branchId === -1 ? "" : `&branch_id=${branchId}`
-        }`,
-    onSuccess: (res: any) => {
-      const resp = res?.data?.response || [];
-      // eslint-disable-next-line no-console
-      let eventData: any[] = [];
-      let tempStartTime = MAX_TIME;
-      if (resp.length) {
-        resp.forEach((dateData: any) => {
-          if (dateData.time_blocks && dateData.time_blocks.length !== 0) {
-            dateData.time_blocks = dateData.time_blocks.map(
-              (ele: {
-                is_holiday: any;
-                course_name: string;
-                subject_name: string;
-              }) => ({
-                ...ele,
-                is_holiday: dateData.is_holiday,
-                reason: dateData.is_holiday
-                  ? dateData?.reason
-                  : ele?.subject_name,
-                mainEventId: dateData.id,
-              })
-            );
-            eventData = [...eventData, ...dateData.time_blocks];
-          }
-        });
-      }
-      eventData = eventData.map((ele, index) => {
-        let hexColor = ele.is_holiday === true ? "#94A3B8" : "#b0db77";
-        if (
-          ele.time_from &&
-          moment(new Date(ele.time_from)).isValid() &&
-          (moment(ele.time_from).day() === 0 ||
-            moment(ele.time_from).day() === 6)
-        ) {
-          hexColor = "#E07B5B";
-        }
-        if (!ele.is_holiday) {
-          const hourValue = Number(
-            moment(new Date(ele.time_from?.replace("Z", ""))).format("HH")
-          );
-          tempStartTime = hourValue < tempStartTime ? hourValue : tempStartTime;
-        }
-        return {
-          ...ele,
-          id: ele.id,
-          mainEventId: ele.mainEventId,
-          reason: ele.reason,
-          is_holiday: ele.is_holiday,
-          currentIndex: index,
-          title: ele.reason,
-          start: new Date(ele.time_from?.replace("Z", "")),
-          end: new Date(ele.time_to?.replace("Z", "")),
-          hexColor,
-        };
-      });
-      tempStartTime = tempStartTime === MAX_TIME ? START_TIME : tempStartTime;
-      setStartTime(tempStartTime);
-      setEventsData(eventData);
-    },
-    onError: ({ response }: any) => {},
-    enabled: false,
-  });
-
-  const { isLoading: postEventLoading, mutate: postTimeTableEvent } = usePost({
-    baseURL: ROASTER_SERVICE,
-    url: `roster-service/time_tables`,
-    onSuccess: (response: any) => {
-      if (response.data.success === false) {
-        toast(
-          "error",
-          response?.data?.errors?.time_blocks[0].non_field_errors[0]
-        );
-      } else {
-        refetchTimetable();
-      }
-    },
-    onError: ({ response }: any) => {
-      toast(
-        "error",
-        (response?.data ?? [])[0] ||
-          (response?.data?.errors?.date ?? [])[0] ||
-          ((response?.data?.errors?.time_blocks ?? [])[0]?.non_field_errors ??
-            [])[0] ||
-          "Error"
-      );
-    },
-  });
-
-  const { isLoading: patchEventLoading, mutate: patchTimeTableEvent } =
-    usePatch({
-      baseURL: ROASTER_SERVICE,
-      url: `roster-service/time_tables/${updateTimetableId}`,
-      onSuccess: (response: any) => {
-        refetchTimetable();
-        SetSchoolTimetablePopup(false);
-      },
-      onError: ({ response }: any) => {
-        toast(
-          "error",
-          response?.data?.errors?.date[0] ||
-            response?.data?.errors?.time_blocks[0]?.non_field_errors[0] ||
-            "Error"
-        );
-        const tempEventData = eventsData.map((event: any) => {
-          if (PrevEventObj.id === event.id) {
-            event.start = PrevEventObj.start;
-            event.end = PrevEventObj.end;
-            return { ...event, start: event.start, end: event.end };
-          }
-          return { ...event };
-        });
-        setEventsData(tempEventData);
-        SetSchoolTimetablePopup(false);
-      },
-    });
-
-  const { isLoading: deleteLoading, mutate: mutateDeleteTimeBlock } = useDelete(
-    {
-      baseURL: ROASTER_SERVICE,
-      url: `roster-service/time_tables/delete`,
-      onSuccess: (response: any) => {
-        refetchTimetable();
-        setConfirmDelete(false);
-        toast("success", "timeblock deleted successfully");
-      },
-      onError: ({ response }: any) => {
-        setConfirmDelete(false);
-        toast("error", response?.statusText || "Error");
-      },
-    }
-  );
-  const { refetch: fetchBranch } = useGet({
-    baseURL: SCHOOL_SERVICE,
-    url: `schools-service/school-classes?school_id=${
-      role.name === USER_TYPE.SCHOOL_ADMIN
-        ? schoolId
-        : branchData?.school_data?.id
-    }${
-      selectedBranch && selectedBranch !== "Select" && !disableBranchButton
-        ? `&branch_name=${selectedBranch}`
-        : ``
-    }&ordering=name`,
-    onSuccess: (resp: any) => {
-      const respData = resp?.data?.response?.results;
-      const temp2: { label: any; value: any; id: any }[] = [];
-      respData?.map((i: any) => {
-        temp2.push({
-          label: i?.name,
-          value: i?.name,
-          id: i?.id,
-        });
-        temp2?.sort(sortData);
-        return temp2;
-      });
-      setClassesArray([
-        { label: "Select", value: "Select", id: null },
-        ...temp2,
-      ]);
-    },
-    onError: () => {},
-  });
-
-  // Get Subjects
-  const { isLoading: subjectLoading, refetch: refetchSubjects } = useGet({
-    baseURL: SCHOOL_SERVICE,
-    url: `schools-service/schools/subject/list/?${
-      classId ? `class_id=${classId}` : ""
-    }`,
-    enabled: false,
-    onSuccess: (resp: any) => {
-      const respData = resp?.data?.response;
-      const temp3: { label: any; value: any; id: any }[] = [];
-      respData?.map((i: any) => {
-        temp3.push({
-          label: i?.name,
-          value: i?.name,
-          id: i?.id,
-        });
-        temp3.sort(sortData);
-        return temp3;
-      });
-      setCourses([...temp3]);
-    },
-  });
-
-  useEffect(() => {
-    if (classId > -1) {
-      refetchSubjects();
-    }
-  }, [classId]);
 
   const { refetch: refetchTeacher } = useGet({
     baseURL: SCHOOL_SERVICE,
@@ -729,30 +419,11 @@ export default function Index() {
   );
 
   useEffect(() => {
-    if (classId !== -1) {
-      refetchTimetable();
-    }
-  }, [selectedBranch, classId, dateApplied]);
-
-  useEffect(() => {
     if (role.name === USER_TYPE.BRANCH_ADMIN) {
       setselectedBranch(branch_name);
       setBranchId(branch_id);
     }
   }, [branchData]);
-
-  useEffect(() => {
-    fetchBranch();
-  }, [selectedBranch]);
-
-  const deleteDebounceTimeBlock = debounce(async () => {
-    if (eventObj?.id) {
-      const blockList = {
-        blocks_list: [eventObj.id],
-      };
-      mutateDeleteTimeBlock(blockList);
-    }
-  }, 500);
 
   const onEventDrop = (dragEventObj: any) => {
     setUpdateTimetableId(dragEventObj.event.time_table_id);
@@ -847,203 +518,74 @@ export default function Index() {
   return (
     <div>
       <RouteLayout navBack={true}>
-        <HeaderMenus
-          title="School Timetable"
-          menuArray={ADMIN_TOOLBAR_MENU}
-          handleToolbarAction={handleToolbarAction}
-        />
-        {(timetableLoading || isRefetching) && <MyLoader />}
-        {postEventLoading && <MyLoader />}
-        {patchEventLoading && <MyLoader />}
-        <CustomizedDialogs
-          open={schoolTimetableEvent}
-          setOpen={() => {
-            SetSchoolTimetablePopup(false);
-            setHolidayCheck(false);
-            setSchollTimetableCheck(false);
-            setUpdateHolidayPopup(false);
-            setSelectedCourse("");
-            setSelectedTeacher("");
-            setShowCourseError(false);
-            setShowTeacherError(false);
-            setShowToError(false);
-            setshowFromError(false);
-            setSelectedTimeFrom(null);
-            setSelectedTimeTo(null);
-          }}
-          title={
-            updateHolidayPopup
-              ? "Update School Timetable"
-              : "Add School Timetable"
-          }
-        >
-          <div>
-            <div className="text-center font-bold">
-              {" "}
-              {moment(timeStart).format("Do MMMM YYYY, dddd")}{" "}
-            </div>
-            <div className="flex">
-              <Dropdown
-                title="Select Subject"
-                value={selectedCourse}
-                dataArray={courses}
-                onChangeHandler={(value) => {
-                  const obj: any = courses.filter(
-                    (ele: { value: string; id: number }) => ele?.value === value
-                  )[0];
-                  setSelectedCourseId(obj.id);
-                  setSelectedCourse(obj.label);
-                }}
-                sxClass={{ border: "1px solid gray", width: "100%" }}
-                parentStyle="grow p-4 w-1/2"
-              />
-
-              <Dropdown
-                title="Teacher"
-                value={selectedTeacher}
-                dataArray={teachers}
-                onChangeHandler={(value) => {
-                  const obj: any = teachers.filter(
-                    (ele: { label: any }) => ele.label === value
-                  )[0];
-                  setSelectedTeacherId(obj.id);
-                  setSelectedTeacher(value);
-                }}
-                sxClass={{ width: "100%", border: "1px solid gray" }}
-                parentStyle="grow p-4 w-1/2"
-              />
-            </div>
-
-            <div className="flex justify-evenly">
-              <div className="pr-2">
-                <CustomeTimePicker
-                  parentLabelClass="text-[0.75rem]"
-                  customLabel="Time From"
-                  onChange={(newValue: any) => {
-                    setSelectedTimeFrom(newValue);
-                    setSelectedTimeTo(null);
-                  }}
-                  value={selectedTimeFrom}
-                  minTime={dayjs().set("hour", 6).set("minute", 0)}
-                />
-              </div>
-
-              <div>
-                <CustomeTimePicker
-                  parentLabelClass="text-[0.75rem]"
-                  customLabel="Time To"
-                  onChange={(newValue: any) => {
-                    setSelectedTimeTo(newValue);
-                  }}
-                  value={selectedTimeTo}
-                  minTime={
-                    selectedTimeFrom !== null
-                      ? dayjs(selectedTimeFrom)
-                      : dayjs().set("hour", 6).set("minute", 0)
-                  }
-                  maxTime={dayjs().set("hour", 18).set("minute", 0)}
-                />
-              </div>
-            </div>
-            <div className="relative top-16">
-              {showCourseError ? (
-                <div className="text-red-500 text-sm ml-4">
-                  {" "}
-                  Please Select Subject{" "}
-                </div>
-              ) : null}
-              {showTeacherError ? (
-                <div className="text-red-500 text-sm ml-4">
-                  {" "}
-                  Please Select Teacher{" "}
-                </div>
-              ) : null}
-              {showFromError ? (
-                <div className="text-red-500 text-sm ml-4">
-                  {" "}
-                  Please Select Time From{" "}
-                </div>
-              ) : null}
-              {showToError ? (
-                <div className="text-red-500 text-sm ml-4">
-                  {" "}
-                  Please Select Time To{" "}
-                </div>
-              ) : null}
-            </div>
-          </div>
-          <div className="flex justify-end py-6 relative top-4">
+        {/* Buttons Section */}
+        <div className="flex justify-between items-center bg-gray-100 p-4 mt-5">
+          <HeaderMenus
+            title="Manage School Calender"
+            menuArray={[]}
+            handleToolbarAction={handleToolbarAction}
+          />
+          <div className="flex items-center space-x-4">
+            {/* Edit Weekends Button */}
             <Button
-              onClick={() =>
-                updateHolidayPopup
-                  ? handleUpdateDialogClick()
-                  : handleOkDialogClick()
-              }
+              sx={{
+                backgroundColor: "#4A9D2D",
+                color: "#FFFFFF",
+                "&:hover": { backgroundColor: "#3A7D24" },
+              }}
+              onClick={() => {
+                console.log("Edit Weekends clicked");
+              }}
             >
-              {" "}
-              {updateHolidayPopup ? "Update" : "Ok"}{" "}
+              Edit Weekends
             </Button>
-          </div>
-        </CustomizedDialogs>
 
-        <CustomizedDialogs
-          open={desiderPopup}
-          setOpen={(parameter: any) => {
-            SetDesiderPopup(false);
+            {/* Manage School Holidays Dropdown */}
+            <div className="relative ml-4">
+              <Button
+                sx={{
+                  backgroundColor: "#FFFFFF",
+                  color: "#4A9D2D",
+                  border: "1px solid #4A9D2D",
+                  "&:hover": { backgroundColor: "#F5F5F5" },
+                }}
+                onClick={() => setIsDropdownOpen((prev) => !prev)}
+              >
+                Manage School Holidays
+              </Button>
+
+              {/* Dropdown Content */}
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-green-500 shadow-lg rounded-lg z-10">
+                  <div className="py-2">
+                    <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                      View
+                    </div>
+                    <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                      Add
+                    </div>
+                    <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                      Edit
+                    </div>
+                    <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                      Delete
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <AddHolidayModal
+          desiderPopup={desiderPopup}
+          SetDesiderPopup={SetDesiderPopup}
+          onSave={(holidayData: any) => {
+            console.log(holidayData);
           }}
-          title=""
-          className="mycustomedialog"
-          maxWidth="493px"
-          fullWidth={false}
-        >
-          <div className="flex flex-col">
-            <div className="text-center font-bold mb-6 flex justify-between items-end">
-              <div>
-                <DatePicker
-                  value={timeStart}
-                  label="Select Date"
-                  handlePickerChange={(val: any) => {
-                    setTimeStart(moment(val).toDate());
-                  }}
-                  format="DD-MM-YYYY"
-                  disablePast={false}
-                  sxType={3}
-                />
-              </div>
-              <div>{moment(timeStart).format("Do MMMM YYYY, dddd")}</div>
-            </div>
+        />
 
-            <div className="flex mb-4 justify-between">
-              <div>
-                <Checkbox
-                  checked={isHolidayCheck}
-                  size="small"
-                  onChange={(e) => {
-                    setHolidayCheck(e.target.checked);
-                    setMarkAsHolidayPopup(true);
-                    SetDesiderPopup(false);
-                  }}
-                />
-                <span> Mark as Holiday </span>
-              </div>
-
-              <div>
-                <Checkbox
-                  checked={isSchollTimetableCheck}
-                  size="small"
-                  onChange={(e) => {
-                    setSchollTimetableCheck(e.target.checked);
-                    SetSchoolTimetablePopup(true);
-                    SetDesiderPopup(false);
-                  }}
-                />
-                <span> Add School Timetable </span>
-              </div>
-            </div>
-          </div>
-        </CustomizedDialogs>
-
-        <div className="bg-white" ref={componentRef}>
+        <div className="mt-5 bg-white" ref={componentRef}>
           <DnDCalendar
             views={["week"]}
             selectable={true}
