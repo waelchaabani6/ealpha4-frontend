@@ -132,8 +132,8 @@
   border-top: unset;
 }
  
-.mycustomedialog .MuiPaper-root {
-  width: 900px;
+.schoolHolidayModal .MuiPaper-root {
+   width: 900px;
   .MuiTextField-root{
     width: 100%;
   }
