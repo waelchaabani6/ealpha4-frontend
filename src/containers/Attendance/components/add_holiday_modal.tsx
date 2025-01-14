@@ -34,7 +34,7 @@ const AddHolidayModal = ({ desiderPopup, SetDesiderPopup, onSave }) => {
         SetDesiderPopup(false);
       }}
       title="Add a Holiday"
-      className="mycustomedialog"
+      className="schoolHolidayModal"
       maxWidth="900px"
       fullWidth={false}
     >
@@ -142,7 +142,6 @@ const AddHolidayModal = ({ desiderPopup, SetDesiderPopup, onSave }) => {
               border: "1px solid #4A9D2D ",
               "&:hover": {
                 backgroundColor: "#F5F5F5",
-                
               },
             }}
             onClick={() => SetDesiderPopup(false)}
