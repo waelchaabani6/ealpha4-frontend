@@ -39,10 +39,10 @@ interface Message {
   user_id: string;
   obeasses_id: string | null;
   date_time: Date;
-  originPath: string;
-  page: number;
   duration: number;
   obeId: string;
+  role: string;
+  redirectionPath: string;
 }
 export default function OBE_Index() {
   const { user } = useSelector((state: any) => state);
@@ -143,6 +143,9 @@ export default function OBE_Index() {
     const duration = minutes;
     const obeasses_id = data?.obeasses_id;
     const currentDate = new Date();
+    const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
+    const targetPagePath = `/${schoolName}/obe-assessments/my-assessments`; // Update this to the path of the page you want to redirect to
+    const targetPageUrl = `${window.location.origin}${targetPagePath}`; // Constructs the full URL
     const originPath = window.location.href;
     const message: Message = {
       key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
@@ -150,9 +153,9 @@ export default function OBE_Index() {
       user_id: user?.user_ting,
       obeasses_id: obeasses_id || null,
       date_time: currentDate,
+      role: user?.role?.name,
+      redirectionPath: targetPageUrl,
       obeId: data?.assessment_id,
-      originPath,
-      page,
       duration
     };
     const encryptedData = encryptMessage(JSON.stringify(message));
