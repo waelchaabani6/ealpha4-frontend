@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable linebreak-style */
 /* eslint-disable comma-dangle */
 /* eslint-disable react/jsx-curly-newline */
@@ -24,7 +25,14 @@ import SendIcon from '@mui/icons-material/Send';
 
 // import Loader from '@shared/loader';
 import { NumberedPagination } from '@component/pagination/CustomPagination';
-import { LinearProgress } from '@mui/material';
+import {
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  LinearProgress,
+  Radio,
+  RadioGroup,
+} from '@mui/material';
 import Row from './Row';
 
 type AdvanceTable = {
@@ -51,6 +59,7 @@ type AdvanceTable = {
   assignHandler?: any;
   viewHandler?: any;
   actionHandler?: (data: any, handlerName: string) => void;
+  toggelAll?: any;
 };
 const AdvanceTable = forwardRef(
   (props: AdvanceTable, ref: any): JSX.Element => {
@@ -77,6 +86,7 @@ const AdvanceTable = forwardRef(
       assignHandler,
       viewHandler,
       actionHandler,
+      toggelAll,
     } = props;
     const handleRequestSort = (
       event: React.MouseEvent<unknown>,
@@ -98,17 +108,26 @@ const AdvanceTable = forwardRef(
       data: any,
       selector?: string
     ): any => {
+      // toggelAll();
       let newSchoolID: string | any[] = [];
       newSchoolID = data.map((n: any) => n[selector || 'id']);
 
       if (event) {
         const newDat = [...bulkSelect, ...newSchoolID];
         setBulkSelect([...new Set(newDat)]);
+
+        const filterArray = abcentBulkSelect.filter(
+          (item: any): any => !newSchoolID.includes(item)
+        );
+        setAbcentBulkSelect([...new Set(filterArray)]);
       } else {
         const filterArray = bulkSelect.filter(
           (item: any): any => !newSchoolID.includes(item)
         );
         setBulkSelect([...new Set(filterArray)]);
+
+        const newDat = [...abcentBulkSelect, ...newSchoolID];
+        setAbcentBulkSelect([...new Set(newDat)]);
       }
     };
 
@@ -117,6 +136,7 @@ const AdvanceTable = forwardRef(
       data: any,
       selector?: string
     ): any => {
+      // toggelAll(false);
       let newSchoolID: string | any[] = [];
       newSchoolID = data.map((n: any) => n[selector || 'id']);
 
@@ -150,7 +170,6 @@ const AdvanceTable = forwardRef(
     const isAbsentSelected = (ids: any, selector?: string) => {
       if (ids?.length) {
         const onlyIds = ids?.map((i: any) => i[selector || 'id']);
-
         return onlyIds.every((v: any) => abcentBulkSelect.includes(v));
       }
       return null;
@@ -180,8 +199,9 @@ const AdvanceTable = forwardRef(
         return (
           <div className="flex gap-2 justify-left items-center">
             <p className={isHeader && 'font-bold'}>
-              Present {isHeader && 'all'}{' '}
+              Present {isHeader && 'all'}
             </p>
+
             <CustomCheckbox
               selector={headerData?.selector || data?.id}
               data={isHeader ? data : [data]}
@@ -201,7 +221,7 @@ const AdvanceTable = forwardRef(
               checked={
                 isHeader
                   ? isAbsentSelected(data, headerData?.selector)
-                  : !bulkSelect.includes(data?.[headerData.selector])
+                  : abcentBulkSelect.includes(data?.[headerData.selector])
               }
               sx={isHeader === true ? headerData.sx : headerData.cellSx}
             />
