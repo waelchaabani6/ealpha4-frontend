@@ -1,28 +1,29 @@
-import React, { useState, useEffect } from "react";
-import { Calendar, momentLocalizer } from "react-big-calendar";
-import PageTitle from "@shared/pageTitle";
-import moment from "moment";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import "moment/locale/en-gb";
-import Dropdown from "@component/dropdown/Dropdown";
-import "./customTimetable.css";
-import { USER_TYPE, MAX_TIME, START_TIME } from "@constants/constants";
-import RouteLayout from "@layout/routeLayout";
-import { useGet, usePost } from "@shared/api/useApi";
-import { useSelector } from "react-redux";
-import { selectUser } from "@shared/store/userSlice";
-import Loader from "@shared/loader";
-import toast from "@shared/toast";
-import CustomeDateRange from "./CustomeDateRange";
-import events from "./events";
+/* eslint-disable linebreak-style */
+import React, { useState, useEffect } from 'react';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import PageTitle from '@shared/pageTitle';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import 'moment/locale/en-gb';
+import Dropdown from '@component/dropdown/Dropdown';
+import './customTimetable.css';
+import { USER_TYPE, MAX_TIME, START_TIME } from '@constants/constants';
+import RouteLayout from '@layout/routeLayout';
+import { useGet, usePost } from '@shared/api/useApi';
+import { useSelector } from 'react-redux';
+import { selectUser } from '@shared/store/userSlice';
+import Loader from '@shared/loader';
+import toast from '@shared/toast';
+import CustomeDateRange from './CustomeDateRange';
+import events from './events';
 
 const SCHOOL_SERVICE = import.meta.env.VITE_APP_SCHOOL_SERVICE_URL;
 const ROASTER_SERVICE = import.meta.env.VITE_APP_ROSTER_SERVICE_URL;
 
-moment.locale("en-GB");
+moment.locale('en-GB');
 const localizer = momentLocalizer(moment);
 
-moment.locale("en-GB", {
+moment.locale('en-GB', {
   week: {
     dow: 1,
   },
@@ -44,14 +45,14 @@ export default function Index() {
   const { user } = useSelector((state: any) => state);
   const [eventsData, setEventsData] = useState<Array<EventTypeData>>(events);
   const [ClassesArray, setClassesArray] = useState<any>([]);
-  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedClass, setSelectedClass] = useState('');
   const reduxData = useSelector(selectUser);
   const { schoolId, branchId = -1 } = reduxData;
   const [startDate, setStartDate] = useState(
-    moment(today).utc().format("YYYY-MM-DD")
+    moment(today).utc().format('YYYY-MM-DD')
   );
   const [endDate, setEndDate] = useState(
-    moment(plus7).utc().format("YYYY-MM-DD")
+    moment(plus7).utc().format('YYYY-MM-DD')
   );
   const [classId, setClassId] = useState(-1);
   const [dateApplied, setDateApplied] = useState(false);
@@ -67,10 +68,10 @@ export default function Index() {
     baseURL: ROASTER_SERVICE,
     url: dateApplied
       ? `roster-service/time_tables?class_id=${classId}&start_date=${startDate}&end_date=${endDate}${
-          branchId === -1 || branchId === null ? "" : `&branch_id=${branchId} `
+          branchId === -1 || branchId === null ? '' : `&branch_id=${branchId} `
         }`
       : `roster-service/time_tables?class_id=${classId}${
-          branchId === -1 || branchId === null ? "" : `&branch_id=${branchId}`
+          branchId === -1 || branchId === null ? '' : `&branch_id=${branchId}`
         }`,
     onSuccess: (res: any) => {
       const resp = res?.data?.response || [];
@@ -95,18 +96,18 @@ export default function Index() {
         });
       }
       eventData = eventData.map((ele, index) => {
-        let hexColor = ele.is_holiday === true ? "#94A3B8" : "#b0db77";
+        let hexColor = ele.is_holiday === true ? '#94A3B8' : '#b0db77';
         if (
           ele.time_from &&
           moment(new Date(ele.time_from)).isValid() &&
           (moment(ele.time_from).day() === 0 ||
             moment(ele.time_from).day() === 6)
         ) {
-          hexColor = "#E07B5B";
+          hexColor = '#E07B5B';
         }
         if (!ele.is_holiday) {
           const hourValue = Number(
-            moment(new Date(ele.time_from?.replace("Z", ""))).format("HH")
+            moment(new Date(ele.time_from?.replace('Z', ''))).format('HH')
           );
           tempStartTime = hourValue < tempStartTime ? hourValue : tempStartTime;
         }
@@ -118,8 +119,8 @@ export default function Index() {
           is_holiday: ele.is_holiday,
           currentIndex: index,
           title: ele.reason,
-          start: new Date(ele.time_from?.replace("Z", "")),
-          end: new Date(ele.time_to?.replace("Z", "")),
+          start: new Date(ele.time_from?.replace('Z', '')),
+          end: new Date(ele.time_to?.replace('Z', '')),
           hexColor,
         };
       });
@@ -130,7 +131,7 @@ export default function Index() {
     onError: ({ response }: any) => {
       const errorMsg =
         response?.data?.errors?.time_blocks[0]?.non_field_errors[0];
-      toast("error", errorMsg);
+      toast('error', errorMsg);
     },
     enabled: false,
   });
@@ -185,7 +186,7 @@ export default function Index() {
   return (
     <div>
       <RouteLayout navBack={true}>
-        <PageTitle title="School Timetablee" />
+        <PageTitle title="School Timetable" />
         {(timetableLoading || isRefetching) && <MyLoader />}
 
         <div className="flex m-3">
@@ -202,7 +203,7 @@ export default function Index() {
                 setClassId(obj.id);
                 setSelectedClass(val);
               }}
-              sxClass={{ width: "206px" }}
+              sxClass={{ width: '206px' }}
               loading={loadClassesForTeacher}
               parentStyle="dropdown-css"
               labelParentClass="dropdown-typography-parent"
@@ -231,10 +232,10 @@ export default function Index() {
           )}
         </div>
 
-        {selectedClass !== "" ? (
+        {selectedClass !== '' ? (
           <div className="bg-white">
             <Calendar
-              views={["week"]}
+              views={['week']}
               selectable={true}
               localizer={localizer}
               date={navigationDate}
@@ -245,15 +246,15 @@ export default function Index() {
               max={new Date(2023, 0, 1, 18, 0)}
               defaultView="week"
               events={eventsData}
-              style={{ width: "100%", height: "700px" }}
+              style={{ width: '100%', height: '700px' }}
               onSelectEvent={() => {}}
               onSelectSlot={() => {}}
               formats={{
                 dayRangeHeaderFormat: (date: any, culture: any) =>
-                  moment(date.start).format("MMM YYYY"),
+                  moment(date.start).format('MMM YYYY'),
                 dayFormat: (date, culture: any) =>
-                  localizer.format(date, "ddd D", culture),
-                eventTimeRangeFormat: () => "",
+                  localizer.format(date, 'ddd D', culture),
+                eventTimeRangeFormat: () => '',
               }}
               eventPropGetter={(event) => {
                 const backgroundColor = event.hexColor;
@@ -266,8 +267,8 @@ export default function Index() {
           </div>
         ) : (
           <div className="flex justify-center items-center bg-white h-[40vh] font-bold">
-            {" "}
-            Please Select a Class{" "}
+            {' '}
+            Please Select a Class{' '}
           </div>
         )}
       </RouteLayout>
