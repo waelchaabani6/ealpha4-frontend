@@ -35,6 +35,8 @@ type MarkAttendanceFiltersProps = {
   setTmpTableData: React.Dispatch<React.SetStateAction<any>>;
   setSelectedDate: React.Dispatch<React.SetStateAction<Date | null>>;
   selectedDate: Date | null;
+  setSelectedClass: React.Dispatch<React.SetStateAction<string | number>>;
+  selectedClass: string | number;
 };
 
 function MarkAttendanceFilters({
@@ -49,6 +51,8 @@ function MarkAttendanceFilters({
   setTmpTableData,
   setSelectedDate,
   selectedDate,
+  setSelectedClass,
+  selectedClass,
 }: MarkAttendanceFiltersProps) {
   const { TEACHER } = USER_TYPE;
   const usersRole = useSelector((state: any) => state?.user?.role);
@@ -56,9 +60,9 @@ function MarkAttendanceFilters({
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
   const [results, setResults] = useState<Student[]>([]);
 
-  const [selectedClass, setSelectedClass] = useState<
-    string | number | null | 'select'
-  >('select');
+  // const [selectedClass, setSelectedClass] = useState<
+  //   string | number | null | 'select'
+  // >('select');
 
   const { schoolId } = useSelector(selectUser);
 

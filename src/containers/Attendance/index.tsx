@@ -343,6 +343,8 @@ function Attendance() {
         setTmpTableData={setTmpTableData}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
+        selectedClass={selectedClass}
+        setSelectedClass={setSelectedClass}
       />
 
       <div className="bg-white" ref={componentRef}>
