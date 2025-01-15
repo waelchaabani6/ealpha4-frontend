@@ -39,6 +39,7 @@ import moment from "moment";
 import { selectUser } from "@shared/store/userSlice";
 import SearchInputWithResults from "@component/input/SearchInputWithResults";
 import { useNavigate, useParams } from "react-router-dom";
+import { set } from "react-hook-form";
 
 const printButton = () => <PrintIcon />;
 
@@ -133,6 +134,7 @@ function Attendance() {
   >("select");
 
   const { role, branchId, schoolId } = useSelector(selectUser);
+
   const [searchString, setSearchString] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<
@@ -227,6 +229,7 @@ function Attendance() {
   const { schoolName } = useParams();
 
   const SchoolURL = import.meta.env.VITE_APP_SCHOOL_SERVICE_URL;
+  const CourseURL = import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL;
   const { data: data1, isLoading: isLoading1 } = useGet({
     baseURL: SchoolURL,
     url: `schools-service/school-branches/?limit=100&school_id=${
@@ -253,22 +256,25 @@ function Attendance() {
     },
   });
 
-  const { isLoading: subLoading, refetch: refectSubject } = useGet({
-    baseURL: SchoolURL,
-    url: `schools-service/school-classes/subject/get?user_id=${
-      user?.userId
-    }&class_id=${selectedClass || ""}`,
+  const { isLoading: subLoading, refetch: refetchCourses } = useGet({
+    baseURL: CourseURL,
+    url: `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
+      selectedBranch === "select" ? "" : selectedBranch
+    }&user_id=${user?.userId}`,
     enabled: false,
     onSuccess: (resp: any) => {
       const respData = resp?.data?.response;
-      const temp3: any = [];
-      respData?.map((i: any) => {
-        temp3.push({ label: i?.name, value: i?.subject_id });
-        return temp3;
-      });
-      setCourses([...temp3]);
+      const formattedCourses = respData.results.map((course: any) => ({
+        label: course.short_name,
+        value: course.program_id,
+      }));
+      setCourses([...formattedCourses]);
     },
   });
+
+  useEffect(() => {
+    refetchCourses();
+  }, [selectedBranch]);
 
   useEffect(() => {
     const isAdmin = [
@@ -537,12 +543,8 @@ function Attendance() {
   };
 
   const submitHandler = () => {
-    console.log(bulkSelect, "bulkSelect");
     const dt = bulkSelect?.map((item: any) => {
       const idx = tmpTableData.find((itm: any) => itm.id === item);
-      // console.log(idx);
-      // console.log(item);
-      // // console.log(idx);
       if (idx) {
         const tmp = {
           student: item,
@@ -562,7 +564,6 @@ function Attendance() {
       }
       return null;
     });
-    console.log("submit data", dt);
     mutate(dt);
   };
 
@@ -586,10 +587,8 @@ function Attendance() {
       return tmp;
     });
 
-    // console.log(dt, 'dt');
     // const ids = data?.data?.response?.result?.map((item: any) => item?.id);
     // bulkSelect.find((i: any) => i.student === itm?.id)?.isPresent
-    // console.log(ids, 'ids');
     // setBulkSelect(ids);
     // mutate(dt);
   };
@@ -630,7 +629,7 @@ function Attendance() {
   return (
     <RouteLayout navBack={true} overflow={true}>
       <HeaderMenus
-        title="Attendance"
+        title="Attendance t"
         subtitle={
           userRole().isSuperAdmin
             ? `School : ${
@@ -693,7 +692,7 @@ function Attendance() {
             title="Select Course"
             value={selectedCourse}
             loading={loadCoursesForTeacher}
-            dataArray={[{ label: "Select", value: "select" }, ...coursesArray]}
+            dataArray={[{ label: "Select", value: "select" }, ...courses]}
             onChangeHandler={(currentCourse: number | string) =>
               setSelectedCourse(currentCourse)
             }
