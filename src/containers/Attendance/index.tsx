@@ -288,7 +288,7 @@ function Attendance() {
       selectedClass !== "select" &&
       usersRole?.name === USER_TYPE.TEACHER
     ) {
-      refectSubject();
+      refetchSubjects();
     }
   }, [selectedClass, selectedSubject]);
 
