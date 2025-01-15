@@ -4,12 +4,12 @@
 /* eslint-disable operator-linebreak */
 /* eslint-disable indent */
 /* eslint-disable comma-dangle */
-import RouteLayout from "@layout/routeLayout";
-import Dropdown from "@component/dropdown/Dropdown";
-import DatePicker from "@component/datepicker";
-import Button from "@component/button/button";
-import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
-import { useEffect, useMemo, useRef, useState } from "react";
+import RouteLayout from '@layout/routeLayout';
+import Dropdown from '@component/dropdown/Dropdown';
+import DatePicker from '@component/datepicker';
+import Button from '@component/button/button';
+import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   TABLE_LABELS,
   COMPONENTS,
@@ -39,7 +39,7 @@ import moment from 'moment';
 import { selectUser } from '@shared/store/userSlice';
 import SearchInputWithResults from '@component/input/SearchInputWithResults';
 import { useNavigate, useParams } from 'react-router-dom';
-import { set } from "react-hook-form";
+import { set } from 'react-hook-form';
 import SessionBooking from '@component/CustomDatePicker';
 import AttendanceCalednar from './AttendanceCalednar';
 
@@ -52,7 +52,7 @@ const TableColumns = [
     //   selector: 'id',
     //   showInHeader: true
     label: TABLE_LABELS?.SR_NO,
-    align: "center",
+    align: 'center',
   },
   // {
   //   label: "Select",
@@ -74,17 +74,17 @@ const TableColumns = [
   //   // component: COMPONENTS?.checkbox
   // },
   {
-    label: "Student First Name",
-    mapper: "StudentFirstName",
+    label: 'Student First Name',
+    mapper: 'StudentFirstName',
     isSort: false,
   },
   {
-    label: "Student Last Name",
-    mapper: "StudentLastName",
+    label: 'Student Last Name',
+    mapper: 'StudentLastName',
   },
   {
-    label: "Grade",
-    mapper: "Grade",
+    label: 'Grade',
+    mapper: 'Grade',
   },
   // {
   //   label: 'Status',
@@ -92,21 +92,21 @@ const TableColumns = [
   //   align: 'center',
   // },
   {
-    label: "Status",
-    mapper: "Status",
-    align: "center",
+    label: 'Status',
+    mapper: 'Status',
+    align: 'center',
   },
   {
-    label: "",
-    mapper: "Select",
-    component: "custom-checkbox",
-    selector: "id",
+    label: '',
+    mapper: 'Select',
+    component: 'custom-checkbox',
+    selector: 'id',
     showInHeader: true,
-    align: "center",
+    align: 'center',
     sx: {
-      display: "flex",
-      alignItems: "center",
-      elementClass: "flex items-center",
+      display: 'flex',
+      alignItems: 'center',
+      elementClass: 'flex items-center',
       // component: COMPONENTS?.checkbox
     },
   },
@@ -124,24 +124,24 @@ function Attendance() {
   const { user } = useSelector((state: any) => state);
   const [tableData, setTableData] = useState<any>([]);
   const [page, setPage] = useState(1);
-  const [orderBy, setOrderBy] = useState<any>("created_at");
-  const [order, setOrder] = useState<any>("asc");
+  const [orderBy, setOrderBy] = useState<any>('created_at');
+  const [order, setOrder] = useState<any>('asc');
   const [bulkSelect, setBulkSelect] = useState<any>([]);
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
   const [selectedBranch, setSelectedBranch] = useState<
-    number | null | "select"
-  >("select");
+    number | null | 'select'
+  >('select');
   const [selectedClass, setSelectedClass] = useState<
-    string | number | null | "select"
-  >("select");
+    string | number | null | 'select'
+  >('select');
 
   const { role, branchId, schoolId } = useSelector(selectUser);
 
-  const [searchString, setSearchString] = useState("");
+  const [searchString, setSearchString] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<
-    number | null | "select" | ""
-  >("select");
+    number | null | 'select' | ''
+  >('select');
   const { schoolData, branchData } = useSelector(selectSchoolData);
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [absentLoader, setAbsentLoader] = useState<boolean>();
@@ -157,7 +157,7 @@ function Attendance() {
 
   // Define state for selected course
   const [selectedCourse, setSelectedCourse] = useState<string | number>(
-    "select"
+    'select'
   );
 
   // Simulated loading states
@@ -179,7 +179,7 @@ function Attendance() {
 
   const handleCourseChange = (currentCourse: number | string) => {
     setSelectedCourse(currentCourse);
-    setSelectedClass("select"); // Reset class selection when a course changes
+    setSelectedClass('select'); // Reset class selection when a course changes
   };
 
   const navigate = useNavigate();
@@ -199,7 +199,7 @@ function Attendance() {
   const { isLoading: subLoading, refetch: refetchCourses } = useGet({
     baseURL: CourseURL,
     url: `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
-      selectedBranch === "select" ? "" : selectedBranch
+      selectedBranch === 'select' ? '' : selectedBranch
     }&user_id=${user?.userId}`,
     enabled: false,
     onSuccess: (resp: any) => {
@@ -238,7 +238,7 @@ function Attendance() {
   }, [selectedBranch]);
 
   useEffect(() => {
-    if (selectedCourse !== "select") {
+    if (selectedCourse !== 'select') {
       refetchClasses();
     }
   }, [selectedCourse]);
@@ -249,10 +249,10 @@ function Attendance() {
       USER_TYPE.BRANCH_ADMIN,
       USER_TYPE.SUPER_ADMIN,
     ].includes(usersRole?.name);
-    if (selectedClass !== "select" && isAdmin) {
+    if (selectedClass !== 'select' && isAdmin) {
       refetchClasses();
     } else if (
-      selectedClass !== "select" &&
+      selectedClass !== 'select' &&
       usersRole?.name === USER_TYPE.TEACHER
     ) {
       refetchCourses();
@@ -272,9 +272,9 @@ function Attendance() {
     url: `schools-service/school-classes/?limit=1000&school_id=${
       schoolData?.id || branchData?.school_data?.id
     } ${
-      branchData || selectedBranch !== "select"
+      branchData || selectedBranch !== 'select'
         ? `&branch_name=${branchName}`
-        : ""
+        : ''
     }`,
     enabled: !!(schoolData?.id || branchData?.school_data?.id),
   });
@@ -302,36 +302,36 @@ function Attendance() {
   }, [selectedSubject]);
 
   const formatSelectedDate = useMemo(
-    () => moment(selectedDate).format("yyyy-MM-DD"),
+    () => moment(selectedDate).format('yyyy-MM-DD'),
     [selectedDate]
   );
 
   const generatedUrl = `roster-service/student-attendance-list?limit=${10}&school_id=${
     schoolData?.id || branchData?.school_data?.id
-  }&subject=${subjectName || ""}&class_name=${className}${
-    selectedDate ? `&date=${formatSelectedDate}` : ""
+  }&subject=${subjectName || ''}&class_name=${className}${
+    selectedDate ? `&date=${formatSelectedDate}` : ''
   }${
     branchData
       ? `&branch_id=${branchData?.id}`
-      : selectedBranch !== "select"
-      ? `&branch_id=${selectedBranch}`
-      : ""
+      : selectedBranch !== 'select'
+        ? `&branch_id=${selectedBranch}`
+        : ''
   }&offset=${(page - 1) * Number(noOfpages)}${
-    searchString ? `&search=${searchString}` : ""
+    searchString ? `&search=${searchString}` : ''
   }`;
-  const cleanedUrl = generatedUrl.trim().replace(/\s+/g, " ");
+  const cleanedUrl = generatedUrl.trim().replace(/\s+/g, ' ');
 
   const { data, isLoading, refetch } = useGet({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
     url: `${cleanedUrl}`,
     enabled: Boolean(
-      (selectedClass !== "select" &&
-        selectedSubject !== "select" &&
+      (selectedClass !== 'select' &&
+        selectedSubject !== 'select' &&
         selectedDate) ||
-        (selectedClass !== "select" &&
-          selectedSubject !== "select" &&
+        (selectedClass !== 'select' &&
+          selectedSubject !== 'select' &&
           selectedDate &&
-          selectedBranch !== "select")
+          selectedBranch !== 'select')
     ),
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.count);
@@ -340,15 +340,15 @@ function Attendance() {
 
   const { isLoading: isLoading3, mutate } = usePost({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
-    url: "roster-service/create-attendance-data",
+    url: 'roster-service/create-attendance-data',
     onSuccess: () => {
       refetch();
       const msg = absentLoader
-        ? "All absent success"
+        ? 'All absent success'
         : presentLoader
-        ? "All present success"
-        : "success";
-      toast("success", "Attendance Updated Successfully!");
+          ? 'All present success'
+          : 'success';
+      toast('success', 'Attendance Updated Successfully!');
       // setAbsentLoader(false);
       // setPresentLoader(false);
       setBulkSelect([]);
@@ -357,7 +357,7 @@ function Attendance() {
     onError: (error: any) => {
       // setAbsentLoader(false);
       // setPresentLoader(false);
-      toast("error", error?.response?.data?.message);
+      toast('error', error?.response?.data?.message);
     },
   });
 
@@ -451,22 +451,13 @@ function Attendance() {
             aria-labelledby="demo-row-radio-buttons-group-label"
             name="row-radio-buttons-group"
             value={itm?.isPresent}
-            // value={
-            //   bulkSelect?.length > 0
-            //     ? bulkSelect.find((i: any) => i === itm?.id)
-            //     : itm?.isPresent
-            // }
-            // value={
-            //   itm?.isPresent ||
-            //   bulkSelect.some((item) => item.student === itm?.id)
-            // }
             onChange={() => handleOnchange(itm?.id)}
           >
             <FormControlLabel
               value={true}
               control={<Radio color="success" size="small" />}
               label="Present"
-              sx={{ marginRight: "20px" }}
+              sx={{ marginRight: '20px' }}
             />
             <FormControlLabel
               value={false}
@@ -477,14 +468,7 @@ function Attendance() {
         </div>
       ),
     }));
-    tmpTableData.map((itm) => {
-      // console.log(bulkSelect);
-      // const x = bulkSelect.some((item) => item.student == itm?.id);
-      // console.log(x);
-      // console.log(bulkSelect.includes.call(itm?.id));
-      // const i = bulkSelect.find((i: any) => i.student === itm?.id).present;
-      // console.log(i);
-    });
+
     setTableData(bb || []);
   }, [tmpTableData, bulkSelect]);
 
@@ -517,14 +501,14 @@ function Attendance() {
           student: item,
           school_id: schoolData?.id || branchData?.school_data?.id,
           school_class: selectedClass,
-          subject: subjectName || "",
+          subject: subjectName || '',
           present: idx?.isPresent,
           present_on_date: formatSelectedDate,
         } as any;
         if (branchId) {
           tmp.branch_id = branchId;
         }
-        if (selectedBranch !== "select") {
+        if (selectedBranch !== 'select') {
           tmp.branch_id = selectedBranch;
         }
         return tmp;
@@ -540,7 +524,7 @@ function Attendance() {
         student: item?.id,
         school_id: schoolData?.id || branchData?.school_data?.id,
         school_class: selectedClass,
-        subject: subjectName || "",
+        subject: subjectName || '',
         present: flag,
         present_on_date: formatSelectedDate,
       } as any;
@@ -548,7 +532,7 @@ function Attendance() {
         tmp.branch_id = branchId;
       }
 
-      if (selectedBranch !== "select") {
+      if (selectedBranch !== 'select') {
         tmp.branch_id = selectedBranch;
       }
       return tmp;
@@ -566,7 +550,7 @@ function Attendance() {
 
   const branchSelectHandler = (currentBranch: number) => {
     setSelectedBranch(currentBranch);
-    setSelectedClass("select");
+    setSelectedClass('select');
     setTableData([]);
   };
 
@@ -616,9 +600,9 @@ function Attendance() {
                   ? schoolData?.school_name
                   : branchData?.school_data.school_name
               }`
-            : ""
+            : ''
         }
-        subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ""}
+        subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ''}
         menuArray={ADMIN_TOOLBAR_MENU}
         // handleToolbarAction={handleToolbarAction}
       />
@@ -647,14 +631,14 @@ function Attendance() {
               value={selectedBranch}
               loading={isLoading1}
               dataArray={[
-                { label: "Select", value: "select" },
+                { label: 'Select', value: 'select' },
                 ...(branchArr?.map((item: any) => ({
                   label: item.name,
                   value: item.id,
                 })) || []),
               ]}
               onChangeHandler={branchSelectHandler}
-              sxClass={{ width: "100%" }}
+              sxClass={{ width: '100%' }}
             />
           )}
           {/* <Dropdown
@@ -671,17 +655,17 @@ function Attendance() {
             title="Select Course"
             value={selectedCourse}
             loading={loadCoursesForTeacher}
-            dataArray={[{ label: "Select", value: "select" }, ...courses]}
+            dataArray={[{ label: 'Select', value: 'select' }, ...courses]}
             onChangeHandler={(currentCourse: number | string) =>
               setSelectedCourse(currentCourse)
             }
-            sxClass={{ width: "100%" }}
+            sxClass={{ width: '100%' }}
           />
           <Dropdown
             title="Select Class"
             value={selectedClass}
             loading={loadClassesForCourse}
-            dataArray={[{ label: "Select", value: "select" }, ...classes]}
+            dataArray={[{ label: 'Select', value: 'select' }, ...classes]}
             onChangeHandler={(currentClass: string | number) => {
               setSelectedClass(currentClass);
               setSelectedClassStudents(
@@ -689,8 +673,8 @@ function Attendance() {
                   ?.students
               );
             }}
-            sxClass={{ width: "100%" }}
-            disabled={selectedCourse === "select"} // Disable if no course selected
+            sxClass={{ width: '100%' }}
+            disabled={selectedCourse === 'select'} // Disable if no course selected
           />
           {/* <Dropdown
             title="Select Subject"

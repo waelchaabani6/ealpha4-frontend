@@ -70,6 +70,9 @@ export default function CustomDatePicker(props: DatePickerProps) {
       eventName: '',
     };
 
+    const isFuture =
+      moment(new Date()).format('yyyy-DD-MM') < moment(dt).format('yyyy-DD-MM');
+
     if (trigger) {
       const eventExists = Object.keys(props.events)?.find(
         (a: string) =>
@@ -89,7 +92,8 @@ export default function CustomDatePicker(props: DatePickerProps) {
         title="title"
         role="gridcell"
         tabIndex={-1}
-        className={`MuiButtonBase-root MuiPickersDay-root ${isToday && 'border border-gray-800 rounded-full'} ${trigger && isEvent.status ? `after:w-[5px] after:h-[5px] after:rounded-full relative top-[3.5px] after:bg-[#1B82EC]` : ''} grid place-items-center ${!dayInCurrentMonth.outsideCurrentMonth ? (isCurrent ? 'text-red font-semibold' : isSunday ? 'text-gray-400' : 'text-black') : 'text-gray-300'} hover:cursor-pointer hover:scale-105 hover:text-gray-500 text-xs w-9 h-9 mx-[2px]`}
+        disabled={isFuture}
+        className={`MuiButtonBase-root MuiPickersDay-root ${isFuture ? 'text-gray-300' : 'hover:cursor-pointer hover:scale-105 hover:text-gray-500'} ${isToday && 'border border-gray-800 rounded-full'} ${trigger && isEvent.status ? `after:w-[5px] after:h-[5px] after:rounded-full relative top-[3.5px] after:bg-[#1B82EC]` : ''} grid place-items-center ${!dayInCurrentMonth.outsideCurrentMonth ? (isCurrent ? 'text-red font-semibold' : isSunday ? 'text-gray-400' : 'text-black') : 'text-gray-300'}  text-xs w-9 h-9 mx-[2px]`}
         // onClick={() => {dateSelectHandler(dt)}}
         onClick={() => {
           console.log('here');
