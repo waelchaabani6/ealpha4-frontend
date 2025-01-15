@@ -24,7 +24,7 @@ import { useSelector } from 'react-redux';
 import { selectSchoolData } from '@shared/store/schoolSlice';
 import ReactToPrint from 'react-to-print';
 import PrintIcon from '@mui/icons-material/Print';
-import { useGet, usePost } from '@shared/api/useApi';
+import { useGet, usePost, useRAWGetApi } from '@shared/api/useApi';
 import {
   currentUserAcademicDate,
   getNoOfPages,
@@ -39,6 +39,8 @@ import moment from 'moment';
 import { selectUser } from '@shared/store/userSlice';
 import SearchInputWithResults from '@component/input/SearchInputWithResults';
 import { useNavigate, useParams } from 'react-router-dom';
+import SessionBooking from '@component/CustomDatePicker';
+import AttendanceCalednar from './AttendanceCalednar';
 
 const printButton = () => <PrintIcon />;
 
@@ -627,6 +629,18 @@ function Attendance() {
   }, [usersRole, user]);
 
   const SubjectData = courses.sort(sortData);
+
+  // Todo: delete this afeter testing
+  const roasterServiceBaseURL = import.meta.env.VITE_APP_ROSTER_SERVICE_URL;
+  const { userId } = useSelector(selectUser);
+
+  // const [eventID, setEventID] = useState<any>();
+  const { data: eventData, refetch: refreshEvents } = useRAWGetApi({
+    baseURL: roasterServiceBaseURL,
+    url: `roster-service/events/?user_id=${userId}&school_id=${schoolId}`,
+    cacheTime: 0,
+  });
+
   return (
     <RouteLayout navBack={true} overflow={true}>
       <HeaderMenus
@@ -729,7 +743,7 @@ function Attendance() {
             }
             sxClass={{ width: "100%" }}
           /> */}
-          <div className="pb-[5px]">
+          {/* <div className="pb-[5px]">
             <DatePicker
               fullWidth={true}
               sxType={1}
@@ -744,7 +758,16 @@ function Attendance() {
               error={null}
               shouldDisableDate={() => false}
             />
+          </div> */}
+
+          <div className="pb-[5px]">
+            <AttendanceCalednar
+              eventData={eventData}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+            />
           </div>
+
           {/* <div className="sm:mt-[1.6rem]">
             <Button
               className="h-[38px] w-full text-[16px]"

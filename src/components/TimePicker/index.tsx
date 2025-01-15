@@ -7,30 +7,37 @@ import './TimePicker.css';
 import { Box } from '@mui/material';
 
 type Props = {
-    customLabel: string;
-    onChange: (value: string | null) => void;
-    value: string;
-    minTime?: any;
-    maxTime?: any;
-    parentLabelClass?: string;
+  customLabel: string;
+  onChange: (value: string | null) => void;
+  value: string;
+  minTime?: any;
+  maxTime?: any;
+  parentLabelClass?: string;
 };
 
-export default function CustomeTimePicker({ onChange, value, customLabel, minTime, maxTime, parentLabelClass = '' }: Props) {
+export default function CustomeTimePicker({
+  onChange,
+  value,
+  customLabel,
+  minTime,
+  maxTime,
+  parentLabelClass = '',
+}: Props) {
   return (
-    <Box sx={{
-      '& .MuiInputBase-root': {
-        height: '40px',
-        width: '380px',
-        position: 'relative',
-        top: '25px'
-      }
-    }}
+    <Box
+      sx={{
+        '& .MuiInputBase-root': {
+          height: '40px',
+          width: '380px',
+          position: 'relative',
+          top: '25px',
+        },
+      }}
     >
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <div className={`relative top-[18px] ${parentLabelClass}`}>
           {' '}
-          {customLabel}
-          {' '}
+          {customLabel}{' '}
         </div>
         <DesktopTimePicker
           renderInput={(TextProps) => <TextField {...TextProps} />}
@@ -41,7 +48,14 @@ export default function CustomeTimePicker({ onChange, value, customLabel, minTim
           minTime={minTime}
           maxTime={maxTime}
           disableIgnoringDatePartForTimeValidation={false}
-          InputProps={{ style: { fontSize: '0.75rem', color: 'black', fontFamily: 'Montserrat-500', border: '1px solid grey' } }}
+          InputProps={{
+            style: {
+              fontSize: '0.75rem',
+              color: 'black',
+              fontFamily: 'Montserrat-500',
+              border: '1px solid grey',
+            },
+          }}
         />
       </LocalizationProvider>
     </Box>
