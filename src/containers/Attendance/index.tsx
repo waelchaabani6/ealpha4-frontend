@@ -149,6 +149,9 @@ function Attendance() {
   const [courses, setCourses] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Student[]>([]);
+  const [classes, setClasses] = useState<any[]>([]);
+  const [listOfStudents, setListOfStudents] = useState<any[]>([]);
+  const [selectedClassStudents, setSelectedClassStudents] = useState([]);
 
   // Define state for selected course
   const [selectedCourse, setSelectedCourse] = useState<string | number>(
@@ -159,67 +162,19 @@ function Attendance() {
   const [loadCoursesForTeacher, setLoadCoursesForTeacher] = useState(false);
   const [loadClassesForCourse, setLoadClassesForCourse] = useState(false);
 
-  // Fake array of courses
-  const coursesArray = [
-    { label: "Math", value: 1 },
-    { label: "Science", value: 2 },
-    { label: "English", value: 3 },
-    { label: "History", value: 4 },
-    { label: "Geography", value: 5 },
-  ];
-  const classesByCourse = {
-    1: [
-      { label: "Algebra 101", value: "algebra_101" },
-      { label: "Geometry Basics", value: "geometry_basics" },
-    ],
-    2: [
-      { label: "Physics Intro", value: "physics_intro" },
-      { label: "Chemistry Basics", value: "chemistry_basics" },
-    ],
-    3: [
-      { label: "Grammar 101", value: "grammar_101" },
-      { label: "Literature Basics", value: "literature_basics" },
-    ],
-    4: [
-      { label: "World History", value: "world_history" },
-      { label: "Medieval Times", value: "medieval_times" },
-    ],
-    5: [
-      { label: "Physical Geography", value: "physical_geography" },
-      { label: "Human Geography", value: "human_geography" },
-    ],
-  };
-
   const handleInputSearch = (value: string) => {
     setLoading(true);
-    // Simulate an API call
     setTimeout(() => {
-      const mockResponse = {
-        students: [
-          {
-            student_id: 101,
-            user_id: 1001,
-            first_name: "Alice",
-            last_name: "Johnson",
-          },
-          {
-            student_id: 102,
-            user_id: 1002,
-            first_name: "Bob",
-            last_name: "Smith",
-          },
-        ],
-      };
-      setResults(
-        mockResponse.students.filter((student) =>
-          `${student.first_name} ${student.last_name}`
-            .toLowerCase()
-            .includes(value.toLowerCase())
-        )
+      const searchResults = selectedClassStudents.filter((student) =>
+        `${student.first_name} ${student.last_name}`
+          .toLowerCase()
+          .includes(value.toLowerCase())
       );
+      setResults(searchResults);
       setLoading(false);
     }, 500);
   };
+
   const handleCourseChange = (currentCourse: number | string) => {
     setSelectedCourse(currentCourse);
     setSelectedClass("select"); // Reset class selection when a course changes
@@ -239,23 +194,6 @@ function Attendance() {
   });
   const branchArr: [] = data1?.data?.response?.results?.sort(sortByName);
 
-  const { isLoading: subjectLoading, refetch: refetchSubjects } = useGet({
-    baseURL: SchoolURL,
-    url: `schools-service/schools/subject/list/?class_id=${
-      selectedClass || ""
-    }`,
-    enabled: false,
-    onSuccess: (resp: any) => {
-      const respData = resp?.data?.response;
-      const temp3: any =
-        respData?.map((i: any) => ({
-          label: i?.name,
-          value: i?.id,
-        })) || [];
-      setCourses([...temp3]);
-    },
-  });
-
   const { isLoading: subLoading, refetch: refetchCourses } = useGet({
     baseURL: CourseURL,
     url: `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
@@ -272,9 +210,36 @@ function Attendance() {
     },
   });
 
+  const { isLoading: classLoading, refetch: refetchClasses } = useGet({
+    baseURL: SchoolURL,
+    url: `schools-service/schools/get-classes?program_id=${selectedCourse}&school_id=${schoolId}&teacher_id=${user?.user_profile_id}`,
+    enabled: false,
+    onSuccess: (resp: any) => {
+      const respData = resp?.data?.results; // Adjust based on the actual API response structure
+
+      const formattedClasses = respData.map((classItem: any) => ({
+        label: classItem.class_name, // Replace `class_name` with the correct key if different
+        value: classItem.class_id, // Replace `class_id` with the correct key if different
+      }));
+      const studentsByClass = respData.map((classItem: any) => ({
+        class_id: classItem.class_id,
+        students: classItem.student_profile, // Only store `student_profile`
+      }));
+
+      setClasses([...formattedClasses]);
+      setListOfStudents(studentsByClass);
+    },
+  });
+
   useEffect(() => {
     refetchCourses();
   }, [selectedBranch]);
+
+  useEffect(() => {
+    if (selectedCourse !== "select") {
+      refetchClasses();
+    }
+  }, [selectedCourse]);
 
   useEffect(() => {
     const isAdmin = [
@@ -283,12 +248,12 @@ function Attendance() {
       USER_TYPE.SUPER_ADMIN,
     ].includes(usersRole?.name);
     if (selectedClass !== "select" && isAdmin) {
-      refetchSubjects();
+      refetchClasses();
     } else if (
       selectedClass !== "select" &&
       usersRole?.name === USER_TYPE.TEACHER
     ) {
-      refetchSubjects();
+      refetchCourses();
     }
   }, [selectedClass, selectedSubject]);
 
@@ -522,20 +487,20 @@ function Attendance() {
   }, [tmpTableData, bulkSelect]);
 
   useEffect(() => {
-    if (data) {
-      const aa =
-        data?.data?.response?.result?.map((itm: any, index: number) => ({
+    if (selectedClassStudents) {
+      const studentsData =
+        selectedClassStudents?.map((itm: any, index: number) => ({
           id: itm?.id,
           SR_NO: index + 1,
           StudentFirstName: itm?.first_name,
           StudentLastName: itm?.last_name,
-          Grade: itm?.class_name,
+          Grade: selectedClass,
           isChecked: false,
-          isPresent: itm?.is_present,
+          isPresent: false,
         })) || [];
-      setTmpTableData(aa);
+      setTmpTableData(studentsData);
     }
-  }, [data]);
+  }, [selectedClassStudents]);
 
   const handlePagination = (currPage: any) => {
     if (currPage) setPage(currPage);
@@ -629,7 +594,7 @@ function Attendance() {
   return (
     <RouteLayout navBack={true} overflow={true}>
       <HeaderMenus
-        title="Attendance t"
+        title="Attendance"
         subtitle={
           userRole().isSuperAdmin
             ? `School : ${
@@ -702,13 +667,14 @@ function Attendance() {
             title="Select Class"
             value={selectedClass}
             loading={loadClassesForCourse}
-            dataArray={[
-              { label: "Select", value: "select" },
-              ...(classesByCourse[selectedCourse] || []),
-            ]}
-            onChangeHandler={(currentClass: string | number) =>
-              setSelectedClass(currentClass)
-            }
+            dataArray={[{ label: "Select", value: "select" }, ...classes]}
+            onChangeHandler={(currentClass: string | number) => {
+              setSelectedClass(currentClass);
+              setSelectedClassStudents(
+                listOfStudents.find((item) => item.class_id === currentClass)
+                  ?.students
+              );
+            }}
             sxClass={{ width: "100%" }}
             disabled={selectedCourse === "select"} // Disable if no course selected
           />
