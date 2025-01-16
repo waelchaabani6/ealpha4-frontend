@@ -1,5 +1,9 @@
 /* eslint-disable no-lone-blocks */
-import { DatePicker as MuiDatePicker, LocalizationProvider, StaticDatePicker } from '@mui/x-date-pickers';
+import {
+  DatePicker as MuiDatePicker,
+  LocalizationProvider,
+  StaticDatePicker,
+} from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
@@ -7,7 +11,12 @@ import TextField from '@mui/material/TextField';
 
 import './CustomeCalendar.css';
 
-function CustomCalendar({ events, parentClass, value, onSelect }: CustomCalendarProps) {
+function CustomCalendar({
+  events,
+  parentClass,
+  value,
+  onSelect,
+}: CustomCalendarProps) {
   const [date, setDate] = useState(new Date());
   useEffect(() => {
     if (value) {
@@ -22,7 +31,15 @@ function CustomCalendar({ events, parentClass, value, onSelect }: CustomCalendar
     const Thursday = document.querySelector('[aria-label="Thursday"]');
     const Friday = document.querySelector('[aria-label="Friday"]');
     const Saturday = document.querySelector('[aria-label="Saturday"]');
-    if (Sunday != null && Monday != null && Tuesday != null && Wednesday != null && Thursday != null && Friday != null && Saturday != null) {
+    if (
+      Sunday != null &&
+      Monday != null &&
+      Tuesday != null &&
+      Wednesday != null &&
+      Thursday != null &&
+      Friday != null &&
+      Saturday != null
+    ) {
       Sunday.textContent = 'Sun';
       Monday.textContent = 'Mon';
       Tuesday.textContent = 'Tue';
@@ -43,18 +60,22 @@ function CustomCalendar({ events, parentClass, value, onSelect }: CustomCalendar
 
   const renderDayInPicker = (dt: any, _: any, dayInCurrentMonth: any) => {
     const isSunday = moment(dt).day() === 0;
-    const isCurrent = moment(date).format('yyyy-DD-MM') === moment(dt).format('yyyy-DD-MM');
+    const isCurrent =
+      moment(date).format('yyyy-DD-MM') === moment(dt).format('yyyy-DD-MM');
     const trigger = events && Object.keys(events)?.length > 0;
     let isEvent = {
       status: false,
-      eventName: ''
+      eventName: '',
     };
     if (trigger) {
-      const eventExists = Object.keys(events)?.find((a: string) => moment(dt).format('yyyy-DD-MM') === moment(a).format('yyyy-DD-MM'));
+      const eventExists = Object.keys(events)?.find(
+        (a: string) =>
+          moment(dt).format('yyyy-DD-MM') === moment(a).format('yyyy-DD-MM')
+      );
       if (eventExists) {
         isEvent = {
           status: true,
-          eventName: (events as any)[eventExists][0].name
+          eventName: (events as any)[eventExists][0].name,
         };
       }
     }
@@ -62,12 +83,10 @@ function CustomCalendar({ events, parentClass, value, onSelect }: CustomCalendar
       <div
         key={dt}
         role="presentation"
-        className={`${(trigger && isEvent.status) ? `after:w-[5px] after:h-[5px] after:rounded-full relative top-[3.5px] after:bg-[#1B82EC]` : ''} w-full h-[27px] grid place-items-center ${!dayInCurrentMonth.outsideCurrentMonth ? isCurrent ? 'text-black font-semibold' : isSunday ? 'text-gray-400' : 'text-black' : 'text-gray-300'} hover:cursor-pointer hover:scale-105 hover:text-gray-500`}
+        className={`${trigger && isEvent.status ? `after:w-[5px] after:h-[5px] after:rounded-full relative top-[3.5px] after:bg-[#1B82EC]` : ''} w-full h-[27px] grid place-items-center ${!dayInCurrentMonth.outsideCurrentMonth ? (isCurrent ? 'text-black font-semibold' : isSunday ? 'text-gray-400' : 'text-black') : 'text-gray-300'} hover:cursor-pointer hover:scale-105 hover:text-gray-500`}
         onClick={() => dateSelectHandler(dt)}
       >
-        {
-          moment(dt).format('D')
-        }
+        {moment(dt).format('D')}
       </div>
     );
   };
@@ -83,15 +102,14 @@ function CustomCalendar({ events, parentClass, value, onSelect }: CustomCalendar
           onChange={dateSelectHandler}
           componentsProps={{
             actionBar: {
-              actions: ['today']
-            }
+              actions: ['today'],
+            },
           }}
           showDaysOutsideCurrentMonth={true}
           className={`CustomCalendar ${parentClass}`}
           renderInput={(params) => <TextField {...params} />}
         />
       </div>
-
     </LocalizationProvider>
   );
 }
@@ -103,8 +121,8 @@ type CustomCalendarProps = {
   onSelect?: (value: Date) => void;
   value?: string | Date;
   events?: { name: string; date: Date }[];
-}
+};
 
 CustomCalendar.defaultProps = {
-  parentClass: ''
+  parentClass: '',
 };
