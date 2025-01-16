@@ -40,11 +40,11 @@ const AttendanceCalednar = ({ eventData, selectedDate, setSelectedDate }) => {
         sxType={1}
         value={!selectedDate ? selectedDate : selectedDate.toString()}
         label="Select Date"
-        // disabled={false}
+        disabled={false}
         defaultStyle={true}
-        // disablePast={false}
+        disablePast={false}
         // disableOld={minStartDate}
-        // disableFuture={new Date()}
+        disableFuture={new Date()}
         events={markEvents || []}
         handlePickerChange={(val: any) => {
           console.log('test');
