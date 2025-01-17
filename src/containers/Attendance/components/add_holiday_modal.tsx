@@ -14,7 +14,6 @@ const AddHolidayModal = ({ desiderPopup, SetDesiderPopup, onSave }) => {
 
   const handleSave = () => {
     const numberOfDays = moment(timeEnd).diff(moment(timeStart), "days") + 1;
-
     const holidayData = {
       holidayName: resonForHoliday,
       startDate: moment(timeStart).format("YYYY-MM-DD"),

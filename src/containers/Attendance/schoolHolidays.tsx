@@ -15,6 +15,8 @@ import PrintIcon from "@mui/icons-material/Print";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { useParams } from "react-router-dom";
 import AddHolidayModal from "./components/add_holiday_modal";
+import PageTitle from "@shared/pageTitle";
+import StatusModal from "./components/status_modal";
 
 const DnDCalendar = withDragAndDrop(Calendar);
 moment.locale("en-GB");
@@ -49,9 +51,37 @@ export default function Index() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [startTime, setStartTime] = useState(8); // Default start time
   const [navigationDate, setNaviagationDate] = useState(new Date());
-
   const { schoolId, role, branchId: userBranchId } = useSelector(selectUser);
   const { branchData } = useSelector(selectSchoolData);
+  const [statusModalOpen, setStatusModalOpen] = useState(true);
+  const [statusModalType, setStatusModalType] = useState<"success" | "error">(
+    "success"
+  );
+  const [statusModalMessage, setStatusModalMessage] = useState("");
+
+  const showSuccessModal = (message: string) => {
+    setStatusModalType("success");
+    setStatusModalMessage(message);
+    setStatusModalOpen(true);
+  };
+
+  const showErrorModal = (message: string) => {
+    setStatusModalType("error");
+    setStatusModalMessage(message);
+    setStatusModalOpen(true);
+  };
+
+  const handleSaveHoliday = (holidayData: any) => {
+    // Example Save Logic
+    try {
+      console.log(holidayData);
+      // Simulate API call success
+      showSuccessModal("Holiday added successfully!");
+    } catch (error) {
+      // Handle API call error
+      showErrorModal("Failed to add holiday. Please try again.");
+    }
+  };
 
   const { refetch: refetchTeacher } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
@@ -117,6 +147,9 @@ export default function Index() {
       <RouteLayout navBack={true}>
         {/* Buttons Section */}
         <div className="flex justify-between items-center bg-gray-100 p-4 mt-5">
+          {/* Page Title */}
+          <PageTitle title="School Holidays" />
+
           <div className="flex items-center space-x-4">
             {/* Edit Weekends Button */}
             <Button
@@ -168,11 +201,18 @@ export default function Index() {
           </div>
         </div>
 
+        <StatusModal
+          isOpen={statusModalOpen}
+          onClose={() => setStatusModalOpen(false)}
+          type={statusModalType}
+          message={statusModalMessage}
+        />
+
         <AddHolidayModal
           desiderPopup={desiderPopup}
           SetDesiderPopup={SetDesiderPopup}
           onSave={(holidayData: any) => {
-            console.log(holidayData);
+            handleSaveHoliday(holidayData);
           }}
         />
 
