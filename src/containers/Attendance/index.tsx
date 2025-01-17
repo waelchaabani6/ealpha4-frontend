@@ -237,15 +237,25 @@ function Attendance() {
         label: classItem.class_name, // Replace `class_name` with the correct key if different
         value: classItem.class_id, // Replace `class_id` with the correct key if different
       }));
-      const studentsByClass = respData.map((classItem: any) => ({
-        class_id: classItem.class_id,
-        students: classItem.student_profile, // Only store `student_profile`
-      }));
 
       setClasses([...formattedClasses]);
-      setListOfStudents(studentsByClass);
     },
   });
+
+  const { isLoading: classStudentsLoading, refetch: refetchClassesStudents } =
+    useGet({
+      baseURL: SchoolURL,
+      url: `schools-service/schools/get-classes/by-class-id?program_id=${
+        selectedCourse !== "select" ? selectedCourse : ""
+      }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
+        selectedClass !== "select" ? selectedClass : ""
+      }`,
+      enabled: false,
+      onSuccess: (resp: any) => {
+        const respData = resp?.data?.results;
+        setSelectedClassStudents(respData[0]?.student_profile);
+      },
+    });
 
   useEffect(() => {
     refetchCourses();
@@ -256,6 +266,12 @@ function Attendance() {
       refetchClasses();
     }
   }, [selectedCourse, selectedClass]);
+
+  useEffect(() => {
+    if (selectedClass !== "select") {
+      refetchClassesStudents();
+    }
+  }, [selectedClass]);
 
   const branchName = useMemo(
     () =>
@@ -683,10 +699,6 @@ function Attendance() {
             dataArray={[{ label: "Select", value: "select" }, ...classes]}
             onChangeHandler={(currentClass: string | number) => {
               setSelectedClass(currentClass);
-              setSelectedClassStudents(
-                listOfStudents.find((item) => item.class_id === currentClass)
-                  ?.students
-              );
             }}
             sxClass={{ width: "100%" }}
             disabled={selectedCourse === "select"} // Disable if no course selected
