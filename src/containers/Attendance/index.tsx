@@ -216,7 +216,9 @@ function Attendance() {
 
   const { isLoading: classLoading, refetch: refetchClasses } = useGet({
     baseURL: SchoolURL,
-    url: `schools-service/schools/get-classes?program_id=${selectedCourse}&school_id=${schoolId}&teacher_id=${user?.user_profile_id}`,
+    url: `schools-service/schools/get-classes?program_id=${selectedCourse}&school_id=${schoolId}&teacher_id=${
+      user?.user_profile_id
+    }&class_id=${selectedClass !== "select" ? selectedClass : ""}`,
     enabled: false,
     onSuccess: (resp: any) => {
       const respData = resp?.data?.results; // Adjust based on the actual API response structure
@@ -240,26 +242,8 @@ function Attendance() {
   }, [selectedBranch]);
 
   useEffect(() => {
-    if (selectedCourse !== "select") {
-      refetchClasses();
-    }
-  }, [selectedCourse]);
-
-  useEffect(() => {
-    const isAdmin = [
-      USER_TYPE.SCHOOL_ADMIN,
-      USER_TYPE.BRANCH_ADMIN,
-      USER_TYPE.SUPER_ADMIN,
-    ].includes(usersRole?.name);
-    if (selectedClass !== "select" && isAdmin) {
-      refetchClasses();
-    } else if (
-      selectedClass !== "select" &&
-      usersRole?.name === USER_TYPE.TEACHER
-    ) {
-      refetchCourses();
-    }
-  }, [selectedClass, selectedSubject]);
+    refetchClasses();
+  }, [selectedCourse, selectedClass]);
 
   const branchName = useMemo(
     () =>
@@ -658,9 +642,10 @@ function Attendance() {
             value={selectedCourse}
             loading={loadCoursesForTeacher}
             dataArray={[{ label: "Select", value: "select" }, ...courses]}
-            onChangeHandler={(currentCourse: number | string) =>
-              setSelectedCourse(currentCourse)
-            }
+            onChangeHandler={(currentCourse: number | string) => {
+              setSelectedCourse(currentCourse);
+              setSelectedClass("select");
+            }}
             sxClass={{ width: "100%" }}
           />
           <Dropdown
