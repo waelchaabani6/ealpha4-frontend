@@ -45,6 +45,15 @@ export default React.forwardRef(<T,>(props: Props<T>, ref: any) => {
     setValue(ev.target.value);
   };
 
+  const handleResultSelect = (item: T) => {
+    if (props.onResultSelect) {
+      props.onResultSelect(item);
+    }
+    // Clear the input and close the results dropdown
+    setValue("");
+    setDebouncedValue("");
+  };
+
   return (
     <div className="min-w-[200px] h-[36px]">
       <div className="w-full h-full flex flex-col relative">
@@ -84,9 +93,7 @@ export default React.forwardRef(<T,>(props: Props<T>, ref: any) => {
                 <li
                   key={index}
                   className="p-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={() =>
-                    props.onResultSelect && props.onResultSelect(item)
-                  }
+                  onClick={() => handleResultSelect(item)}
                 >
                   {props.renderResultItem(item, index)}
                 </li>

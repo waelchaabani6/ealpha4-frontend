@@ -107,9 +107,14 @@ function Attendance() {
   const [searchResults, setSearchResults] = useState<Student[]>([]);
   const [currentClassName, SetCurrentClassName] = useState<string>('');
 
+  useEffect(() => {
+    if (selectedClass === "select" && results.length === 0) {
+      setSelectedClassStudents([]);
+    }
+  }, [selectedClassStudents]);
+
   const navigate = useNavigate();
   const { schoolName } = useParams();
-
   const formatSelectedDate = useMemo(
     () => moment(selectedDate).format('yyyy-MM-DD'),
     [selectedDate]
@@ -228,7 +233,7 @@ function Attendance() {
           SR_NO: index + 1,
           StudentFirstName: itm?.first_name,
           StudentLastName: itm?.last_name,
-          Grade: itm?.class_name,
+          Grade: "N/A",
           isChecked: false,
           isPresent: itm?.is_present,
         })) || [];
