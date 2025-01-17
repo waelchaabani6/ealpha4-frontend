@@ -1,5 +1,5 @@
 /* eslint-disable linebreak-style */
-/* eslint-disable react/jsx-curly-newline */
+/* eslint-disable no-console */
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable operator-linebreak */
@@ -93,6 +93,11 @@ const TableColumns = [
   //   align: 'center',
   // },
   {
+    label: 'Status',
+    mapper: 'Status',
+    align: 'center',
+  },
+  {
     label: '',
     mapper: 'Select',
     component: 'custom-checkbox',
@@ -149,7 +154,9 @@ function Attendance() {
   const [results, setResults] = useState<Student[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [listOfStudents, setListOfStudents] = useState<any[]>([]);
-  const [selectedClassStudents, setSelectedClassStudents] = useState([]);
+  const [selectedClassStudents, setSelectedClassStudents] = useState<Student[]>(
+    []
+  );
 
   // Define state for selected course
   const [selectedCourse, setSelectedCourse] = useState<string | number>(
@@ -179,6 +186,12 @@ function Attendance() {
     setSelectedCourse(currentCourse);
     setSelectedClass('select'); // Reset class selection when a course changes
   };
+
+  useEffect(() => {
+    if (selectedClass === 'select' && results.length === 0) {
+      setSelectedClassStudents([]);
+    }
+  }, [selectedClassStudents]);
 
   const navigate = useNavigate();
   const { schoolName } = useParams();
@@ -212,7 +225,11 @@ function Attendance() {
 
   const { isLoading: classLoading, refetch: refetchClasses } = useGet({
     baseURL: SchoolURL,
-    url: `schools-service/schools/get-classes?program_id=${selectedCourse}&school_id=${schoolId}&teacher_id=${user?.user_profile_id}`,
+    url: `schools-service/schools/get-classes?program_id=${
+      selectedCourse !== 'select' ? selectedCourse : ''
+    }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
+      selectedClass !== 'select' ? selectedClass : ''
+    }`,
     enabled: false,
     onSuccess: (resp: any) => {
       const respData = resp?.data?.results; // Adjust based on the actual API response structure
@@ -236,26 +253,10 @@ function Attendance() {
   }, [selectedBranch]);
 
   useEffect(() => {
-    if (selectedCourse !== 'select') {
+    if (selectedCourse !== 'select' || selectedBranch !== 'select') {
       refetchClasses();
     }
-  }, [selectedCourse]);
-
-  useEffect(() => {
-    const isAdmin = [
-      USER_TYPE.SCHOOL_ADMIN,
-      USER_TYPE.BRANCH_ADMIN,
-      USER_TYPE.SUPER_ADMIN,
-    ].includes(usersRole?.name);
-    if (selectedClass !== 'select' && isAdmin) {
-      refetchClasses();
-    } else if (
-      selectedClass !== 'select' &&
-      usersRole?.name === USER_TYPE.TEACHER
-    ) {
-      refetchCourses();
-    }
-  }, [selectedClass, selectedSubject]);
+  }, [selectedCourse, selectedClass]);
 
   const branchName = useMemo(
     () =>
@@ -478,7 +479,7 @@ function Attendance() {
           SR_NO: index + 1,
           StudentFirstName: itm?.first_name,
           StudentLastName: itm?.last_name,
-          Grade: selectedClass,
+          Grade: 'N/A',
           isChecked: false,
           isPresent: false,
         })) || [];
@@ -617,8 +618,23 @@ function Attendance() {
                 {student.first_name} {student.last_name}
               </span>
             )}
-            onResultSelect={(student) => {
-              // console.log(`Selected student:`, student);
+            onResultSelect={(student: Student) => {
+              const classWithStudent = listOfStudents.find((classItem) =>
+                classItem.students.some(
+                  (item) => item.student_id === student.student_id
+                )
+              );
+
+              if (classWithStudent) {
+                // Add the student to the selectedClassStudents array
+                setSelectedClassStudents(() => [
+                  classWithStudent.students.find(
+                    (item) => item.student_id === student.student_id
+                  ),
+                ]);
+              } else {
+                console.warn('Student not found in any class');
+              }
             }}
           />
         </div>
@@ -654,9 +670,11 @@ function Attendance() {
             value={selectedCourse}
             loading={loadCoursesForTeacher}
             dataArray={[{ label: 'Select', value: 'select' }, ...courses]}
-            onChangeHandler={(currentCourse: number | string) =>
-              setSelectedCourse(currentCourse)
-            }
+            onChangeHandler={(currentCourse: number | string) => {
+              setSelectedCourse(currentCourse);
+              setSelectedClass('select');
+              setResults([]);
+            }}
             sxClass={{ width: '100%' }}
           />
           <Dropdown

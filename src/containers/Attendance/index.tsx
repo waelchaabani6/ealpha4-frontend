@@ -107,11 +107,11 @@ function Attendance() {
   const [searchResults, setSearchResults] = useState<Student[]>([]);
   const [currentClassName, SetCurrentClassName] = useState<string>('');
 
-  useEffect(() => {
-    if (selectedClass === "select" && results.length === 0) {
-      setSelectedClassStudents([]);
-    }
-  }, [selectedClassStudents]);
+  // useEffect(() => {
+  //   if (selectedClass === "select" && results.length === 0) {
+  //     setSelectedClassStudents([]);
+  //   }
+  // }, [selectedClassStudents]);
 
   const navigate = useNavigate();
   const { schoolName } = useParams();
@@ -233,7 +233,7 @@ function Attendance() {
           SR_NO: index + 1,
           StudentFirstName: itm?.first_name,
           StudentLastName: itm?.last_name,
-          Grade: "N/A",
+          Grade: 'N/A',
           isChecked: false,
           isPresent: itm?.is_present,
         })) || [];
@@ -343,6 +343,8 @@ function Attendance() {
         setTmpTableData={setTmpTableData}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
+        selectedClass={selectedClass}
+        setSelectedClass={setSelectedClass}
       />
 
       <div className="bg-white" ref={componentRef}>
