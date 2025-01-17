@@ -169,13 +169,11 @@ function Attendance() {
   const handleInputSearch = (value: string) => {
     setLoading(true);
     setTimeout(() => {
-      const searchResults = listOfStudents
-        .flatMap((item) => item.students)
-        .filter((student) =>
-          `${student.first_name} ${student.last_name}`
-            .toLowerCase()
-            .includes(value.toLowerCase())
-        );
+      const searchResults = selectedClassStudents.filter((student) =>
+        `${student.first_name} ${student.last_name}`
+          .toLowerCase()
+          .includes(value.toLowerCase())
+      );
       setResults(searchResults);
       setLoading(false);
     }, 500);
@@ -634,22 +632,8 @@ function Attendance() {
               </span>
             )}
             onResultSelect={(student: Student) => {
-              const classWithStudent = listOfStudents.find((classItem) =>
-                classItem.students.some(
-                  (item) => item.student_id === student.student_id
-                )
-              );
-
-              if (classWithStudent) {
-                // Add the student to the selectedClassStudents array
-                setSelectedClassStudents(() => [
-                  classWithStudent.students.find(
-                    (item) => item.student_id === student.student_id
-                  ),
-                ]);
-              } else {
-                console.warn("Student not found in any class");
-              }
+              setSelectedClassStudents([student]);
+              handleInputSearch("");
             }}
           />
         </div>
