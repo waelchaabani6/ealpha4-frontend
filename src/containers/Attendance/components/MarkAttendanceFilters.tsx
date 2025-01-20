@@ -93,11 +93,15 @@ function MarkAttendanceFilters({
   const handleInputSearch = (value: string) => {
     setLoading(true);
     setTimeout(() => {
-      const searchResults = selectedClassStudents.filter((student) =>
+      const dataTobSearchIn =
+        selectedClass !== "select" ? selectedClassStudents : listOfStudents;
+      console.log({ dataTobSearchIn });
+      const searchResults = dataTobSearchIn.filter((student) =>
         `${student.first_name} ${student.last_name}`
           .toLowerCase()
           .includes(value.toLowerCase())
       );
+      console.log({ searchResults });
       setResults(searchResults);
       setLoading(false);
     }, 500);
@@ -145,6 +149,15 @@ function MarkAttendanceFilters({
         value: classItem.class_id, // Replace `class_id` with the correct key if different
       }));
 
+      //map over respData and get the students data from student_profile and acculmate it   in a new array
+      const studentsData = respData.map((itm: any) => itm.student_profile);
+
+      // merge all the students data in one array
+      const mergedStudentsData = studentsData.reduce(
+        (acc: any, itm: any) => [...acc, ...itm],
+        []
+      );
+      setListOfStudents(mergedStudentsData);
       setClasses([...formattedClasses]);
     },
   });

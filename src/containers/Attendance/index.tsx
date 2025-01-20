@@ -141,12 +141,7 @@ function Attendance() {
   const { data, isLoading, refetch } = useGet({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
     url: `${cleanedUrl}`,
-    enabled: Boolean(
-      (selectedClass !== "select" && selectedDate) ||
-        (selectedClass !== "select" &&
-          selectedDate &&
-          selectedBranch !== "select")
-    ),
+    enabled: false,
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.count);
     },
@@ -391,7 +386,7 @@ function Attendance() {
       </div>
       <div className="flex justify-end py-2">
         <Button
-          disabled={isLoading3 || bulkSelect.length < 1}
+          disabled={isLoading3}
           onClick={submitHandler}
           loading={isLoading3}
         >
