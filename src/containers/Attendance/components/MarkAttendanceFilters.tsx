@@ -59,11 +59,13 @@ function MarkAttendanceFilters({
   selectedCourse,
   setSelectedCourse,
 }: MarkAttendanceFiltersProps) {
-  const { TEACHER } = USER_TYPE;
+  const { TEACHER, SCHOOL_ADMIN } = USER_TYPE;
   const usersRole = useSelector((state: any) => state?.user?.role);
   const { user } = useSelector((state: any) => state);
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
   const [results, setResults] = useState<Student[]>([]);
+
+  const isSchoolAdmin = usersRole?.name === SCHOOL_ADMIN;
 
   const { schoolId } = useSelector(selectUser);
 
@@ -116,12 +118,17 @@ function MarkAttendanceFilters({
   });
 
   const branchArr: [] = data1?.data?.response?.results?.sort(sortByName);
+  const endPointUrl = isSchoolAdmin
+    ? `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
+        selectedBranch === "select" ? "" : selectedBranch
+      }`
+    : `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
+        selectedBranch === "select" ? "" : selectedBranch
+      }&user_id=${isSchoolAdmin ? "" : user?.userId}`;
 
   const { isLoading: subLoading, refetch: refetchCourses } = useGet({
     baseURL: CourseURL,
-    url: `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
-      selectedBranch === "select" ? "" : selectedBranch
-    }&user_id=${user?.userId}`,
+    url: endPointUrl,
     enabled: false,
     onSuccess: (resp: any) => {
       const respData = resp?.data?.response;
