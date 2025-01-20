@@ -52,8 +52,8 @@ const TableColumns = [
     mapper: "StudentLastName",
   },
   {
-    label: "Grade",
-    mapper: "Grade",
+    label: "Class",
+    mapper: "Class",
   },
   // {
   //   label: 'Status',
@@ -93,6 +93,8 @@ function Attendance() {
   const [selectedClass, setSelectedClass] = useState<number | null | "select">(
     "select"
   );
+  const [selectedClassName, setSelectedClassName] = useState<string | null>("");
+
   const AttendanceUrl = import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL;
   const { branchId, schoolId } = useSelector(selectUser);
   const [searchString, setSearchString] = useState("");
@@ -229,7 +231,7 @@ function Attendance() {
       SR_NO: index + 1,
       StudentFirstName: itm?.StudentFirstName,
       StudentLastName: itm?.StudentLastName,
-      Grade: itm?.Grade,
+      Class: selectedClassName || "",
       isChecked: itm.isChecked,
       Status: <StatusComponent itm={itm} handleOnchange={handleOnchange} />,
     }));
@@ -245,7 +247,7 @@ function Attendance() {
           SR_NO: index + 1,
           StudentFirstName: itm?.first_name,
           StudentLastName: itm?.last_name,
-          Grade: "N/A",
+          Class: selectedClassName,
           isChecked: false,
           isPresent: itm?.is_present,
         })) || [];
@@ -360,6 +362,8 @@ function Attendance() {
         setSelectedClass={setSelectedClass}
         selectedCourse={selectedCourse}
         setSelectedCourse={setSelectedCourse}
+        selectedClassName={selectedClassName}
+        setSelectedClassName={setSelectedClassName}
       />
 
       <div className="bg-white" ref={componentRef}>

@@ -40,6 +40,8 @@ type MarkAttendanceFiltersProps = {
   selectedClass: string | number;
   selectedCourse: string | number;
   setSelectedCourse: React.Dispatch<React.SetStateAction<string | number>>;
+  selectedClassName?: string;
+  setSelectedClassName?: React.Dispatch<React.SetStateAction<string>>;
 };
 
 function MarkAttendanceFilters({
@@ -58,6 +60,8 @@ function MarkAttendanceFilters({
   selectedClass,
   selectedCourse,
   setSelectedCourse,
+  selectedClassName,
+  setSelectedClassName,
 }: MarkAttendanceFiltersProps) {
   const { TEACHER, SCHOOL_ADMIN } = USER_TYPE;
   const usersRole = useSelector((state: any) => state?.user?.role);
@@ -105,6 +109,7 @@ function MarkAttendanceFilters({
       );
       console.log({ searchResults });
       setResults(searchResults);
+
       setLoading(false);
     }, 500);
   };
@@ -167,6 +172,13 @@ function MarkAttendanceFilters({
       //map over respData and get the students data from student_profile and acculmate it   in a new array
       const studentsData = respData.map((itm: any) => itm.student_profile);
 
+      // I need to add class property to each student object
+      studentsData.forEach((itm: any, index: number) => {
+        itm.forEach((student: any) => {
+          student.class = formattedClasses[index].label;
+        });
+      });
+
       // merge all the students data in one array
       const mergedStudentsData = studentsData.reduce(
         (acc: any, itm: any) => [...acc, ...itm],
@@ -205,7 +217,7 @@ function MarkAttendanceFilters({
     if (selectedClass !== "select") {
       refetchClassesStudents();
     }
-  }, [selectedClass]);
+  }, [selectedClass, selectedClassStudents]);
 
   const branchName = useMemo(
     () =>
@@ -295,7 +307,9 @@ function MarkAttendanceFilters({
               </span>
             )}
             onResultSelect={(student: Student) => {
+              console.log({ student });
               setSelectedClassStudents([student]);
+              setSelectedClassName(student.class || "");
               handleInputSearch("");
             }}
           />
@@ -339,6 +353,10 @@ function MarkAttendanceFilters({
             dataArray={[{ label: "Select", value: "select" }, ...classes]}
             onChangeHandler={(currentClass: string | number) => {
               setSelectedClass(currentClass);
+              const className = classes.find(
+                (itm) => itm.value === currentClass
+              );
+              setSelectedClassName(className?.label);
             }}
             sxClass={{ width: "100%" }}
             disabled={selectedCourse === "select"} // Disable if no course selected
