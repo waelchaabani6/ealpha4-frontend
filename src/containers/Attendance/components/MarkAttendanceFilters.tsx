@@ -118,7 +118,7 @@ function MarkAttendanceFilters({
   });
 
   const branchArr: [] = data1?.data?.response?.results?.sort(sortByName);
-  const endPointUrl = isSchoolAdmin
+  const coursesEndPointUrl = isSchoolAdmin
     ? `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
         selectedBranch === "select" ? "" : selectedBranch
       }`
@@ -128,7 +128,7 @@ function MarkAttendanceFilters({
 
   const { isLoading: subLoading, refetch: refetchCourses } = useGet({
     baseURL: CourseURL,
-    url: endPointUrl,
+    url: coursesEndPointUrl,
     enabled: false,
     onSuccess: (resp: any) => {
       const respData = resp?.data?.response;
@@ -140,13 +140,21 @@ function MarkAttendanceFilters({
     },
   });
 
+  const clasessEndPointUrl = isSchoolAdmin
+    ? `schools-service/schools/get-classes?program_id=${
+        selectedCourse !== "select" ? selectedCourse : ""
+      }&school_id=${schoolId}&class_id=${
+        selectedClass !== "select" ? selectedClass : ""
+      }`
+    : `schools-service/schools/get-classes?program_id=${
+        selectedCourse !== "select" ? selectedCourse : ""
+      }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
+        selectedClass !== "select" ? selectedClass : ""
+      }`;
+
   const { isLoading: classLoading, refetch: refetchClasses } = useGet({
     baseURL: SchoolURL,
-    url: `schools-service/schools/get-classes?program_id=${
-      selectedCourse !== "select" ? selectedCourse : ""
-    }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
-      selectedClass !== "select" ? selectedClass : ""
-    }`,
+    url: clasessEndPointUrl,
     enabled: false,
     onSuccess: (resp: any) => {
       const respData = resp?.data?.results; // Adjust based on the actual API response structure
