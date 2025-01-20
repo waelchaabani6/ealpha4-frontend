@@ -65,10 +65,6 @@ function MarkAttendanceFilters({
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
   const [results, setResults] = useState<Student[]>([]);
 
-  // const [selectedClass, setSelectedClass] = useState<
-  //   string | number | null | 'select'
-  // >('select');
-
   const { schoolId } = useSelector(selectUser);
 
   // const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -224,51 +220,11 @@ function MarkAttendanceFilters({
     setCurrentClassName(className);
   }, [className]);
 
-  // const subjectName = useMemo(() => {
-  //   const tmp = courses?.find((item: any) => item?.value === selectedSubject);
-  //   return tmp?.label;
-  // }, [selectedSubject]);
-
-  // const formatSelectedDate = useMemo(
-  //   () => moment(selectedDate).format('yyyy-MM-DD'),
-  //   [selectedDate]
-  // );
-
-  // const { isLoading: loadClassesForTeacher, mutate: ClassesForTeacher } =
-  //   usePost({
-  //     baseURL: AttendanceUrl,
-  //     url: `?course_id=${selectedCourse}&date=${moment(selectedDate).format(
-  //       "YYYY-MM-DD"
-  //     )}&teacher_id=${
-  //       user?.user_profile_id
-  //     }&class_id=${selectedClass}&school_id=${schoolId}`,
-  //     onSuccess: (resp: any) => {
-  //       const res = resp?.data?.response;
-  //       const formatArr =
-  //         res?.map((ele: any) => ({ label: ele.name, value: ele.class_id })) ||
-  //         [];
-  //       formatArr.sort(sortData);
-  //       setTeacherClassesArray(formatArr);
-  //     },
-  //   });
-
-  // const handleSearch = (value: any) => {
-  //   setSearchString(value);
-  // };
-
   const branchSelectHandler = (currentBranch: number) => {
     setSelectedBranch(currentBranch);
     setSelectedClass("select");
     setTableData([]);
   };
-
-  // useEffect(() => {
-  //   if (usersRole?.name === TEACHER && user?.user_profile_id) {
-  //     ClassesForTeacher({
-  //       teacher_id: user?.user_profile_id,
-  //     });
-  //   }
-  // }, [usersRole, user]);
 
   useEffect(() => {
     if (selectedClassStudents) {
