@@ -4,56 +4,56 @@
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable indent */
 /* eslint-disable comma-dangle */
-import RouteLayout from '@layout/routeLayout';
-import Button from '@component/button/button';
-import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import RouteLayout from "@layout/routeLayout";
+import Button from "@component/button/button";
+import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   TABLE_LABELS,
   TOOLBAR_LABELS,
   RESULTS_PER_PAGE,
-} from '@constants/constants';
-import Wrapper from '@shared/wrapper/Wrapper';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import { useSelector } from 'react-redux';
-import { selectSchoolData } from '@shared/store/schoolSlice';
-import ReactToPrint from 'react-to-print';
-import PrintIcon from '@mui/icons-material/Print';
-import { useGet, usePost } from '@shared/api/useApi';
+} from "@constants/constants";
+import Wrapper from "@shared/wrapper/Wrapper";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
+import { useSelector } from "react-redux";
+import { selectSchoolData } from "@shared/store/schoolSlice";
+import ReactToPrint from "react-to-print";
+import PrintIcon from "@mui/icons-material/Print";
+import { useGet, usePost } from "@shared/api/useApi";
 import {
   currentUserAcademicDate,
   getNoOfPages,
   incrementDateByOne,
   userRole,
-} from '@utility/utility';
-import toast from '@shared/toast';
-import moment from 'moment';
-import { selectUser } from '@shared/store/userSlice';
-import { useNavigate, useParams } from 'react-router-dom';
-import MarkAttendanceFilters from './components/MarkAttendanceFilters';
-import { Student } from './types';
-import StatusComponent from './components/StatusComponent';
+} from "@utility/utility";
+import toast from "@shared/toast";
+import moment from "moment";
+import { selectUser } from "@shared/store/userSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import MarkAttendanceFilters from "./components/MarkAttendanceFilters";
+import { Student } from "./types";
+import StatusComponent from "./components/StatusComponent";
 
 const printButton = () => <PrintIcon />;
 
 const TableColumns = [
   {
     label: TABLE_LABELS?.SR_NO,
-    align: 'center',
+    align: "center",
   },
 
   {
-    label: 'Student First Name',
-    mapper: 'StudentFirstName',
+    label: "Student First Name",
+    mapper: "StudentFirstName",
     isSort: false,
   },
   {
-    label: 'Student Last Name',
-    mapper: 'StudentLastName',
+    label: "Student Last Name",
+    mapper: "StudentLastName",
   },
   {
-    label: 'Grade',
-    mapper: 'Grade',
+    label: "Grade",
+    mapper: "Grade",
   },
   // {
   //   label: 'Status',
@@ -62,40 +62,40 @@ const TableColumns = [
   // },
 
   {
-    label: '',
-    mapper: 'Select',
-    component: 'custom-checkbox',
-    selector: 'id',
+    label: "",
+    mapper: "Select",
+    component: "custom-checkbox",
+    selector: "id",
     showInHeader: true,
-    align: 'center',
+    align: "center",
     sx: {
-      display: 'flex',
-      alignItems: 'center',
+      display: "flex",
+      alignItems: "center",
     },
     cellSx: {
-      justifyContent: 'flex-start',
-      position: 'relative',
-      left: '0px',
+      justifyContent: "flex-start",
+      position: "relative",
+      left: "0px",
     },
-    elementClass: 'flex items-center',
+    elementClass: "flex items-center",
   },
 ];
 
 function Attendance() {
   const [tableData, setTableData] = useState<any>([]);
   const [page, setPage] = useState(1);
-  const [orderBy, setOrderBy] = useState<any>('created_at');
-  const [order, setOrder] = useState<any>('asc');
+  const [orderBy, setOrderBy] = useState<any>("created_at");
+  const [order, setOrder] = useState<any>("asc");
   const [bulkSelect, setBulkSelect] = useState<any>([]);
   const [selectedBranch, setSelectedBranch] = useState<
-    number | null | 'select'
-  >('select');
-  const [selectedClass, setSelectedClass] = useState<number | null | 'select'>(
-    'select'
+    number | null | "select"
+  >("select");
+  const [selectedClass, setSelectedClass] = useState<number | null | "select">(
+    "select"
   );
-
-  const { branchId } = useSelector(selectUser);
-  const [searchString, setSearchString] = useState('');
+  const AttendanceUrl = import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL;
+  const { branchId, schoolId } = useSelector(selectUser);
+  const [searchString, setSearchString] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const { schoolData, branchData } = useSelector(selectSchoolData);
   const [totalDataCount, setTotalDataCount] = useState(0);
@@ -105,32 +105,47 @@ function Attendance() {
   const [courses, setCourses] = useState<any>([]);
 
   const [searchResults, setSearchResults] = useState<Student[]>([]);
-  const [currentClassName, SetCurrentClassName] = useState<string>('');
+  const [currentClassName, SetCurrentClassName] = useState<string>("");
+  const [selectedCourse, setSelectedCourse] = useState<string | number>(
+    "select"
+  );
 
   // useEffect(() => {
   //   if (selectedClass === "select" && results.length === 0) {
   //     setSelectedClassStudents([]);
   //   }
   // }, [selectedClassStudents]);
-
+  const { user } = useSelector((state: any) => state);
   const navigate = useNavigate();
   const { schoolName } = useParams();
   const formatSelectedDate = useMemo(
-    () => moment(selectedDate).format('yyyy-MM-DD'),
+    () => moment(selectedDate).format("yyyy-MM-DD"),
     [selectedDate]
   );
 
-  const generatedUrl = `roster-service/student-attendance-list?limit=${10}&school_id=${schoolData?.id || branchData?.school_data?.id}&subject=${currentClassName || ''}&class_name=${currentClassName}${selectedDate ? `&date=${formatSelectedDate}` : ''}${branchData ? `&branch_id=${branchData?.id}` : selectedBranch !== 'select' ? `&branch_id=${selectedBranch}` : ''}&offset=${(page - 1) * Number(noOfpages)}${searchString ? `&search=${searchString}` : ''}`;
-  const cleanedUrl = generatedUrl.trim().replace(/\s+/g, ' ');
+  const generatedUrl = `roster-service/student-attendance-list?limit=${10}&school_id=${
+    schoolData?.id || branchData?.school_data?.id
+  }&subject=${currentClassName || ""}&class_name=${currentClassName}${
+    selectedDate ? `&date=${formatSelectedDate}` : ""
+  }${
+    branchData
+      ? `&branch_id=${branchData?.id}`
+      : selectedBranch !== "select"
+      ? `&branch_id=${selectedBranch}`
+      : ""
+  }&offset=${(page - 1) * Number(noOfpages)}${
+    searchString ? `&search=${searchString}` : ""
+  }`;
+  const cleanedUrl = generatedUrl.trim().replace(/\s+/g, " ");
 
   const { data, isLoading, refetch } = useGet({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
     url: `${cleanedUrl}`,
     enabled: Boolean(
-      (selectedClass !== 'select' && selectedDate) ||
-        (selectedClass !== 'select' &&
+      (selectedClass !== "select" && selectedDate) ||
+        (selectedClass !== "select" &&
           selectedDate &&
-          selectedBranch !== 'select')
+          selectedBranch !== "select")
     ),
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.count);
@@ -138,16 +153,18 @@ function Attendance() {
   });
 
   const { isLoading: isLoading3, mutate } = usePost({
-    baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
-    url: 'roster-service/create-attendance-data',
+    baseURL: AttendanceUrl,
+    url: `attendance_service/attendance/mark/?course_id=${selectedCourse}&date=${moment(
+      selectedDate
+    ).format("YYYY-MM-DD")}&teacher_id=${
+      user?.user_profile_id
+    }&class_id=${selectedClass}&school_id=${schoolId}`,
     onSuccess: () => {
-      refetch();
-      toast('success', 'Attendance Updated Successfully!');
+      toast("success", "Attendance Updated Successfully!");
       setBulkSelect([]);
-      navigate(`/${schoolName}/attandance/reports`);
     },
     onError: (error: any) => {
-      toast('error', error?.response?.data?.message);
+      toast("error", error?.response?.data?.message);
     },
   });
 
@@ -184,7 +201,7 @@ function Attendance() {
   };
 
   const handleOnchange = (id: number) => {
-    console.log('id is', id);
+    console.log("id is", id);
     const index = tmpTableData.findIndex((itm: any) => itm.id === id);
     if (index > -1) {
       const oldD = data?.data?.response?.result[index].is_present;
@@ -233,7 +250,7 @@ function Attendance() {
           SR_NO: index + 1,
           StudentFirstName: itm?.first_name,
           StudentLastName: itm?.last_name,
-          Grade: 'N/A',
+          Grade: "N/A",
           isChecked: false,
           isPresent: itm?.is_present,
         })) || [];
@@ -245,39 +262,40 @@ function Attendance() {
     if (currPage) setPage(currPage);
     else setPage(1);
   };
-
   const submitHandler = () => {
-    console.log(bulkSelect, 'bulkSelect');
-    const dt = bulkSelect?.map((item: any) => {
-      const idx = tmpTableData.find((itm: any) => itm.id === item);
-      // console.log(idx);
-      console.log(item);
-      // // console.log(idx);
-      if (idx) {
-        const tmp = {
-          student: item,
-          school_id: schoolData?.id || branchData?.school_data?.id,
-          school_class: selectedClass,
-          // subject: subjectName || '',
-          present: idx?.isPresent,
-          present_on_date: formatSelectedDate,
-        } as any;
-        if (branchId) {
-          tmp.branch_id = branchId;
+    if (!selectedDate) {
+      toast("error", "Please select a date before submitting attendance.");
+      return;
+    }
+
+    const studentsData = bulkSelect
+      ?.map((item: any) => {
+        const idx = tmpTableData.find((itm: any) => itm.id === item);
+        if (idx) {
+          return {
+            student_id: item,
+            status: idx?.isPresent ? "present" : "absent",
+          };
         }
-        if (selectedBranch !== 'select') {
-          tmp.branch_id = selectedBranch;
-        }
-        return tmp;
-      }
-      return null;
-    });
-    console.log('submit data', dt);
-    mutate(dt);
+        return null;
+      })
+      .filter(Boolean); // Remove null values
+
+    if (studentsData.length === 0) {
+      toast("error", "No students selected for attendance.");
+      return; // Prevent submission if no students are selected
+    }
+
+    const payload = {
+      students: studentsData,
+    };
+
+    console.log("submit data", payload);
+    mutate(payload);
   };
 
   const toggleAllHandler = (flag = true) => {
-    console.log('here toggle all');
+    console.log("here toggle all");
     const dt = data?.data?.response?.result?.map((item: any) => {
       const tmp = {
         student: item?.id,
@@ -291,7 +309,7 @@ function Attendance() {
         tmp.branch_id = branchId;
       }
 
-      if (selectedBranch !== 'select') {
+      if (selectedBranch !== "select") {
         tmp.branch_id = selectedBranch;
       }
       return tmp;
@@ -324,9 +342,9 @@ function Attendance() {
                   ? schoolData?.school_name
                   : branchData?.school_data.school_name
               }`
-            : ''
+            : ""
         }
-        subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ''}
+        subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ""}
         menuArray={ADMIN_TOOLBAR_MENU}
         // handleToolbarAction={handleToolbarAction}
       />
@@ -345,6 +363,8 @@ function Attendance() {
         setSelectedDate={setSelectedDate}
         selectedClass={selectedClass}
         setSelectedClass={setSelectedClass}
+        selectedCourse={selectedCourse}
+        setSelectedCourse={setSelectedCourse}
       />
 
       <div className="bg-white" ref={componentRef}>

@@ -6,28 +6,29 @@
 /* eslint-disable operator-linebreak */
 /* eslint-disable indent */
 /* eslint-disable comma-dangle */
-import Dropdown from '@component/dropdown/Dropdown';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { RESULTS_PER_PAGE, USER_TYPE } from '@constants/constants';
-import { useSelector } from 'react-redux';
-import { selectSchoolData } from '@shared/store/schoolSlice';
-import { useGet, usePost, useRAWGetApi } from '@shared/api/useApi';
-import { getNoOfPages, userRole, sortData, sortByName } from '@utility/utility';
+import Dropdown from "@component/dropdown/Dropdown";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { RESULTS_PER_PAGE, USER_TYPE } from "@constants/constants";
+import { useSelector } from "react-redux";
+import { selectSchoolData } from "@shared/store/schoolSlice";
+import { useGet, usePost, useRAWGetApi } from "@shared/api/useApi";
+import { getNoOfPages, userRole, sortData, sortByName } from "@utility/utility";
 
-import moment from 'moment';
-import { selectUser } from '@shared/store/userSlice';
-import SearchInputWithResults from '@component/input/SearchInputWithResults';
-import AttendanceCalednar from '../AttendanceCalednar';
-import { Student } from '../types';
+import moment from "moment";
+import { selectUser } from "@shared/store/userSlice";
+import SearchInputWithResults from "@component/input/SearchInputWithResults";
+import AttendanceCalednar from "../AttendanceCalednar";
+import { Student } from "../types";
 
 const SchoolURL = import.meta.env.VITE_APP_SCHOOL_SERVICE_URL;
 const CourseURL = import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL;
+const AttendanceUrl = import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL;
 
 type MarkAttendanceFiltersProps = {
   searchResults?: any;
   setSearchResults?: any;
-  setSelectedBranch: React.Dispatch<React.SetStateAction<number | 'select'>>;
-  selectedBranch: number | 'select';
+  setSelectedBranch: React.Dispatch<React.SetStateAction<number | "select">>;
+  selectedBranch: number | "select";
   setCurrentClassName: React.Dispatch<React.SetStateAction<string>>;
   setTableData: React.Dispatch<React.SetStateAction<any>>;
   setCourses: React.Dispatch<React.SetStateAction<any>>;
@@ -37,6 +38,8 @@ type MarkAttendanceFiltersProps = {
   selectedDate: Date | null;
   setSelectedClass: React.Dispatch<React.SetStateAction<string | number>>;
   selectedClass: string | number;
+  selectedCourse: string | number;
+  setSelectedCourse: React.Dispatch<React.SetStateAction<string | number>>;
 };
 
 function MarkAttendanceFilters({
@@ -53,6 +56,8 @@ function MarkAttendanceFilters({
   selectedDate,
   setSelectedClass,
   selectedClass,
+  selectedCourse,
+  setSelectedCourse,
 }: MarkAttendanceFiltersProps) {
   const { TEACHER } = USER_TYPE;
   const usersRole = useSelector((state: any) => state?.user?.role);
@@ -68,8 +73,8 @@ function MarkAttendanceFilters({
 
   // const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<
-    number | null | 'select' | ''
-  >('select');
+    number | null | "select" | ""
+  >("select");
   const { schoolData, branchData } = useSelector(selectSchoolData);
 
   const [loading, setLoading] = useState(false);
@@ -79,13 +84,8 @@ function MarkAttendanceFilters({
     []
   );
 
-  // Define state for selected course
-  const [selectedCourse, setSelectedCourse] = useState<string | number>(
-    'select'
-  );
-
   useEffect(() => {
-    if (selectedClass === 'select' && results.length === 0) {
+    if (selectedClass === "select" && results.length === 0) {
       setSelectedClassStudents([]);
     }
   }, [selectedClassStudents]);
@@ -97,14 +97,12 @@ function MarkAttendanceFilters({
   const handleInputSearch = (value: string) => {
     setLoading(true);
     setTimeout(() => {
-      const res = listOfStudents
-        .flatMap((item) => item.students)
-        .filter((student) =>
-          `${student.first_name} ${student.last_name}`
-            .toLowerCase()
-            .includes(value.toLowerCase())
-        );
-      setSearchResults(res);
+      const searchResults = selectedClassStudents.filter((student) =>
+        `${student.first_name} ${student.last_name}`
+          .toLowerCase()
+          .includes(value.toLowerCase())
+      );
+      setResults(searchResults);
       setLoading(false);
     }, 500);
   };
@@ -122,7 +120,7 @@ function MarkAttendanceFilters({
   const { isLoading: subLoading, refetch: refetchCourses } = useGet({
     baseURL: CourseURL,
     url: `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
-      selectedBranch === 'select' ? '' : selectedBranch
+      selectedBranch === "select" ? "" : selectedBranch
     }&user_id=${user?.userId}`,
     enabled: false,
     onSuccess: (resp: any) => {
@@ -138,9 +136,9 @@ function MarkAttendanceFilters({
   const { isLoading: classLoading, refetch: refetchClasses } = useGet({
     baseURL: SchoolURL,
     url: `schools-service/schools/get-classes?program_id=${
-      selectedCourse !== 'select' ? selectedCourse : ''
+      selectedCourse !== "select" ? selectedCourse : ""
     }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
-      selectedClass !== 'select' ? selectedClass : ''
+      selectedClass !== "select" ? selectedClass : ""
     }`,
     enabled: false,
     onSuccess: (resp: any) => {
@@ -150,41 +148,40 @@ function MarkAttendanceFilters({
         label: classItem.class_name, // Replace `class_name` with the correct key if different
         value: classItem.class_id, // Replace `class_id` with the correct key if different
       }));
-      const studentsByClass = respData.map((classItem: any) => ({
-        class_id: classItem.class_id,
-        students: classItem.student_profile, // Only store `student_profile`
-      }));
 
       setClasses([...formattedClasses]);
-      setListOfStudents(studentsByClass);
     },
   });
 
+  const { isLoading: classStudentsLoading, refetch: refetchClassesStudents } =
+    useGet({
+      baseURL: SchoolURL,
+      url: `schools-service/schools/get-classes/by-class-id?program_id=${
+        selectedCourse !== "select" ? selectedCourse : ""
+      }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
+        selectedClass !== "select" ? selectedClass : ""
+      }`,
+      enabled: false,
+      onSuccess: (resp: any) => {
+        const respData = resp?.data?.results;
+        setSelectedClassStudents(respData[0]?.student_profile);
+      },
+    });
   useEffect(() => {
     refetchCourses();
   }, [selectedBranch]);
 
   useEffect(() => {
-    if (selectedCourse !== 'select' || selectedBranch !== 'select') {
+    if (selectedCourse !== "select" || selectedBranch !== "select") {
       refetchClasses();
     }
   }, [selectedCourse, selectedClass]);
 
-  // useEffect(() => {
-  //   const isAdmin = [
-  //     USER_TYPE.SCHOOL_ADMIN,
-  //     USER_TYPE.BRANCH_ADMIN,
-  //     USER_TYPE.SUPER_ADMIN,
-  //   ].includes(usersRole?.name);
-  //   if (selectedClass !== 'select' && isAdmin) {
-  //     refetchClasses();
-  //   } else if (
-  //     selectedClass !== 'select' &&
-  //     usersRole?.name === USER_TYPE.TEACHER
-  //   ) {
-  //     refetchCourses();
-  //   }
-  // }, [selectedClass]);
+  useEffect(() => {
+    if (selectedClass !== "select") {
+      refetchClassesStudents();
+    }
+  }, [selectedClass]);
 
   const branchName = useMemo(
     () =>
@@ -199,9 +196,9 @@ function MarkAttendanceFilters({
     url: `schools-service/school-classes/?limit=1000&school_id=${
       schoolData?.id || branchData?.school_data?.id
     } ${
-      branchData || selectedBranch !== 'select'
+      branchData || selectedBranch !== "select"
         ? `&branch_name=${branchName}`
-        : ''
+        : ""
     }`,
     enabled: !!(schoolData?.id || branchData?.school_data?.id),
   });
@@ -237,19 +234,23 @@ function MarkAttendanceFilters({
   //   [selectedDate]
   // );
 
-  const { isLoading: loadClassesForTeacher, mutate: ClassesForTeacher } =
-    usePost({
-      baseURL: SchoolURL,
-      url: `schools-service/school-classes/teacher/assigned-class`,
-      onSuccess: (resp: any) => {
-        const res = resp?.data?.response;
-        const formatArr =
-          res?.map((ele: any) => ({ label: ele.name, value: ele.class_id })) ||
-          [];
-        formatArr.sort(sortData);
-        setTeacherClassesArray(formatArr);
-      },
-    });
+  // const { isLoading: loadClassesForTeacher, mutate: ClassesForTeacher } =
+  //   usePost({
+  //     baseURL: AttendanceUrl,
+  //     url: `?course_id=${selectedCourse}&date=${moment(selectedDate).format(
+  //       "YYYY-MM-DD"
+  //     )}&teacher_id=${
+  //       user?.user_profile_id
+  //     }&class_id=${selectedClass}&school_id=${schoolId}`,
+  //     onSuccess: (resp: any) => {
+  //       const res = resp?.data?.response;
+  //       const formatArr =
+  //         res?.map((ele: any) => ({ label: ele.name, value: ele.class_id })) ||
+  //         [];
+  //       formatArr.sort(sortData);
+  //       setTeacherClassesArray(formatArr);
+  //     },
+  //   });
 
   // const handleSearch = (value: any) => {
   //   setSearchString(value);
@@ -257,17 +258,17 @@ function MarkAttendanceFilters({
 
   const branchSelectHandler = (currentBranch: number) => {
     setSelectedBranch(currentBranch);
-    setSelectedClass('select');
+    setSelectedClass("select");
     setTableData([]);
   };
 
-  useEffect(() => {
-    if (usersRole?.name === TEACHER && user?.user_profile_id) {
-      ClassesForTeacher({
-        teacher_id: user?.user_profile_id,
-      });
-    }
-  }, [usersRole, user]);
+  // useEffect(() => {
+  //   if (usersRole?.name === TEACHER && user?.user_profile_id) {
+  //     ClassesForTeacher({
+  //       teacher_id: user?.user_profile_id,
+  //     });
+  //   }
+  // }, [usersRole, user]);
 
   useEffect(() => {
     if (selectedClassStudents) {
@@ -277,7 +278,7 @@ function MarkAttendanceFilters({
           SR_NO: index + 1,
           StudentFirstName: itm?.first_name,
           StudentLastName: itm?.last_name,
-          Grade: 'N/A',
+          Grade: "N/A",
           isChecked: false,
           isPresent: false,
         })) || [];
@@ -303,29 +304,15 @@ function MarkAttendanceFilters({
           <SearchInputWithResults
             onChange={handleInputSearch}
             loading={loading}
-            results={searchResults}
+            results={results}
             renderResultItem={(student: Student) => (
               <span>
                 {student.first_name} {student.last_name}
               </span>
             )}
             onResultSelect={(student: Student) => {
-              const classWithStudent = listOfStudents.find((classItem) =>
-                classItem.students.some(
-                  (item) => item.student_id === student.student_id
-                )
-              );
-
-              if (classWithStudent) {
-                // Add the student to the selectedClassStudents array
-                setSelectedClassStudents(() => [
-                  classWithStudent.students.find(
-                    (item) => item.student_id === student.student_id
-                  ),
-                ]);
-              } else {
-                console.warn('Student not found in any class');
-              }
+              setSelectedClassStudents([student]);
+              handleInputSearch("");
             }}
           />
         </div>
@@ -337,14 +324,14 @@ function MarkAttendanceFilters({
               value={selectedBranch}
               loading={isLoading1}
               dataArray={[
-                { label: 'Select', value: 'select' },
+                { label: "Select", value: "select" },
                 ...(branchArr?.map((item: any) => ({
                   label: item.name,
                   value: item.id,
                 })) || []),
               ]}
               onChangeHandler={branchSelectHandler}
-              sxClass={{ width: '100%' }}
+              sxClass={{ width: "100%" }}
             />
           )}
 
@@ -352,29 +339,25 @@ function MarkAttendanceFilters({
             title="Select Course"
             value={selectedCourse}
             loading={loadCoursesForTeacher}
-            dataArray={[{ label: 'Select', value: 'select' }, ...courses]}
+            dataArray={[{ label: "Select", value: "select" }, ...courses]}
             onChangeHandler={(currentCourse: number | string) => {
               setSelectedCourse(currentCourse);
-              setSelectedClass('select');
+              setSelectedClass("select");
               setResults([]);
             }}
-            sxClass={{ width: '100%' }}
+            sxClass={{ width: "100%" }}
           />
 
           <Dropdown
             title="Select Class"
             value={selectedClass}
             loading={loadClassesForCourse}
-            dataArray={[{ label: 'Select', value: 'select' }, ...classes]}
+            dataArray={[{ label: "Select", value: "select" }, ...classes]}
             onChangeHandler={(currentClass: string | number) => {
               setSelectedClass(currentClass);
-              setSelectedClassStudents(
-                listOfStudents.find((item) => item.class_id === currentClass)
-                  ?.students
-              );
             }}
-            sxClass={{ width: '100%' }}
-            disabled={selectedCourse === 'select'} // Disable if no course selected
+            sxClass={{ width: "100%" }}
+            disabled={selectedCourse === "select"} // Disable if no course selected
           />
 
           <div className="pb-[5px]">
