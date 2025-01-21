@@ -87,6 +87,7 @@ function Attendance() {
   const [orderBy, setOrderBy] = useState<any>("created_at");
   const [order, setOrder] = useState<any>("asc");
   const [bulkSelect, setBulkSelect] = useState<any>([]);
+  const [abcentBulkSelect, setAbcentBulkSelect] = useState<any>([]);
   const [selectedBranch, setSelectedBranch] = useState<
     number | null | "select"
   >("select");
@@ -197,6 +198,15 @@ function Attendance() {
     setBulkSelect(params);
   };
 
+  const handleDeSelection = (params: any) => {
+    setAbcentBulkSelect(params);
+  };
+
+  useEffect(() => {
+    console.log({ bulkSelect });
+    console.log({ abcentBulkSelect });
+  }, [bulkSelect, abcentBulkSelect]);
+
   const handleOnchange = (id: number) => {
     console.log("id is", id);
     const index = tmpTableData.findIndex((itm: any) => itm.id === id);
@@ -265,13 +275,16 @@ function Attendance() {
       return;
     }
 
-    const studentsData = bulkSelect
+    const studentsData = tmpTableData
       ?.map((item: any) => {
-        const idx = tmpTableData.find((itm: any) => itm.id === item);
-        if (idx) {
+        if (item) {
           return {
-            student_id: item,
-            status: idx?.isPresent ? "present" : "absent",
+            student_id: item.id,
+            status: bulkSelect.includes(item.id)
+              ? "present"
+              : abcentBulkSelect.includes(item.id)
+              ? "absent"
+              : "present",
           };
         }
         return null;
@@ -384,6 +397,8 @@ function Attendance() {
             setBulkSelect={handleSelection}
             maxHeight={620}
             bulkSelect={bulkSelect}
+            setAbcentBulkSelect={handleDeSelection}
+            abcentBulkSelect={abcentBulkSelect}
             toggelAll={toggleAllHandler}
           />
         </Wrapper>

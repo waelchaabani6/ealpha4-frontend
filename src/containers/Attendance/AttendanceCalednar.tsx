@@ -1,7 +1,7 @@
 /* eslint-disable linebreak-style */
-import CustomDatePicker from '@component/CustomDatePicker';
-import moment from 'moment';
-import { useMemo } from 'react';
+import CustomDatePicker from "@component/CustomDatePicker";
+import moment from "moment";
+import { useMemo } from "react";
 
 const AttendanceCalednar = ({ eventData, selectedDate, setSelectedDate }) => {
   const markEvents = useMemo(() => {
@@ -10,20 +10,20 @@ const AttendanceCalednar = ({ eventData, selectedDate, setSelectedDate }) => {
     eventData?.data?.response?.forEach((evt: any) => {
       const start = moment(evt.start_date);
       const end = moment(evt.end_date);
-      while (start.format('yyyy-MM-DD') < end.format('yyyy-MM-DD')) {
-        tmp.push(moment(start).format('yyyy-MM-DD'));
-        const key = moment(start).format('yyyy-MM-DD');
+      while (start.format("yyyy-MM-DD") < end.format("yyyy-MM-DD")) {
+        tmp.push(moment(start).format("yyyy-MM-DD"));
+        const key = moment(start).format("yyyy-MM-DD");
         if (tmp2[key]) {
           tmp2[key] = [...tmp2[key], { name: evt?.event_name, date: start }];
         } else {
           tmp2[key] = [{ name: evt?.event_name, date: start }];
         }
-        start.add(1, 'days');
+        start.add(1, "days");
       }
-      if (!tmp?.includes(moment(start).format('yyyy-MM-DD'))) {
-        tmp.push(moment(start).format('yyyy-MM-DD'));
+      if (!tmp?.includes(moment(start).format("yyyy-MM-DD"))) {
+        tmp.push(moment(start).format("yyyy-MM-DD"));
       }
-      const key = moment(start).format('yyyy-MM-DD');
+      const key = moment(start).format("yyyy-MM-DD");
       if (tmp2[key]) {
         tmp2[key] = [...tmp2[key], { name: evt?.event_name, date: start }];
       } else {
@@ -47,7 +47,7 @@ const AttendanceCalednar = ({ eventData, selectedDate, setSelectedDate }) => {
         disableFuture={new Date()}
         events={markEvents || []}
         handlePickerChange={(val: any) => {
-          console.log('test');
+          console.log("test");
           setSelectedDate(val.toDate());
         }}
       />
