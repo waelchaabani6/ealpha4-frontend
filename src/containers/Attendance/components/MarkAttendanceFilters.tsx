@@ -188,15 +188,22 @@ function MarkAttendanceFilters({
       setClasses([...formattedClasses]);
     },
   });
+  const classesStudentsEndPointUrl = isSchoolAdmin
+    ? `schools-service/schools/get-classes/by-class-id?program_id=${
+        selectedCourse !== "select" ? selectedCourse : ""
+      }&school_id=${schoolId}&class_id=${
+        selectedClass !== "select" ? selectedClass : ""
+      }`
+    : `schools-service/schools/get-classes/by-class-id?program_id=${
+        selectedCourse !== "select" ? selectedCourse : ""
+      }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
+        selectedClass !== "select" ? selectedClass : ""
+      }`;
 
   const { isLoading: classStudentsLoading, refetch: refetchClassesStudents } =
     useGet({
       baseURL: SchoolURL,
-      url: `schools-service/schools/get-classes/by-class-id?program_id=${
-        selectedCourse !== "select" ? selectedCourse : ""
-      }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
-        selectedClass !== "select" ? selectedClass : ""
-      }`,
+      url: classesStudentsEndPointUrl,
       enabled: false,
       onSuccess: (resp: any) => {
         const respData = resp?.data?.results;
