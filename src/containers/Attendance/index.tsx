@@ -118,6 +118,7 @@ function Attendance() {
   );
   const isAdmin =
     usersRole?.name === SCHOOL_ADMIN || usersRole?.name === BRANCH_ADMIN;
+  const isBranchAdmin = usersRole?.name === BRANCH_ADMIN;
 
   // useEffect(() => {
   //   if (selectedClass === "select" && results.length === 0) {
@@ -159,7 +160,11 @@ function Attendance() {
   const MarkAttendanceEndpointUrl = isAdmin
     ? `attendance_service/attendance/mark/?course_id=${selectedCourse}&date=${moment(
         selectedDate
-      ).format("YYYY-MM-DD")}&class_id=${selectedClass}&school_id=${schoolId}`
+      ).format(
+        "YYYY-MM-DD"
+      )}&class_id=${selectedClass}&school_id=${schoolId}&branch_id=${
+        isBranchAdmin ? branchId : ""
+      }`
     : `attendance_service/attendance/mark/?course_id=${selectedCourse}&date=${moment(
         selectedDate
       ).format("YYYY-MM-DD")}&teacher_id=${
