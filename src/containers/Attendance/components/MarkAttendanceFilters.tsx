@@ -71,8 +71,9 @@ function MarkAttendanceFilters({
 
   const isAdmin =
     usersRole?.name === SCHOOL_ADMIN || usersRole?.name === BRANCH_ADMIN;
+  const isBranchAdmin = usersRole?.name === BRANCH_ADMIN;
 
-  const { schoolId } = useSelector(selectUser);
+  const { schoolId, branchId } = useSelector(selectUser);
 
   // const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<
@@ -126,7 +127,11 @@ function MarkAttendanceFilters({
   const branchArr: [] = data1?.data?.response?.results?.sort(sortByName);
   const coursesEndPointUrl = isAdmin
     ? `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
-        selectedBranch === "select" ? "" : selectedBranch
+        selectedBranch !== "select"
+          ? selectedBranch
+          : isBranchAdmin
+          ? branchId
+          : ""
       }`
     : `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
         selectedBranch === "select" ? "" : selectedBranch
