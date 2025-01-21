@@ -220,11 +220,6 @@ function Attendance() {
     setAbcentBulkSelect(params);
   };
 
-  useEffect(() => {
-    console.log({ bulkSelect });
-    console.log({ abcentBulkSelect });
-  }, [bulkSelect, abcentBulkSelect]);
-
   const handleOnchange = (id: number) => {
     console.log("id is", id);
     const index = tmpTableData.findIndex((itm: any) => itm.id === id);
@@ -424,10 +419,13 @@ function Attendance() {
       <div className="flex justify-end py-2">
         <Button
           disabled={
-            isLoading3 || (bulkSelect.length < 1 && abcentBulkSelect.length < 1)
+            isLoading3 ||
+            (bulkSelect.length < 1 && abcentBulkSelect.length < 1) ||
+            tmpTableData.length !== bulkSelect.length + abcentBulkSelect.length
           }
           onClick={submitHandler}
           loading={isLoading3}
+          tooltipMessage="Please submit status to the remaining students first"
         >
           Submit
         </Button>

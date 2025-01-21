@@ -102,27 +102,20 @@ const AdvanceTable = forwardRef(
       event: React.ChangeEvent<HTMLInputElement>,
       data: any,
       selector?: string
-    ): any => {
-      // toggelAll();
-      let newSchoolID: string | any[] = [];
-      newSchoolID = data.map((n: any) => n[selector || "id"]);
+    ): void => {
+      const newSchoolID: string[] = data.map((n: any) => n[selector || "id"]);
 
       if (event) {
-        const newDat = [...bulkSelect, ...newSchoolID];
-        setBulkSelect([...new Set(newDat)]);
-
-        const filterArray = abcentBulkSelect.filter(
-          (item: any): any => !newSchoolID.includes(item)
+        // Add IDs to bulkSelect (Present) and remove from abcentBulkSelect (Absent)
+        setBulkSelect((prev) => [...new Set([...prev, ...newSchoolID])]);
+        setAbcentBulkSelect((prev) =>
+          prev.filter((item: any) => !newSchoolID.includes(item))
         );
-        setAbcentBulkSelect([...new Set(filterArray)]);
       } else {
-        const filterArray = bulkSelect.filter(
-          (item: any): any => !newSchoolID.includes(item)
+        // Remove IDs from bulkSelect (Present) only
+        setBulkSelect((prev) =>
+          prev.filter((item: any) => !newSchoolID.includes(item))
         );
-        setBulkSelect([...new Set(filterArray)]);
-
-        const newDat = [...abcentBulkSelect, ...newSchoolID];
-        setAbcentBulkSelect([...new Set(newDat)]);
       }
     };
 
@@ -130,27 +123,20 @@ const AdvanceTable = forwardRef(
       event: React.ChangeEvent<HTMLInputElement>,
       data: any,
       selector?: string
-    ): any => {
-      // toggelAll(false);
-      let newSchoolID: string | any[] = [];
-      newSchoolID = data.map((n: any) => n[selector || "id"]);
+    ): void => {
+      const newSchoolID: string[] = data.map((n: any) => n[selector || "id"]);
 
       if (event) {
-        const filterArray = bulkSelect.filter(
-          (item: any): any => !newSchoolID.includes(item)
+        // Add IDs to abcentBulkSelect (Absent) and remove from bulkSelect (Present)
+        setAbcentBulkSelect((prev) => [...new Set([...prev, ...newSchoolID])]);
+        setBulkSelect((prev) =>
+          prev.filter((item: any) => !newSchoolID.includes(item))
         );
-        setBulkSelect([...new Set(filterArray)]);
-
-        const newDat = [...abcentBulkSelect, ...newSchoolID];
-        setAbcentBulkSelect([...new Set(newDat)]);
       } else {
-        const newDat = [...bulkSelect, ...newSchoolID];
-        setBulkSelect([...new Set(newDat)]);
-
-        const filterArray = abcentBulkSelect.filter(
-          (item: any): any => !newSchoolID.includes(item)
+        // Remove IDs from abcentBulkSelect (Absent) only
+        setAbcentBulkSelect((prev) =>
+          prev.filter((item: any) => !newSchoolID.includes(item))
         );
-        setAbcentBulkSelect([...new Set(filterArray)]);
       }
     };
 
