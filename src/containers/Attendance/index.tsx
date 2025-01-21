@@ -160,6 +160,7 @@ function Attendance() {
     onSuccess: () => {
       toast("success", "Attendance Updated Successfully!");
       setBulkSelect([]);
+      setAbcentBulkSelect([]);
     },
     onError: (error: any) => {
       toast("error", error?.response?.data?.message);
