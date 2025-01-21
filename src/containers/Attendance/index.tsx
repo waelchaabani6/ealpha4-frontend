@@ -12,6 +12,7 @@ import {
   TABLE_LABELS,
   TOOLBAR_LABELS,
   RESULTS_PER_PAGE,
+  USER_TYPE,
 } from "@constants/constants";
 import Wrapper from "@shared/wrapper/Wrapper";
 import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
@@ -82,6 +83,9 @@ const TableColumns = [
 ];
 
 function Attendance() {
+  const usersRole = useSelector((state: any) => state?.user?.role);
+  const { SCHOOL_ADMIN, BRANCH_ADMIN } = USER_TYPE;
+
   const [tableData, setTableData] = useState<any>([]);
   const [page, setPage] = useState(1);
   const [orderBy, setOrderBy] = useState<any>("created_at");
@@ -112,6 +116,8 @@ function Attendance() {
   const [selectedCourse, setSelectedCourse] = useState<string | number>(
     "select"
   );
+  const isAdmin =
+    usersRole?.name === SCHOOL_ADMIN || usersRole?.name === BRANCH_ADMIN;
 
   // useEffect(() => {
   //   if (selectedClass === "select" && results.length === 0) {
@@ -150,13 +156,19 @@ function Attendance() {
     },
   });
 
+  const MarkAttendanceEndpointUrl = isAdmin
+    ? `attendance_service/attendance/mark/?course_id=${selectedCourse}&date=${moment(
+        selectedDate
+      ).format("YYYY-MM-DD")}&class_id=${selectedClass}&school_id=${schoolId}`
+    : `attendance_service/attendance/mark/?course_id=${selectedCourse}&date=${moment(
+        selectedDate
+      ).format("YYYY-MM-DD")}&teacher_id=${
+        user?.user_profile_id
+      }&class_id=${selectedClass}&school_id=${schoolId}`;
+
   const { isLoading: isLoading3, mutate } = usePost({
     baseURL: AttendanceUrl,
-    url: `attendance_service/attendance/mark/?course_id=${selectedCourse}&date=${moment(
-      selectedDate
-    ).format("YYYY-MM-DD")}&teacher_id=${
-      user?.user_profile_id
-    }&class_id=${selectedClass}&school_id=${schoolId}`,
+    url: MarkAttendanceEndpointUrl,
     onSuccess: () => {
       toast("success", "Attendance Updated Successfully!");
       setBulkSelect([]);
@@ -406,7 +418,9 @@ function Attendance() {
       </div>
       <div className="flex justify-end py-2">
         <Button
-          disabled={isLoading3}
+          disabled={
+            isLoading3 || (bulkSelect.length < 1 && abcentBulkSelect.length < 1)
+          }
           onClick={submitHandler}
           loading={isLoading3}
         >

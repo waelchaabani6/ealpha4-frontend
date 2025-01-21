@@ -63,13 +63,14 @@ function MarkAttendanceFilters({
   selectedClassName,
   setSelectedClassName,
 }: MarkAttendanceFiltersProps) {
-  const { TEACHER, SCHOOL_ADMIN } = USER_TYPE;
+  const { TEACHER, SCHOOL_ADMIN, BRANCH_ADMIN } = USER_TYPE;
   const usersRole = useSelector((state: any) => state?.user?.role);
   const { user } = useSelector((state: any) => state);
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
   const [results, setResults] = useState<Student[]>([]);
 
-  const isSchoolAdmin = usersRole?.name === SCHOOL_ADMIN;
+  const isAdmin =
+    usersRole?.name === SCHOOL_ADMIN || usersRole?.name === BRANCH_ADMIN;
 
   const { schoolId } = useSelector(selectUser);
 
@@ -123,13 +124,13 @@ function MarkAttendanceFilters({
   });
 
   const branchArr: [] = data1?.data?.response?.results?.sort(sortByName);
-  const coursesEndPointUrl = isSchoolAdmin
+  const coursesEndPointUrl = isAdmin
     ? `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
         selectedBranch === "select" ? "" : selectedBranch
       }`
     : `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
         selectedBranch === "select" ? "" : selectedBranch
-      }&user_id=${isSchoolAdmin ? "" : user?.userId}`;
+      }&user_id=${isAdmin ? "" : user?.userId}`;
 
   const { isLoading: subLoading, refetch: refetchCourses } = useGet({
     baseURL: CourseURL,
@@ -145,7 +146,7 @@ function MarkAttendanceFilters({
     },
   });
 
-  const clasessEndPointUrl = isSchoolAdmin
+  const clasessEndPointUrl = isAdmin
     ? `schools-service/schools/get-classes?program_id=${
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&class_id=${
@@ -188,7 +189,7 @@ function MarkAttendanceFilters({
       setClasses([...formattedClasses]);
     },
   });
-  const classesStudentsEndPointUrl = isSchoolAdmin
+  const classesStudentsEndPointUrl = isAdmin
     ? `schools-service/schools/get-classes/by-class-id?program_id=${
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&class_id=${
