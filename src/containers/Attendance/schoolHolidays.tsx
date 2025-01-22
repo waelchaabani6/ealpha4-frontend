@@ -6,7 +6,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "moment/locale/en-gb";
 import RouteLayout from "@layout/routeLayout";
-import { useGet } from "@shared/api/useApi";
+import { useGet, usePost } from "@shared/api/useApi";
 import { selectSchoolData } from "@shared/store/schoolSlice";
 import { useSelector } from "react-redux";
 import { selectUser } from "@shared/store/userSlice";
@@ -15,6 +15,7 @@ import PrintIcon from "@mui/icons-material/Print";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { useParams } from "react-router-dom";
 import AddHolidayModal from "./components/add_holiday_modal";
+import PageTitle from "@shared/pageTitle";
 
 const DnDCalendar = withDragAndDrop(Calendar);
 moment.locale("en-GB");
@@ -49,9 +50,9 @@ export default function Index() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [startTime, setStartTime] = useState(8); // Default start time
   const [navigationDate, setNaviagationDate] = useState(new Date());
-
   const { schoolId, role, branchId: userBranchId } = useSelector(selectUser);
   const { branchData } = useSelector(selectSchoolData);
+  const [holidayResponseStatus, setHolidayStatus] = useState(false);
 
   const { refetch: refetchTeacher } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
@@ -68,6 +69,34 @@ export default function Index() {
     },
     enabled: false,
   });
+
+  const { isLoading: isSavingHoliday, mutate: saveHoliday } = usePost({
+    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+    url: "schools-service/holiday-management/holidays/",
+    onSuccess: () => {
+      toast("success", "Holiday added successfully!");
+      setHolidayStatus(true);
+    },
+    onError: (error: any) => {
+      toast("error", error?.response?.data?.message || "Failed to add holiday");
+      setHolidayStatus(false);
+    },
+  });
+
+  const handleSaveHoliday = (saveData: any) => {
+    const payload = {
+      holiday_name: saveData.holidayName,
+      description: saveData.description,
+      start_date: saveData.startDate,
+      end_date: saveData.endDate,
+      holiday_type: saveData.dayType === "full" ? "full_day" : "half_day", // Example mapping for dayType
+      school: schoolId, // Assuming schoolId is available in your state or context
+    };
+
+    saveHoliday({
+      ...payload,
+    });
+  };
 
   useEffect(() => {
     if (classId !== -1 && courseId !== null) {
@@ -117,6 +146,9 @@ export default function Index() {
       <RouteLayout navBack={true}>
         {/* Buttons Section */}
         <div className="flex justify-between items-center bg-gray-100 p-4 mt-5">
+          {/* Page Title */}
+          <PageTitle title="School Holidays" />
+
           <div className="flex items-center space-x-4">
             {/* Edit Weekends Button */}
             <Button
@@ -171,8 +203,9 @@ export default function Index() {
         <AddHolidayModal
           desiderPopup={desiderPopup}
           SetDesiderPopup={SetDesiderPopup}
+          holidayResponseStatus={holidayResponseStatus}
           onSave={(holidayData: any) => {
-            console.log(holidayData);
+            handleSaveHoliday(holidayData);
           }}
         />
 
