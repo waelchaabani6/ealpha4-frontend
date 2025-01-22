@@ -4,13 +4,29 @@ import CustomizedDialogs from "@component/dialog/CustomDialog";
 import { CustomInput } from "@component/input";
 import moment from "moment";
 import React, { useState } from "react";
+import HolidayStatus from "./holiday_status";
 
-const AddHolidayModal = ({ desiderPopup, SetDesiderPopup, onSave }) => {
+const AddHolidayModal = ({
+  desiderPopup,
+  SetDesiderPopup,
+  onSave,
+  holidayResponseStatus,
+}) => {
   const [resonForHoliday, setResonForHoliday] = useState("");
   const [timeStart, setTimeStart] = useState(new Date());
   const [timeEnd, setTimeEnd] = useState(new Date());
   const [dayType, setDayType] = useState("full");
   const [description, setDescription] = useState("");
+  const [showStatus, setShowStatus] = useState(false);
+
+  // Function to reset the form
+  const resetForm = () => {
+    setResonForHoliday("");
+    setTimeStart(new Date());
+    setTimeEnd(new Date());
+    setDayType("full");
+    setDescription("");
+  };
 
   const handleSave = () => {
     const numberOfDays = moment(timeEnd).diff(moment(timeStart), "days") + 1;
@@ -22,9 +38,13 @@ const AddHolidayModal = ({ desiderPopup, SetDesiderPopup, onSave }) => {
       dayType,
       description,
     };
-    onSave(holidayData);
-    SetDesiderPopup(false);
+    onSave(holidayData); // Pass holidayData to parent handler
+    resetForm(); // Reset the form fields
+    setShowStatus(true);
   };
+  const statusMessage = holidayResponseStatus
+    ? "The holidays and days off have been successfully marked on the calendar. Your updates are now visible to all users"
+    : "Unable to connect to the server. Please check your internet connection and try again";
 
   return (
     <CustomizedDialogs
@@ -37,122 +57,141 @@ const AddHolidayModal = ({ desiderPopup, SetDesiderPopup, onSave }) => {
       maxWidth="900px"
       fullWidth={false}
     >
-      <div className="mt-[13px]">
-        <CustomInput
-          size="small"
-          label="Holiday Name:"
-          placeholder="Tap the name of the holiday"
-          icon={true}
-          fullWidth={true}
-          value={resonForHoliday}
-          onChange={(e) => setResonForHoliday(e.target.value)}
+      {showStatus ? (
+        <HolidayStatus
+          type={holidayResponseStatus ? "success" : "error"}
+          message={statusMessage}
+          onClose={() => {
+            SetDesiderPopup(false);
+            setShowStatus(false);
+          }}
+          onConfirm={() => {
+            SetDesiderPopup(false);
+            setShowStatus(false);
+          }}
         />
-      </div>
-      <div className="flex flex-col mt-[21px]">
-        <div className="font-bold mb-[30px] flex justify-between items-end">
-          <div className="w-[290px]">
-            <DatePicker
-              value={timeStart}
-              label="From Date:"
-              handlePickerChange={(val) => setTimeStart(moment(val).toDate())}
-              format="DD-MM-YYYY"
-              disablePast={false}
-              sxType={3}
-              defaultStyle={true}
-            />
-          </div>
-          <div className="w-[290px]">
-            <DatePicker
-              value={timeEnd}
-              label="To Date:"
-              handlePickerChange={(val) => setTimeEnd(moment(val).toDate())}
-              format="DD-MM-YYYY"
-              disablePast={false}
-              sxType={3}
-            />
-          </div>
-          <div className="w-[200px]">
-            <CustomInput
-              name="Branch Name"
-              label="Number of days"
-              parentLabelClass=""
-              size="small"
-              value={moment(timeEnd).diff(moment(timeStart), "days") + 1}
-              disabled={true}
-              sx={{ height: "37px" }}
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-8">
-          <label className="flex items-center space-x-2">
-            <input
-              type="radio"
-              name="dayType"
-              value="full"
-              className="hidden peer"
-              checked={dayType === "full"}
-              onChange={() => setDayType("full")}
-            />
-            <div className="w-5 h-5 rounded-full border border-green-500 flex items-center justify-center peer-checked:bg-green-500">
-              <div className="w-3 h-3 rounded-full bg-gray peer-checked:bg-white"></div>
-            </div>
-            <span className="text-[#222222] text-[12px] font-light">
-              Full day
-            </span>
-          </label>
-
-          <label className="flex items-center space-x-2">
-            <input
-              type="radio"
-              name="dayType"
-              value="half"
-              className="hidden peer"
-              checked={dayType === "half"}
-              onChange={() => setDayType("half")}
-            />
-            <div className="w-5 h-5 rounded-full border border-green-500 flex items-center justify-center peer-checked:bg-green-500">
-              <div className="w-3 h-3 rounded-full bg-gray peer-checked:bg-white"></div>
-            </div>
-            <span className="text-[#222222] text-[12px] font-light">
-              Half day
-            </span>
-          </label>
-        </div>
-
+      ) : (
         <div>
-          <p className="text-[12px] text-light text-[#222222] mt-[27px]">
-            Description
-          </p>
-          <textarea
-            className="w-full h-24 border border-gray-300 rounded-md mt-3 ps-[20px] pt-[19px]"
-            placeholder="Add text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
+          <div className="mt-[13px]">
+            <CustomInput
+              size="small"
+              label="Holiday Name:"
+              placeholder="Tap the name of the holiday"
+              icon={true}
+              fullWidth={true}
+              value={resonForHoliday}
+              onChange={(e) => setResonForHoliday(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col mt-[21px]">
+            <div className="font-bold mb-[30px] flex justify-between items-end">
+              <div className="w-[290px]">
+                <DatePicker
+                  value={timeStart}
+                  label="From Date:"
+                  handlePickerChange={(val) =>
+                    setTimeStart(moment(val).toDate())
+                  }
+                  format="DD-MM-YYYY"
+                  disablePast={false}
+                  sxType={3}
+                  defaultStyle={true}
+                />
+              </div>
+              <div className="w-[290px]">
+                <DatePicker
+                  value={timeEnd}
+                  label="To Date:"
+                  handlePickerChange={(val) => setTimeEnd(moment(val).toDate())}
+                  format="DD-MM-YYYY"
+                  disablePast={false}
+                  sxType={3}
+                />
+              </div>
+              <div className="w-[200px]">
+                <CustomInput
+                  name="Branch Name"
+                  label="Number of days"
+                  parentLabelClass=""
+                  size="small"
+                  value={moment(timeEnd).diff(moment(timeStart), "days") + 1}
+                  disabled={true}
+                  sx={{ height: "37px" }}
+                />
+              </div>
+            </div>
 
-        <div className="actions flex justify-end mt-[36px] gap-[10px]">
-          <Button
-            sx={{
-              width: "120px",
-              backgroundColor: "#F5F5F5",
-              color: "#4A9D2D",
-              border: "1px solid #4A9D2D ",
-              "&:hover": {
-                backgroundColor: "#F5F5F5",
-              },
-            }}
-            onClick={() => SetDesiderPopup(false)}
-          >
-            Cancel
-          </Button>
+            <div className="flex items-center space-x-8">
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="dayType"
+                  value="full"
+                  className="hidden peer"
+                  checked={dayType === "full"}
+                  onChange={() => setDayType("full")}
+                />
+                <div className="w-5 h-5 rounded-full border border-green-500 flex items-center justify-center peer-checked:bg-green-500">
+                  <div className="w-3 h-3 rounded-full bg-gray peer-checked:bg-white"></div>
+                </div>
+                <span className="text-[#222222] text-[12px] font-light">
+                  Full day
+                </span>
+              </label>
 
-          <Button sx={{ width: "120px" }} onClick={handleSave}>
-            Save
-          </Button>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="dayType"
+                  value="half"
+                  className="hidden peer"
+                  checked={dayType === "half"}
+                  onChange={() => setDayType("half")}
+                />
+                <div className="w-5 h-5 rounded-full border border-green-500 flex items-center justify-center peer-checked:bg-green-500">
+                  <div className="w-3 h-3 rounded-full bg-gray peer-checked:bg-white"></div>
+                </div>
+                <span className="text-[#222222] text-[12px] font-light">
+                  Half day
+                </span>
+              </label>
+            </div>
+
+            <div>
+              <p className="text-[12px] text-light text-[#222222] mt-[27px]">
+                Description
+              </p>
+              <textarea
+                className="w-full h-24 border border-gray-300 rounded-md mt-3 ps-[20px] pt-[19px]"
+                placeholder="Add text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+
+            <div className="actions flex justify-end mt-[36px] gap-[10px]">
+              <Button
+                sx={{
+                  width: "120px",
+                  backgroundColor: "#F5F5F5",
+                  color: "#4A9D2D",
+                  border: "1px solid #4A9D2D ",
+                  "&:hover": {
+                    backgroundColor: "#F5F5F5",
+                  },
+                }}
+                onClick={() => SetDesiderPopup(false)}
+              >
+                Cancel
+              </Button>
+
+              <Button sx={{ width: "120px" }} onClick={handleSave}>
+                Save
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </CustomizedDialogs>
   );
 };

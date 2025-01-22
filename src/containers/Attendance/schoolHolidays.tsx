@@ -6,7 +6,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "moment/locale/en-gb";
 import RouteLayout from "@layout/routeLayout";
-import { useGet } from "@shared/api/useApi";
+import { useGet, usePost } from "@shared/api/useApi";
 import { selectSchoolData } from "@shared/store/schoolSlice";
 import { useSelector } from "react-redux";
 import { selectUser } from "@shared/store/userSlice";
@@ -16,7 +16,6 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { useParams } from "react-router-dom";
 import AddHolidayModal from "./components/add_holiday_modal";
 import PageTitle from "@shared/pageTitle";
-import StatusModal from "./components/status_modal";
 
 const DnDCalendar = withDragAndDrop(Calendar);
 moment.locale("en-GB");
@@ -53,35 +52,7 @@ export default function Index() {
   const [navigationDate, setNaviagationDate] = useState(new Date());
   const { schoolId, role, branchId: userBranchId } = useSelector(selectUser);
   const { branchData } = useSelector(selectSchoolData);
-  const [statusModalOpen, setStatusModalOpen] = useState(true);
-  const [statusModalType, setStatusModalType] = useState<"success" | "error">(
-    "success"
-  );
-  const [statusModalMessage, setStatusModalMessage] = useState("");
-
-  const showSuccessModal = (message: string) => {
-    setStatusModalType("success");
-    setStatusModalMessage(message);
-    setStatusModalOpen(true);
-  };
-
-  const showErrorModal = (message: string) => {
-    setStatusModalType("error");
-    setStatusModalMessage(message);
-    setStatusModalOpen(true);
-  };
-
-  const handleSaveHoliday = (holidayData: any) => {
-    // Example Save Logic
-    try {
-      console.log(holidayData);
-      // Simulate API call success
-      showSuccessModal("Holiday added successfully!");
-    } catch (error) {
-      // Handle API call error
-      showErrorModal("Failed to add holiday. Please try again.");
-    }
-  };
+  const [holidayResponseStatus, setHolidayStatus] = useState(false);
 
   const { refetch: refetchTeacher } = useGet({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
@@ -98,6 +69,34 @@ export default function Index() {
     },
     enabled: false,
   });
+
+  const { isLoading: isSavingHoliday, mutate: saveHoliday } = usePost({
+    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+    url: "schools-service/holiday-management/holidays/",
+    onSuccess: () => {
+      toast("success", "Holiday added successfully!");
+      setHolidayStatus(true);
+    },
+    onError: (error: any) => {
+      toast("error", error?.response?.data?.message || "Failed to add holiday");
+      setHolidayStatus(false);
+    },
+  });
+
+  const handleSaveHoliday = (saveData: any) => {
+    const payload = {
+      holiday_name: saveData.holidayName,
+      description: saveData.description,
+      start_date: saveData.startDate,
+      end_date: saveData.endDate,
+      holiday_type: saveData.dayType === "full" ? "full_day" : "half_day", // Example mapping for dayType
+      school: schoolId, // Assuming schoolId is available in your state or context
+    };
+
+    saveHoliday({
+      ...payload,
+    });
+  };
 
   useEffect(() => {
     if (classId !== -1 && courseId !== null) {
@@ -201,16 +200,10 @@ export default function Index() {
           </div>
         </div>
 
-        <StatusModal
-          isOpen={statusModalOpen}
-          onClose={() => setStatusModalOpen(false)}
-          type={statusModalType}
-          message={statusModalMessage}
-        />
-
         <AddHolidayModal
           desiderPopup={desiderPopup}
           SetDesiderPopup={SetDesiderPopup}
+          holidayResponseStatus={holidayResponseStatus}
           onSave={(holidayData: any) => {
             handleSaveHoliday(holidayData);
           }}
