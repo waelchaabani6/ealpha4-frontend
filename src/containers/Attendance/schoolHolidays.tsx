@@ -36,7 +36,14 @@ type EventTypeData = {
 
 export default function Index() {
   const componentRef = useRef(null);
-  const [eventsData, setEventsData] = useState<Array<EventTypeData>>([]);
+  const [eventsData, setEventsData] = useState<Array<EventTypeData>>([
+    {
+      title: "Holiday",
+      start: new Date(2024, 0, 1, 0, 0),
+      end: new Date(2024, 0, 1, 23, 59),
+      hexColor: "#FF0000",
+    },
+  ]);
   const [selectedTimeFrom, setSelectedTimeFrom] = useState<any>(null);
   const [selectedTimeTo, setSelectedTimeTo] = useState<any>(null);
   const [desiderPopup, SetDesiderPopup] = useState(false);
@@ -54,20 +61,24 @@ export default function Index() {
   const { branchData } = useSelector(selectSchoolData);
   const [holidayResponseStatus, setHolidayStatus] = useState(false);
 
-  const { refetch: refetchTeacher } = useGet({
-    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/school-classes/teacher/get?class_id=${classId}&subject_id=${courseId}`,
+  // Fetch holidays and set them as calendar events
+  const { refetch: fetchHolidays } = useGet({
+    baseURL: "https://school.development.ealpha.net/api/v1/",
+    url: `schools-service/holiday-management/holidays/list/${schoolId}/`,
     onSuccess: (resp: any) => {
-      const respData = resp?.data?.response;
-      const tempTeachers =
-        respData?.map((i: any) => ({
-          label: `${i?.teacher_name}`,
-          value: `${i?.teacher_name}`,
-          id: i?.user_profile_id,
-        })) || [];
-      setTeachers(tempTeachers);
+      const holidays = resp?.data?.data || [];
+      const events = holidays.map((holiday: any) => ({
+        title: holiday.holiday_name,
+        start: new Date(holiday.start_date),
+        end: new Date(holiday.end_date),
+        hexColor: "#FEE6C9", // Customize the color if needed
+      }));
+      setEventsData(events);
     },
-    enabled: false,
+    onError: (error: any) => {
+      console.error("Failed to fetch holidays:", error);
+    },
+    enabled: true, // Will manually trigger fetch
   });
 
   const { isLoading: isSavingHoliday, mutate: saveHoliday } = usePost({
@@ -97,12 +108,6 @@ export default function Index() {
       ...payload,
     });
   };
-
-  useEffect(() => {
-    if (classId !== -1 && courseId !== null) {
-      refetchTeacher();
-    }
-  }, [courseId]);
 
   useEffect(() => {
     if (role.name === "BRANCH_ADMIN") {
@@ -211,18 +216,15 @@ export default function Index() {
 
         <div className="mt-5 bg-white" ref={componentRef}>
           <DnDCalendar
-            views={["week"]}
+            views={["month"]}
             selectable={true}
             localizer={localizer}
             date={navigationDate}
             onNavigate={(navDate: Date) => setNaviagationDate(navDate)}
-            min={new Date(2023, 0, 1, startTime, 0)}
-            max={new Date(2023, 0, 1, 18, 0)}
-            defaultView="week"
+            defaultView="month"
             events={eventsData}
             style={{ width: "100%", height: "100vh" }}
             onSelectSlot={handleSelect}
-            className="studentSchedular"
             formats={{
               dayFormat: (date, culture: any) =>
                 localizer.format(date, "ddd D", culture),
