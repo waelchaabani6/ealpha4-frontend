@@ -1,5 +1,5 @@
 .studentSchedular .rbc-row-content {
-  display: none;
+  /* display: none; */
 }
 
 .studentSchedular .rbc-row.rbc-time-header-cell {
@@ -26,6 +26,23 @@
 .studentSchedular .rbc-toolbar {
   position: relative;
   height: 60px;
+}
+.studentSchedular .rbc-month-header {
+  padding: 20px 0px;
+  background-color: #E5F8E2;
+}
+.studentSchedular .rbc-row-bg{
+  background-color: #F5F5F5;
+}
+
+.studentSchedular .rbc-toolbar .rbc-toolbar-label {
+  font-size: 1.3rem;
+    font-weight: 600;
+    color: #000;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    margin-inline-start: 15px;
 }
 
 .studentSchedular .rbc-btn-group {

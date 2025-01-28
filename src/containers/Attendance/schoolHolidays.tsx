@@ -91,7 +91,7 @@ export default function Index() {
           title: "Weekend",
           start: new Date(d),
           end: new Date(d),
-          hexColor: "#C9F2FE", // Color for weekends
+          hexColor: "red", // Color for weekends
         });
       }
     }
@@ -139,7 +139,7 @@ export default function Index() {
           start: new Date(holiday.start_date),
           end: new Date(holiday.end_date),
           holidayType: holiday.holiday_type,
-          hexColor: "#FEE6C9", // Color for holidays
+          hexColor: "blue", // Color for holidays
         }));
 
         // Fetch weekends
@@ -359,7 +359,7 @@ export default function Index() {
     <div>
       <RouteLayout navBack={true}>
         {/* Buttons Section */}
-        <div className="flex justify-between items-center bg-gray-100 p-4 mt-5">
+        <div className="flex justify-between items-center p-4 mt-5">
           {/* Page Title */}
           <PageTitle title="School Holidays" />
 
@@ -477,6 +477,7 @@ export default function Index() {
             localizer={localizer}
             defaultView="month"
             events={eventsData}
+            className="studentSchedular"
             style={{ width: "100%", height: "100vh" }}
             onSelectSlot={handleSelect}
             onSelectEvent={handleEditClick}
