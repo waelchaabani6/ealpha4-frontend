@@ -16,6 +16,7 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { useParams } from "react-router-dom";
 import AddHolidayModal from "./components/add_holiday_modal";
 import PageTitle from "@shared/pageTitle";
+import AddWeekendModal from "./components/add_weekend_modal";
 
 const DnDCalendar = withDragAndDrop(Calendar);
 moment.locale("en-GB");
@@ -47,31 +48,173 @@ export default function Index() {
   const [currentView, setCurrentView] = useState("create");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedHolidayId, setSelectedHolidayId] = useState(null);
+  const [weekendsData, setWeekendsData] = useState([]); // To store weekends list
+  const [isWeekendModalOpen, setIsWeekendModalOpen] = useState(false);
+  const [isWeekendRequestLoading, setIsWeekendRequestLoading] = useState(false);
+  const [currentWeekendData, setCurrentWeekendData] = useState(null); // For editing a weekend
+  const [weekendsResponseeStatus, setWeekendsResponseStatus] = useState(false);
+  const { schoolId, branchId } = useSelector(selectUser);
 
-  const { schoolId } = useSelector(selectUser);
+  const calculateWeekendDates = (days: string[], endsAfter: string) => {
+    const dayMap: { [key: string]: number } = {
+      Sunday: 0,
+      Monday: 1,
+      Tuesday: 2,
+      Wednesday: 3,
+      Thursday: 4,
+      Friday: 5,
+      Saturday: 6,
+    };
+
+    const today = new Date();
+    const startDate = new Date(today.getFullYear(), today.getMonth(), 1); // Start of the current month
+    const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); // Default to end of the month
+
+    if (endsAfter === "3-month") {
+      endDate.setMonth(endDate.getMonth() + 3);
+    } else if (endsAfter === "6-month") {
+      endDate.setMonth(endDate.getMonth() + 6);
+    } else if (endsAfter === "current_academic_year") {
+      endDate.setMonth(8); // Assuming academic year ends in September
+      endDate.setDate(30);
+    }
+
+    const weekends = [];
+    for (
+      let d = new Date(startDate);
+      d <= endDate;
+      d.setDate(d.getDate() + 1)
+    ) {
+      if (days.includes(d.toLocaleDateString("en-GB", { weekday: "long" }))) {
+        weekends.push({
+          id: `${d.toISOString()}-weekend`,
+          title: "Weekend",
+          start: new Date(d),
+          end: new Date(d),
+          hexColor: "#C9F2FE", // Color for weekends
+        });
+      }
+    }
+
+    return weekends;
+  };
 
   // Fetch holidays and set them as calendar events
   const { refetch: fetchHolidays } = useGet({
     baseURL: "https://school.development.ealpha.net/api/v1/",
     url: `schools-service/holiday-management/holidays/list/${schoolId}/`,
     onSuccess: (resp: any) => {
-      const holidays = resp?.data?.data || [];
-      const events = holidays.map((holiday: any) => ({
-        id: holiday.id,
-        title: holiday.holiday_name,
-        description: holiday.description,
-        start: new Date(holiday.start_date),
-        end: new Date(holiday.end_date),
-        holidayType: holiday.holiday_type,
-        hexColor: "#FEE6C9",
-      }));
-
-      setEventsData(events);
+      console.log("resp", resp);
     },
     onError: (error: any) => {
       console.error("Failed to fetch holidays:", error);
     },
     enabled: true, // Will manually trigger fetch
+  });
+
+  // Fetch weekends
+  const { refetch: fetchWeekends } = useGet({
+    baseURL: "https://school.development.ealpha.net/api/v1/",
+    url: `schools-service/holiday-management/weekends/list/${schoolId}/`,
+    onSuccess: (resp: any) => {
+      setWeekendsData(resp?.data?.data || []);
+    },
+    onError: (error: any) => {
+      console.error("Failed to fetch weekends:", error);
+    },
+    enabled: true,
+  });
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        // Fetch holidays
+        const holidaysResponse = await fetchHolidays();
+
+        const holidays = holidaysResponse?.data?.data?.data || [];
+        const holidayEvents = holidays.map((holiday: any) => ({
+          id: holiday.id,
+          title: holiday.holiday_name,
+          description: holiday.description,
+          start: new Date(holiday.start_date),
+          end: new Date(holiday.end_date),
+          holidayType: holiday.holiday_type,
+          hexColor: "#FEE6C9", // Color for holidays
+        }));
+
+        // Fetch weekends
+        const weekendsResponse = await fetchWeekends();
+        const weekends = weekendsResponse?.data?.data?.data || [];
+        const weekendEvents = weekends.flatMap((weekend: any) =>
+          calculateWeekendDates(weekend.days, weekend.ends_after)
+        );
+
+        // Merge holidays and weekends
+        setEventsData([...holidayEvents, ...weekendEvents]);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      }
+    };
+
+    fetchEvents();
+  }, [fetchHolidays, fetchWeekends]);
+  // Create new weekend
+  const { isLoading: isCreatingWeekend, mutate: createWeekend } = usePost({
+    baseURL: "https://school.development.ealpha.net/api/v1/",
+    url: "schools-service/holiday-management/weekends/",
+    onSuccess: () => {
+      setWeekendsResponseStatus(true); // Set success response status
+      toast("success", "Weekend created successfully!");
+      fetchWeekends(); // Refresh weekends list
+      setIsWeekendRequestLoading(false);
+    },
+    onError: (error: any) => {
+      setWeekendsResponseStatus(false); // Set error response status
+      toast(
+        "error",
+        error?.response?.data?.message || "Failed to create weekend"
+      );
+      setIsWeekendRequestLoading(false);
+    },
+  });
+
+  // Update existing weekend
+  const { isLoading: isUpdatingWeekend, mutate: updateWeekend } = usePut({
+    baseURL: "https://school.development.ealpha.net/api/v1/",
+    url: `schools-service/holiday-management/weekends/${currentWeekendData?.id}/`,
+    onSuccess: () => {
+      setWeekendsResponseStatus(true); // Set success response status
+      toast("success", "Weekend updated successfully!");
+      fetchWeekends(); // Refresh weekends list
+      setIsWeekendRequestLoading(false);
+    },
+    onError: (error: any) => {
+      setWeekendsResponseStatus(false); // Set error response status
+      toast(
+        "error",
+        error?.response?.data?.message || "Failed to update weekend"
+      );
+      setIsWeekendRequestLoading(false);
+    },
+  });
+
+  // Delete existing weekend
+
+  const { isLoading: isDeletingWeekend, mutate: deleteWeekend } = usePut({
+    baseURL: "https://school.development.ealpha.net/api/v1/",
+    url: `schools-service/holiday-management/weekends/delete/${currentWeekendData?.id}/`,
+    onSuccess: () => {
+      setWeekendsResponseStatus(true); // Set success response status
+      toast("success", "Weekend deleted successfully!");
+      fetchWeekends(); // Refresh weekends list
+    },
+    onError: (error: any) => {
+      setWeekendsResponseStatus(false); // Set error response status
+      toast(
+        "error",
+        error?.response?.data?.message || "Failed to delete weekend"
+      );
+    },
   });
 
   // Save new holiday
@@ -167,9 +310,23 @@ export default function Index() {
   };
 
   const handleEditClick = (event: any) => {
-    setCurrentEditData(event); // Set the selected event data for editing
-    SetDesiderPopup(true); // Open the modal
-    setCurrentView("edit"); // Set to edit view
+    if (event.title === "Weekend") {
+      // Weekend event
+      const selectedWeekend = weekendsData.find((weekend: any) =>
+        weekend.days.some(
+          (day: string) =>
+            event.start.toLocaleDateString("en-GB", { weekday: "long" }) === day
+        )
+      );
+
+      setCurrentWeekendData(selectedWeekend || null); // Set the weekend data for editing
+      setIsWeekendModalOpen(true); // Open weekend modal
+    } else {
+      // Holiday event
+      setCurrentEditData(event); // Set the selected holiday data for editing
+      SetDesiderPopup(true); // Open holiday modal
+      setCurrentView("edit"); // Set to edit view
+    }
   };
 
   const handleSelect = (obj: { start: Date; end: Date }) => {
@@ -179,6 +336,23 @@ export default function Index() {
     setSelectedTimeTo(end);
     SetDesiderPopup(true); // Open the modal
     setCurrentView("create"); // Set to create view
+  };
+
+  const handleSaveOrUpdateWeekend = (weekendData: any) => {
+    setIsWeekendRequestLoading(true);
+
+    const payload = {
+      school: schoolId,
+      branch: branchId, // Replace with actual branch ID if dynamic
+      days: weekendData.days, // Selected days
+      ends_after: weekendData.ends_after, // "never" or specific period
+    };
+
+    if (currentWeekendData) {
+      updateWeekend(payload); // Update existing weekend
+    } else {
+      createWeekend(payload); // Create new weekend
+    }
   };
 
   return (
@@ -198,10 +372,11 @@ export default function Index() {
                 "&:hover": { backgroundColor: "#3A7D24" },
               }}
               onClick={() => {
-                console.log("Edit Weekends clicked");
+                setCurrentWeekendData(null); // Reset edit data for new weekend
+                setIsWeekendModalOpen(true); // Open modal
               }}
             >
-              Edit Weekends
+              Add Weekends
             </Button>
           </div>
           <div className="relative ml-4">
@@ -261,7 +436,18 @@ export default function Index() {
             )}
           </div>
         </div>
-
+        <AddWeekendModal
+          isOpen={isWeekendModalOpen}
+          onClose={() => {
+            setIsWeekendModalOpen(false);
+            setCurrentWeekendData({});
+          }}
+          onSave={handleSaveOrUpdateWeekend}
+          isRequestLoading={isWeekendRequestLoading}
+          setIsRequestLoading={setIsWeekendRequestLoading}
+          initialData={currentWeekendData} // Pass current weekend data
+          weekendsResponseeStatus={weekendsResponseeStatus}
+        />
         <AddHolidayModal
           desiderPopup={desiderPopup}
           SetDesiderPopup={SetDesiderPopup}
