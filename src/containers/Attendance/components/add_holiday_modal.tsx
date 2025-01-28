@@ -1,159 +1,100 @@
-import Button from "@component/button/button";
-import DatePicker from "@component/datepicker";
 import CustomizedDialogs from "@component/dialog/CustomDialog";
-import { CustomInput } from "@component/input";
-import moment from "moment";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import HolidayStatus from "./holiday_status";
+import HolidayForm from "./holiday_form";
+import HolidayList from "./list_holidays";
+import Loader from "@shared/loader";
 
-const AddHolidayModal = ({ desiderPopup, SetDesiderPopup, onSave }) => {
-  const [resonForHoliday, setResonForHoliday] = useState("");
-  const [timeStart, setTimeStart] = useState(new Date());
-  const [timeEnd, setTimeEnd] = useState(new Date());
-  const [dayType, setDayType] = useState("full");
-  const [description, setDescription] = useState("");
+const AddHolidayModal = ({
+  desiderPopup,
+  SetDesiderPopup,
+  onSave,
+  onEdit,
+  onDelete,
+  holidayResponseStatus,
+  eventsData,
+  isCreateLoading,
+  isEditLoading,
+  setIsCreateLoading,
+  setIsEditLoading,
+  currentView,
+  setCurrentView,
+  isEdit,
+  editDataOnSelect,
+}) => {
+  const [currentEditData, setCurrentEditData] = useState(null);
 
-  const handleSave = () => {
-    const numberOfDays = moment(timeEnd).diff(moment(timeStart), "days") + 1;
+  const statusMessage = holidayResponseStatus
+    ? "The holidays and days off have been successfully marked on the calendar. Your updates are now visible to all users"
+    : "Unable to connect to the server. Please check your internet connection and try again";
 
-    const holidayData = {
-      holidayName: resonForHoliday,
-      startDate: moment(timeStart).format("YYYY-MM-DD"),
-      endDate: moment(timeEnd).format("YYYY-MM-DD"),
-      numberOfDays,
-      dayType,
-      description,
-    };
-    onSave(holidayData);
+  const handleClose = () => {
     SetDesiderPopup(false);
+    setCurrentView("list");
+    setCurrentEditData(null); // Reset edit data on close
   };
+
+  useEffect(() => {
+    if (isEdit && editDataOnSelect) {
+      setCurrentEditData(editDataOnSelect);
+      setCurrentView("edit");
+      console.log("editDataOnSelect", editDataOnSelect);
+    }
+  }, [editDataOnSelect]);
 
   return (
     <CustomizedDialogs
       open={desiderPopup}
-      setOpen={() => {
-        SetDesiderPopup(false);
-      }}
-      title="Add a Holiday"
+      setOpen={handleClose}
+      title={
+        currentView === "create"
+          ? "Add a Holiday"
+          : currentView === "edit"
+          ? "Edit Holiday"
+          : "Holiday List"
+      }
       className="schoolHolidayModal"
       maxWidth="900px"
       fullWidth={false}
     >
-      <div className="mt-[13px]">
-        <CustomInput
-          size="small"
-          label="Holiday Name:"
-          placeholder="Tap the name of the holiday"
-          icon={true}
-          fullWidth={true}
-          value={resonForHoliday}
-          onChange={(e) => setResonForHoliday(e.target.value)}
+      {currentView === "status" ? (
+        <HolidayStatus
+          type={holidayResponseStatus ? "success" : "error"}
+          message={statusMessage}
+          onClose={handleClose}
+          onConfirm={handleClose}
+          isLoader={isCreateLoading || isEditLoading}
         />
-      </div>
-      <div className="flex flex-col mt-[21px]">
-        <div className="font-bold mb-[30px] flex justify-between items-end">
-          <div className="w-[290px]">
-            <DatePicker
-              value={timeStart}
-              label="From Date:"
-              handlePickerChange={(val) => setTimeStart(moment(val).toDate())}
-              format="DD-MM-YYYY"
-              disablePast={false}
-              sxType={3}
-              defaultStyle={true}
-            />
-          </div>
-          <div className="w-[290px]">
-            <DatePicker
-              value={timeEnd}
-              label="To Date:"
-              handlePickerChange={(val) => setTimeEnd(moment(val).toDate())}
-              format="DD-MM-YYYY"
-              disablePast={false}
-              sxType={3}
-            />
-          </div>
-          <div className="w-[200px]">
-            <CustomInput
-              name="Branch Name"
-              label="Number of days"
-              parentLabelClass=""
-              size="small"
-              value={moment(timeEnd).diff(moment(timeStart), "days") + 1}
-              disabled={true}
-              sx={{ height: "37px" }}
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-8">
-          <label className="flex items-center space-x-2">
-            <input
-              type="radio"
-              name="dayType"
-              value="full"
-              className="hidden peer"
-              checked={dayType === "full"}
-              onChange={() => setDayType("full")}
-            />
-            <div className="w-5 h-5 rounded-full border border-green-500 flex items-center justify-center peer-checked:bg-green-500">
-              <div className="w-3 h-3 rounded-full bg-gray peer-checked:bg-white"></div>
-            </div>
-            <span className="text-[#222222] text-[12px] font-light">
-              Full day
-            </span>
-          </label>
-
-          <label className="flex items-center space-x-2">
-            <input
-              type="radio"
-              name="dayType"
-              value="half"
-              className="hidden peer"
-              checked={dayType === "half"}
-              onChange={() => setDayType("half")}
-            />
-            <div className="w-5 h-5 rounded-full border border-green-500 flex items-center justify-center peer-checked:bg-green-500">
-              <div className="w-3 h-3 rounded-full bg-gray peer-checked:bg-white"></div>
-            </div>
-            <span className="text-[#222222] text-[12px] font-light">
-              Half day
-            </span>
-          </label>
-        </div>
-
-        <div>
-          <p className="text-[12px] text-light text-[#222222] mt-[27px]">
-            Description
-          </p>
-          <textarea
-            className="w-full h-24 border border-gray-300 rounded-md mt-3 ps-[20px] pt-[19px]"
-            placeholder="Add text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-
-        <div className="actions flex justify-end mt-[36px] gap-[10px]">
-          <Button
-            sx={{
-              width: "120px",
-              backgroundColor: "#F5F5F5",
-              color: "#4A9D2D",
-              border: "1px solid #4A9D2D ",
-              "&:hover": {
-                backgroundColor: "#F5F5F5",
-              },
-            }}
-            onClick={() => SetDesiderPopup(false)}
-          >
-            Cancel
-          </Button>
-
-          <Button sx={{ width: "120px" }} onClick={handleSave}>
-            Save
-          </Button>
-        </div>
-      </div>
+      ) : currentView === "create" ? (
+        <HolidayForm
+          setShowStatus={() => setCurrentView("status")}
+          SetDesiderPopup={SetDesiderPopup}
+          onSave={onSave}
+          isRequestLoading={isCreateLoading}
+          setIsRequestLoading={setIsCreateLoading}
+        />
+      ) : currentView === "edit" ? (
+        <HolidayForm
+          setShowStatus={() => setCurrentView("status")}
+          SetDesiderPopup={SetDesiderPopup}
+          isEdit
+          onSave={onSave}
+          initialData={currentEditData}
+          isRequestLoading={isEditLoading}
+          setIsRequestLoading={setIsEditLoading}
+        />
+      ) : (
+        <HolidayList
+          eventsData={eventsData}
+          onEdit={(event) => {
+            setCurrentEditData(event);
+            setCurrentView("edit");
+          }}
+          onDelete={(id) => {
+            onDelete(id);
+          }}
+        />
+      )}
     </CustomizedDialogs>
   );
 };

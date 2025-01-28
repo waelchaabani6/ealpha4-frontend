@@ -6,7 +6,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "moment/locale/en-gb";
 import RouteLayout from "@layout/routeLayout";
-import { useGet } from "@shared/api/useApi";
+import { useGet, usePost, usePut } from "@shared/api/useApi";
 import { selectSchoolData } from "@shared/store/schoolSlice";
 import { useSelector } from "react-redux";
 import { selectUser } from "@shared/store/userSlice";
@@ -15,6 +15,7 @@ import PrintIcon from "@mui/icons-material/Print";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { useParams } from "react-router-dom";
 import AddHolidayModal from "./components/add_holiday_modal";
+import PageTitle from "@shared/pageTitle";
 
 const DnDCalendar = withDragAndDrop(Calendar);
 moment.locale("en-GB");
@@ -36,80 +37,148 @@ type EventTypeData = {
 export default function Index() {
   const componentRef = useRef(null);
   const [eventsData, setEventsData] = useState<Array<EventTypeData>>([]);
-  const [selectedTimeFrom, setSelectedTimeFrom] = useState<any>(null);
-  const [selectedTimeTo, setSelectedTimeTo] = useState<any>(null);
   const [desiderPopup, SetDesiderPopup] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState("");
-  const [courseId, setSelectedCourseId] = useState(null);
-  const [teachers, setTeachers] = useState<any>([]);
-  const [selectedTeacher, setSelectedTeacher] = useState<any>("");
-  const [selectedTeacherId, setSelectedTeacherId] = useState<any>(null);
-  const [classId, setClassId] = useState(-1);
-  const [branchId, setBranchId] = useState(-1);
+  const [holidayResponseStatus, setHolidayStatus] = useState(false);
+  const [isCreateLoading, setIsCreateLoading] = useState(false);
+  const [isEditLoading, setIsEditLoading] = useState(false);
+  const [currentEditData, setCurrentEditData] = useState<any>(null);
+  const [selectedTimeFrom, setSelectedTimeFrom] = useState(new Date());
+  const [selectedTimeTo, setSelectedTimeTo] = useState(new Date());
+  const [currentView, setCurrentView] = useState("create");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [startTime, setStartTime] = useState(8); // Default start time
-  const [navigationDate, setNaviagationDate] = useState(new Date());
+  const [selectedHolidayId, setSelectedHolidayId] = useState(null);
 
-  const { schoolId, role, branchId: userBranchId } = useSelector(selectUser);
-  const { branchData } = useSelector(selectSchoolData);
+  const { schoolId } = useSelector(selectUser);
 
-  const { refetch: refetchTeacher } = useGet({
-    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/school-classes/teacher/get?class_id=${classId}&subject_id=${courseId}`,
+  // Fetch holidays and set them as calendar events
+  const { refetch: fetchHolidays } = useGet({
+    baseURL: "https://school.development.ealpha.net/api/v1/",
+    url: `schools-service/holiday-management/holidays/list/${schoolId}/`,
     onSuccess: (resp: any) => {
-      const respData = resp?.data?.response;
-      const tempTeachers =
-        respData?.map((i: any) => ({
-          label: `${i?.teacher_name}`,
-          value: `${i?.teacher_name}`,
-          id: i?.user_profile_id,
-        })) || [];
-      setTeachers(tempTeachers);
+      const holidays = resp?.data?.data || [];
+      const events = holidays.map((holiday: any) => ({
+        id: holiday.id,
+        title: holiday.holiday_name,
+        description: holiday.description,
+        start: new Date(holiday.start_date),
+        end: new Date(holiday.end_date),
+        holidayType: holiday.holiday_type,
+        hexColor: "#FEE6C9",
+      }));
+
+      setEventsData(events);
     },
-    enabled: false,
+    onError: (error: any) => {
+      console.error("Failed to fetch holidays:", error);
+    },
+    enabled: true, // Will manually trigger fetch
+  });
+
+  // Save new holiday
+  const { isLoading: isSavingHoliday, mutate: saveHoliday } = usePost({
+    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+    url: "schools-service/holiday-management/holidays/",
+    onSuccess: () => {
+      toast("success", "Holiday added successfully!");
+      setHolidayStatus(true);
+      setIsCreateLoading(false);
+      fetchHolidays(); // Refresh holidays after creation
+    },
+    onError: (error: any) => {
+      toast("error", error?.response?.data?.message || "Failed to add holiday");
+      setHolidayStatus(false);
+      setIsCreateLoading(false);
+    },
+  });
+
+  // Edit existing holiday
+  const { isLoading: isUpdatingHoliday, mutate: updateHoliday } = usePut({
+    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+    url: `schools-service/holiday-management/holidays/${currentEditData?.id}/`,
+    onSuccess: () => {
+      toast("success", "Holiday updated successfully!");
+      setHolidayStatus(true);
+      fetchHolidays(); // Refresh holidays after edit
+    },
+    onError: (error: any) => {
+      toast(
+        "error",
+        error?.response?.data?.message || "Failed to update holiday"
+      );
+      setHolidayStatus(false);
+      SetDesiderPopup(false);
+    },
+  });
+
+  // Delete existing holiday
+  const { isLoading: isDeletingHoliday, mutate: deleteHoliday } = usePut({
+    baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
+    url: `schools-service/holiday-management/holidays/delete/${selectedHolidayId}/`,
+    onSuccess: () => {
+      toast("success", "Holiday deleted successfully!");
+      setHolidayStatus(true);
+      fetchHolidays(); // Refresh holidays after delete
+      SetDesiderPopup(false);
+    },
+    onError: (error: any) => {
+      toast(
+        "error",
+        error?.response?.data?.message || "Failed to delete holiday"
+      );
+      setHolidayStatus(false);
+    },
   });
 
   useEffect(() => {
-    if (classId !== -1 && courseId !== null) {
-      refetchTeacher();
+    if (selectedHolidayId !== null) {
+      deleteHoliday(selectedHolidayId);
     }
-  }, [courseId]);
+  }, [selectedHolidayId]);
 
-  useEffect(() => {
-    if (role.name === "BRANCH_ADMIN") {
-      setBranchId(userBranchId);
-    }
-  }, [branchData]);
+  const handleSaveHoliday = (saveData: any) => {
+    setIsCreateLoading(true);
+    const payload = {
+      holiday_name: saveData.holidayName,
+      description: saveData.description,
+      start_date: saveData.startDate,
+      end_date: saveData.endDate,
+      holiday_type: saveData.dayType === "full" ? "full_day" : "half_day",
+      school: schoolId,
+    };
+
+    saveHoliday(payload); // Save new holiday
+  };
+
+  const handleEditHoliday = (editData: any) => {
+    const payload = {
+      holiday_name: editData.holidayName,
+      description: editData.description,
+      start_date: editData.startDate,
+      end_date: editData.endDate,
+      holiday_type: editData.dayType === "full" ? "full_day" : "half_day",
+      school: schoolId,
+    };
+
+    updateHoliday(payload); // Update existing holiday
+  };
+
+  const handleDeleteHoliday = (id: number) => {
+    setSelectedHolidayId(id);
+  };
+
+  const handleEditClick = (event: any) => {
+    setCurrentEditData(event); // Set the selected event data for editing
+    SetDesiderPopup(true); // Open the modal
+    setCurrentView("edit"); // Set to edit view
+  };
 
   const handleSelect = (obj: { start: Date; end: Date }) => {
     const { start, end } = obj;
+    setCurrentEditData(null); // Clear current edit data
     setSelectedTimeFrom(start);
     setSelectedTimeTo(end);
-    SetDesiderPopup(true);
-  };
-
-  const handleToolbarAction = (title: string) => {
-    if (title === "IMPORT") {
-      importData();
-    }
-  };
-
-  const importData = () => {
-    const input: any = document.createElement("input");
-    input.type = "file";
-    input.accept = ".csv";
-    input.onchange = () => {
-      const file = input?.files?.[0];
-      const fileType = file.name.split(".").pop();
-      if (fileType === "csv") {
-        const formData = new FormData();
-        formData.append("csv_file", file);
-        formData.append("import_type", "sub-admin");
-      } else {
-        toast("error", "Please upload CSV filetype only");
-      }
-    };
-    input.click();
+    SetDesiderPopup(true); // Open the modal
+    setCurrentView("create"); // Set to create view
   };
 
   return (
@@ -117,6 +186,9 @@ export default function Index() {
       <RouteLayout navBack={true}>
         {/* Buttons Section */}
         <div className="flex justify-between items-center bg-gray-100 p-4 mt-5">
+          {/* Page Title */}
+          <PageTitle title="School Holidays" />
+
           <div className="flex items-center space-x-4">
             {/* Edit Weekends Button */}
             <Button
@@ -131,65 +203,97 @@ export default function Index() {
             >
               Edit Weekends
             </Button>
+          </div>
+          <div className="relative ml-4">
+            <Button
+              sx={{
+                backgroundColor: "#FFFFFF",
+                color: "#4A9D2D",
+                border: "1px solid #4A9D2D",
+                "&:hover": { backgroundColor: "#F5F5F5" },
+              }}
+              onClick={() => setIsDropdownOpen((prev) => !prev)}
+            >
+              Manage School Holidays
+            </Button>
 
-            {/* Manage School Holidays Dropdown */}
-            <div className="relative ml-4">
-              <Button
-                sx={{
-                  backgroundColor: "#FFFFFF",
-                  color: "#4A9D2D",
-                  border: "1px solid #4A9D2D",
-                  "&:hover": { backgroundColor: "#F5F5F5" },
-                }}
-                onClick={() => setIsDropdownOpen((prev) => !prev)}
-              >
-                Manage School Holidays
-              </Button>
-
-              {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-green-500 shadow-lg rounded-lg z-10">
-                  <div className="py-2">
-                    <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                      View
-                    </div>
-                    <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                      Add
-                    </div>
-                    <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                      Edit
-                    </div>
-                    <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                      Delete
-                    </div>
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-green-500 shadow-lg rounded-lg z-10">
+                <div className="py-2">
+                  <div
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      setCurrentView("list");
+                      SetDesiderPopup(true);
+                    }}
+                  >
+                    View
+                  </div>
+                  <div
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      setCurrentView("create");
+                      SetDesiderPopup(true);
+                    }}
+                  >
+                    Add
+                  </div>
+                  <div
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      setCurrentView("list");
+                      SetDesiderPopup(true);
+                    }}
+                  >
+                    Edit
+                  </div>
+                  <div
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      setCurrentView("list");
+                      SetDesiderPopup(true);
+                    }}
+                  >
+                    Delete
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
 
         <AddHolidayModal
           desiderPopup={desiderPopup}
           SetDesiderPopup={SetDesiderPopup}
+          holidayResponseStatus={holidayResponseStatus}
           onSave={(holidayData: any) => {
-            console.log(holidayData);
+            currentEditData
+              ? handleEditHoliday(holidayData) // Handle edit
+              : handleSaveHoliday(holidayData); // Handle create
           }}
+          onEdit={(holidayData: any) => handleEditHoliday(holidayData)}
+          onDelete={(holidayId: any) => handleDeleteHoliday(holidayId)}
+          eventsData={eventsData}
+          isCreateLoading={isSavingHoliday}
+          isEditLoading={isUpdatingHoliday}
+          setIsCreateLoading={setIsCreateLoading}
+          setIsEditLoading={setIsEditLoading}
+          isEdit={!!currentEditData}
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+          editDataOnSelect={currentEditData}
         />
 
         <div className="mt-5 bg-white" ref={componentRef}>
           <DnDCalendar
-            views={["week"]}
+            views={["month"]}
             selectable={true}
             localizer={localizer}
-            date={navigationDate}
-            onNavigate={(navDate: Date) => setNaviagationDate(navDate)}
-            min={new Date(2023, 0, 1, startTime, 0)}
-            max={new Date(2023, 0, 1, 18, 0)}
-            defaultView="week"
+            defaultView="month"
             events={eventsData}
             style={{ width: "100%", height: "100vh" }}
             onSelectSlot={handleSelect}
-            className="studentSchedular"
+            onSelectEvent={handleEditClick}
             formats={{
               dayFormat: (date, culture: any) =>
                 localizer.format(date, "ddd D", culture),

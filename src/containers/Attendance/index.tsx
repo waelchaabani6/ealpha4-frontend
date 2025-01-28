@@ -12,6 +12,7 @@ import {
   TABLE_LABELS,
   TOOLBAR_LABELS,
   RESULTS_PER_PAGE,
+  USER_TYPE,
 } from '@constants/constants';
 import Wrapper from '@shared/wrapper/Wrapper';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
@@ -52,8 +53,8 @@ const TableColumns = [
     mapper: 'StudentLastName',
   },
   {
-    label: 'Grade',
-    mapper: 'Grade',
+    label: 'Class',
+    mapper: 'Class',
   },
   // {
   //   label: 'Status',
@@ -82,19 +83,26 @@ const TableColumns = [
 ];
 
 function Attendance() {
+  const usersRole = useSelector((state: any) => state?.user?.role);
+  const { SCHOOL_ADMIN, BRANCH_ADMIN } = USER_TYPE;
+
   const [tableData, setTableData] = useState<any>([]);
+  const [withredirection, setWithredirection] = useState(false);
   const [page, setPage] = useState(1);
   const [orderBy, setOrderBy] = useState<any>('created_at');
   const [order, setOrder] = useState<any>('asc');
   const [bulkSelect, setBulkSelect] = useState<any>([]);
+  const [abcentBulkSelect, setAbcentBulkSelect] = useState<any>([]);
   const [selectedBranch, setSelectedBranch] = useState<
     number | null | 'select'
   >('select');
   const [selectedClass, setSelectedClass] = useState<number | null | 'select'>(
     'select'
   );
+  const [selectedClassName, setSelectedClassName] = useState<string | null>('');
 
-  const { branchId } = useSelector(selectUser);
+  const AttendanceUrl = import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL;
+  const { branchId, schoolId } = useSelector(selectUser);
   const [searchString, setSearchString] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const { schoolData, branchData } = useSelector(selectSchoolData);
@@ -106,13 +114,19 @@ function Attendance() {
 
   const [searchResults, setSearchResults] = useState<Student[]>([]);
   const [currentClassName, SetCurrentClassName] = useState<string>('');
+  const [selectedCourse, setSelectedCourse] = useState<string | number>(
+    'select'
+  );
+  const isAdmin =
+    usersRole?.name === SCHOOL_ADMIN || usersRole?.name === BRANCH_ADMIN;
+  const isBranchAdmin = usersRole?.name === BRANCH_ADMIN;
 
   // useEffect(() => {
   //   if (selectedClass === "select" && results.length === 0) {
   //     setSelectedClassStudents([]);
   //   }
   // }, [selectedClassStudents]);
-
+  const { user } = useSelector((state: any) => state);
   const navigate = useNavigate();
   const { schoolName } = useParams();
   const formatSelectedDate = useMemo(
@@ -120,31 +134,55 @@ function Attendance() {
     [selectedDate]
   );
 
-  const generatedUrl = `roster-service/student-attendance-list?limit=${10}&school_id=${schoolData?.id || branchData?.school_data?.id}&subject=${currentClassName || ''}&class_name=${currentClassName}${selectedDate ? `&date=${formatSelectedDate}` : ''}${branchData ? `&branch_id=${branchData?.id}` : selectedBranch !== 'select' ? `&branch_id=${selectedBranch}` : ''}&offset=${(page - 1) * Number(noOfpages)}${searchString ? `&search=${searchString}` : ''}`;
+  const generatedUrl = `roster-service/student-attendance-list?limit=${10}&school_id=${
+    schoolData?.id || branchData?.school_data?.id
+  }&subject=${currentClassName || ''}&class_name=${currentClassName}${
+    selectedDate ? `&date=${formatSelectedDate}` : ''
+  }${
+    branchData
+      ? `&branch_id=${branchData?.id}`
+      : selectedBranch !== 'select'
+        ? `&branch_id=${selectedBranch}`
+        : ''
+  }&offset=${(page - 1) * Number(noOfpages)}${
+    searchString ? `&search=${searchString}` : ''
+  }`;
   const cleanedUrl = generatedUrl.trim().replace(/\s+/g, ' ');
 
   const { data, isLoading, refetch } = useGet({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
     url: `${cleanedUrl}`,
-    enabled: Boolean(
-      (selectedClass !== 'select' && selectedDate) ||
-        (selectedClass !== 'select' &&
-          selectedDate &&
-          selectedBranch !== 'select')
-    ),
+    enabled: false,
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.count);
     },
   });
 
+  const MarkAttendanceEndpointUrl = isAdmin
+    ? `attendance_service/attendance/mark/?course_id=${selectedCourse}&date=${moment(
+        selectedDate
+      ).format(
+        'YYYY-MM-DD'
+      )}&class_id=${selectedClass}&school_id=${schoolId}&branch_id=${
+        isBranchAdmin ? branchId : ''
+      }`
+    : `attendance_service/attendance/mark/?course_id=${selectedCourse}&date=${moment(
+        selectedDate
+      ).format('YYYY-MM-DD')}&teacher_id=${
+        user?.user_profile_id
+      }&class_id=${selectedClass}&school_id=${schoolId}`;
+
   const { isLoading: isLoading3, mutate } = usePost({
-    baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
-    url: 'roster-service/create-attendance-data',
+    baseURL: AttendanceUrl,
+    url: MarkAttendanceEndpointUrl,
     onSuccess: () => {
-      refetch();
       toast('success', 'Attendance Updated Successfully!');
       setBulkSelect([]);
-      navigate(`/${schoolName}/attandance/reports`);
+      setAbcentBulkSelect([]);
+
+      if (withredirection) {
+        navigate(`/${schoolName}/attandance/reports`);
+      }
     },
     onError: (error: any) => {
       toast('error', error?.response?.data?.message);
@@ -183,6 +221,10 @@ function Attendance() {
     setBulkSelect(params);
   };
 
+  const handleDeSelection = (params: any) => {
+    setAbcentBulkSelect(params);
+  };
+
   const handleOnchange = (id: number) => {
     console.log('id is', id);
     const index = tmpTableData.findIndex((itm: any) => itm.id === id);
@@ -217,7 +259,7 @@ function Attendance() {
       SR_NO: index + 1,
       StudentFirstName: itm?.StudentFirstName,
       StudentLastName: itm?.StudentLastName,
-      Grade: itm?.Grade,
+      Class: selectedClassName || '',
       isChecked: itm.isChecked,
       Status: <StatusComponent itm={itm} handleOnchange={handleOnchange} />,
     }));
@@ -233,7 +275,7 @@ function Attendance() {
           SR_NO: index + 1,
           StudentFirstName: itm?.first_name,
           StudentLastName: itm?.last_name,
-          Grade: 'N/A',
+          Class: selectedClassName,
           isChecked: false,
           isPresent: itm?.is_present,
         })) || [];
@@ -246,34 +288,50 @@ function Attendance() {
     else setPage(1);
   };
 
+  function submitFunc() {
+    if (!selectedDate) {
+      toast('error', 'Please select a date before submitting attendance.');
+      return;
+    }
+
+    const studentsData = tmpTableData
+      ?.map((item: any) => {
+        if (item) {
+          return {
+            student_id: item.id,
+            status: bulkSelect.includes(item.id)
+              ? 'present'
+              : abcentBulkSelect.includes(item.id)
+                ? 'absent'
+                : 'present',
+          };
+        }
+        return null;
+      })
+      .filter(Boolean); // Remove null values
+
+    if (studentsData.length === 0) {
+      toast('error', 'No students selected for attendance.');
+      return; // Prevent submission if no students are selected
+    }
+
+    const payload = {
+      students: studentsData,
+    };
+
+    console.log('submit data', payload);
+
+    mutate(payload);
+  }
+
   const submitHandler = () => {
-    console.log(bulkSelect, 'bulkSelect');
-    const dt = bulkSelect?.map((item: any) => {
-      const idx = tmpTableData.find((itm: any) => itm.id === item);
-      // console.log(idx);
-      console.log(item);
-      // // console.log(idx);
-      if (idx) {
-        const tmp = {
-          student: item,
-          school_id: schoolData?.id || branchData?.school_data?.id,
-          school_class: selectedClass,
-          // subject: subjectName || '',
-          present: idx?.isPresent,
-          present_on_date: formatSelectedDate,
-        } as any;
-        if (branchId) {
-          tmp.branch_id = branchId;
-        }
-        if (selectedBranch !== 'select') {
-          tmp.branch_id = selectedBranch;
-        }
-        return tmp;
-      }
-      return null;
-    });
-    console.log('submit data', dt);
-    mutate(dt);
+    submitFunc();
+    setWithredirection(false);
+  };
+
+  const submitAndExitHandler = () => {
+    submitFunc();
+    setWithredirection(true);
   };
 
   const toggleAllHandler = (flag = true) => {
@@ -345,6 +403,10 @@ function Attendance() {
         setSelectedDate={setSelectedDate}
         selectedClass={selectedClass}
         setSelectedClass={setSelectedClass}
+        selectedCourse={selectedCourse}
+        setSelectedCourse={setSelectedCourse}
+        selectedClassName={selectedClassName}
+        setSelectedClassName={setSelectedClassName}
       />
 
       <div className="bg-white" ref={componentRef}>
@@ -365,18 +427,45 @@ function Attendance() {
             setBulkSelect={handleSelection}
             maxHeight={620}
             bulkSelect={bulkSelect}
+            setAbcentBulkSelect={handleDeSelection}
+            abcentBulkSelect={abcentBulkSelect}
             toggelAll={toggleAllHandler}
           />
         </Wrapper>
       </div>
-      <div className="flex justify-end py-2">
-        <Button
-          disabled={isLoading3 || bulkSelect.length < 1}
-          onClick={submitHandler}
-          loading={isLoading3}
-        >
-          Submit
-        </Button>
+
+      <div className="flex gap-3 justify-end">
+        <div className="flex justify-end py-2">
+          <Button
+            disabled={
+              isLoading3 ||
+              (bulkSelect.length < 1 && abcentBulkSelect.length < 1) ||
+              tmpTableData.length !==
+                bulkSelect.length + abcentBulkSelect.length
+            }
+            onClick={submitHandler}
+            loading={isLoading3}
+            tooltipMessage="Please submit status to the remaining students first"
+          >
+            Submit
+          </Button>
+        </div>
+
+        <div className="flex justify-end py-2">
+          <Button
+            disabled={
+              isLoading3 ||
+              (bulkSelect.length < 1 && abcentBulkSelect.length < 1) ||
+              tmpTableData.length !==
+                bulkSelect.length + abcentBulkSelect.length
+            }
+            onClick={submitAndExitHandler}
+            loading={isLoading3}
+            tooltipMessage="Please submit status to the remaining students first"
+          >
+            Submit and exit
+          </Button>
+        </div>
       </div>
     </RouteLayout>
   );

@@ -3,30 +3,30 @@
 /* eslint-disable comma-dangle */
 /* eslint-disable react/jsx-curly-newline */
 /* eslint-disable implicit-arrow-linebreak */
-import React, { forwardRef, useState } from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import { ReactComponent as DeleteRow } from '@images/delete-row.svg';
-import { ReactComponent as Assign } from '@images/assign.svg';
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import { ReactComponent as View } from '@images/view.svg';
-import { ReactComponent as Edit } from '@images/edit.svg';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import { COMPONENTS } from '@constants/constants';
-import CustomCheckbox from '@component/checkbox/CustomCheckbox';
-import LongMenu from '@component/IconMenu/CustomIconMenu';
-import CustomizedSwitches from '@component/switch/CustomSwitch';
-import DownloadIcon from '@mui/icons-material/Download';
-import SendIcon from '@mui/icons-material/Send';
+import React, { forwardRef, useState } from "react";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import { ReactComponent as DeleteRow } from "@images/delete-row.svg";
+import { ReactComponent as Assign } from "@images/assign.svg";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import { ReactComponent as View } from "@images/view.svg";
+import { ReactComponent as Edit } from "@images/edit.svg";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import { COMPONENTS } from "@constants/constants";
+import CustomCheckbox from "@component/checkbox/CustomCheckbox";
+import LongMenu from "@component/IconMenu/CustomIconMenu";
+import CustomizedSwitches from "@component/switch/CustomSwitch";
+import DownloadIcon from "@mui/icons-material/Download";
+import SendIcon from "@mui/icons-material/Send";
 
 // import Loader from '@shared/loader';
-import { NumberedPagination } from '@component/pagination/CustomPagination';
-import { LinearProgress } from '@mui/material';
-import Row from './Row';
+import { NumberedPagination } from "@component/pagination/CustomPagination";
+import { LinearProgress } from "@mui/material";
+import Row from "./Row";
 
 type AdvanceTable = {
   tableData: any;
@@ -41,6 +41,8 @@ type AdvanceTable = {
   subTableHeader?: any;
   bulkSelect?: any;
   setBulkSelect?: any;
+  setAbcentBulkSelect?: any;
+  abcentBulkSelect?: any;
   orderBy?: any;
   setOrderBy?: any;
   order?: any;
@@ -68,6 +70,8 @@ const AdvanceTable = forwardRef(
       subTableHeader,
       bulkSelect,
       setBulkSelect,
+      setAbcentBulkSelect,
+      abcentBulkSelect,
       order,
       setOrder,
       orderBy,
@@ -85,12 +89,10 @@ const AdvanceTable = forwardRef(
       event: React.MouseEvent<unknown>,
       property: any
     ) => {
-      const isAsc = orderBy === property && order === 'asc';
-      setOrder(isAsc ? 'desc' : 'asc');
+      const isAsc = orderBy === property && order === "asc";
+      setOrder(isAsc ? "desc" : "asc");
       setOrderBy(property);
     };
-
-    const [abcentBulkSelect, setAbcentBulkSelect] = useState<any>([]);
 
     const createSortHandler = (e: any, item: any): any => {
       setPage(1);
@@ -100,27 +102,20 @@ const AdvanceTable = forwardRef(
       event: React.ChangeEvent<HTMLInputElement>,
       data: any,
       selector?: string
-    ): any => {
-      // toggelAll();
-      let newSchoolID: string | any[] = [];
-      newSchoolID = data.map((n: any) => n[selector || 'id']);
+    ): void => {
+      const newSchoolID: string[] = data.map((n: any) => n[selector || "id"]);
 
       if (event) {
-        const newDat = [...bulkSelect, ...newSchoolID];
-        setBulkSelect([...new Set(newDat)]);
-
-        const filterArray = abcentBulkSelect.filter(
-          (item: any): any => !newSchoolID.includes(item)
+        // Add IDs to bulkSelect (Present) and remove from abcentBulkSelect (Absent)
+        setBulkSelect((prev) => [...new Set([...prev, ...newSchoolID])]);
+        setAbcentBulkSelect((prev) =>
+          prev.filter((item: any) => !newSchoolID.includes(item))
         );
-        setAbcentBulkSelect([...new Set(filterArray)]);
       } else {
-        const filterArray = bulkSelect.filter(
-          (item: any): any => !newSchoolID.includes(item)
+        // Remove IDs from bulkSelect (Present) only
+        setBulkSelect((prev) =>
+          prev.filter((item: any) => !newSchoolID.includes(item))
         );
-        setBulkSelect([...new Set(filterArray)]);
-
-        const newDat = [...abcentBulkSelect, ...newSchoolID];
-        setAbcentBulkSelect([...new Set(newDat)]);
       }
     };
 
@@ -128,33 +123,26 @@ const AdvanceTable = forwardRef(
       event: React.ChangeEvent<HTMLInputElement>,
       data: any,
       selector?: string
-    ): any => {
-      // toggelAll(false);
-      let newSchoolID: string | any[] = [];
-      newSchoolID = data.map((n: any) => n[selector || 'id']);
+    ): void => {
+      const newSchoolID: string[] = data.map((n: any) => n[selector || "id"]);
 
       if (event) {
-        const filterArray = bulkSelect.filter(
-          (item: any): any => !newSchoolID.includes(item)
+        // Add IDs to abcentBulkSelect (Absent) and remove from bulkSelect (Present)
+        setAbcentBulkSelect((prev) => [...new Set([...prev, ...newSchoolID])]);
+        setBulkSelect((prev) =>
+          prev.filter((item: any) => !newSchoolID.includes(item))
         );
-        setBulkSelect([...new Set(filterArray)]);
-
-        const newDat = [...abcentBulkSelect, ...newSchoolID];
-        setAbcentBulkSelect([...new Set(newDat)]);
       } else {
-        const newDat = [...bulkSelect, ...newSchoolID];
-        setBulkSelect([...new Set(newDat)]);
-
-        const filterArray = abcentBulkSelect.filter(
-          (item: any): any => !newSchoolID.includes(item)
+        // Remove IDs from abcentBulkSelect (Absent) only
+        setAbcentBulkSelect((prev) =>
+          prev.filter((item: any) => !newSchoolID.includes(item))
         );
-        setAbcentBulkSelect([...new Set(filterArray)]);
       }
     };
 
     const isSelected = (ids: any, selector?: string) => {
       if (ids?.length) {
-        const onlyIds = ids?.map((i: any) => i[selector || 'id']);
+        const onlyIds = ids?.map((i: any) => i[selector || "id"]);
         return onlyIds.every((v: any) => bulkSelect.includes(v));
       }
       return null;
@@ -162,7 +150,7 @@ const AdvanceTable = forwardRef(
 
     const isAbsentSelected = (ids: any, selector?: string) => {
       if (ids?.length) {
-        const onlyIds = ids?.map((i: any) => i[selector || 'id']);
+        const onlyIds = ids?.map((i: any) => i[selector || "id"]);
         return onlyIds.every((v: any) => abcentBulkSelect.includes(v));
       }
       return null;
@@ -175,7 +163,7 @@ const AdvanceTable = forwardRef(
             hasLabel={false}
             handleOnChange={statusHandler}
             rowData={data}
-            checked={data?.status === 'Active' || data?.status === true}
+            checked={data?.status === "Active" || data?.status === true}
           />
         );
       }
@@ -188,11 +176,11 @@ const AdvanceTable = forwardRef(
           />
         );
       }
-      if (headerData?.component === 'custom-checkbox') {
+      if (headerData?.component === "custom-checkbox") {
         return (
           <div className="flex gap-2 justify-left items-center">
-            <p className={isHeader && 'font-bold'}>
-              Present {isHeader && 'all'}
+            <p className={isHeader && "font-bold"}>
+              Present {isHeader && "all"}
             </p>
 
             <CustomCheckbox
@@ -218,8 +206,8 @@ const AdvanceTable = forwardRef(
               }
               sx={isHeader === true ? headerData.sx : headerData.cellSx}
             />
-            <p className={isHeader && 'font-bold'}>
-              Absent {isHeader && 'all'}
+            <p className={isHeader && "font-bold"}>
+              Absent {isHeader && "all"}
             </p>
           </div>
         );
@@ -253,9 +241,9 @@ const AdvanceTable = forwardRef(
                 actionHandler(data, headerData?.component);
               }
             }}
-            style={{ cursor: 'pointer', float: headerData?.bodyAlign }}
+            style={{ cursor: "pointer", float: headerData?.bodyAlign }}
           >
-            <DeleteRow className="tableIcon" style={{ width: '100%' }} />
+            <DeleteRow className="tableIcon" style={{ width: "100%" }} />
           </span>
         );
       }
@@ -273,9 +261,9 @@ const AdvanceTable = forwardRef(
                 actionHandler(data, headerData?.component);
               }
             }}
-            style={{ cursor: 'pointer', float: headerData?.bodyAlign }}
+            style={{ cursor: "pointer", float: headerData?.bodyAlign }}
           >
-            <Assign className="tableIcon" style={{ width: '100%' }} />
+            <Assign className="tableIcon" style={{ width: "100%" }} />
           </span>
         );
       }
@@ -293,9 +281,9 @@ const AdvanceTable = forwardRef(
                 actionHandler(data, headerData?.component);
               }
             }}
-            style={{ cursor: 'pointer', float: headerData?.bodyAlign }}
+            style={{ cursor: "pointer", float: headerData?.bodyAlign }}
           >
-            <RemoveRedEyeIcon style={{ fontSize: '20px' }} />
+            <RemoveRedEyeIcon style={{ fontSize: "20px" }} />
             {/* <View className="tableIcon" style={{ width: '100%' }} /> */}
           </span>
         );
@@ -309,9 +297,9 @@ const AdvanceTable = forwardRef(
             onClick={() =>
               actionHandler && actionHandler(data, headerData?.component)
             }
-            style={{ cursor: 'pointer', float: headerData?.bodyAlign }}
+            style={{ cursor: "pointer", float: headerData?.bodyAlign }}
           >
-            <Edit className="tableIcon" style={{ width: '100%' }} />
+            <Edit className="tableIcon" style={{ width: "100%" }} />
           </span>
         );
       }
@@ -325,9 +313,9 @@ const AdvanceTable = forwardRef(
             onClick={() =>
               actionHandler && actionHandler(data, headerData?.component)
             }
-            style={{ cursor: 'pointer', float: headerData?.bodyAlign }}
+            style={{ cursor: "pointer", float: headerData?.bodyAlign }}
           >
-            <Edit className="tableIcon" style={{ width: '100%' }} />
+            <Edit className="tableIcon" style={{ width: "100%" }} />
           </span>
         );
       }
@@ -341,15 +329,15 @@ const AdvanceTable = forwardRef(
               actionHandler && actionHandler(data, headerData?.component)
             }
             style={{
-              cursor: 'pointer',
+              cursor: "pointer",
               float: headerData?.bodyAlign,
-              backgroundColor: '#516cf6',
-              borderRadius: '5px',
+              backgroundColor: "#516cf6",
+              borderRadius: "5px",
             }}
           >
             <DownloadIcon
               className="tableIcon"
-              style={{ width: '100%', color: 'white' }}
+              style={{ width: "100%", color: "white" }}
             />
           </span>
         );
@@ -364,20 +352,20 @@ const AdvanceTable = forwardRef(
               actionHandler && actionHandler(data, headerData?.component)
             }
             style={{
-              cursor: 'pointer',
+              cursor: "pointer",
               float: headerData?.bodyAlign,
-              backgroundColor: 'var(--sunlight)',
-              borderRadius: '5px',
+              backgroundColor: "var(--sunlight)",
+              borderRadius: "5px",
             }}
           >
             <SendIcon
               className="tableIcon"
-              style={{ width: '100%', color: 'white' }}
+              style={{ width: "100%", color: "white" }}
             />
           </span>
         );
       }
-      return headerData?.label || 'No data';
+      return headerData?.label || "No data";
     };
 
     // console.log('table data =', tableData)
@@ -388,7 +376,7 @@ const AdvanceTable = forwardRef(
         <TableContainer
           className="relative"
           ref={ref}
-          sx={{ maxHeight: '100%' || props.maxHeight }}
+          sx={{ maxHeight: "100%" || props.maxHeight }}
         >
           <Table stickyHeader={true} aria-label="sticky table">
             <TableHead>
@@ -396,7 +384,7 @@ const AdvanceTable = forwardRef(
                 {headerRows?.map((item: any, index: number) => (
                   <TableCell
                     key={`${item?.label}-${index}`}
-                    align={item?.align || 'left'}
+                    align={item?.align || "left"}
                     sortDirection={orderBy === item?.label ? order : false}
                     colSpan={item?.colspan || 1}
                     sx={item.sx ? item.sx : {}}
@@ -404,7 +392,7 @@ const AdvanceTable = forwardRef(
                     {item?.isSort === true ? (
                       <TableSortLabel
                         active={orderBy === item?.mapper}
-                        direction={orderBy === item?.mapper ? order : 'asc'}
+                        direction={orderBy === item?.mapper ? order : "asc"}
                         onClick={(e: any) => {
                           createSortHandler(
                             e,
@@ -412,7 +400,7 @@ const AdvanceTable = forwardRef(
                           );
                         }}
                         sx={{
-                          '.MuiSvgIcon-root': {
+                          ".MuiSvgIcon-root": {
                             opacity: 0.2,
                           },
                         }}
@@ -423,7 +411,7 @@ const AdvanceTable = forwardRef(
                       <>
                         {mapperHandler(item, tableData, true)}
                         <div
-                          className={item.elementClass ? item.elementClass : ''}
+                          className={item.elementClass ? item.elementClass : ""}
                         >
                           {item?.label}
                         </div>

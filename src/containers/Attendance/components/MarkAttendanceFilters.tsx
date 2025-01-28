@@ -22,6 +22,7 @@ import { Student } from '../types';
 
 const SchoolURL = import.meta.env.VITE_APP_SCHOOL_SERVICE_URL;
 const CourseURL = import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL;
+const AttendanceUrl = import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL;
 
 type MarkAttendanceFiltersProps = {
   searchResults?: any;
@@ -37,6 +38,10 @@ type MarkAttendanceFiltersProps = {
   selectedDate: Date | null;
   setSelectedClass: React.Dispatch<React.SetStateAction<string | number>>;
   selectedClass: string | number;
+  selectedCourse: string | number;
+  setSelectedCourse: React.Dispatch<React.SetStateAction<string | number>>;
+  selectedClassName?: string;
+  setSelectedClassName?: React.Dispatch<React.SetStateAction<string>>;
 };
 
 function MarkAttendanceFilters({
@@ -53,18 +58,22 @@ function MarkAttendanceFilters({
   selectedDate,
   setSelectedClass,
   selectedClass,
+  selectedCourse,
+  setSelectedCourse,
+  selectedClassName,
+  setSelectedClassName,
 }: MarkAttendanceFiltersProps) {
-  const { TEACHER } = USER_TYPE;
+  const { TEACHER, SCHOOL_ADMIN, BRANCH_ADMIN } = USER_TYPE;
   const usersRole = useSelector((state: any) => state?.user?.role);
   const { user } = useSelector((state: any) => state);
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
   const [results, setResults] = useState<Student[]>([]);
 
-  // const [selectedClass, setSelectedClass] = useState<
-  //   string | number | null | 'select'
-  // >('select');
+  const isAdmin =
+    usersRole?.name === SCHOOL_ADMIN || usersRole?.name === BRANCH_ADMIN;
+  const isBranchAdmin = usersRole?.name === BRANCH_ADMIN;
 
-  const { schoolId } = useSelector(selectUser);
+  const { schoolId, branchId } = useSelector(selectUser);
 
   // const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<
@@ -77,11 +86,6 @@ function MarkAttendanceFilters({
   const [listOfStudents, setListOfStudents] = useState<any[]>([]);
   const [selectedClassStudents, setSelectedClassStudents] = useState<Student[]>(
     []
-  );
-
-  // Define state for selected course
-  const [selectedCourse, setSelectedCourse] = useState<string | number>(
-    'select'
   );
 
   useEffect(() => {
@@ -97,14 +101,17 @@ function MarkAttendanceFilters({
   const handleInputSearch = (value: string) => {
     setLoading(true);
     setTimeout(() => {
-      const res = listOfStudents
-        .flatMap((item) => item.students)
-        .filter((student) =>
-          `${student.first_name} ${student.last_name}`
-            .toLowerCase()
-            .includes(value.toLowerCase())
-        );
-      setSearchResults(res);
+      const dataTobSearchIn =
+        selectedClass !== 'select' ? selectedClassStudents : listOfStudents;
+      console.log({ dataTobSearchIn });
+      const searchResults = dataTobSearchIn.filter((student) =>
+        `${student.first_name} ${student.last_name}`
+          .toLowerCase()
+          .includes(value.toLowerCase())
+      );
+      console.log({ searchResults });
+      setResults(searchResults);
+
       setLoading(false);
     }, 500);
   };
@@ -118,12 +125,21 @@ function MarkAttendanceFilters({
   });
 
   const branchArr: [] = data1?.data?.response?.results?.sort(sortByName);
+  const coursesEndPointUrl = isAdmin
+    ? `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
+        selectedBranch !== 'select'
+          ? selectedBranch
+          : isBranchAdmin
+            ? branchId
+            : ''
+      }`
+    : `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
+        selectedBranch === 'select' ? '' : selectedBranch
+      }&user_id=${isAdmin ? '' : user?.userId}`;
 
   const { isLoading: subLoading, refetch: refetchCourses } = useGet({
     baseURL: CourseURL,
-    url: `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
-      selectedBranch === 'select' ? '' : selectedBranch
-    }&user_id=${user?.userId}`,
+    url: coursesEndPointUrl,
     enabled: false,
     onSuccess: (resp: any) => {
       const respData = resp?.data?.response;
@@ -135,13 +151,21 @@ function MarkAttendanceFilters({
     },
   });
 
+  const clasessEndPointUrl = isAdmin
+    ? `schools-service/schools/get-classes?program_id=${
+        selectedCourse !== 'select' ? selectedCourse : ''
+      }&school_id=${schoolId}&class_id=${
+        selectedClass !== 'select' ? selectedClass : ''
+      }&branch_id=${selectedBranch !== 'select' ? selectedBranch : ''}`
+    : `schools-service/schools/get-classes?program_id=${
+        selectedCourse !== 'select' ? selectedCourse : ''
+      }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
+        selectedClass !== 'select' ? selectedClass : ''
+      }`;
+
   const { isLoading: classLoading, refetch: refetchClasses } = useGet({
     baseURL: SchoolURL,
-    url: `schools-service/schools/get-classes?program_id=${
-      selectedCourse !== 'select' ? selectedCourse : ''
-    }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
-      selectedClass !== 'select' ? selectedClass : ''
-    }`,
+    url: clasessEndPointUrl,
     enabled: false,
     onSuccess: (resp: any) => {
       const respData = resp?.data?.results; // Adjust based on the actual API response structure
@@ -150,16 +174,48 @@ function MarkAttendanceFilters({
         label: classItem.class_name, // Replace `class_name` with the correct key if different
         value: classItem.class_id, // Replace `class_id` with the correct key if different
       }));
-      const studentsByClass = respData.map((classItem: any) => ({
-        class_id: classItem.class_id,
-        students: classItem.student_profile, // Only store `student_profile`
-      }));
 
+      // map over respData and get the students data from student_profile and acculmate it   in a new array
+      const studentsData = respData.map((itm: any) => itm.student_profile);
+
+      // I need to add class property to each student object
+      studentsData.forEach((itm: any, index: number) => {
+        itm.forEach((student: any) => {
+          student.class = formattedClasses[index].label;
+        });
+      });
+
+      // merge all the students data in one array
+      const mergedStudentsData = studentsData.reduce(
+        (acc: any, itm: any) => [...acc, ...itm],
+        []
+      );
+      setListOfStudents(mergedStudentsData);
       setClasses([...formattedClasses]);
-      setListOfStudents(studentsByClass);
     },
   });
+  const classesStudentsEndPointUrl = isAdmin
+    ? `schools-service/schools/get-classes/by-class-id?program_id=${
+        selectedCourse !== 'select' ? selectedCourse : ''
+      }&school_id=${schoolId}&class_id=${
+        selectedClass !== 'select' ? selectedClass : ''
+      }&branch_id=${selectedBranch !== 'select' ? selectedBranch : ''}`
+    : `schools-service/schools/get-classes/by-class-id?program_id=${
+        selectedCourse !== 'select' ? selectedCourse : ''
+      }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
+        selectedClass !== 'select' ? selectedClass : ''
+      }`;
 
+  const { isLoading: classStudentsLoading, refetch: refetchClassesStudents } =
+    useGet({
+      baseURL: SchoolURL,
+      url: classesStudentsEndPointUrl,
+      enabled: false,
+      onSuccess: (resp: any) => {
+        const respData = resp?.data?.results;
+        setSelectedClassStudents(respData[0]?.student_profile);
+      },
+    });
   useEffect(() => {
     refetchCourses();
   }, [selectedBranch]);
@@ -170,21 +226,11 @@ function MarkAttendanceFilters({
     }
   }, [selectedCourse, selectedClass]);
 
-  // useEffect(() => {
-  //   const isAdmin = [
-  //     USER_TYPE.SCHOOL_ADMIN,
-  //     USER_TYPE.BRANCH_ADMIN,
-  //     USER_TYPE.SUPER_ADMIN,
-  //   ].includes(usersRole?.name);
-  //   if (selectedClass !== 'select' && isAdmin) {
-  //     refetchClasses();
-  //   } else if (
-  //     selectedClass !== 'select' &&
-  //     usersRole?.name === USER_TYPE.TEACHER
-  //   ) {
-  //     refetchCourses();
-  //   }
-  // }, [selectedClass]);
+  useEffect(() => {
+    if (selectedClass !== 'select') {
+      refetchClassesStudents();
+    }
+  }, [selectedClass, selectedClassStudents]);
 
   const branchName = useMemo(
     () =>
@@ -227,47 +273,11 @@ function MarkAttendanceFilters({
     setCurrentClassName(className);
   }, [className]);
 
-  // const subjectName = useMemo(() => {
-  //   const tmp = courses?.find((item: any) => item?.value === selectedSubject);
-  //   return tmp?.label;
-  // }, [selectedSubject]);
-
-  // const formatSelectedDate = useMemo(
-  //   () => moment(selectedDate).format('yyyy-MM-DD'),
-  //   [selectedDate]
-  // );
-
-  const { isLoading: loadClassesForTeacher, mutate: ClassesForTeacher } =
-    usePost({
-      baseURL: SchoolURL,
-      url: `schools-service/school-classes/teacher/assigned-class`,
-      onSuccess: (resp: any) => {
-        const res = resp?.data?.response;
-        const formatArr =
-          res?.map((ele: any) => ({ label: ele.name, value: ele.class_id })) ||
-          [];
-        formatArr.sort(sortData);
-        setTeacherClassesArray(formatArr);
-      },
-    });
-
-  // const handleSearch = (value: any) => {
-  //   setSearchString(value);
-  // };
-
   const branchSelectHandler = (currentBranch: number) => {
     setSelectedBranch(currentBranch);
     setSelectedClass('select');
     setTableData([]);
   };
-
-  useEffect(() => {
-    if (usersRole?.name === TEACHER && user?.user_profile_id) {
-      ClassesForTeacher({
-        teacher_id: user?.user_profile_id,
-      });
-    }
-  }, [usersRole, user]);
 
   useEffect(() => {
     if (selectedClassStudents) {
@@ -303,29 +313,17 @@ function MarkAttendanceFilters({
           <SearchInputWithResults
             onChange={handleInputSearch}
             loading={loading}
-            results={searchResults}
+            results={results}
             renderResultItem={(student: Student) => (
               <span>
                 {student.first_name} {student.last_name}
               </span>
             )}
             onResultSelect={(student: Student) => {
-              const classWithStudent = listOfStudents.find((classItem) =>
-                classItem.students.some(
-                  (item) => item.student_id === student.student_id
-                )
-              );
-
-              if (classWithStudent) {
-                // Add the student to the selectedClassStudents array
-                setSelectedClassStudents(() => [
-                  classWithStudent.students.find(
-                    (item) => item.student_id === student.student_id
-                  ),
-                ]);
-              } else {
-                console.warn('Student not found in any class');
-              }
+              console.log({ student });
+              setSelectedClassStudents([student]);
+              setSelectedClassName(student.class || '');
+              handleInputSearch('');
             }}
           />
         </div>
@@ -368,10 +366,10 @@ function MarkAttendanceFilters({
             dataArray={[{ label: 'Select', value: 'select' }, ...classes]}
             onChangeHandler={(currentClass: string | number) => {
               setSelectedClass(currentClass);
-              setSelectedClassStudents(
-                listOfStudents.find((item) => item.class_id === currentClass)
-                  ?.students
+              const className = classes.find(
+                (itm) => itm.value === currentClass
               );
+              setSelectedClassName(className?.label);
             }}
             sxClass={{ width: '100%' }}
             disabled={selectedCourse === 'select'} // Disable if no course selected
