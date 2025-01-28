@@ -32,11 +32,13 @@ const AddWeekendModal = ({
 
   useEffect(() => {
     if (initialData) {
-      setSelectedDays(initialData.days || []); // Prefill days
-      setEndsAfter(initialData.ends_after || "never"); // Prefill ends_after
+      setSelectedDays(initialData.days || []); // Set selected days
+      setEndsAfter(initialData.ends_after || "never"); // Set radio button value
+      setAfterValue(initialData.ends_after || ""); // Set dropdown value (if needed)
     } else {
       setSelectedDays([]);
-      setEndsAfter("never");
+      setEndsAfter("never"); // Default radio selection
+      setAfterValue(""); // Reset dropdown value
     }
   }, [initialData]);
 
@@ -86,14 +88,17 @@ const AddWeekendModal = ({
   };
 
   const handleClose = () => {
-    setCurrentView("form"); // Reset to form view
-    onClose(); // Close modal
+    onClose();
+    setCurrentView("form");
   };
 
   return (
     <CustomizedDialogs
       open={isOpen}
-      setOpen={onClose}
+      setOpen={() => {
+        onClose();
+        setCurrentView("form");
+      }}
       title={initialData ? "Edit Weekend" : "Add Weekend"}
       className="weekendModal"
       maxWidth="600px"
@@ -141,8 +146,11 @@ const AddWeekendModal = ({
                 type="radio"
                 name="endsAfter"
                 value="never"
-                checked={endsAfter === "never"}
-                onChange={() => setEndsAfter("never")}
+                checked={endsAfter === "never"} // Check for "never"
+                onChange={() => {
+                  setEndsAfter("never");
+                  setAfterValue(""); // Clear dropdown value if "never" is selected
+                }}
               />
               Never
             </label>
@@ -151,11 +159,14 @@ const AddWeekendModal = ({
                 type="radio"
                 name="endsAfter"
                 value="after"
-                checked={endsAfter === "after"}
-                onChange={() => setEndsAfter("after")}
+                checked={endsAfter !== "never"} // Check for any value other than "never"
+                onChange={() => {
+                  setEndsAfter("after"); // Set to "after" for dropdown display
+                  if (!afterValue) setAfterValue("3-month"); // Default dropdown value
+                }}
               />
               After
-              {endsAfter === "after" && (
+              {endsAfter !== "never" && (
                 <select
                   className="ends-after-dropdown"
                   value={afterValue}

@@ -6,7 +6,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "moment/locale/en-gb";
 import RouteLayout from "@layout/routeLayout";
-import { useGet, usePost, usePut } from "@shared/api/useApi";
+import { useDelete, useGet, usePost, usePut } from "@shared/api/useApi";
 import { selectSchoolData } from "@shared/store/schoolSlice";
 import { useSelector } from "react-redux";
 import { selectUser } from "@shared/store/userSlice";
@@ -17,6 +17,7 @@ import { useParams } from "react-router-dom";
 import AddHolidayModal from "./components/add_holiday_modal";
 import PageTitle from "@shared/pageTitle";
 import AddWeekendModal from "./components/add_weekend_modal";
+import { set } from "react-hook-form";
 
 const DnDCalendar = withDragAndDrop(Calendar);
 moment.locale("en-GB");
@@ -54,7 +55,6 @@ export default function Index() {
   const [currentWeekendData, setCurrentWeekendData] = useState(null); // For editing a weekend
   const [weekendsResponseeStatus, setWeekendsResponseStatus] = useState(false);
   const { schoolId, branchId } = useSelector(selectUser);
-
   const calculateWeekendDates = (days: string[], endsAfter: string) => {
     const dayMap: { [key: string]: number } = {
       Sunday: 0,
@@ -68,15 +68,18 @@ export default function Index() {
 
     const today = new Date();
     const startDate = new Date(today.getFullYear(), today.getMonth(), 1); // Start of the current month
-    const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); // Default to end of the month
+    let endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); // Default: end of the month
 
+    // Handle different end conditions
     if (endsAfter === "3-month") {
-      endDate.setMonth(endDate.getMonth() + 3);
+      endDate.setMonth(endDate.getMonth() + 2);
     } else if (endsAfter === "6-month") {
-      endDate.setMonth(endDate.getMonth() + 6);
+      endDate.setMonth(endDate.getMonth() + 5);
     } else if (endsAfter === "current_academic_year") {
       endDate.setMonth(8); // Assuming academic year ends in September
       endDate.setDate(30);
+    } else if (endsAfter === "never") {
+      endDate = new Date(today.getFullYear() + 10, 11, 31); // Generate for the next 10 years
     }
 
     const weekends = [];
@@ -91,7 +94,7 @@ export default function Index() {
           title: "Weekend",
           start: new Date(d),
           end: new Date(d),
-          hexColor: "red", // Color for weekends
+          hexColor: "#FFD9D9", // Color for weekends
         });
       }
     }
@@ -125,51 +128,57 @@ export default function Index() {
     enabled: true,
   });
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        // Fetch holidays
-        const holidaysResponse = await fetchHolidays();
+  const fetchEvents = async () => {
+    try {
+      // Fetch holidays
+      const holidaysResponse = await fetchHolidays();
+      const holidays = holidaysResponse?.data?.data?.data || [];
+      const holidayEvents = holidays.map((holiday: any) => ({
+        id: holiday.id,
+        title: holiday.holiday_name,
+        description: holiday.description,
+        start: new Date(holiday.start_date),
+        end: new Date(holiday.end_date),
+        holidayType: holiday.holiday_type,
+        hexColor: "#D2F0FF", // Color for holidays
+      }));
 
-        const holidays = holidaysResponse?.data?.data?.data || [];
-        const holidayEvents = holidays.map((holiday: any) => ({
-          id: holiday.id,
-          title: holiday.holiday_name,
-          description: holiday.description,
-          start: new Date(holiday.start_date),
-          end: new Date(holiday.end_date),
-          holidayType: holiday.holiday_type,
-          hexColor: "blue", // Color for holidays
-        }));
+      // Fetch weekends
+      const weekendsResponse = await fetchWeekends();
+      const weekends = weekendsResponse?.data?.data?.data || [];
 
-        // Fetch weekends
-        const weekendsResponse = await fetchWeekends();
-        const weekends = weekendsResponse?.data?.data?.data || [];
-        const weekendEvents = weekends.flatMap((weekend: any) =>
-          calculateWeekendDates(weekend.days, weekend.ends_after)
+      // Handle only the first weekend index
+      let weekendEvents: any[] = [];
+      if (weekends.length > 0) {
+        weekendEvents = calculateWeekendDates(
+          weekends[0].days,
+          weekends[0].ends_after
         );
-
-        // Merge holidays and weekends
-        setEventsData([...holidayEvents, ...weekendEvents]);
-      } catch (error) {
-        console.error("Failed to fetch events:", error);
       }
-    };
 
+      // Merge holidays and the first weekend index
+      setEventsData([...holidayEvents, ...weekendEvents]);
+    } catch (error) {
+      console.error("Failed to fetch events:", error);
+    }
+  };
+  useEffect(() => {
     fetchEvents();
   }, [fetchHolidays, fetchWeekends]);
+
   // Create new weekend
   const { isLoading: isCreatingWeekend, mutate: createWeekend } = usePost({
     baseURL: "https://school.development.ealpha.net/api/v1/",
     url: "schools-service/holiday-management/weekends/",
     onSuccess: () => {
-      setWeekendsResponseStatus(true); // Set success response status
+      setWeekendsResponseStatus(true);
       toast("success", "Weekend created successfully!");
       fetchWeekends(); // Refresh weekends list
+      fetchEvents(); // Fetch events after creating a weekend
       setIsWeekendRequestLoading(false);
     },
     onError: (error: any) => {
-      setWeekendsResponseStatus(false); // Set error response status
+      setWeekendsResponseStatus(false);
       toast(
         "error",
         error?.response?.data?.message || "Failed to create weekend"
@@ -183,13 +192,14 @@ export default function Index() {
     baseURL: "https://school.development.ealpha.net/api/v1/",
     url: `schools-service/holiday-management/weekends/${currentWeekendData?.id}/`,
     onSuccess: () => {
-      setWeekendsResponseStatus(true); // Set success response status
+      setWeekendsResponseStatus(true);
       toast("success", "Weekend updated successfully!");
       fetchWeekends(); // Refresh weekends list
+      fetchEvents(); // Fetch events after updating a weekend
       setIsWeekendRequestLoading(false);
     },
     onError: (error: any) => {
-      setWeekendsResponseStatus(false); // Set error response status
+      setWeekendsResponseStatus(false);
       toast(
         "error",
         error?.response?.data?.message || "Failed to update weekend"
@@ -225,7 +235,8 @@ export default function Index() {
       toast("success", "Holiday added successfully!");
       setHolidayStatus(true);
       setIsCreateLoading(false);
-      fetchHolidays(); // Refresh holidays after creation
+      fetchHolidays();
+      fetchEvents();
     },
     onError: (error: any) => {
       toast("error", error?.response?.data?.message || "Failed to add holiday");
@@ -242,6 +253,7 @@ export default function Index() {
       toast("success", "Holiday updated successfully!");
       setHolidayStatus(true);
       fetchHolidays(); // Refresh holidays after edit
+      fetchEvents();
     },
     onError: (error: any) => {
       toast(
@@ -254,7 +266,7 @@ export default function Index() {
   });
 
   // Delete existing holiday
-  const { isLoading: isDeletingHoliday, mutate: deleteHoliday } = usePut({
+  const { isLoading: isDeletingHoliday, mutate: deleteHoliday } = useDelete({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
     url: `schools-service/holiday-management/holidays/delete/${selectedHolidayId}/`,
     onSuccess: () => {
@@ -262,6 +274,7 @@ export default function Index() {
       setHolidayStatus(true);
       fetchHolidays(); // Refresh holidays after delete
       SetDesiderPopup(false);
+      fetchEvents();
     },
     onError: (error: any) => {
       toast(
@@ -343,9 +356,9 @@ export default function Index() {
 
     const payload = {
       school: schoolId,
-      branch: branchId, // Replace with actual branch ID if dynamic
-      days: weekendData.days, // Selected days
-      ends_after: weekendData.ends_after, // "never" or specific period
+      branch: branchId,
+      days: weekendData.days,
+      ends_after: weekendData.ends_after,
     };
 
     if (currentWeekendData) {
@@ -372,11 +385,13 @@ export default function Index() {
                 "&:hover": { backgroundColor: "#3A7D24" },
               }}
               onClick={() => {
-                setCurrentWeekendData(null); // Reset edit data for new weekend
+                setCurrentWeekendData(
+                  weekendsData.length > 0 ? weekendsData[0] : null
+                ); // Reset edit data for new weekend
                 setIsWeekendModalOpen(true); // Open modal
               }}
             >
-              Add Weekends
+              Manage Weekends
             </Button>
           </div>
           <div className="relative ml-4">
@@ -400,6 +415,7 @@ export default function Index() {
                     onClick={() => {
                       setCurrentView("list");
                       SetDesiderPopup(true);
+                      setIsDropdownOpen(false);
                     }}
                   >
                     View
@@ -409,6 +425,7 @@ export default function Index() {
                     onClick={() => {
                       setCurrentView("create");
                       SetDesiderPopup(true);
+                      setIsDropdownOpen(false);
                     }}
                   >
                     Add
@@ -418,6 +435,7 @@ export default function Index() {
                     onClick={() => {
                       setCurrentView("list");
                       SetDesiderPopup(true);
+                      setIsDropdownOpen(false);
                     }}
                   >
                     Edit
@@ -427,6 +445,7 @@ export default function Index() {
                     onClick={() => {
                       setCurrentView("list");
                       SetDesiderPopup(true);
+                      setIsDropdownOpen(false);
                     }}
                   >
                     Delete
