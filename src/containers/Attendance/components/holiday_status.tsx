@@ -60,21 +60,23 @@ const HolidayStatus: React.FC<StatusModalProps> = ({
               >
                 View the updated calendar
               </Button>
-              <Button
-                onClick={onConfirm}
-                sx={{
-                  backgroundColor: "#FFFFFF",
-                  color: "#4CAF50",
-                  border: "1px solid #4CAF50",
-                  padding: "10px 20px",
-                  borderRadius: "5px",
-                  "&:hover": {
-                    backgroundColor: "#F9F9F9",
-                  },
-                }}
-              >
-                Edit Holidays
-              </Button>
+              {onConfirm && (
+                <Button
+                  onClick={onConfirm}
+                  sx={{
+                    backgroundColor: "#FFFFFF",
+                    color: "#4CAF50",
+                    border: "1px solid #4CAF50",
+                    padding: "10px 20px",
+                    borderRadius: "5px",
+                    "&:hover": {
+                      backgroundColor: "#F9F9F9",
+                    },
+                  }}
+                >
+                  Edit Holidays
+                </Button>
+              )}
             </div>
           ) : (
             <div className="mt-6 flex flex-col space-y-4 w-[281px] mx-auto">
