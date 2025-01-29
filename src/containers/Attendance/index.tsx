@@ -371,6 +371,10 @@ function Attendance() {
     return targetDate;
   }, [schoolData, branchData]);
 
+  useEffect(() => {
+    refetch();
+  }, [selectedDate]);
+
   return (
     <RouteLayout navBack={true} overflow={true}>
       <HeaderMenus

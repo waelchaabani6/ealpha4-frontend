@@ -34,14 +34,11 @@ import {
   sortData,
   sortByName,
 } from '@utility/utility';
-import DebounceInput from '@component/input/DebounceInput';
 import toast from '@shared/toast';
 import moment from 'moment';
 import { selectUser } from '@shared/store/userSlice';
 import SearchInputWithResults from '@component/input/SearchInputWithResults';
 import { useNavigate, useParams } from 'react-router-dom';
-import { set } from 'react-hook-form';
-import SessionBooking from '@component/CustomDatePicker';
 import AttendanceCalednar from './components/AttendanceCalednar';
 
 const printButton = () => <PrintIcon />;
@@ -727,9 +724,9 @@ function Attendance() {
 
           <div className="pb-[5px]">
             <AttendanceCalednar
-              eventData={eventData}
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
+            // eventData={eventData}
+            // selectedDate={selectedDate}
+            // setSelectedDate={setSelectedDate}
             />
           </div>
 

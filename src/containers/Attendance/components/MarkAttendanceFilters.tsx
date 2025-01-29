@@ -387,11 +387,7 @@ function MarkAttendanceFilters({
           />
 
           <div className="pb-[5px]">
-            <AttendanceCalednar
-              eventData={[]}
-              // selectedDate={selectedDate}
-              // setSelectedDate={setSelectedDate}
-            />
+            <AttendanceCalednar />
           </div>
         </div>
       </div>
