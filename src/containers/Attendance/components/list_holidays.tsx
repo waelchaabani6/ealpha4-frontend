@@ -2,6 +2,8 @@ import CustomPagination from "@shared/customPagination";
 import React, { useEffect, useState } from "react";
 import { ReactComponent as Trash } from "@images/icons/trash.svg";
 import { ReactComponent as Pin } from "@images/icons/green_pin.svg";
+import moment from "moment";
+
 
 type EventTypeData = {
   id: number;
@@ -46,14 +48,15 @@ const HolidayList: React.FC<HolidayListPropsType> = ({
 
   // Function to calculate the duration between two dates
   const calculateDuration = (start: string, end: string) => {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    let duration = Math.ceil(
-      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    
-    return duration === 0 ? 1 : duration; 
+    const startDate = moment(start, "YYYY-MM-DD");
+    const endDate = moment(end, "YYYY-MM-DD");
+  
+    // Calculate the difference in days and add 1 to include the start date
+    const duration = endDate.diff(startDate, "days") + 1;
+  
+    return duration;
   };
+  
   
 
   return (

@@ -298,7 +298,7 @@ export default function Index() {
       description: saveData.description,
       start_date: saveData.startDate,
       end_date: saveData.endDate,
-      holiday_type: saveData.dayType === "full" ? "full_day" : "half_day",
+      holiday_type: saveData.dayType === "full_day" ? "full_day" : "half_day",
       school: schoolId,
     };
 
@@ -311,7 +311,7 @@ export default function Index() {
       description: editData.description,
       start_date: editData.startDate,
       end_date: editData.endDate,
-      holiday_type: editData.dayType === "full" ? "full_day" : "half_day",
+      holiday_type: editData.dayType === "full_day" ? "full_day" : "half_day",
       school: schoolId,
     };
 
@@ -472,7 +472,7 @@ export default function Index() {
           SetDesiderPopup={SetDesiderPopup}
           holidayResponseStatus={holidayResponseStatus}
           onSave={(holidayData: any) => {
-            currentView === 'edit '
+            currentView === 'edit'
               ? handleEditHoliday(holidayData) // Handle edit
               : handleSaveHoliday(holidayData); // Handle create
              

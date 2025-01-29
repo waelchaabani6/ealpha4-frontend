@@ -28,6 +28,7 @@ const HolidayForm: React.FC<HolidayFormType> = ({
   const [timeEnd, setTimeEnd] = useState(new Date());
   const [dayType, setDayType] = useState("full_day");
   const [description, setDescription] = useState("");
+  
 
   // Function to reset the form
   const resetForm = () => {
@@ -153,7 +154,7 @@ const HolidayForm: React.FC<HolidayFormType> = ({
               value="half_day"
               className="hidden peer"
               checked={dayType === "half_day"}
-              onChange={() => setDayType("half")}
+              onChange={() => setDayType("half_day")}
             />
             <div className="w-5 h-5 rounded-full border border-green-500 flex items-center justify-center peer-checked:bg-green-500">
               <div className="w-3 h-3 rounded-full bg-gray peer-checked:bg-white"></div>
