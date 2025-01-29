@@ -17,7 +17,7 @@ import { getNoOfPages, userRole, sortData, sortByName } from '@utility/utility';
 import moment from 'moment';
 import { selectUser } from '@shared/store/userSlice';
 import SearchInputWithResults from '@component/input/SearchInputWithResults';
-import AttendanceCalednar from '../AttendanceCalednar';
+import AttendanceCalednar from './AttendanceCalednar';
 import { Student } from '../types';
 
 const SchoolURL = import.meta.env.VITE_APP_SCHOOL_SERVICE_URL;
@@ -92,7 +92,7 @@ function MarkAttendanceFilters({
     if (selectedClass === 'select' && results.length === 0) {
       setSelectedClassStudents([]);
     }
-  }, [selectedClassStudents]);
+  }, [selectedClass, results]);
 
   // Simulated loading states
   const [loadCoursesForTeacher, setLoadCoursesForTeacher] = useState(false);
@@ -297,14 +297,25 @@ function MarkAttendanceFilters({
 
   // Todo: delete this afeter testing
   const roasterServiceBaseURL = import.meta.env.VITE_APP_ROSTER_SERVICE_URL;
+  const attencanceServiceBaseURL = import.meta.env
+    .VITE_APP_ATTENDANCE_SERVICE_URL;
   const { userId } = useSelector(selectUser);
 
   // const [eventID, setEventID] = useState<any>();
-  const { data: eventData, refetch: refreshEvents } = useRAWGetApi({
-    baseURL: roasterServiceBaseURL,
-    url: `roster-service/events/?user_id=${userId}&school_id=${schoolId}`,
-    cacheTime: 0,
-  });
+
+  // const date = new Date();
+  // const month = date.getMonth() + 1;
+  // const year = date.getFullYear();
+  // const { data: eventData, refetch: refreshEvents } = useRAWGetApi({
+  //   baseURL: attencanceServiceBaseURL,
+  //   // url: `roster-service/events/?user_id=${userId}&school_id=${schoolId}`,
+  //   url: `attendance_service/calendar-status/?year=${year}&month=${month}&school_id=${schoolId}&branch_id=${branchId}`,
+  //   cacheTime: 0,
+  // });
+
+  // useEffect(() => {
+  //   refreshEvents();
+  // }, [selectedDate]);
 
   return (
     <>
@@ -377,9 +388,9 @@ function MarkAttendanceFilters({
 
           <div className="pb-[5px]">
             <AttendanceCalednar
-              eventData={eventData}
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
+              eventData={[]}
+              // selectedDate={selectedDate}
+              // setSelectedDate={setSelectedDate}
             />
           </div>
         </div>

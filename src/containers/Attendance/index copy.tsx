@@ -42,7 +42,7 @@ import SearchInputWithResults from '@component/input/SearchInputWithResults';
 import { useNavigate, useParams } from 'react-router-dom';
 import { set } from 'react-hook-form';
 import SessionBooking from '@component/CustomDatePicker';
-import AttendanceCalednar from './AttendanceCalednar';
+import AttendanceCalednar from './components/AttendanceCalednar';
 
 const printButton = () => <PrintIcon />;
 
