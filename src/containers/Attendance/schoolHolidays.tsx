@@ -472,9 +472,10 @@ export default function Index() {
           SetDesiderPopup={SetDesiderPopup}
           holidayResponseStatus={holidayResponseStatus}
           onSave={(holidayData: any) => {
-            currentEditData
+            currentView === 'edit '
               ? handleEditHoliday(holidayData) // Handle edit
               : handleSaveHoliday(holidayData); // Handle create
+             
           }}
           onEdit={(holidayData: any) => handleEditHoliday(holidayData)}
           onDelete={(holidayId: any) => handleDeleteHoliday(holidayId)}
