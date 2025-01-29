@@ -48,11 +48,13 @@ const HolidayList: React.FC<HolidayListPropsType> = ({
   const calculateDuration = (start: string, end: string) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
-    const duration = Math.ceil(
+    let duration = Math.ceil(
       (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
     );
-    return duration;
+    
+    return duration === 0 ? 1 : duration; 
   };
+  
 
   return (
     <div className="p-6">
