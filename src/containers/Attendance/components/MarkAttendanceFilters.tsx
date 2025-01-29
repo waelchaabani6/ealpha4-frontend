@@ -295,28 +295,6 @@ function MarkAttendanceFilters({
     }
   }, [selectedClassStudents]);
 
-  // Todo: delete this afeter testing
-  const roasterServiceBaseURL = import.meta.env.VITE_APP_ROSTER_SERVICE_URL;
-  const attencanceServiceBaseURL = import.meta.env
-    .VITE_APP_ATTENDANCE_SERVICE_URL;
-  const { userId } = useSelector(selectUser);
-
-  // const [eventID, setEventID] = useState<any>();
-
-  // const date = new Date();
-  // const month = date.getMonth() + 1;
-  // const year = date.getFullYear();
-  // const { data: eventData, refetch: refreshEvents } = useRAWGetApi({
-  //   baseURL: attencanceServiceBaseURL,
-  //   // url: `roster-service/events/?user_id=${userId}&school_id=${schoolId}`,
-  //   url: `attendance_service/calendar-status/?year=${year}&month=${month}&school_id=${schoolId}&branch_id=${branchId}`,
-  //   cacheTime: 0,
-  // });
-
-  // useEffect(() => {
-  //   refreshEvents();
-  // }, [selectedDate]);
-
   return (
     <>
       <div className="w-full grid grid-cols-1 lg:grid-cols-4 my-2 gap-2 items-center justify-between">
@@ -387,7 +365,10 @@ function MarkAttendanceFilters({
           />
 
           <div className="pb-[5px]">
-            <AttendanceCalednar />
+            <AttendanceCalednar
+              setSelectedDate={setSelectedDate}
+              selectedDate={selectedDate}
+            />
           </div>
         </div>
       </div>

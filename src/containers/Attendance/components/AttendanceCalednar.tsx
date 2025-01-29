@@ -73,9 +73,15 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
   );
 };
 
-const AttendanceCalednar = () => {
+const AttendanceCalednar = ({
+  setSelectedDate,
+  selectedDate,
+}: {
+  setSelectedDate: React.Dispatch<React.SetStateAction<Date>>;
+  selectedDate: Date;
+}) => {
   const [calendarData, setCalendarData] = useState<AttendanceData[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  // const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [month, setMonth] = useState<number>(0); // January
   const [year, setYear] = useState<number>(2025);
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);

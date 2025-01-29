@@ -149,7 +149,7 @@ function Attendance() {
   }`;
   const cleanedUrl = generatedUrl.trim().replace(/\s+/g, ' ');
 
-  const { data, isLoading, refetch } = useGet({
+  const { data, isLoading, refetchhh } = useGet({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
     url: `${cleanedUrl}`,
     enabled: false,
@@ -354,13 +354,6 @@ function Attendance() {
       }
       return tmp;
     });
-
-    // console.log(dt, 'dt');
-    // const ids = data?.data?.response?.result?.map((item: any) => item?.id);
-    // bulkSelect.find((i: any) => i.student === itm?.id)?.isPresent
-    // console.log(ids, 'ids');
-    // setBulkSelect(ids);
-    // mutate(dt);
   };
 
   const minStartDate = useMemo(() => {
@@ -371,9 +364,43 @@ function Attendance() {
     return targetDate;
   }, [schoolData, branchData]);
 
+  const { attendanceData, isLoadingAttendanceData, refetch } = useGet({
+    baseURL: import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL,
+    url: `/attendance_service/attendance/history/?course_id=${selectedCourse}&date=${moment(
+      selectedDate
+    ).format(
+      'YYYY-MM-DD'
+    )}&class_id=${selectedClass}&school_id=${schoolId}&branch_id=${
+      isBranchAdmin ? branchId : ''
+    }`,
+    enabled: false,
+    onSuccess: (res: any) => {
+      console.log(res);
+      // setTotalDataCount(res?.data?.response?.count);
+    },
+  });
+
   useEffect(() => {
     refetch();
   }, [selectedDate]);
+
+  useEffect(() => {
+    if (attendanceData) {
+      const aa =
+        attendanceData?.data?.response?.result?.map(
+          (itm: any, index: number) => ({
+            id: itm?.id,
+            SR_NO: index + 1,
+            StudentFirstName: itm?.first_name,
+            StudentLastName: itm?.last_name,
+            Class: selectedClassName,
+            isChecked: false,
+            isPresent: itm?.is_present,
+          })
+        ) || [];
+      setTmpTableData(aa);
+    }
+  }, [attendanceData]);
 
   return (
     <RouteLayout navBack={true} overflow={true}>
