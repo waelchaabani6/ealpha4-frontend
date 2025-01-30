@@ -86,6 +86,7 @@ function Attendance() {
   const usersRole = useSelector((state: any) => state?.user?.role);
   const { SCHOOL_ADMIN, BRANCH_ADMIN } = USER_TYPE;
 
+  const [attendanceData, setAttendanceData] = useState<any>({});
   const [tableData, setTableData] = useState<any>([]);
   const [withredirection, setWithredirection] = useState(false);
   const [page, setPage] = useState(1);
@@ -364,7 +365,7 @@ function Attendance() {
     return targetDate;
   }, [schoolData, branchData]);
 
-  const { attendanceData, isLoadingAttendanceData, refetch } = useGet({
+  const { _, isLoadingAttendanceData, refetch } = useGet({
     baseURL: import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL,
     url: `/attendance_service/attendance/history/?course_id=${selectedCourse}&date=${moment(
       selectedDate
@@ -377,17 +378,22 @@ function Attendance() {
     onSuccess: (res: any) => {
       console.log(res);
       // setTotalDataCount(res?.data?.response?.count);
+      setAttendanceData(res);
     },
   });
 
   useEffect(() => {
-    refetch();
+    if (selectedDate) {
+      refetch();
+    }
   }, [selectedDate]);
 
   useEffect(() => {
+    console.log('here', attendanceData);
     if (attendanceData) {
+      console.log('attendance histiry', attendanceData);
       const aa =
-        attendanceData?.data?.response?.result?.map(
+        attendanceData?.data?.attendance_history?.attendance_data?.map(
           (itm: any, index: number) => ({
             id: itm?.id,
             SR_NO: index + 1,
@@ -399,6 +405,7 @@ function Attendance() {
           })
         ) || [];
       setTmpTableData(aa);
+      console.log(aa, 'aa');
     }
   }, [attendanceData]);
 

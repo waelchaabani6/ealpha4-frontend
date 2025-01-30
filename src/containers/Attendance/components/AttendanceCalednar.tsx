@@ -76,9 +76,13 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
 const AttendanceCalednar = ({
   setSelectedDate,
   selectedDate,
+  selectedCourse,
+  selectedClass,
 }: {
   setSelectedDate: React.Dispatch<React.SetStateAction<Date>>;
   selectedDate: Date;
+  selectedCourse: number | string;
+  selectedClass: number | string;
 }) => {
   const [calendarData, setCalendarData] = useState<AttendanceData[]>([]);
   // const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -94,7 +98,7 @@ const AttendanceCalednar = ({
 
   const { isLoading: loading, refetch: fetchCalendar } = useGet({
     baseURL: attencanceServiceBaseURL,
-    url: `attendance_service/calendar-status/?year=${year}&month=${month + 1}&school_id=${schoolId}&branch_id=${branchId}`,
+    url: `attendance_service/calendar-status/?year=${year}&month=${month + 1}&school_id=${schoolId}&branch_id=${branchId}&class_id=${selectedClass}&course_id=${selectedCourse}`,
     onSuccess: (res: any) => {
       setCalendarData(res.data);
     },
@@ -212,6 +216,10 @@ const AttendanceCalednar = ({
     };
   }, [wrapperRef]);
 
+  useEffect(() => {
+    fetchCalendar();
+  }, [selectedClass, selectedCourse]);
+
   return (
     <div ref={wrapperRef} className="relative min-w-[280px] ">
       <div className="min-w-[200px]">
@@ -279,6 +287,7 @@ const AttendanceCalednar = ({
                 isSelected={selectedDate?.getDate() === day}
                 isDisabled={isDisabled(day)} // Pass the isDisabled prop to CalendarDay
                 onSelectDay={handleSelectDay}
+                se
                 month={month}
                 year={year}
               />

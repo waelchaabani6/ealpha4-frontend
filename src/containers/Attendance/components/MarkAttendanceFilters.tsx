@@ -368,6 +368,8 @@ function MarkAttendanceFilters({
             <AttendanceCalednar
               setSelectedDate={setSelectedDate}
               selectedDate={selectedDate}
+              selectedCourse={selectedCourse}
+              selectedClass={selectedClass}
             />
           </div>
         </div>
