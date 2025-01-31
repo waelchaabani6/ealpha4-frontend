@@ -34,6 +34,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import MarkAttendanceFilters from './components/MarkAttendanceFilters';
 import { Student } from './types';
 import StatusComponent from './components/StatusComponent';
+import { CleanHands } from '@mui/icons-material';
 
 const printButton = () => <PrintIcon />;
 
@@ -82,6 +83,8 @@ const TableColumns = [
   },
 ];
 
+const SchoolURL = import.meta.env.VITE_APP_SCHOOL_SERVICE_URL;
+
 function Attendance() {
   const usersRole = useSelector((state: any) => state?.user?.role);
   const { SCHOOL_ADMIN, BRANCH_ADMIN } = USER_TYPE;
@@ -122,6 +125,10 @@ function Attendance() {
     usersRole?.name === SCHOOL_ADMIN || usersRole?.name === BRANCH_ADMIN;
   const isBranchAdmin = usersRole?.name === BRANCH_ADMIN;
 
+  const [selectedClassStudents, setSelectedClassStudents] = useState<Student[]>(
+    []
+  );
+
   // useEffect(() => {
   //   if (selectedClass === "select" && results.length === 0) {
   //     setSelectedClassStudents([]);
@@ -150,7 +157,11 @@ function Attendance() {
   }`;
   const cleanedUrl = generatedUrl.trim().replace(/\s+/g, ' ');
 
-  const { data, isLoading, refetchhh } = useGet({
+  const {
+    data,
+    isLoading,
+    refetch: refetchData,
+  } = useGet({
     baseURL: import.meta.env.VITE_APP_ROSTER_SERVICE_URL,
     url: `${cleanedUrl}`,
     enabled: false,
@@ -227,7 +238,6 @@ function Attendance() {
   };
 
   const handleOnchange = (id: number) => {
-    console.log('id is', id);
     const index = tmpTableData.findIndex((itm: any) => itm.id === id);
     if (index > -1) {
       const oldD = data?.data?.response?.result[index].is_present;
@@ -262,27 +272,29 @@ function Attendance() {
       StudentLastName: itm?.StudentLastName,
       Class: selectedClassName || '',
       isChecked: itm.isChecked,
+      isPresent: itm.isPresent,
+      isAbsent: itm?.isAbsent,
       Status: <StatusComponent itm={itm} handleOnchange={handleOnchange} />,
     }));
 
     setTableData(bb || []);
   }, [tmpTableData]);
 
-  useEffect(() => {
-    if (data) {
-      const aa =
-        data?.data?.response?.result?.map((itm: any, index: number) => ({
-          id: itm?.id,
-          SR_NO: index + 1,
-          StudentFirstName: itm?.first_name,
-          StudentLastName: itm?.last_name,
-          Class: selectedClassName,
-          isChecked: false,
-          isPresent: itm?.is_present,
-        })) || [];
-      setTmpTableData(aa);
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data) {
+  //     const aa =
+  //       data?.data?.response?.result?.map((itm: any, index: number) => ({
+  //         id: itm?.id,
+  //         SR_NO: index + 1,
+  //         StudentFirstName: itm?.first_name,
+  //         StudentLastName: itm?.last_name,
+  //         Class: selectedClassName,
+  //         isChecked: false,
+  //         isPresent: itm?.is_present,
+  //       })) || [];
+  //     setTmpTableData(aa);
+  //   }
+  // }, [data]);
 
   const handlePagination = (currPage: any) => {
     if (currPage) setPage(currPage);
@@ -336,7 +348,6 @@ function Attendance() {
   };
 
   const toggleAllHandler = (flag = true) => {
-    console.log('here toggle all');
     const dt = data?.data?.response?.result?.map((item: any) => {
       const tmp = {
         student: item?.id,
@@ -357,15 +368,19 @@ function Attendance() {
     });
   };
 
-  const minStartDate = useMemo(() => {
-    const targetDate = incrementDateByOne(currentUserAcademicDate()?.start, -5);
-    if (new Date() >= currentUserAcademicDate()?.start) {
-      return new Date();
-    }
-    return targetDate;
-  }, [schoolData, branchData]);
+  // const minStartDate = useMemo(() => {
+  //   const targetDate = incrementDateByOne(currentUserAcademicDate()?.start, -5);
+  //   if (new Date() >= currentUserAcademicDate()?.start) {
+  //     return new Date();
+  //   }
+  //   return targetDate;
+  // }, [schoolData, branchData]);
 
-  const { _, isLoadingAttendanceData, refetch } = useGet({
+  const {
+    data: attendanceD,
+    isLoadingAttendanceData,
+    refetch,
+  } = useGet({
     baseURL: import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL,
     url: `/attendance_service/attendance/history/?course_id=${selectedCourse}&date=${moment(
       selectedDate
@@ -375,11 +390,7 @@ function Attendance() {
       isBranchAdmin ? branchId : ''
     }`,
     enabled: false,
-    onSuccess: (res: any) => {
-      console.log(res);
-      // setTotalDataCount(res?.data?.response?.count);
-      setAttendanceData(res);
-    },
+    onSuccess: (res: any) => {},
   });
 
   useEffect(() => {
@@ -388,26 +399,63 @@ function Attendance() {
     }
   }, [selectedDate]);
 
+  const classesStudentsEndPointUrl = isAdmin
+    ? `schools-service/schools/get-classes/by-class-id?program_id=${
+        selectedCourse !== 'select' ? selectedCourse : ''
+      }&school_id=${schoolId}&class_id=${
+        selectedClass !== 'select' ? selectedClass : ''
+      }&branch_id=${selectedBranch !== 'select' ? selectedBranch : ''}`
+    : `schools-service/schools/get-classes/by-class-id?program_id=${
+        selectedCourse !== 'select' ? selectedCourse : ''
+      }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
+        selectedClass !== 'select' ? selectedClass : ''
+      }`;
+
+  const { isLoading: classStudentsLoading, refetch: refetchClassesStudents } =
+    useGet({
+      baseURL: SchoolURL,
+      url: classesStudentsEndPointUrl,
+      enabled: false,
+      onSuccess: (resp: any) => {
+        console.log('reftech students');
+        const respData = resp?.data?.results;
+        setSelectedClassStudents(() => respData[0]?.student_profile);
+
+        const studentsData =
+          respData[0]?.student_profile?.map((itm: any, index: number) => ({
+            id: itm?.student_id,
+            SR_NO: index + 1,
+            StudentFirstName: itm?.first_name,
+            StudentLastName: itm?.last_name,
+            Grade: 'N/A',
+            isChecked: false,
+            isPresent: false,
+          })) || [];
+
+        setTmpTableData(() => studentsData);
+      },
+    });
+
   useEffect(() => {
-    console.log('here', attendanceData);
-    if (attendanceData) {
-      console.log('attendance histiry', attendanceData);
+    if (attendanceD?.data?.attendance_history?.attendance_data?.length > 0) {
       const aa =
-        attendanceData?.data?.attendance_history?.attendance_data?.map(
+        attendanceD?.data?.attendance_history?.attendance_data?.map(
           (itm: any, index: number) => ({
             id: itm?.id,
             SR_NO: index + 1,
             StudentFirstName: itm?.first_name,
             StudentLastName: itm?.last_name,
             Class: selectedClassName,
-            isChecked: false,
-            isPresent: itm?.is_present,
+            isChecked: itm?.status === 'present',
+            isPresent: itm?.status === 'present',
+            isAbsent: itm?.status === 'absent',
           })
         ) || [];
       setTmpTableData(aa);
-      console.log(aa, 'aa');
+    } else {
+      refetchClassesStudents();
     }
-  }, [attendanceData]);
+  }, [attendanceD]);
 
   return (
     <RouteLayout navBack={true} overflow={true}>
@@ -445,6 +493,8 @@ function Attendance() {
         setSelectedCourse={setSelectedCourse}
         selectedClassName={selectedClassName}
         setSelectedClassName={setSelectedClassName}
+        setSelectedClassStudents={setSelectedClassStudents}
+        selectedClassStudents={selectedClassStudents}
       />
 
       <div className="bg-white" ref={componentRef}>

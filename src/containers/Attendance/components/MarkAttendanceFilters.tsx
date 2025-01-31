@@ -42,6 +42,8 @@ type MarkAttendanceFiltersProps = {
   setSelectedCourse: React.Dispatch<React.SetStateAction<string | number>>;
   selectedClassName?: string;
   setSelectedClassName?: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedClassStudents: React.Dispatch<React.SetStateAction<Student[]>>;
+  selectedClassStudents: Student[];
 };
 
 function MarkAttendanceFilters({
@@ -62,6 +64,8 @@ function MarkAttendanceFilters({
   setSelectedCourse,
   selectedClassName,
   setSelectedClassName,
+  setSelectedClassStudents,
+  selectedClassStudents,
 }: MarkAttendanceFiltersProps) {
   const { TEACHER, SCHOOL_ADMIN, BRANCH_ADMIN } = USER_TYPE;
   const usersRole = useSelector((state: any) => state?.user?.role);
@@ -84,9 +88,9 @@ function MarkAttendanceFilters({
   const [loading, setLoading] = useState(false);
   const [classes, setClasses] = useState<any[]>([]);
   const [listOfStudents, setListOfStudents] = useState<any[]>([]);
-  const [selectedClassStudents, setSelectedClassStudents] = useState<Student[]>(
-    []
-  );
+  // const [selectedClassStudents, setSelectedClassStudents] = useState<Student[]>(
+  //   []
+  // );
 
   useEffect(() => {
     if (selectedClass === 'select' && results.length === 0) {
@@ -279,21 +283,21 @@ function MarkAttendanceFilters({
     setTableData([]);
   };
 
-  useEffect(() => {
-    if (selectedClassStudents) {
-      const studentsData =
-        selectedClassStudents?.map((itm: any, index: number) => ({
-          id: itm?.student_id,
-          SR_NO: index + 1,
-          StudentFirstName: itm?.first_name,
-          StudentLastName: itm?.last_name,
-          Grade: 'N/A',
-          isChecked: false,
-          isPresent: false,
-        })) || [];
-      setTmpTableData(studentsData);
-    }
-  }, [selectedClassStudents]);
+  // useEffect(() => {
+  //   if (selectedClassStudents) {
+  //     const studentsData =
+  //       selectedClassStudents?.map((itm: any, index: number) => ({
+  //         id: itm?.student_id,
+  //         SR_NO: index + 1,
+  //         StudentFirstName: itm?.first_name,
+  //         StudentLastName: itm?.last_name,
+  //         Grade: 'N/A',
+  //         isChecked: false,
+  //         isPresent: false,
+  //       })) || [];
+  //     setTmpTableData(studentsData);
+  //   }
+  // }, [selectedClassStudents]);
 
   return (
     <>
