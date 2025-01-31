@@ -287,7 +287,6 @@ const AttendanceCalednar = ({
                 isSelected={selectedDate?.getDate() === day}
                 isDisabled={isDisabled(day)} // Pass the isDisabled prop to CalendarDay
                 onSelectDay={handleSelectDay}
-                se
                 month={month}
                 year={year}
               />
