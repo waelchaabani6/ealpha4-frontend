@@ -80,6 +80,7 @@ export default function Index() {
       endDate.setMonth(endDate.getMonth() + 5);
     } else if (endsAfter === 'current_academic_year') {
       endDate.setMonth(8); // Assuming academic year ends in September
+
       endDate.setDate(30);
     } else if (endsAfter === 'never') {
       endDate = new Date(today.getFullYear() + 10, 11, 31); // Generate for the next 10 years
