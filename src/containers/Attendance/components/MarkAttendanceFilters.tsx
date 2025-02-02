@@ -14,7 +14,6 @@ import { selectSchoolData } from '@shared/store/schoolSlice';
 import { useGet, usePost, useRAWGetApi } from '@shared/api/useApi';
 import { getNoOfPages, userRole, sortData, sortByName } from '@utility/utility';
 
-import moment from 'moment';
 import { selectUser } from '@shared/store/userSlice';
 import SearchInputWithResults from '@component/input/SearchInputWithResults';
 import AttendanceCalednar from './AttendanceCalednar';

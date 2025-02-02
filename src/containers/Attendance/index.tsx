@@ -35,6 +35,7 @@ import MarkAttendanceFilters from './components/MarkAttendanceFilters';
 import { Student } from './types';
 import StatusComponent from './components/StatusComponent';
 import { CleanHands } from '@mui/icons-material';
+import AttendanceTable from './components/AttendanceTable';
 
 const printButton = () => <PrintIcon />;
 
@@ -91,7 +92,7 @@ function Attendance() {
 
   const [attendanceData, setAttendanceData] = useState<any>({});
   const [tableData, setTableData] = useState<any>([]);
-  const [withredirection, setWithredirection] = useState(false);
+  // const [withredirection, setWithredirection] = useState(false);
   const [page, setPage] = useState(1);
   const [orderBy, setOrderBy] = useState<any>('created_at');
   const [order, setOrder] = useState<any>('asc');
@@ -105,7 +106,7 @@ function Attendance() {
   );
   const [selectedClassName, setSelectedClassName] = useState<string | null>('');
 
-  const AttendanceUrl = import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL;
+  // const AttendanceUrl = import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL;
   const { branchId, schoolId } = useSelector(selectUser);
   const [searchString, setSearchString] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -135,8 +136,8 @@ function Attendance() {
   //   }
   // }, [selectedClassStudents]);
   const { user } = useSelector((state: any) => state);
-  const navigate = useNavigate();
-  const { schoolName } = useParams();
+  // const navigate = useNavigate();
+  // const { schoolName } = useParams();
   const formatSelectedDate = useMemo(
     () => moment(selectedDate).format('yyyy-MM-DD'),
     [selectedDate]
@@ -184,22 +185,22 @@ function Attendance() {
         user?.user_profile_id
       }&class_id=${selectedClass}&school_id=${schoolId}`;
 
-  const { isLoading: isLoading3, mutate } = usePost({
-    baseURL: AttendanceUrl,
-    url: MarkAttendanceEndpointUrl,
-    onSuccess: () => {
-      toast('success', 'Attendance Updated Successfully!');
-      setBulkSelect([]);
-      setAbcentBulkSelect([]);
+  // const { isLoading: isLoading3, mutate } = usePost({
+  //   baseURL: AttendanceUrl,
+  //   url: MarkAttendanceEndpointUrl,
+  //   onSuccess: () => {
+  //     toast('success', 'Attendance Updated Successfully!');
+  //     setBulkSelect([]);
+  //     setAbcentBulkSelect([]);
 
-      if (withredirection) {
-        navigate(`/${schoolName}/attandance/reports`);
-      }
-    },
-    onError: (error: any) => {
-      toast('error', error?.response?.data?.message);
-    },
-  });
+  //     if (withredirection) {
+  //       navigate(`/${schoolName}/attandance/reports`);
+  //     }
+  //   },
+  //   onError: (error: any) => {
+  //     toast('error', error?.response?.data?.message);
+  //   },
+  // });
 
   const ADMIN_TOOLBAR_MENU = [
     // {
@@ -274,7 +275,8 @@ function Attendance() {
       isChecked: itm.isChecked,
       isPresent: itm.isPresent,
       isAbsent: itm?.isAbsent,
-      Status: <StatusComponent itm={itm} handleOnchange={handleOnchange} />,
+      status: itm?.status ?? null,
+      // Status: <StatusComponent itm={itm} handleOnchange={handleOnchange} />,
     }));
 
     setTableData(bb || []);
@@ -334,39 +336,39 @@ function Attendance() {
 
     console.log('submit data', payload);
 
-    mutate(payload);
+    // mutate(payload);
   }
 
-  const submitHandler = () => {
-    submitFunc();
-    setWithredirection(false);
-  };
+  // const submitHandler = () => {
+  //   submitFunc();
+  //   setWithredirection(false);
+  // };
 
-  const submitAndExitHandler = () => {
-    submitFunc();
-    setWithredirection(true);
-  };
+  // const submitAndExitHandler = () => {
+  //   submitFunc();
+  //   setWithredirection(true);
+  // };
 
-  const toggleAllHandler = (flag = true) => {
-    const dt = data?.data?.response?.result?.map((item: any) => {
-      const tmp = {
-        student: item?.id,
-        school_id: schoolData?.id || branchData?.school_data?.id,
-        school_class: selectedClass,
-        // subject: subjectName || '',
-        present: flag,
-        present_on_date: formatSelectedDate,
-      } as any;
-      if (branchId) {
-        tmp.branch_id = branchId;
-      }
+  // const toggleAllHandler = (flag = true) => {
+  //   const dt = data?.data?.response?.result?.map((item: any) => {
+  //     const tmp = {
+  //       student: item?.id,
+  //       school_id: schoolData?.id || branchData?.school_data?.id,
+  //       school_class: selectedClass,
+  //       // subject: subjectName || '',
+  //       present: flag,
+  //       present_on_date: formatSelectedDate,
+  //     } as any;
+  //     if (branchId) {
+  //       tmp.branch_id = branchId;
+  //     }
 
-      if (selectedBranch !== 'select') {
-        tmp.branch_id = selectedBranch;
-      }
-      return tmp;
-    });
-  };
+  //     if (selectedBranch !== 'select') {
+  //       tmp.branch_id = selectedBranch;
+  //     }
+  //     return tmp;
+  //   });
+  // };
 
   // const minStartDate = useMemo(() => {
   //   const targetDate = incrementDateByOne(currentUserAcademicDate()?.start, -5);
@@ -427,6 +429,7 @@ function Attendance() {
             SR_NO: index + 1,
             StudentFirstName: itm?.first_name,
             StudentLastName: itm?.last_name,
+            status: null,
             Grade: 'N/A',
             isChecked: false,
             isPresent: false,
@@ -438,6 +441,7 @@ function Attendance() {
 
   useEffect(() => {
     if (attendanceD?.data?.attendance_history?.attendance_data?.length > 0) {
+      console.log(attendanceD?.data?.attendance_history?.attendance_data);
       const aa =
         attendanceD?.data?.attendance_history?.attendance_data?.map(
           (itm: any, index: number) => ({
@@ -446,9 +450,10 @@ function Attendance() {
             StudentFirstName: itm?.first_name,
             StudentLastName: itm?.last_name,
             Class: selectedClassName,
-            isChecked: itm?.status === 'present',
-            isPresent: itm?.status === 'present',
-            isAbsent: itm?.status === 'absent',
+            status:
+              itm?.status !== 'present' && itm?.status !== 'absent'
+                ? null
+                : itm?.status,
           })
         ) || [];
       setTmpTableData(aa);
@@ -497,8 +502,8 @@ function Attendance() {
         selectedClassStudents={selectedClassStudents}
       />
 
-      <div className="bg-white" ref={componentRef}>
-        <Wrapper>
+      <div ref={componentRef}>
+        {/* <Wrapper>
           <AdvanceTable
             isLoading={isLoading}
             tableData={tableData}
@@ -519,10 +524,17 @@ function Attendance() {
             abcentBulkSelect={abcentBulkSelect}
             toggelAll={toggleAllHandler}
           />
-        </Wrapper>
+        </Wrapper> */}
+        <>
+          <AttendanceTable
+            tableData={tableData}
+            MarkAttendanceEndpointUrl={MarkAttendanceEndpointUrl}
+            selectedDate={selectedDate}
+          />
+        </>
       </div>
 
-      <div className="flex gap-3 justify-end">
+      {/* <div className="flex gap-3 justify-end">
         <div className="flex justify-end py-2">
           <Button
             disabled={
@@ -554,7 +566,7 @@ function Attendance() {
             Submit and exit
           </Button>
         </div>
-      </div>
+      </div> */}
     </RouteLayout>
   );
 }
