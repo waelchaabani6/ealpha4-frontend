@@ -432,44 +432,44 @@ function Attendance() {
 
   const [tmpTableData, setTmpTableData] = useState<any[]>([]);
 
-  useEffect(() => {
-    const bb = tmpTableData?.map((itm: any, index: number) => ({
-      id: itm?.id,
-      SR_NO: index + 1,
-      StudentFirstName: itm?.StudentFirstName,
-      StudentLastName: itm?.StudentLastName,
-      Grade: itm?.Grade,
-      isChecked: itm.isChecked,
-      Status: (
-        <div className="flex justify-center">
-          <RadioGroup
-            row={true}
-            aria-labelledby="demo-row-radio-buttons-group-label"
-            name="row-radio-buttons-group"
-            value={itm?.isPresent}
-            onChange={() => handleOnchange(itm?.id)}
-          >
-            <FormControlLabel
-              value={true}
-              control={<Radio color="success" size="small" />}
-              label="Present"
-              sx={{ marginRight: '20px' }}
-            />
-            <FormControlLabel
-              value={false}
-              control={<Radio color="success" size="small" />}
-              label="Absent"
-            />
-          </RadioGroup>
-        </div>
-      ),
-    }));
+  // useEffect(() => {
+  //   const bb = tmpTableData?.map((itm: any, index: number) => ({
+  //     id: itm?.id,
+  //     SR_NO: index + 1,
+  //     StudentFirstName: itm?.StudentFirstName,
+  //     StudentLastName: itm?.StudentLastName,
+  //     Grade: itm?.Grade,
+  //     isChecked: itm.isChecked,
+  //     Status: (
+  //       <div className="flex justify-center">
+  //         <RadioGroup
+  //           row={true}
+  //           aria-labelledby="demo-row-radio-buttons-group-label"
+  //           name="row-radio-buttons-group"
+  //           value={itm?.isPresent}
+  //           onChange={() => handleOnchange(itm?.id)}
+  //         >
+  //           <FormControlLabel
+  //             value={true}
+  //             control={<Radio color="success" size="small" />}
+  //             label="Present"
+  //             sx={{ marginRight: '20px' }}
+  //           />
+  //           <FormControlLabel
+  //             value={false}
+  //             control={<Radio color="success" size="small" />}
+  //             label="Absent"
+  //           />
+  //         </RadioGroup>
+  //       </div>
+  //     ),
+  //   }));
 
-    setTableData(bb || []);
-  }, [tmpTableData, bulkSelect]);
+  //   setTableData(bb || []);
+  // }, [tmpTableData, bulkSelect]);
 
   useEffect(() => {
-    if (selectedClassStudents) {
+    if (selectedClassStudents && ) {
       const studentsData =
         selectedClassStudents?.map((itm: any, index: number) => ({
           id: itm?.id,
