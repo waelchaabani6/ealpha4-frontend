@@ -32,7 +32,7 @@ type MarkAttendanceFiltersProps = {
   setTableData: React.Dispatch<React.SetStateAction<any>>;
   setCourses: React.Dispatch<React.SetStateAction<any>>;
   courses: any;
-  setTmpTableData: React.Dispatch<React.SetStateAction<any>>;
+  // setTmpTableData: React.Dispatch<React.SetStateAction<any>>;
   setSelectedDate: React.Dispatch<React.SetStateAction<Date | null>>;
   selectedDate: Date | null;
   setSelectedClass: React.Dispatch<React.SetStateAction<string | number>>;
@@ -54,7 +54,7 @@ function MarkAttendanceFilters({
   setTableData,
   setCourses,
   courses,
-  setTmpTableData,
+  // setTmpTableData,
   setSelectedDate,
   selectedDate,
   setSelectedClass,

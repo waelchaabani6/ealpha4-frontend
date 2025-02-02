@@ -34,7 +34,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import MarkAttendanceFilters from './components/MarkAttendanceFilters';
 import { Student } from './types';
 import StatusComponent from './components/StatusComponent';
-import { CleanHands } from '@mui/icons-material';
 import AttendanceTable from './components/AttendanceTable';
 
 const printButton = () => <PrintIcon />;
@@ -122,6 +121,8 @@ function Attendance() {
   const [selectedCourse, setSelectedCourse] = useState<string | number>(
     'select'
   );
+  const [attendanceHistory, seAttendanceHistory] = useState<any>([]);
+
   const isAdmin =
     usersRole?.name === SCHOOL_ADMIN || usersRole?.name === BRANCH_ADMIN;
   const isBranchAdmin = usersRole?.name === BRANCH_ADMIN;
@@ -230,38 +231,38 @@ function Attendance() {
     },
   ];
 
-  const handleSelection = (params: any) => {
-    setBulkSelect(params);
-  };
+  // const handleSelection = (params: any) => {
+  //   setBulkSelect(params);
+  // };
 
-  const handleDeSelection = (params: any) => {
-    setAbcentBulkSelect(params);
-  };
+  // const handleDeSelection = (params: any) => {
+  //   setAbcentBulkSelect(params);
+  // };
 
-  const handleOnchange = (id: number) => {
-    const index = tmpTableData.findIndex((itm: any) => itm.id === id);
-    if (index > -1) {
-      const oldD = data?.data?.response?.result[index].is_present;
-      const newD = !tmpTableData[index].isPresent;
-      setTmpTableData([
-        ...tmpTableData.slice(0, index),
-        {
-          ...tmpTableData[index],
-          isPresent: newD,
-        },
-        ...tmpTableData.slice(index + 1),
-      ]);
-      if (oldD !== newD) {
-        setBulkSelect(
-          Array.from(new Set([...bulkSelect, tmpTableData[index].id]))
-        );
-      } else {
-        setBulkSelect((prev: number[]) =>
-          prev?.filter((ids: number) => ids !== tmpTableData[index].id)
-        );
-      }
-    }
-  };
+  // const handleOnchange = (id: number) => {
+  //   const index = tmpTableData.findIndex((itm: any) => itm.id === id);
+  //   if (index > -1) {
+  //     const oldD = data?.data?.response?.result[index].is_present;
+  //     const newD = !tmpTableData[index].isPresent;
+  //     setTmpTableData([
+  //       ...tmpTableData.slice(0, index),
+  //       {
+  //         ...tmpTableData[index],
+  //         isPresent: newD,
+  //       },
+  //       ...tmpTableData.slice(index + 1),
+  //     ]);
+  //     if (oldD !== newD) {
+  //       setBulkSelect(
+  //         Array.from(new Set([...bulkSelect, tmpTableData[index].id]))
+  //       );
+  //     } else {
+  //       setBulkSelect((prev: number[]) =>
+  //         prev?.filter((ids: number) => ids !== tmpTableData[index].id)
+  //       );
+  //     }
+  //   }
+  // };
 
   const [tmpTableData, setTmpTableData] = useState<any[]>([]);
 
@@ -303,41 +304,41 @@ function Attendance() {
     else setPage(1);
   };
 
-  function submitFunc() {
-    if (!selectedDate) {
-      toast('error', 'Please select a date before submitting attendance.');
-      return;
-    }
+  // function submitFunc() {
+  //   if (!selectedDate) {
+  //     toast('error', 'Please select a date before submitting attendance.');
+  //     return;
+  //   }
 
-    const studentsData = tmpTableData
-      ?.map((item: any) => {
-        if (item) {
-          return {
-            student_id: item.id,
-            status: bulkSelect.includes(item.id)
-              ? 'present'
-              : abcentBulkSelect.includes(item.id)
-                ? 'absent'
-                : 'present',
-          };
-        }
-        return null;
-      })
-      .filter(Boolean); // Remove null values
+  //   const studentsData = tmpTableData
+  //     ?.map((item: any) => {
+  //       if (item) {
+  //         return {
+  //           student_id: item.id,
+  //           status: bulkSelect.includes(item.id)
+  //             ? 'present'
+  //             : abcentBulkSelect.includes(item.id)
+  //               ? 'absent'
+  //               : 'present',
+  //         };
+  //       }
+  //       return null;
+  //     })
+  //     .filter(Boolean); // Remove null values
 
-    if (studentsData.length === 0) {
-      toast('error', 'No students selected for attendance.');
-      return; // Prevent submission if no students are selected
-    }
+  //   if (studentsData.length === 0) {
+  //     toast('error', 'No students selected for attendance.');
+  //     return; // Prevent submission if no students are selected
+  //   }
 
-    const payload = {
-      students: studentsData,
-    };
+  //   const payload = {
+  //     students: studentsData,
+  //   };
 
-    console.log('submit data', payload);
+  //   console.log('submit data', payload);
 
-    // mutate(payload);
-  }
+  //   // mutate(payload);
+  // }
 
   // const submitHandler = () => {
   //   submitFunc();
@@ -392,10 +393,14 @@ function Attendance() {
       isBranchAdmin ? branchId : ''
     }`,
     enabled: false,
-    onSuccess: (res: any) => {},
+    onSuccess: (res: any) => {
+      seAttendanceHistory(res?.data?.attendance_history?.attendance_data);
+    },
   });
 
   useEffect(() => {
+    setTmpTableData([]);
+
     if (selectedDate) {
       refetch();
     }
@@ -435,32 +440,39 @@ function Attendance() {
             isPresent: false,
           })) || [];
 
-        setTmpTableData(() => studentsData);
+        if (
+          attendanceHistory?.length === 0 ||
+          attendanceHistory?.length === undefined
+        ) {
+          setTmpTableData(() => studentsData);
+        }
+        console.log(attendanceHistory?.length);
       },
     });
 
   useEffect(() => {
-    if (attendanceD?.data?.attendance_history?.attendance_data?.length > 0) {
-      console.log(attendanceD?.data?.attendance_history?.attendance_data);
-      const aa =
-        attendanceD?.data?.attendance_history?.attendance_data?.map(
-          (itm: any, index: number) => ({
-            id: itm?.id,
-            SR_NO: index + 1,
-            StudentFirstName: itm?.first_name,
-            StudentLastName: itm?.last_name,
-            Class: selectedClassName,
-            status:
-              itm?.status !== 'present' && itm?.status !== 'absent'
-                ? null
-                : itm?.status,
-          })
-        ) || [];
+    if (attendanceHistory?.length > 0) {
+      console.log(attendanceHistory);
+      const aa = attendanceHistory?.map((itm: any, index: number) => ({
+        id: itm?.id,
+        SR_NO: index + 1,
+        StudentFirstName: itm?.first_name,
+        StudentLastName: itm?.last_name,
+        Class: selectedClassName,
+        status:
+          itm?.status !== 'present' && itm?.status !== 'absent'
+            ? null
+            : itm?.status,
+      }));
       setTmpTableData(aa);
     } else {
       refetchClassesStudents();
     }
   }, [attendanceD]);
+
+  useEffect(() => {
+    seAttendanceHistory([]);
+  }, [selectedClass]);
 
   return (
     <RouteLayout navBack={true} overflow={true}>
@@ -489,7 +501,7 @@ function Attendance() {
         setTableData={setTableData}
         setCourses={setCourses}
         courses={courses}
-        setTmpTableData={setTmpTableData}
+        // setTmpTableData={setTmpTableData}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
         selectedClass={selectedClass}
