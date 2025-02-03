@@ -12,7 +12,7 @@ const AddWeekendModal = ({
   weekendsResponseeStatus, // Response status
 }) => {
   const [selectedDays, setSelectedDays] = useState([]); // Array to hold selected days
-  const [endsAfter, setEndsAfter] = useState("never"); // 'never' or 'after'
+  const [endsAfter, setEndsAfter] = useState(""); // 'never' or 'after'
   const [afterValue, setAfterValue] = useState("");
   const [currentView, setCurrentView] = useState("form"); // To handle form and status views
   const endsAfterOptions = [
@@ -183,9 +183,8 @@ const AddWeekendModal = ({
             </label>
           </div>
 
-          {endsAfter === "after" && !afterValue && (
-            <p className="error-text">* Please select a period.</p>
-          )}
+          {!endsAfter && <p className="error-text">* Please select a period.</p>}
+          {endsAfter === "after" && !afterValue && <p className="error-text">* Please select a duration.</p>}
 
           <div className="modal-actions">
             <button className="cancel-button" onClick={onClose}>

@@ -57,8 +57,9 @@ export default function Index() {
   const [isWeekendRequestLoading, setIsWeekendRequestLoading] = useState(false);
   const [currentWeekendData, setCurrentWeekendData] = useState(null); // For editing a weekend
   const [weekendsResponseeStatus, setWeekendsResponseStatus] = useState(false);
+  const [endDateFromResponse, setEndDateFromResponse] = useState('');
   const { schoolId, branchId } = useSelector(selectUser);
-  const calculateWeekendDates = (days: string[], endsAfter: string) => {
+  const calculateWeekendDates = (days: string[], endsAfter: string, endDateFromResponse?: string) => {
     const dayMap: { [key: string]: number } = {
       Sunday: 0,
       Monday: 1,
@@ -68,43 +69,48 @@ export default function Index() {
       Friday: 5,
       Saturday: 6,
     };
-
+  
     const today = new Date();
     const startDate = new Date(today.getFullYear(), today.getMonth(), 1); // Start of the current month
     let endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); // Default: end of the month
-
+  
     // Handle different end conditions
-    if (endsAfter === '3-month') {
+    if (endsAfter === "3-month") {
       endDate.setMonth(endDate.getMonth() + 2);
-    } else if (endsAfter === '6-month') {
+    } else if (endsAfter === "6-month") {
       endDate.setMonth(endDate.getMonth() + 5);
-    } else if (endsAfter === 'current_academic_year') {
-      endDate.setMonth(8); // Assuming academic year ends in September
+    } else if (endsAfter === "current_academic_year") {
+      
+      if (endDateFromResponse) {
 
-      endDate.setDate(30);
-    } else if (endsAfter === 'never') {
-      endDate = new Date(today.getFullYear() + 10, 11, 31); // Generate for the next 10 years
+        endDate = new Date(endDateFromResponse); 
+        endDate.setMonth(8); 
+        endDate.setDate(30);
+      }
+    } else if (endsAfter === "never") {
+      endDate = new Date(today.getFullYear() + 10, 11, 31); // Default: 10 years from now
     }
-
+  
     const weekends = [];
     for (
       let d = new Date(startDate);
       d <= endDate;
       d.setDate(d.getDate() + 1)
     ) {
-      if (days.includes(d.toLocaleDateString('en-GB', { weekday: 'long' }))) {
+      if (days.includes(d.toLocaleDateString("en-GB", { weekday: "long" }))) {
         weekends.push({
           id: `${d.toISOString()}-weekend`,
-          title: 'Weekend',
+          title: "Weekend",
           start: new Date(d),
           end: new Date(d),
-          hexColor: '#FFD9D9', // Color for weekends
+          hexColor: "#FFD9D9", // Color for weekends
         });
       }
     }
-
+  
     return weekends;
   };
+  
 
   // Fetch holidays and set them as calendar events
   const { refetch: fetchHolidays } = useGet({
@@ -156,7 +162,8 @@ export default function Index() {
       if (weekends.length > 0) {
         weekendEvents = calculateWeekendDates(
           weekends[0].days,
-          weekends[0].ends_after
+          weekends[0].ends_after,
+          endDateFromResponse
         );
       }
 
@@ -195,7 +202,9 @@ export default function Index() {
   const { isLoading: isUpdatingWeekend, mutate: updateWeekend } = usePut({
     baseURL: 'https://school.development.ealpha.net/api/v1/',
     url: `schools-service/holiday-management/weekends/${currentWeekendData?.id}/`,
-    onSuccess: () => {
+    onSuccess: (res) => {
+      const currentYearendDate = res?.data?.data?.end_date;
+      setEndDateFromResponse(currentYearendDate);
       setWeekendsResponseStatus(true);
       toast('success', 'Weekend updated successfully!');
       fetchWeekends(); // Refresh weekends list
@@ -350,7 +359,7 @@ export default function Index() {
     const { start, end } = obj;
     setCurrentEditData(null); // Clear current edit data
     setSelectedTimeFrom(start);
-    setSelectedTimeTo(end);
+    setSelectedTimeTo(start);
     SetDesiderPopup(true); // Open the modal
     setCurrentView('create'); // Set to create view
   };
