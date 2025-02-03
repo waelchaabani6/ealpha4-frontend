@@ -71,18 +71,17 @@ const AttendanceTable = ({
     const payload = {
       students: attendanceData,
     };
-
-    mutate(payload);
+    return payload;
   };
 
   const handleSubmit = () => {
-    submitFunc();
-    setWithredirection(false);
+    const payload = submitFunc();
+    mutate(payload);
   };
 
   const submitAndExitHandler = () => {
-    submitFunc();
-    setWithredirection(true);
+    const payload = submitFunc();
+    mutateWithRedirection(payload);
   };
 
   // Mark all students as present
@@ -116,17 +115,22 @@ const AttendanceTable = ({
     (student) => student.attendance !== null
   );
 
+  const { isLoading: isLoading2, mutate: mutateWithRedirection } = usePost({
+    baseURL: AttendanceUrl,
+    url: MarkAttendanceEndpointUrl,
+    onSuccess: () => {
+      toast('success', 'Attendance Updated Successfully!');
+      navigate(`/${schoolName}/attandance/reports`);
+    },
+    onError: (error: any) => {
+      toast('error', error?.response?.data?.message);
+    },
+  });
   const { isLoading: isLoading3, mutate } = usePost({
     baseURL: AttendanceUrl,
     url: MarkAttendanceEndpointUrl,
     onSuccess: () => {
       toast('success', 'Attendance Updated Successfully!');
-      // setBulk?Select([]);
-      // setAbcentBulkSelect([]);
-
-      if (withredirection) {
-        navigate(`/${schoolName}/attandance/reports`);
-      }
     },
     onError: (error: any) => {
       toast('error', error?.response?.data?.message);
