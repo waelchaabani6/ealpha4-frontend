@@ -13,17 +13,17 @@ const AddWeekendModal = ({
 }) => {
   const [selectedDays, setSelectedDays] = useState([]); // Array to hold selected days
   const [endsAfter, setEndsAfter] = useState(""); // 'never' or 'after'
-  const [afterValue, setAfterValue] = useState("");
-  const [currentView, setCurrentView] = useState("form"); // To handle form and status views
+  const [afterValue, setAfterValue] = useState(""); // For dropdown selection
+  const [currentView, setCurrentView] = useState("form"); // Handles form, confirmation, and status views
+
+  const MAX_DAYS = 3; // Maximum allowed days selection
+
   const endsAfterOptions = [
-    {
-      value: "never",
-      label: "Never",
-    },
+    { value: "never", label: "Never" },
     { value: "3-month", label: "3 months" },
     { value: "6-month", label: "6 months" },
     { value: "current_academic_year", label: "Current Academic Year" },
-  ]; // Options for 'endsAfter' radio buttons
+  ];
 
   // Status message for HolidayStatus component
   const statusMessage = weekendsResponseeStatus
@@ -32,30 +32,41 @@ const AddWeekendModal = ({
 
   useEffect(() => {
     if (initialData) {
-      setSelectedDays(initialData.days || []); // Set selected days
-      setEndsAfter(initialData.ends_after || ""); // Set radio button value
-      setAfterValue(initialData.ends_after || ""); // Set dropdown value (if needed)
+      setSelectedDays(initialData.days || []);
+
+      if (initialData.ends_after && initialData.ends_after !== "never") {
+        setEndsAfter("after");
+        setAfterValue(initialData.ends_after);
+      } else {
+        setEndsAfter("never");
+        setAfterValue("");
+      }
     } else {
       setSelectedDays([]);
-      setEndsAfter(""); // Default radio selection
-      setAfterValue(""); // Reset dropdown value
+      setEndsAfter("");
+      setAfterValue("");
     }
   }, [initialData]);
 
-  // Toggle day selection
+  // Toggle day selection (Max 3 Days)
   const toggleDaySelection = (day) => {
-    setSelectedDays(
-      (prevDays) =>
-        prevDays.includes(day)
-          ? prevDays.filter((d) => d !== day) // Remove day if already selected
-          : [...prevDays, day] // Add day if not selected
-    );
+    setSelectedDays((prevDays) => {
+      if (prevDays.includes(day)) {
+        return prevDays.filter((d) => d !== day); // Remove day if already selected
+      } else {
+        if (prevDays.length >= MAX_DAYS) {
+          alert(`You can only select up to ${MAX_DAYS} days.`);
+          return prevDays; // Do not add more days if max reached
+        }
+        return [...prevDays, day]; // Add day if not selected
+      }
+    });
   };
 
   // Reset form
   const resetForm = () => {
     setSelectedDays([]);
-    setEndsAfter("never");
+    setEndsAfter("");
     setAfterValue("");
   };
 
@@ -65,7 +76,7 @@ const AddWeekendModal = ({
     }
   }, [isOpen]);
 
-  // Save handler
+  // Save handler - Show Confirmation First
   const handleSave = () => {
     if (selectedDays.length === 0) {
       alert("Please select at least one day.");
@@ -76,15 +87,20 @@ const AddWeekendModal = ({
       return;
     }
 
+    setCurrentView("confirm"); // Show confirmation message before saving
+  };
+
+  // Confirm Save
+  const confirmSave = () => {
     setIsRequestLoading(true);
 
     const weekendData = {
-      days: selectedDays, // Array of selected days
-      ends_after: endsAfter === "never" ? "never" : afterValue, // Ends after value
+      days: selectedDays,
+      ends_after: endsAfter === "never" ? "never" : afterValue,
     };
 
-    onSave(weekendData); // Pass data to parent
-    setCurrentView("status"); // Switch to status view
+    onSave(weekendData);
+    setCurrentView("status"); // Switch to status view after save
   };
 
   const handleClose = () => {
@@ -104,7 +120,21 @@ const AddWeekendModal = ({
       maxWidth="600px"
       fullWidth={false}
     >
-      {currentView === "status" ? (
+      {currentView === "confirm" ? (
+        // Confirmation Step
+        <div className="confirmation-view">
+          <h3>Are you sure you want to save these weekend changes?</h3>
+          <div className="modal-actions">
+            <button className="cancel-button" onClick={() => setCurrentView("form")}>
+              No
+            </button>
+            <button className="save-button" onClick={confirmSave} disabled={isRequestLoading}>
+              Yes
+            </button>
+          </div>
+        </div>
+      ) : currentView === "status" ? (
+        // Success or Error Message
         <HolidayStatus
           type={weekendsResponseeStatus ? "success" : "error"}
           message={statusMessage}
@@ -112,32 +142,21 @@ const AddWeekendModal = ({
           isLoader={isRequestLoading}
         />
       ) : (
+        // Form View
         <div className="weekend-form">
-          <h3>Select Days *</h3>
+          <h3>Select Days * (Max {MAX_DAYS} Days)</h3>
           <div className="days-selector">
-            {[
-              "Sunday",
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-              "Saturday",
-            ].map((day) => (
+            {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map((day) => (
               <button
                 key={day}
-                className={`day-button ${
-                  selectedDays.includes(day) ? "active" : ""
-                }`}
+                className={`day-button ${selectedDays.includes(day) ? "active" : ""}`}
                 onClick={() => toggleDaySelection(day)}
               >
-                {day.substring(0, 1)} {/* Show abbreviated day */}
+                {day.substring(0, 1)}
               </button>
             ))}
           </div>
-          {selectedDays.length === 0 && (
-            <p className="error-text">* Please select at least one day.</p>
-          )}
+          {selectedDays.length === 0 && <p className="error-text">* Please select at least one day.</p>}
 
           <h3>Ends After</h3>
           <div className="ends-after-options">
@@ -146,10 +165,10 @@ const AddWeekendModal = ({
                 type="radio"
                 name="endsAfter"
                 value="never"
-                checked={endsAfter === "never"} // Check for "never"
+                checked={endsAfter === "never"}
                 onChange={() => {
                   setEndsAfter("never");
-                  setAfterValue(""); // Clear dropdown value if "never" is selected
+                  setAfterValue("");
                 }}
               />
               Never
@@ -159,14 +178,14 @@ const AddWeekendModal = ({
                 type="radio"
                 name="endsAfter"
                 value="after"
-                checked={endsAfter !== "never"} // Check for any value other than "never"
+                checked={endsAfter === "after"}
                 onChange={() => {
-                  setEndsAfter("after"); // Set to "after" for dropdown display
-                  if (!afterValue) setAfterValue(""); // Default dropdown value
+                  setEndsAfter("after");
+                  if (!afterValue) setAfterValue(""); 
                 }}
               />
               After
-              {endsAfter !== "never" && (
+              {endsAfter === "after" && (
                 <select
                   className="ends-after-dropdown"
                   value={afterValue}
@@ -190,11 +209,7 @@ const AddWeekendModal = ({
             <button className="cancel-button" onClick={onClose}>
               Cancel
             </button>
-            <button
-              className="save-button"
-              onClick={handleSave}
-              disabled={isRequestLoading}
-            >
+            <button className="save-button" onClick={handleSave} disabled={isRequestLoading}>
               {isRequestLoading ? "Saving..." : "Save"}
             </button>
           </div>

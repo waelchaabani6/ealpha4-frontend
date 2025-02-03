@@ -182,7 +182,8 @@
 }
 
 .weekendModal {
-  .weekend-form {
+  .weekend-form,
+  .confirmation-view {
     padding: 1rem;
 
     h3 {
