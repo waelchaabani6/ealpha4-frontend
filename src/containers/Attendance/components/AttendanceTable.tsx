@@ -86,10 +86,8 @@ const AttendanceTable = ({
   };
 
   const submitAndExitHandler = () => {
-    setWithredirection((prev) => {
-      submitFunc(); // Call submitFunc after updating state
-      return true;
-    });
+    setWithredirection(true);
+    submitFunc();
   };
 
   // Mark all students as present
@@ -127,13 +125,16 @@ const AttendanceTable = ({
     baseURL: AttendanceUrl,
     url: MarkAttendanceEndpointUrl,
     onSuccess: () => {
-      toast('success', 'Attendance Updated Successfully!');
+      if (withredirection) {
+        navigate(`/${schoolName}/attandance/reports`);
+      }else{
+        toast('success', 'Attendance Updated Successfully!');
+      }
+      
       // setBulk?Select([]);
       // setAbcentBulkSelect([]);
 
-      if (withredirection) {
-        navigate(`/${schoolName}/attandance/reports`);
-      }
+      
     },
     onError: (error: any) => {
       toast('error', error?.response?.data?.message);
