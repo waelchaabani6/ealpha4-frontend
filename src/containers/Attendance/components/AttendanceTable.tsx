@@ -47,9 +47,6 @@ const AttendanceTable = ({
 }: any) => {
   const [students, setStudents] = useState<Student[]>([]);
 
-  // const [currentPage, setCurrentPage] = useState<number>(1);
-  // const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-
   const navigate = useNavigate();
   const { schoolName } = useParams();
 

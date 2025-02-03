@@ -373,6 +373,9 @@ function MarkAttendanceFilters({
               selectedDate={selectedDate}
               selectedCourse={selectedCourse}
               selectedClass={selectedClass}
+              isCalendarDisabled={
+                selectedCourse === 'select' && selectedClass === 'select'
+              }
             />
           </div>
         </div>
