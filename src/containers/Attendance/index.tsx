@@ -542,6 +542,11 @@ function Attendance() {
             tableData={tableData}
             MarkAttendanceEndpointUrl={MarkAttendanceEndpointUrl}
             selectedDate={selectedDate}
+            isLoading={isLoading}
+            currentPage={page}
+            rowsPerPage={RESULTS_PER_PAGE?.[0]}
+            paginateHandler={handlePagination}
+            totalPages={noOfpages}
           />
         </>
       </div>
