@@ -33,11 +33,11 @@ const AddWeekendModal = ({
   useEffect(() => {
     if (initialData) {
       setSelectedDays(initialData.days || []); // Set selected days
-      setEndsAfter(initialData.ends_after || "never"); // Set radio button value
+      setEndsAfter(initialData.ends_after || ""); // Set radio button value
       setAfterValue(initialData.ends_after || ""); // Set dropdown value (if needed)
     } else {
       setSelectedDays([]);
-      setEndsAfter("never"); // Default radio selection
+      setEndsAfter(""); // Default radio selection
       setAfterValue(""); // Reset dropdown value
     }
   }, [initialData]);
@@ -162,7 +162,7 @@ const AddWeekendModal = ({
                 checked={endsAfter !== "never"} // Check for any value other than "never"
                 onChange={() => {
                   setEndsAfter("after"); // Set to "after" for dropdown display
-                  if (!afterValue) setAfterValue("3-month"); // Default dropdown value
+                  if (!afterValue) setAfterValue(""); // Default dropdown value
                 }}
               />
               After
