@@ -44,6 +44,10 @@ const AttendanceTable = ({
   const navigate = useNavigate();
   const { schoolName } = useParams();
 
+  useEffect(() => {
+    console.log({withredirection});
+  }
+  ,[withredirection])
   // Handle attendance changes for each student
   const handleAttendanceChange = (id: number, status: 'present' | 'absent') => {
     setStudents((prevState) =>
@@ -55,6 +59,7 @@ const AttendanceTable = ({
 
   // Submit attendance data
   const submitFunc = () => {
+    
     if (!selectedDate) {
       toast('error', 'Please select a date before submitting attendance.');
       return;
