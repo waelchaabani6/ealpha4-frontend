@@ -4,6 +4,7 @@
 /* eslint-disable linebreak-style */
 import Button from '@component/button/button';
 import {
+  LinearProgress,
   Table,
   TableCell,
   TableContainer,
@@ -15,6 +16,7 @@ import Wrapper from '@shared/wrapper/Wrapper';
 import { usePost } from '@shared/api/useApi';
 import toast from '@shared/toast';
 import { useNavigate, useParams } from 'react-router-dom';
+import { NumberedPagination } from '@component/pagination/CustomPagination';
 
 interface Student {
   id: number;
@@ -37,17 +39,17 @@ const AttendanceTable = ({
   tableData,
   MarkAttendanceEndpointUrl,
   selectedDate,
+  isLoading,
+  currentPage,
+  rowsPerPage,
+  paginateHandler,
+  totalPages,
 }: any) => {
   const [students, setStudents] = useState<Student[]>([]);
-  const [withredirection, setWithredirection] = useState(false);
 
   const navigate = useNavigate();
   const { schoolName } = useParams();
 
-  useEffect(() => {
-    console.log({withredirection});
-  }
-  ,[withredirection])
   // Handle attendance changes for each student
   const handleAttendanceChange = (id: number, status: 'present' | 'absent') => {
     setStudents((prevState) =>
@@ -59,7 +61,6 @@ const AttendanceTable = ({
 
   // Submit attendance data
   const submitFunc = () => {
-    
     if (!selectedDate) {
       toast('error', 'Please select a date before submitting attendance.');
       return;
@@ -144,90 +145,108 @@ const AttendanceTable = ({
 
   return (
     <div>
-      <div className="my-4 flex gap-3 justify-end">
-        <Button onClick={markAllPresent}>Mark All Present</Button>
+      <div>
+        {isLoading && <LinearProgress />}
+        <div className="my-4 flex gap-3 justify-end">
+          <Button onClick={markAllPresent}>Mark All Present</Button>
 
-        <Button onClick={markAllAbsent} variant="outlined">
-          Mark All Absent
-        </Button>
-      </div>
+          <Button onClick={markAllAbsent} variant="outlined">
+            Mark All Absent
+          </Button>
+        </div>
 
-      <div className="bg-white">
-        <Wrapper>
-          <TableContainer className="relative">
-            <Table stickyHeader={true} aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Student First Name</TableCell>
-                  <TableCell>Student Last Name</TableCell>
-                  <TableCell>Class Name</TableCell>
-                  <TableCell>Attendance</TableCell>
-                </TableRow>
-              </TableHead>
-              <tbody>
-                {students.map((student) => (
-                  <TableRow key={student.id} className="text-center">
-                    <TableCell>{student.StudentFirstName}</TableCell>
-                    <TableCell>{student.StudentLastName}</TableCell>
-                    <TableCell>{student.Class}</TableCell>
-                    <TableCell>
-                      <label className="mr-4">
-                        <input
-                          type="radio"
-                          name={`attendance-${student.id}`}
-                          value="present"
-                          checked={student.attendance === 'present'}
-                          onChange={() =>
-                            handleAttendanceChange(student.id, 'present')
-                          }
-                          className="mr-2"
-                        />
-                        Present
-                      </label>
-                      <label>
-                        <input
-                          type="radio"
-                          name={`attendance-${student.id}`}
-                          value="absent"
-                          checked={student.attendance === 'absent'}
-                          onChange={() =>
-                            handleAttendanceChange(student.id, 'absent')
-                          }
-                          className="mr-2"
-                        />
-                        Absent
-                      </label>
-                    </TableCell>
+        <div className="bg-white">
+          <Wrapper>
+            <TableContainer className="relative">
+              <Table stickyHeader={true} aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Student First Name</TableCell>
+                    <TableCell>Student Last Name</TableCell>
+                    <TableCell>Class Name</TableCell>
+                    <TableCell>Attendance</TableCell>
                   </TableRow>
-                ))}
-              </tbody>
-            </Table>
-          </TableContainer>
-        </Wrapper>
-      </div>
-
-      <div className="flex gap-3 justify-end">
-        <div className="flex justify-end py-2">
-          <Button
-            disabled={!isAllAttendanceMarked} // Disable submit button if not all attendance is marked
-            onClick={handleSubmit}
-            // loading={isLoading3}
-            tooltipMessage="Please submit status to the remaining students first"
-          >
-            Submit
-          </Button>
+                </TableHead>
+                <tbody>
+                  {students?.length ? (
+                    students.map((student) => (
+                      <TableRow key={student.id} className="text-center">
+                        <TableCell>{student.StudentFirstName}</TableCell>
+                        <TableCell>{student.StudentLastName}</TableCell>
+                        <TableCell>{student.Class}</TableCell>
+                        <TableCell>
+                          <label className="mr-4">
+                            <input
+                              type="radio"
+                              name={`attendance-${student.id}`}
+                              value="present"
+                              checked={student.attendance === 'present'}
+                              onChange={() =>
+                                handleAttendanceChange(student.id, 'present')
+                              }
+                              className="mr-2"
+                            />
+                            Present
+                          </label>
+                          <label>
+                            <input
+                              type="radio"
+                              name={`attendance-${student.id}`}
+                              value="absent"
+                              checked={student.attendance === 'absent'}
+                              onChange={() =>
+                                handleAttendanceChange(student.id, 'absent')
+                              }
+                              className="mr-2"
+                            />
+                            Absent
+                          </label>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={13} align="center">
+                        <p>No data found</p>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </tbody>
+              </Table>
+            </TableContainer>
+          </Wrapper>
         </div>
 
-        <div className="flex justify-end py-2">
-          <Button
-            disabled={!isAllAttendanceMarked} // Disable submit button if not all attendance is marked
-            onClick={submitAndExitHandler}
-            tooltipMessage="Please submit status to the remaining students first"
-          >
-            Submit and exit
-          </Button>
+        <div className="flex gap-3 justify-end">
+          <div className="flex justify-end py-2">
+            <Button
+              disabled={!isAllAttendanceMarked} // Disable submit button if not all attendance is marked
+              onClick={handleSubmit}
+              // loading={isLoading3}
+              tooltipMessage="Please submit status to the remaining students first"
+            >
+              Submit
+            </Button>
+          </div>
+
+          <div className="flex justify-end py-2">
+            <Button
+              disabled={!isAllAttendanceMarked} // Disable submit button if not all attendance is marked
+              onClick={submitAndExitHandler}
+              tooltipMessage="Please submit status to the remaining students first"
+            >
+              Submit and exit
+            </Button>
+          </div>
         </div>
       </div>
+      {totalPages && totalPages > 1 ? (
+        <NumberedPagination
+          totalPages={totalPages}
+          paginateHandler={paginateHandler}
+          currentPage={currentPage}
+        />
+      ) : null}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+/* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable operator-linebreak */
 /* eslint-disable linebreak-style */
 /* eslint-disable arrow-body-style */
@@ -10,62 +11,105 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { ref } from 'yup';
+import Loader from '@shared/loader';
 
 interface AttendanceData {
   date: string;
   attendance_marked: boolean;
+  is_holiday: boolean;
+  is_weekend: boolean;
 }
 
 interface CalendarDayProps {
   day: number | null;
-  isWeekend: boolean;
-  attendanceMarked: boolean;
+  // isWeekend: boolean;
+  // attendanceMarked: boolean;
   isSelected: boolean;
   isDisabled: boolean;
+  // isHoliday: boolean;
   onSelectDay: (day: number) => void;
   month: number;
   year: number;
+  attendanceData: AttendanceData;
 }
 
 const CalendarDay: React.FC<CalendarDayProps> = ({
   day,
-  isWeekend,
-  attendanceMarked,
+  // isWeekend,
+  // attendanceMarked,
   isSelected,
   isDisabled,
+  // isHoliday,
   onSelectDay,
   month,
   year,
+  attendanceData = {
+    // Provide default value in case attendanceData is undefined
+    date: '',
+    attendance_marked: false,
+    is_holiday: false,
+    is_weekend: false,
+  },
 }) => {
+  const { is_holiday, is_weekend, attendance_marked } = attendanceData;
+
+  // Memoizing the handleClick callback to prevent unnecessary re-renders
   const handleClick = useCallback(() => {
-    if (day !== null && !isWeekend && !isDisabled) {
+    if (day !== null && !is_weekend && !isDisabled && !is_holiday) {
+      // Check if it's not a holiday
       onSelectDay(day);
     }
-  }, [isWeekend, onSelectDay, day, isDisabled]);
+  }, [is_weekend, onSelectDay, day, isDisabled, is_holiday]);
 
+  // Early return if day is null (empty cell for alignment)
   if (day === null) {
-    return <div className="p-2" />; // Empty cell for alignment
+    return <div className="p-2" />;
   }
 
-  const currentDate = new Date(year, month, day);
-  const isToday =
-    moment(new Date()).format('yyyy-DD-MM') ===
-    moment(currentDate).format('yyyy-DD-MM');
+  // Memoizing currentDate and isToday for performance optimization
+  const currentDate = useMemo(
+    () => new Date(year, month, day),
+    [year, month, day]
+  );
+
+  const isToday = useMemo(
+    () =>
+      moment(new Date()).format('yyyy-DD-MM') ===
+      moment(currentDate).format('yyyy-DD-MM'),
+    [currentDate]
+  );
+
+  // Memoizing the className string to prevent unnecessary re-renders
+  const buttonClassName = useMemo(() => {
+    const baseClassName = `MuiButtonBase-root MuiPickersDay-root
+      ${isDisabled || is_holiday ? 'text-gray-300 cursor-not-allowed' : 'hover:cursor-pointer hover:scale-105 hover:text-gray-500'}
+      ${isToday ? 'border border-gray-800 rounded-full' : ''}
+      ${!is_weekend && !attendance_marked && !isSelected && !isDisabled && !is_holiday ? `after:w-[5px] after:h-[5px] after:rounded-full relative top-[3.5px] after:bg-[#1B82EC]` : ''}
+      grid place-items-center
+      ${isSelected ? 'text-red font-semibold' : is_weekend ? 'text-gray-400' : 'text-black'} text-xs w-9 h-9 mx-[2px]`;
+
+    return baseClassName;
+  }, [
+    isDisabled,
+    is_holiday,
+    is_weekend,
+    attendance_marked,
+    isSelected,
+    isToday,
+  ]);
 
   return (
     <button
       type="button"
       role="gridcell"
       tabIndex={-1}
-      disabled={isWeekend || isDisabled}
-      className={`MuiButtonBase-root MuiPickersDay-root
-        ${isDisabled ? 'text-gray-300' : 'hover:cursor-pointer hover:scale-105 hover:text-gray-500'} ${isToday && 'border border-gray-800 rounded-full'} ${!isWeekend && !attendanceMarked && !isSelected && !isDisabled ? `after:w-[5px] after:h-[5px] after:rounded-full relative top-[3.5px] after:bg-[#1B82EC]` : ''} 
-      grid place-items-center 
-      ${isSelected ? 'text-red font-semibold' : isWeekend ? 'text-gray-400' : 'text-black'} text-xs w-9 h-9 mx-[2px]`}
+      disabled={is_weekend || isDisabled || is_holiday} // Disable if holiday
+      className={buttonClassName}
       onClick={handleClick}
     >
       <span
-        className={`block text-center ${isWeekend || isDisabled ? 'text-gray-500' : 'text-black'}`}
+        className={`block text-center ${is_weekend || isDisabled || is_holiday ? 'text-gray-500' : 'text-black'}`}
       >
         {day}
       </span>
@@ -78,15 +122,17 @@ const AttendanceCalednar = ({
   selectedDate,
   selectedCourse,
   selectedClass,
+  isCalendarDisabled,
 }: {
   setSelectedDate: React.Dispatch<React.SetStateAction<Date>>;
   selectedDate: Date;
   selectedCourse: number | string;
   selectedClass: number | string;
+  isCalendarDisabled: boolean;
 }) => {
   const [calendarData, setCalendarData] = useState<AttendanceData[]>([]);
   // const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [month, setMonth] = useState<number>(0); // January
+  const [month, setMonth] = useState<number>(new Date().getMonth());
   const [year, setYear] = useState<number>(2025);
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
   const wrapperRef = useRef(null);
@@ -125,23 +171,6 @@ const AttendanceCalednar = ({
   }, [month, year]);
 
   const currentDate = useMemo(() => new Date(), []); // Get today's date for comparison
-
-  const isWeekend = useCallback(
-    (day: number): boolean => {
-      const date = new Date(year, month, day);
-      return date.getDay() === 0 || date.getDay() === 6; // Sunday (0) or Saturday (6)
-    },
-    [month, year]
-  );
-
-  const isAttendanceMarked = useCallback(
-    (day: number): boolean => {
-      const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-      const attendance = calendarData.find((item) => item.date === dateStr);
-      return attendance ? attendance.attendance_marked : true;
-    },
-    [calendarData, month, year]
-  );
 
   const isDisabled = useCallback(
     (day: number): boolean => {
@@ -218,7 +247,8 @@ const AttendanceCalednar = ({
 
   useEffect(() => {
     fetchCalendar();
-  }, [selectedClass, selectedCourse]);
+    console.log('reftech');
+  }, [selectedClass, selectedCourse, month]);
 
   return (
     <div ref={wrapperRef} className="relative min-w-[280px] ">
@@ -237,7 +267,8 @@ const AttendanceCalednar = ({
           onClick={handleInputClick}
           onChange={handleInputChange}
           placeholder="Select a date"
-          className="h-full w-full p-2 outline-none placeholder:text-black text-sm border-2 rounded-md"
+          className="h-full w-full p-2 outline-none placeholder:text-black text-sm border-2 rounded-md disabled:border disabled:border-black disabled:rounded-md"
+          disabled={isCalendarDisabled}
         />
       </div>
 
@@ -262,40 +293,49 @@ const AttendanceCalednar = ({
               <ChevronRightIcon />
             </button>
           </div>
+          {loading ? (
+            <Loader />
+          ) : (
+            <div className="grid grid-cols-7 gap-2 p-2">
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(
+                (dayName) => (
+                  <span
+                    key={dayName}
+                    className="text-xs w-9 h-10 mx-[2px] flex items-center justify-center"
+                  >
+                    {dayName}
+                  </span>
+                )
+              )}
+              {/* Create empty cells before the first day of the month */}
+              {Array.from({ length: startDayOfWeek }).map((_, index) => (
+                <div key={index} className="p-2" />
+              ))}
+              {getDaysInMonth.map((day) => {
+                const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                const attendance = calendarData.find(
+                  (item) => item.date === dateStr
+                );
 
-          <div className="grid grid-cols-7 gap-2 p-2">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(
-              (dayName) => (
-                <span
-                  key={dayName}
-                  className="text-xs w-9 h-10 mx-[2px] flex items-center justify-center"
-                >
-                  {dayName}
-                </span>
-              )
-            )}
-            {/* Create empty cells before the first day of the month */}
-            {Array.from({ length: startDayOfWeek }).map((_, index) => (
-              <div key={index} className="p-2" />
-            ))}
-            {getDaysInMonth.map((day) => (
-              <CalendarDay
-                key={day}
-                day={day}
-                isWeekend={isWeekend(day)}
-                attendanceMarked={isAttendanceMarked(day)}
-                isSelected={selectedDate?.getDate() === day}
-                isDisabled={isDisabled(day)} // Pass the isDisabled prop to CalendarDay
-                onSelectDay={handleSelectDay}
-                month={month}
-                year={year}
-              />
-            ))}
-            {/* Create empty cells after the last day of the month to fill the grid */}
-            {Array.from({ length: totalCells % 7 }).map((_, index) => (
-              <div key={index} className="p-2" />
-            ))}
-          </div>
+                return (
+                  <CalendarDay
+                    key={day}
+                    day={day}
+                    attendanceData={attendance}
+                    isSelected={selectedDate?.getDate() === day}
+                    isDisabled={isDisabled(day)} // Pass the isDisabled prop to CalendarDay
+                    onSelectDay={handleSelectDay}
+                    month={month}
+                    year={year}
+                  />
+                );
+              })}
+              {/* Create empty cells after the last day of the month to fill the grid */}
+              {Array.from({ length: totalCells % 7 }).map((_, index) => (
+                <div key={index} className="p-2" />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
