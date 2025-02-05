@@ -277,6 +277,7 @@ function Attendance() {
       isPresent: itm.isPresent,
       isAbsent: itm?.isAbsent,
       status: itm?.status ?? null,
+      student_id: itm?.student_id,
       // Status: <StatusComponent itm={itm} handleOnchange={handleOnchange} />,
     }));
 
@@ -434,6 +435,7 @@ function Attendance() {
             SR_NO: index + 1,
             StudentFirstName: itm?.first_name,
             StudentLastName: itm?.last_name,
+            student_id: itm?.student_id,
             status: null,
             Grade: 'N/A',
             isChecked: false,
@@ -458,6 +460,7 @@ function Attendance() {
         SR_NO: index + 1,
         StudentFirstName: itm?.first_name,
         StudentLastName: itm?.last_name,
+        student_id: itm?.student_id,
         Class: selectedClassName,
         status:
           itm?.status !== 'present' && itm?.status !== 'absent'
@@ -515,28 +518,6 @@ function Attendance() {
       />
 
       <div ref={componentRef}>
-        {/* <Wrapper>
-          <AdvanceTable
-            isLoading={isLoading}
-            tableData={tableData}
-            headerRows={TableColumns}
-            totalPages={noOfpages}
-            paginateHandler={handlePagination}
-            currentPage={page}
-            rowsPerPage={RESULTS_PER_PAGE?.[0]}
-            orderBy={orderBy}
-            setOrderBy={setOrderBy}
-            order={order}
-            setOrder={setOrder}
-            setPage={setPage}
-            setBulkSelect={handleSelection}
-            maxHeight={620}
-            bulkSelect={bulkSelect}
-            setAbcentBulkSelect={handleDeSelection}
-            abcentBulkSelect={abcentBulkSelect}
-            toggelAll={toggleAllHandler}
-          />
-        </Wrapper> */}
         <>
           <AttendanceTable
             tableData={tableData}
