@@ -20,6 +20,7 @@ import { NumberedPagination } from '@component/pagination/CustomPagination';
 
 interface Student {
   id: number;
+  student_id: number;
   attendance: 'present' | 'absent' | null; // null means no attendance marked yet
   StudentLastName: string;
   StudentFirstName: string;
@@ -41,7 +42,7 @@ const AttendanceTable = ({
   selectedDate,
   isLoading,
   currentPage,
-  rowsPerPage,
+  setRefreshCalendar,
   paginateHandler,
   totalPages,
 }: any) => {
@@ -67,7 +68,7 @@ const AttendanceTable = ({
     }
 
     const attendanceData = students.map((student) => ({
-      student_id: student.id,
+      student_id: student.student_id,
       first_name: student.StudentFirstName,
       last_name: student.StudentLastName,
       class_name: student.Class,
@@ -111,6 +112,7 @@ const AttendanceTable = ({
       StudentFirstName: itm?.StudentFirstName,
       Class: itm?.Class,
       attendance: itm?.status,
+      student_id: itm?.student_id,
     }));
 
     setStudents(bb || []);
@@ -137,6 +139,7 @@ const AttendanceTable = ({
     url: MarkAttendanceEndpointUrl,
     onSuccess: () => {
       toast('success', 'Attendance Updated Successfully!');
+      setRefreshCalendar((prev) => !prev);
     },
     onError: (error: any) => {
       toast('error', error?.response?.data?.message);

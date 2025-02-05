@@ -96,7 +96,7 @@ function Attendance() {
   const [orderBy, setOrderBy] = useState<any>('created_at');
   const [order, setOrder] = useState<any>('asc');
   const [bulkSelect, setBulkSelect] = useState<any>([]);
-  const [abcentBulkSelect, setAbcentBulkSelect] = useState<any>([]);
+  const [refrechCalendar, setRefreshCalendar] = useState<boolean>(false);
   const [selectedBranch, setSelectedBranch] = useState<
     number | null | 'select'
   >('select');
@@ -105,7 +105,6 @@ function Attendance() {
   );
   const [selectedClassName, setSelectedClassName] = useState<string | null>('');
 
-  // const AttendanceUrl = import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL;
   const { branchId, schoolId } = useSelector(selectUser);
   const [searchString, setSearchString] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -131,14 +130,8 @@ function Attendance() {
     []
   );
 
-  // useEffect(() => {
-  //   if (selectedClass === "select" && results.length === 0) {
-  //     setSelectedClassStudents([]);
-  //   }
-  // }, [selectedClassStudents]);
   const { user } = useSelector((state: any) => state);
-  // const navigate = useNavigate();
-  // const { schoolName } = useParams();
+
   const formatSelectedDate = useMemo(
     () => moment(selectedDate).format('yyyy-MM-DD'),
     [selectedDate]
@@ -186,23 +179,6 @@ function Attendance() {
         user?.user_profile_id
       }&class_id=${selectedClass}&school_id=${schoolId}`;
 
-  // const { isLoading: isLoading3, mutate } = usePost({
-  //   baseURL: AttendanceUrl,
-  //   url: MarkAttendanceEndpointUrl,
-  //   onSuccess: () => {
-  //     toast('success', 'Attendance Updated Successfully!');
-  //     setBulkSelect([]);
-  //     setAbcentBulkSelect([]);
-
-  //     if (withredirection) {
-  //       navigate(`/${schoolName}/attandance/reports`);
-  //     }
-  //   },
-  //   onError: (error: any) => {
-  //     toast('error', error?.response?.data?.message);
-  //   },
-  // });
-
   const ADMIN_TOOLBAR_MENU = [
     // {
     //   title: TOOLBAR_LABELS.ADD,
@@ -231,39 +207,6 @@ function Attendance() {
     },
   ];
 
-  // const handleSelection = (params: any) => {
-  //   setBulkSelect(params);
-  // };
-
-  // const handleDeSelection = (params: any) => {
-  //   setAbcentBulkSelect(params);
-  // };
-
-  // const handleOnchange = (id: number) => {
-  //   const index = tmpTableData.findIndex((itm: any) => itm.id === id);
-  //   if (index > -1) {
-  //     const oldD = data?.data?.response?.result[index].is_present;
-  //     const newD = !tmpTableData[index].isPresent;
-  //     setTmpTableData([
-  //       ...tmpTableData.slice(0, index),
-  //       {
-  //         ...tmpTableData[index],
-  //         isPresent: newD,
-  //       },
-  //       ...tmpTableData.slice(index + 1),
-  //     ]);
-  //     if (oldD !== newD) {
-  //       setBulkSelect(
-  //         Array.from(new Set([...bulkSelect, tmpTableData[index].id]))
-  //       );
-  //     } else {
-  //       setBulkSelect((prev: number[]) =>
-  //         prev?.filter((ids: number) => ids !== tmpTableData[index].id)
-  //       );
-  //     }
-  //   }
-  // };
-
   const [tmpTableData, setTmpTableData] = useState<any[]>([]);
 
   useEffect(() => {
@@ -277,27 +220,11 @@ function Attendance() {
       isPresent: itm.isPresent,
       isAbsent: itm?.isAbsent,
       status: itm?.status ?? null,
-      // Status: <StatusComponent itm={itm} handleOnchange={handleOnchange} />,
+      student_id: itm?.student_id,
     }));
 
     setTableData(bb || []);
   }, [tmpTableData]);
-
-  // useEffect(() => {
-  //   if (data) {
-  //     const aa =
-  //       data?.data?.response?.result?.map((itm: any, index: number) => ({
-  //         id: itm?.id,
-  //         SR_NO: index + 1,
-  //         StudentFirstName: itm?.first_name,
-  //         StudentLastName: itm?.last_name,
-  //         Class: selectedClassName,
-  //         isChecked: false,
-  //         isPresent: itm?.is_present,
-  //       })) || [];
-  //     setTmpTableData(aa);
-  //   }
-  // }, [data]);
 
   const handlePagination = (currPage: any) => {
     if (currPage) setPage(currPage);
@@ -424,7 +351,6 @@ function Attendance() {
       url: classesStudentsEndPointUrl,
       enabled: false,
       onSuccess: (resp: any) => {
-        console.log('reftech students');
         const respData = resp?.data?.results;
         setSelectedClassStudents(() => respData[0]?.student_profile);
 
@@ -434,6 +360,7 @@ function Attendance() {
             SR_NO: index + 1,
             StudentFirstName: itm?.first_name,
             StudentLastName: itm?.last_name,
+            student_id: itm?.student_id,
             status: null,
             Grade: 'N/A',
             isChecked: false,
@@ -446,18 +373,17 @@ function Attendance() {
         ) {
           setTmpTableData(() => studentsData);
         }
-        console.log(attendanceHistory?.length);
       },
     });
 
   useEffect(() => {
     if (attendanceHistory?.length > 0) {
-      console.log(attendanceHistory);
       const aa = attendanceHistory?.map((itm: any, index: number) => ({
         id: itm?.id,
         SR_NO: index + 1,
         StudentFirstName: itm?.first_name,
         StudentLastName: itm?.last_name,
+        student_id: itm?.student_id,
         Class: selectedClassName,
         status:
           itm?.status !== 'present' && itm?.status !== 'absent'
@@ -512,31 +438,10 @@ function Attendance() {
         setSelectedClassName={setSelectedClassName}
         setSelectedClassStudents={setSelectedClassStudents}
         selectedClassStudents={selectedClassStudents}
+        refetchCalendar={refrechCalendar}
       />
 
       <div ref={componentRef}>
-        {/* <Wrapper>
-          <AdvanceTable
-            isLoading={isLoading}
-            tableData={tableData}
-            headerRows={TableColumns}
-            totalPages={noOfpages}
-            paginateHandler={handlePagination}
-            currentPage={page}
-            rowsPerPage={RESULTS_PER_PAGE?.[0]}
-            orderBy={orderBy}
-            setOrderBy={setOrderBy}
-            order={order}
-            setOrder={setOrder}
-            setPage={setPage}
-            setBulkSelect={handleSelection}
-            maxHeight={620}
-            bulkSelect={bulkSelect}
-            setAbcentBulkSelect={handleDeSelection}
-            abcentBulkSelect={abcentBulkSelect}
-            toggelAll={toggleAllHandler}
-          />
-        </Wrapper> */}
         <>
           <AttendanceTable
             tableData={tableData}
@@ -547,43 +452,10 @@ function Attendance() {
             rowsPerPage={RESULTS_PER_PAGE?.[0]}
             paginateHandler={handlePagination}
             totalPages={noOfpages}
+            setRefreshCalendar={setRefreshCalendar}
           />
         </>
       </div>
-
-      {/* <div className="flex gap-3 justify-end">
-        <div className="flex justify-end py-2">
-          <Button
-            disabled={
-              isLoading3 ||
-              (bulkSelect.length < 1 && abcentBulkSelect.length < 1) ||
-              tmpTableData.length !==
-                bulkSelect.length + abcentBulkSelect.length
-            }
-            onClick={submitHandler}
-            loading={isLoading3}
-            tooltipMessage="Please submit status to the remaining students first"
-          >
-            Submit
-          </Button>
-        </div>
-
-        <div className="flex justify-end py-2">
-          <Button
-            disabled={
-              isLoading3 ||
-              (bulkSelect.length < 1 && abcentBulkSelect.length < 1) ||
-              tmpTableData.length !==
-                bulkSelect.length + abcentBulkSelect.length
-            }
-            onClick={submitAndExitHandler}
-            loading={isLoading3}
-            tooltipMessage="Please submit status to the remaining students first"
-          >
-            Submit and exit
-          </Button>
-        </div>
-      </div> */}
     </RouteLayout>
   );
 }

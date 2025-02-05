@@ -43,6 +43,7 @@ type MarkAttendanceFiltersProps = {
   setSelectedClassName?: React.Dispatch<React.SetStateAction<string>>;
   setSelectedClassStudents: React.Dispatch<React.SetStateAction<Student[]>>;
   selectedClassStudents: Student[];
+  refetchCalendar: boolean;
 };
 
 function MarkAttendanceFilters({
@@ -65,6 +66,7 @@ function MarkAttendanceFilters({
   setSelectedClassName,
   setSelectedClassStudents,
   selectedClassStudents,
+  refetchCalendar,
 }: MarkAttendanceFiltersProps) {
   const { TEACHER, SCHOOL_ADMIN, BRANCH_ADMIN } = USER_TYPE;
   const usersRole = useSelector((state: any) => state?.user?.role);
@@ -77,19 +79,11 @@ function MarkAttendanceFilters({
   const isBranchAdmin = usersRole?.name === BRANCH_ADMIN;
 
   const { schoolId, branchId } = useSelector(selectUser);
-
-  // const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedSubject, setSelectedSubject] = useState<
-    number | null | 'select' | ''
-  >('select');
   const { schoolData, branchData } = useSelector(selectSchoolData);
 
   const [loading, setLoading] = useState(false);
   const [classes, setClasses] = useState<any[]>([]);
   const [listOfStudents, setListOfStudents] = useState<any[]>([]);
-  // const [selectedClassStudents, setSelectedClassStudents] = useState<Student[]>(
-  //   []
-  // );
 
   useEffect(() => {
     if (selectedClass === 'select' && results.length === 0) {
@@ -282,22 +276,6 @@ function MarkAttendanceFilters({
     setTableData([]);
   };
 
-  // useEffect(() => {
-  //   if (selectedClassStudents) {
-  //     const studentsData =
-  //       selectedClassStudents?.map((itm: any, index: number) => ({
-  //         id: itm?.student_id,
-  //         SR_NO: index + 1,
-  //         StudentFirstName: itm?.first_name,
-  //         StudentLastName: itm?.last_name,
-  //         Grade: 'N/A',
-  //         isChecked: false,
-  //         isPresent: false,
-  //       })) || [];
-  //     setTmpTableData(studentsData);
-  //   }
-  // }, [selectedClassStudents]);
-
   return (
     <>
       <div className="w-full grid grid-cols-1 lg:grid-cols-4 my-2 gap-2 items-center justify-between">
@@ -376,6 +354,7 @@ function MarkAttendanceFilters({
               isCalendarDisabled={
                 selectedCourse === 'select' && selectedClass === 'select'
               }
+              refetchCalendar={refetchCalendar}
             />
           </div>
         </div>
