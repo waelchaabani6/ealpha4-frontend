@@ -42,7 +42,7 @@ const AttendanceTable = ({
   selectedDate,
   isLoading,
   currentPage,
-  rowsPerPage,
+  setRefreshCalendar,
   paginateHandler,
   totalPages,
 }: any) => {
@@ -139,6 +139,7 @@ const AttendanceTable = ({
     url: MarkAttendanceEndpointUrl,
     onSuccess: () => {
       toast('success', 'Attendance Updated Successfully!');
+      setRefreshCalendar((prev) => !prev);
     },
     onError: (error: any) => {
       toast('error', error?.response?.data?.message);

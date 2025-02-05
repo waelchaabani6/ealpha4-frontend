@@ -123,12 +123,14 @@ const AttendanceCalednar = ({
   selectedCourse,
   selectedClass,
   isCalendarDisabled,
+  refetchCalendar,
 }: {
   setSelectedDate: React.Dispatch<React.SetStateAction<Date>>;
   selectedDate: Date;
   selectedCourse: number | string;
   selectedClass: number | string;
   isCalendarDisabled: boolean;
+  refetchCalendar: boolean;
 }) => {
   const [calendarData, setCalendarData] = useState<AttendanceData[]>([]);
   // const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -154,7 +156,7 @@ const AttendanceCalednar = ({
 
   useEffect(() => {
     fetchCalendar();
-  }, [month, year]);
+  }, [month, year, refetchCalendar]);
 
   const getDaysInMonth = useMemo(() => {
     const days: number[] = [];
@@ -247,7 +249,6 @@ const AttendanceCalednar = ({
 
   useEffect(() => {
     fetchCalendar();
-    console.log('reftech');
   }, [selectedClass, selectedCourse, month]);
 
   return (
