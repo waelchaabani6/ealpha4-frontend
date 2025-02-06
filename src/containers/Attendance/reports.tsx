@@ -25,6 +25,8 @@ import {
 } from "@utility/utility";
 import { selectUser } from "@shared/store/userSlice";
 import moment from "moment";
+import { useForm } from "react-hook-form";
+import AttendanceReportFilters from "./components/AttendanceReportFilters";
 
 const printButton = () => <PrintIcon />;
 
@@ -192,17 +194,11 @@ export default function () {
   const [datesPerPage, setDatesPerPage] = useState(1);
   const [sortBy, setSortBy] = useState<SortByType>("All");
   const [recordsPerPage, setRecordsPerPage] = useState<number | "all">(10);
-  const [selectedBranch, setSelectedBranch] = useState<
-    number | null | "select"
-  >("select");
-  const [selectedClass, setSelectedClass] = useState<number | "select">(
-    "select"
-  );
+
   const [selectedSubject, setSelectedSubject] = useState<
     number | null | "select"
   >("select");
-  const [fromDate, setFromDate] = useState<any>();
-  const [toDate, setToDate] = useState<any>();
+
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
   const {
@@ -215,6 +211,26 @@ export default function () {
   const { schoolData, branchData } = useSelector(selectSchoolData);
   const noOfpages = getNoOfPages(totalDataCount, RESULTS_PER_PAGE?.[0]);
   const SchoolUrl = import.meta.env.VITE_APP_SCHOOL_SERVICE_URL;
+
+  const { control, watch } = useForm();
+
+  const [selectedBranch, setSelectedBranch] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
+
+  const fetchReportData = () => {
+    console.log("Fetching report data with:", {
+      selectedBranch,
+      selectedCourse,
+      selectedClass,
+      fromDate,
+      toDate,
+    });
+    // Call API or handle the report generation logic here
+  };
+
   const ADMIN_TOOLBAR_MENU = [
     // {
     //   title: TOOLBAR_LABELS.ADD,
@@ -251,22 +267,6 @@ export default function () {
     [toDate]
   );
 
-  const { isLoading: subjectLoading1, refetch: refetchSubjects } = useGet({
-    baseURL: SchoolUrl,
-    url: `schools-service/schools/subject/list/?class_id=${
-      selectedClass || ""
-    }`,
-    enabled: false,
-    onSuccess: (resp: any) => {
-      const respData = resp?.data?.response;
-      const temp3: any =
-        respData?.map((i: any) => ({
-          label: i?.name,
-          value: i?.id,
-        })) || [];
-      setCourses([...temp3]);
-    },
-  });
   const classId =
     selectedClass !== "select" ? selectedClass : user?.class_id || "";
   const { isLoading: subLoading, refetch: refectSubject } = useGet({
@@ -284,32 +284,6 @@ export default function () {
       setCourses([...temp3]);
     },
   });
-
-  useEffect(() => {
-    if (
-      selectedClass !== "select" &&
-      usersRole?.name === USER_TYPE.SCHOOL_ADMIN
-    ) {
-      refetchSubjects();
-    } else if (
-      selectedClass !== "select" &&
-      usersRole?.name === USER_TYPE.BRANCH_ADMIN
-    ) {
-      refetchSubjects();
-    } else if (
-      selectedClass !== "select" &&
-      usersRole?.name === USER_TYPE.SUPER_ADMIN
-    ) {
-      refetchSubjects();
-    } else if (
-      selectedClass !== "select" &&
-      usersRole?.name === USER_TYPE.TEACHER
-    ) {
-      refectSubject();
-    } else if (usersRole?.name === USER_TYPE.STUDENT) {
-      refectSubject();
-    }
-  }, [selectedClass, selectedSubject, user?.class_id]);
 
   const subjectName = useMemo(() => {
     const tmp = courses?.find((item: any) => item.value === selectedSubject);
@@ -532,7 +506,7 @@ export default function () {
           // handleToolbarAction={handleToolbarAction}
         />
 
-        <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6 my-2">
+        {/* <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6 my-2">
           {((userRole().isSuperAdmin && !branchData) ||
             (userRole().isSchoolAdmin && !branchData) ||
             (userRole().isTeacher && !branchData)) && (
@@ -628,7 +602,22 @@ export default function () {
               sxClass={{ width: "100%" }}
             />
           )}
-        </div>
+        </div> */}
+        <AttendanceReportFilters
+          selectedBranch={selectedBranch}
+          setSelectedBranch={setSelectedBranch}
+          selectedCourse={selectedCourse}
+          setSelectedCourse={setSelectedCourse}
+          selectedClass={selectedClass}
+          setSelectedClass={setSelectedClass}
+          fromDate={fromDate}
+          setFromDate={setFromDate}
+          toDate={toDate}
+          setToDate={setToDate}
+          fetchReportData={fetchReportData}
+          control={control}
+          watch={watch}
+        />
 
         <div className=" wrapperBorder overflow-hidden" ref={componentRef}>
           <SimpleTableAttendanceReport
