@@ -6,6 +6,7 @@ import { useGet } from "@shared/api/useApi";
 import DatePicker from "@shared/form/DatePicker";
 import { selectUser } from "@shared/store/userSlice";
 import { USER_TYPE } from "@constants/constants";
+import { sortByName } from "@utility/utility";
 
 const AttendanceReportURL = import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL;
 const CourseURL = import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL;
@@ -94,10 +95,10 @@ function AttendanceReportFilters({
   const { isLoading: isCoursesLoading, refetch: refetchCourses } = useGet({
     baseURL: CourseURL,
     url: coursesEndPointUrl,
-    enabled: false,
-    onSuccess: (resp) => {
+    enabled: true,
+    onSuccess: (resp: any) => {
       const respData = resp?.data?.response;
-      const formattedCourses = respData.results.map((course) => ({
+      const formattedCourses = respData.results.map((course: any) => ({
         label: course.short_name,
         value: course.program_id,
       }));
@@ -128,7 +129,9 @@ function AttendanceReportFilters({
         }))
       ),
   });
-
+  useEffect(() => {
+    console.log("selectedBranch", selectedBranch);
+  }, [selectedBranch]);
   useEffect(() => {
     if (selectedBranch) refetchCourses();
   }, [selectedBranch]);
@@ -141,8 +144,21 @@ function AttendanceReportFilters({
     if (selectedClass && fromDate && toDate) fetchReportData();
   }, [selectedClass, fromDate, toDate]);
 
+  const branchSelectHandler = (currentBranch: number) => {
+    setSelectedBranch(currentBranch);
+    setSelectedClass("select");
+  };
+
+  const courseSelectHandler = (currentCourse: number) => {
+    setSelectedCourse(currentCourse);
+    setSelectedClass("select");
+  };
+
+  const branchArr: [] =
+    branchDataResponse?.data?.response?.results?.sort(sortByName);
+
   return (
-    <div className="w-full flex flex-wrap gap-4 items-center">
+    <div className="w-full flex flex-wrap gap-4 items-center mt-5 mb-5">
       {isParent && (
         <Dropdown
           title="Select Child"
@@ -152,7 +168,7 @@ function AttendanceReportFilters({
           onChangeHandler={setSelectedChild}
           loading={childrenLoading}
           sxClass={{
-            width: "230px",
+            width: "250px",
           }}
         />
       )}
@@ -160,23 +176,36 @@ function AttendanceReportFilters({
         <Dropdown
           title="Select Branch"
           value={selectedBranch}
-          dataArray={[{ label: "Select", value: "" }, ...branches]}
-          onChangeHandler={setSelectedBranch}
+          dataArray={[
+            { label: "Select", value: "select" },
+            ...(branchArr?.map((item: any) => ({
+              label: item.name,
+              value: item.id,
+            })) || []),
+          ]}
+          onChangeHandler={branchSelectHandler}
+          sxClass={{
+            width: "250px",
+          }}
         />
       )}
       <Dropdown
         title="Select Course"
         value={selectedCourse}
-        dataArray={[{ label: "Select", value: "" }, ...courses]}
-        onChangeHandler={setSelectedCourse}
-        disabled={isParent && !selectedChild}
+        dataArray={[{ label: "Select", value: "select" }, ...courses]}
+        onChangeHandler={(option) => setSelectedCourse(option || "select")}
+        sxClass={{
+          width: "250px",
+        }}
       />
       <Dropdown
         title="Select Class"
         value={selectedClass}
-        dataArray={[{ label: "Select", value: "" }, ...classes]}
-        onChangeHandler={setSelectedClass}
-        disabled={!selectedCourse}
+        dataArray={[{ label: "Select", value: "select" }, ...classes]}
+        onChangeHandler={(option) => setSelectedClass(option || "select")}
+        sxClass={{
+          width: "250px",
+        }}
       />
       <div>
         <DatePicker

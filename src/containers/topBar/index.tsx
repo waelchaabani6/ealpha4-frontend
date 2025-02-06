@@ -176,22 +176,22 @@ export default function Index() {
         title="Attendance"
         path={`/${schoolName}/attandance`}
         dropdown={true}
-        childs={
-          role !== USER_TYPE.STUDENT &&
-          role !== USER_TYPE.PARENTS &&
-          role !== USER_TYPE.SCHOOL_ADMIN
+        childs={[
+          ...(role !== USER_TYPE.STUDENT && role !== USER_TYPE.PARENTS
             ? [
                 { label: "Mark Attendance", path: "attandance/mark" },
                 { label: "Attendance Reports", path: "attandance/reports" },
               ]
-            : role === USER_TYPE.SCHOOL_ADMIN
+            : []),
+          ...(role === USER_TYPE.SCHOOL_ADMIN || role === USER_TYPE.BRANCH_ADMIN
             ? [
-                { label: "Mark Attendance", path: "attandance/mark" },
-                { label: "Attendance Reports", path: "attandance/reports" },
-                { label: "School Holidays", path: "attandance/holidays" },
+                {
+                  label: "Manage Weekends and Holidays",
+                  path: "attandance/holidays",
+                },
               ]
-            : []
-        }
+            : []),
+        ]}
       />
     </div>
   );
