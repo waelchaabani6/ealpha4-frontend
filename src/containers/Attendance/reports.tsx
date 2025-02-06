@@ -214,9 +214,19 @@ export default function () {
 
   const { control, watch } = useForm();
 
-  const [selectedBranch, setSelectedBranch] = useState("");
-  const [selectedCourse, setSelectedCourse] = useState("");
-  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedBranch, setSelectedBranch] = useState<number | "select">(
+    "select"
+  );
+  const [selectedCourse, setSelectedCourse] = useState<number | "select">(
+    "select"
+  );
+  const [selectedClass, setSelectedClass] = useState<number | "select">(
+    "select"
+  );
+  const [selectedChild, setSelectedChild] = useState<number | "select">(
+    "select"
+  );
+
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
 
@@ -459,9 +469,10 @@ export default function () {
       setToDate(val.toDate());
     }
   };
-  const branchSelectHandler = (currentBranch: number) => {
-    setSelectedBranch(currentBranch);
-    setSelectedClass("select");
+  const branchSelectHandler = (currentBranch) => {
+    console.log("Current Branch Selected:", currentBranch);
+    setSelectedBranch(currentBranch?.value || ""); // Ensure ID is stored
+    setSelectedClass("select"); // Reset class selection
   };
 
   const CLASS_ARRAY =
@@ -617,6 +628,8 @@ export default function () {
           fetchReportData={fetchReportData}
           control={control}
           watch={watch}
+          selectedChild={selectedChild}
+          setSelectedChild={setSelectedChild}
         />
 
         <div className=" wrapperBorder overflow-hidden" ref={componentRef}>
