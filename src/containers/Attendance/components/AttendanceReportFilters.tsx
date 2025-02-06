@@ -1,19 +1,21 @@
 import Dropdown from "@component/dropdown/Dropdown";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectSchoolData } from "@shared/store/schoolSlice";
 import { useGet } from "@shared/api/useApi";
 import DatePicker from "@shared/form/DatePicker";
+import { selectUser } from "@shared/store/userSlice";
+import { USER_TYPE } from "@constants/constants";
 
 const AttendanceReportURL = import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL;
 const CourseURL = import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL;
 const SchoolURL = import.meta.env.VITE_APP_SCHOOL_SERVICE_URL;
 
-console.log("Attendance Report URL:", AttendanceReportURL);
-
 function AttendanceReportFilters({
   selectedBranch,
   setSelectedBranch,
+  selectedChild,
+  setSelectedChild,
   selectedCourse,
   setSelectedCourse,
   selectedClass,
@@ -27,27 +29,35 @@ function AttendanceReportFilters({
   watch,
 }) {
   const { schoolData, branchData } = useSelector(selectSchoolData);
-  const {
-    schoolId,
-    branchId,
-    role: usersRole,
-  } = useSelector(
-    (state: {
-      user: {
-        schoolId: string;
-        branchId: string;
-        role: { name: string; user_profile_id: string };
-      };
-    }) => state.user
-  );
+  const { userId, role: usersRole } = useSelector(selectUser);
+
+  const isParent = usersRole?.name === USER_TYPE.PARENTS;
   const isAdmin =
-    usersRole?.name === "School Admin" || usersRole?.name === "Branch Admin";
-  const isBranchAdmin = usersRole?.name === "BRANCH_ADMIN";
+    usersRole?.name === USER_TYPE.SCHOOL_ADMIN ||
+    usersRole?.name === USER_TYPE.BRANCH_ADMIN;
+  const isBranchAdmin = usersRole?.name === USER_TYPE.BRANCH_ADMIN;
 
   const [branches, setBranches] = useState([]);
   const [courses, setCourses] = useState([]);
   const [classes, setClasses] = useState([]);
+  const [childrenData, setChildrenData] = useState([]);
 
+  // Fetching Children for Parent Role
+  const { isLoading: childrenLoading, refetch: childrenFetch } = useGet({
+    baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
+    url: `users-service/parent-student-details/${userId}/`,
+    enabled: isParent,
+    onSuccess: (res) => {
+      const students = res?.data?.response?.students || [];
+      const formattedChildren = students.map((child) => ({
+        label: `${child.first_name} ${child.last_name}`,
+        value: child.id,
+      }));
+      setChildrenData(formattedChildren);
+    },
+  });
+
+  // Fetching Branch Data
   const { data: branchDataResponse } = useGet({
     baseURL: SchoolURL,
     url: `schools-service/school-branches/?limit=100&school_id=${
@@ -64,25 +74,30 @@ function AttendanceReportFilters({
     },
   });
 
+  // Fetching Courses
   const coursesEndPointUrl = isAdmin
-    ? `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
+    ? `course-code-service/courses/courses-selection/?school_id=${
+        schoolData?.id
+      }&branch_id=${
         selectedBranch !== "select"
           ? selectedBranch
           : isBranchAdmin
-          ? branchId
+          ? branchData?.id
           : ""
       }`
-    : `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
+    : `course-code-service/courses/courses-selection/?school_id=${
+        schoolData?.id
+      }&branch_id=${
         selectedBranch === "select" ? "" : selectedBranch
-      }`;
+      }&student_id=${selectedChild}`;
 
   const { isLoading: isCoursesLoading, refetch: refetchCourses } = useGet({
     baseURL: CourseURL,
     url: coursesEndPointUrl,
     enabled: false,
-    onSuccess: (resp: any) => {
+    onSuccess: (resp) => {
       const respData = resp?.data?.response;
-      const formattedCourses = respData.results.map((course: any) => ({
+      const formattedCourses = respData.results.map((course) => ({
         label: course.short_name,
         value: course.program_id,
       }));
@@ -90,17 +105,16 @@ function AttendanceReportFilters({
     },
   });
 
+  // Fetching Classes
   const classesEndPointUrl = isAdmin
     ? `schools-service/schools/get-classes?program_id=${
         selectedCourse !== "select" ? selectedCourse : ""
-      }&school_id=${schoolId}&class_id=${
+      }&school_id=${schoolData?.id}&class_id=${
         selectedClass !== "select" ? selectedClass : ""
       }&branch_id=${selectedBranch !== "select" ? selectedBranch : ""}`
     : `schools-service/schools/get-classes?program_id=${
         selectedCourse !== "select" ? selectedCourse : ""
-      }&school_id=${schoolId}&teacher_id=${
-        usersRole?.user_profile_id
-      }&class_id=${selectedClass !== "select" ? selectedClass : ""}`;
+      }&school_id=${schoolData?.id}&student_id=${selectedChild}`;
 
   const { data: classesResponse, refetch: refetchClasses } = useGet({
     baseURL: SchoolURL,
@@ -116,18 +130,33 @@ function AttendanceReportFilters({
   });
 
   useEffect(() => {
-    refetchCourses();
+    if (selectedBranch) refetchCourses();
   }, [selectedBranch]);
+
   useEffect(() => {
     if (selectedCourse) refetchClasses();
   }, [selectedCourse]);
+
   useEffect(() => {
     if (selectedClass && fromDate && toDate) fetchReportData();
   }, [selectedClass, fromDate, toDate]);
 
   return (
     <div className="w-full flex flex-wrap gap-4 items-center">
-      {!branchData && (
+      {isParent && (
+        <Dropdown
+          title="Select Child"
+          value={selectedChild}
+          dataArray={[{ label: "Select", value: "" }, ...childrenData]}
+          displayEmpty={true}
+          onChangeHandler={setSelectedChild}
+          loading={childrenLoading}
+          sxClass={{
+            width: "230px",
+          }}
+        />
+      )}
+      {!branchData && isAdmin && (
         <Dropdown
           title="Select Branch"
           value={selectedBranch}
@@ -140,6 +169,7 @@ function AttendanceReportFilters({
         value={selectedCourse}
         dataArray={[{ label: "Select", value: "" }, ...courses]}
         onChangeHandler={setSelectedCourse}
+        disabled={isParent && !selectedChild}
       />
       <Dropdown
         title="Select Class"
