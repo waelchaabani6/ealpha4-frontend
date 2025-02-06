@@ -1,6 +1,9 @@
-import CustomizedDialogs from "@component/dialog/CustomDialog";
-import React, { useEffect, useState } from "react";
-import HolidayStatus from "./holiday_status"; // Import HolidayStatus component
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable react/button-has-type */
+/* eslint-disable linebreak-style */
+import CustomizedDialogs from '@component/dialog/CustomDialog';
+import React, { useEffect, useState } from 'react';
+import HolidayStatus from './holiday_status'; // Import HolidayStatus component
 
 const AddWeekendModal = ({
   isOpen,
@@ -12,39 +15,39 @@ const AddWeekendModal = ({
   weekendsResponseeStatus, // Response status
 }) => {
   const [selectedDays, setSelectedDays] = useState([]); // Array to hold selected days
-  const [endsAfter, setEndsAfter] = useState(""); // 'never' or 'after'
-  const [afterValue, setAfterValue] = useState(""); // For dropdown selection
-  const [currentView, setCurrentView] = useState("form"); // Handles form, confirmation, and status views
+  const [endsAfter, setEndsAfter] = useState('never'); // 'never' or 'after'
+  const [afterValue, setAfterValue] = useState(''); // For dropdown selection
+  const [currentView, setCurrentView] = useState('form'); // Handles form, confirmation, and status views
 
   const MAX_DAYS = 3; // Maximum allowed days selection
 
   const endsAfterOptions = [
-    { value: "never", label: "Never" },
-    { value: "3-month", label: "3 months" },
-    { value: "6-month", label: "6 months" },
-    { value: "current_academic_year", label: "Current Academic Year" },
+    { value: 'never', label: 'Never' },
+    { value: '3-month', label: '3 months' },
+    { value: '6-month', label: '6 months' },
+    { value: 'current_academic_year', label: 'Current Academic Year' },
   ];
 
   // Status message for HolidayStatus component
   const statusMessage = weekendsResponseeStatus
-    ? "The weekend has been successfully saved."
-    : "Failed to save the weekend. Please try again.";
+    ? 'The weekend has been successfully saved.'
+    : 'Failed to save the weekend. Please try again.';
 
   useEffect(() => {
     if (initialData) {
       setSelectedDays(initialData.days || []);
 
-      if (initialData.ends_after && initialData.ends_after !== "never") {
-        setEndsAfter("after");
+      if (initialData.ends_after && initialData.ends_after !== 'never') {
+        setEndsAfter('after');
         setAfterValue(initialData.ends_after);
       } else {
-        setEndsAfter("never");
-        setAfterValue("");
+        setEndsAfter('never');
+        setAfterValue('');
       }
     } else {
       setSelectedDays([]);
-      setEndsAfter("");
-      setAfterValue("");
+      setEndsAfter('');
+      setAfterValue('');
     }
   }, [initialData]);
 
@@ -66,8 +69,8 @@ const AddWeekendModal = ({
   // Reset form
   const resetForm = () => {
     setSelectedDays([]);
-    setEndsAfter("");
-    setAfterValue("");
+    setEndsAfter('');
+    setAfterValue('');
   };
 
   useEffect(() => {
@@ -79,15 +82,15 @@ const AddWeekendModal = ({
   // Save handler - Show Confirmation First
   const handleSave = () => {
     if (selectedDays.length === 0) {
-      alert("Please select at least one day.");
+      alert('Please select at least one day.');
       return;
     }
-    if (endsAfter === "after" && !afterValue) {
-      alert("Please select a period.");
+    if (endsAfter === 'after' && !afterValue) {
+      alert('Please select a period.');
       return;
     }
 
-    setCurrentView("confirm"); // Show confirmation message before saving
+    setCurrentView('confirm'); // Show confirmation message before saving
   };
 
   // Confirm Save
@@ -96,47 +99,58 @@ const AddWeekendModal = ({
 
     const weekendData = {
       days: selectedDays,
-      ends_after: endsAfter === "never" ? "never" : afterValue,
+      ends_after: endsAfter === 'never' ? 'never' : afterValue,
     };
 
     onSave(weekendData);
-    setCurrentView("status"); // Switch to status view after save
+    setCurrentView('status'); // Switch to status view after save
   };
 
   const handleClose = () => {
     onClose();
-    setCurrentView("form");
+    setCurrentView('form');
   };
+
+  useEffect(() => {
+    !initialData && setEndsAfter('never');
+  }, [initialData]);
 
   return (
     <CustomizedDialogs
       open={isOpen}
       setOpen={() => {
         onClose();
-        setCurrentView("form");
+        setCurrentView('form');
       }}
-      title={initialData ? "Edit Weekend" : "Add Weekend"}
+      title={initialData ? 'Edit Weekend' : 'Add Weekend'}
       className="weekendModal"
       maxWidth="600px"
       fullWidth={false}
     >
-      {currentView === "confirm" ? (
+      {currentView === 'confirm' ? (
         // Confirmation Step
         <div className="confirmation-view">
           <h3>Are you sure you want to save these weekend changes?</h3>
           <div className="modal-actions">
-            <button className="cancel-button" onClick={() => setCurrentView("form")}>
+            <button
+              className="cancel-button"
+              onClick={() => setCurrentView('form')}
+            >
               No
             </button>
-            <button className="save-button" onClick={confirmSave} disabled={isRequestLoading}>
+            <button
+              className="save-button"
+              onClick={confirmSave}
+              disabled={isRequestLoading}
+            >
               Yes
             </button>
           </div>
         </div>
-      ) : currentView === "status" ? (
+      ) : currentView === 'status' ? (
         // Success or Error Message
         <HolidayStatus
-          type={weekendsResponseeStatus ? "success" : "error"}
+          type={weekendsResponseeStatus ? 'success' : 'error'}
           message={statusMessage}
           onClose={handleClose}
           isLoader={isRequestLoading}
@@ -146,17 +160,27 @@ const AddWeekendModal = ({
         <div className="weekend-form">
           <h3>Select Days * (Max {MAX_DAYS} Days)</h3>
           <div className="days-selector">
-            {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map((day) => (
+            {[
+              'Sunday',
+              'Monday',
+              'Tuesday',
+              'Wednesday',
+              'Thursday',
+              'Friday',
+              'Saturday',
+            ].map((day) => (
               <button
                 key={day}
-                className={`day-button ${selectedDays.includes(day) ? "active" : ""}`}
+                className={`day-button ${selectedDays.includes(day) ? 'active' : ''}`}
                 onClick={() => toggleDaySelection(day)}
               >
                 {day.substring(0, 1)}
               </button>
             ))}
           </div>
-          {selectedDays.length === 0 && <p className="error-text">* Please select at least one day.</p>}
+          {selectedDays.length === 0 && (
+            <p className="error-text">* Please select at least one day.</p>
+          )}
 
           <h3>Ends After</h3>
           <div className="ends-after-options">
@@ -165,10 +189,10 @@ const AddWeekendModal = ({
                 type="radio"
                 name="endsAfter"
                 value="never"
-                checked={endsAfter === "never"}
+                checked={endsAfter === 'never'}
                 onChange={() => {
-                  setEndsAfter("never");
-                  setAfterValue("");
+                  setEndsAfter('never');
+                  setAfterValue('');
                 }}
               />
               Never
@@ -178,14 +202,14 @@ const AddWeekendModal = ({
                 type="radio"
                 name="endsAfter"
                 value="after"
-                checked={endsAfter === "after"}
+                checked={endsAfter === 'after'}
                 onChange={() => {
-                  setEndsAfter("after");
-                  if (!afterValue) setAfterValue(""); 
+                  setEndsAfter('after');
+                  if (!afterValue) setAfterValue('');
                 }}
               />
               After
-              {endsAfter === "after" && (
+              {endsAfter === 'after' && (
                 <select
                   className="ends-after-dropdown"
                   value={afterValue}
@@ -202,15 +226,23 @@ const AddWeekendModal = ({
             </label>
           </div>
 
-          {!endsAfter && <p className="error-text">* Please select a period.</p>}
-          {endsAfter === "after" && !afterValue && <p className="error-text">* Please select a duration.</p>}
+          {!endsAfter && (
+            <p className="error-text">* Please select a period.</p>
+          )}
+          {endsAfter === 'after' && !afterValue && (
+            <p className="error-text">* Please select a duration.</p>
+          )}
 
           <div className="modal-actions">
             <button className="cancel-button" onClick={onClose}>
               Cancel
             </button>
-            <button className="save-button" onClick={handleSave} disabled={isRequestLoading}>
-              {isRequestLoading ? "Saving..." : "Save"}
+            <button
+              className="save-button"
+              onClick={handleSave}
+              disabled={isRequestLoading}
+            >
+              {isRequestLoading ? 'Saving...' : 'Save'}
             </button>
           </div>
         </div>
