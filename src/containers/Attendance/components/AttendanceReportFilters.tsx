@@ -30,18 +30,26 @@ function AttendanceReportFilters({
   watch,
 }) {
   const { schoolData, branchData } = useSelector(selectSchoolData);
-  const { userId, role: usersRole } = useSelector(selectUser);
+  const { userId, role: usersRole, schoolId } = useSelector(selectUser);
 
   const isParent = usersRole?.name === USER_TYPE.PARENTS;
   const isAdmin =
     usersRole?.name === USER_TYPE.SCHOOL_ADMIN ||
     usersRole?.name === USER_TYPE.BRANCH_ADMIN;
   const isBranchAdmin = usersRole?.name === USER_TYPE.BRANCH_ADMIN;
+  const isStudent = usersRole?.name === USER_TYPE.STUDENT;
+  const isParentOrStudent = isParent || isStudent;
 
   const [branches, setBranches] = useState([]);
   const [courses, setCourses] = useState([]);
   const [classes, setClasses] = useState([]);
   const [childrenData, setChildrenData] = useState([]);
+
+  useEffect(() => {
+    if (isStudent) {
+      setSelectedChild(userId);
+    }
+  }, [userId]);
 
   // Fetching Children for Parent Role
   const { isLoading: childrenLoading, refetch: childrenFetch } = useGet({
@@ -61,10 +69,8 @@ function AttendanceReportFilters({
   // Fetching Branch Data
   const { data: branchDataResponse } = useGet({
     baseURL: SchoolURL,
-    url: `schools-service/school-branches/?limit=100&school_id=${
-      schoolData?.id || branchData?.school_data?.id
-    }`,
-    enabled: !!(schoolData?.id || branchData?.school_data?.id),
+    url: `schools-service/school-branches/?limit=100&school_id=${schoolId}`,
+    enabled: !!(schoolId && (isBranchAdmin || isAdmin)),
     onSuccess: (resp) => {
       setBranches(
         resp.data.response.results.map(({ name, id }) => ({
@@ -77,18 +83,14 @@ function AttendanceReportFilters({
 
   // Fetching Courses
   const coursesEndPointUrl = isAdmin
-    ? `course-code-service/courses/courses-selection/?school_id=${
-        schoolData?.id
-      }&branch_id=${
+    ? `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
         selectedBranch !== "select"
           ? selectedBranch
           : isBranchAdmin
           ? branchData?.id
           : ""
       }`
-    : `course-code-service/courses/courses-selection/?school_id=${
-        schoolData?.id
-      }&branch_id=${
+    : `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
         selectedBranch === "select" ? "" : selectedBranch
       }&student_id=${selectedChild}`;
 
@@ -110,12 +112,12 @@ function AttendanceReportFilters({
   const classesEndPointUrl = isAdmin
     ? `schools-service/schools/get-classes?program_id=${
         selectedCourse !== "select" ? selectedCourse : ""
-      }&school_id=${schoolData?.id}&class_id=${
+      }&school_id=${schoolId}&class_id=${
         selectedClass !== "select" ? selectedClass : ""
       }&branch_id=${selectedBranch !== "select" ? selectedBranch : ""}`
     : `schools-service/schools/get-classes?program_id=${
         selectedCourse !== "select" ? selectedCourse : ""
-      }&school_id=${schoolData?.id}&student_id=${selectedChild}`;
+      }&school_id=${schoolId}&student_id=${selectedChild}`;
 
   const { data: classesResponse, refetch: refetchClasses } = useGet({
     baseURL: SchoolURL,
@@ -129,15 +131,13 @@ function AttendanceReportFilters({
         }))
       ),
   });
-  useEffect(() => {
-    console.log("selectedBranch", selectedBranch);
-  }, [selectedBranch]);
+
   useEffect(() => {
     if (selectedBranch) refetchCourses();
   }, [selectedBranch]);
 
   useEffect(() => {
-    if (selectedCourse) refetchClasses();
+    if (selectedCourse !== "select") refetchClasses();
   }, [selectedCourse]);
 
   useEffect(() => {
@@ -146,7 +146,6 @@ function AttendanceReportFilters({
 
   const branchSelectHandler = (currentBranch: number) => {
     setSelectedBranch(currentBranch);
-    setSelectedClass("select");
   };
 
   const courseSelectHandler = (currentCourse: number) => {
@@ -163,16 +162,16 @@ function AttendanceReportFilters({
         <Dropdown
           title="Select Child"
           value={selectedChild}
-          dataArray={[{ label: "Select", value: "" }, ...childrenData]}
+          dataArray={[...childrenData]}
           displayEmpty={true}
-          onChangeHandler={setSelectedChild}
+          onChangeHandler={(option) => setSelectedChild(option || "select")}
           loading={childrenLoading}
           sxClass={{
             width: "250px",
           }}
         />
       )}
-      {!branchData && isAdmin && (
+      {isAdmin && (
         <Dropdown
           title="Select Branch"
           value={selectedBranch}
@@ -189,6 +188,7 @@ function AttendanceReportFilters({
           }}
         />
       )}
+
       <Dropdown
         title="Select Course"
         value={selectedCourse}
@@ -198,15 +198,19 @@ function AttendanceReportFilters({
           width: "250px",
         }}
       />
-      <Dropdown
-        title="Select Class"
-        value={selectedClass}
-        dataArray={[{ label: "Select", value: "select" }, ...classes]}
-        onChangeHandler={(option) => setSelectedClass(option || "select")}
-        sxClass={{
-          width: "250px",
-        }}
-      />
+      {!isParentOrStudent && (
+        <Dropdown
+          title="Select Class"
+          value={selectedClass}
+          dataArray={[{ label: "Select", value: "select" }, ...classes]}
+          onChangeHandler={(option) => setSelectedClass(option || "select")}
+          disabled={selectedCourse === "select"}
+          sxClass={{
+            width: "250px",
+          }}
+        />
+      )}
+
       <div>
         <DatePicker
           control={control}
