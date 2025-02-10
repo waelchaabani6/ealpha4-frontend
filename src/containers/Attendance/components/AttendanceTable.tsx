@@ -130,7 +130,11 @@ const AttendanceTable = ({
     baseURL: AttendanceUrl,
     url: MarkAttendanceEndpointUrl,
     onSuccess: () => {
-      toast('success', 'Attendance Updated Successfully!');
+      if (attendanceHistory && attendanceHistory?.length > 0) {
+        toast('success', 'Attendance Updated Successfully!');
+      } else {
+        toast('success', 'Attendance added successfully!');
+      }
       navigate(`/${schoolName}/attandance/reports`);
     },
     onError: (error: any) => {
