@@ -103,7 +103,7 @@ function AttendanceReportFilters({
       }`
     : `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
         selectedBranch === "select" ? "" : selectedBranch
-      }&student_id=${selectedChild}`;
+      }&user_id=${selectedChild}`;
 
   const { isLoading: isCoursesLoading, refetch: refetchCourses } = useGet({
     baseURL: CourseURL,
