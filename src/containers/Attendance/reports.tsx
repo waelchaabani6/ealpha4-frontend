@@ -343,38 +343,29 @@ export default function () {
   //   [selectedClass]
   // );
 
+  const schoolId = schoolData?.id || branchData?.school_data?.id;
+  const branch_id = branchId
+    ? `&branch_id=${branchId}`
+    : selectedBranch !== 'select'
+      ? `&branch_id=${selectedBranch}`
+      : '&branch_id=';
+
   const {
     data: data2,
     isLoading: isLoading2,
     refetch: refetchReport,
   } = useGet({
     baseURL: import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL,
-    url: `attendance_service/attendance/${userRole().isStudent || userRole().isParent ? 'student' : `report`}
-    /?school_id=${schoolData?.id || branchData?.school_data?.id}
-    ${selectedCourse !== 'select' ? `&course_id=${selectedCourse}` : ''}${
-      branchId
-        ? `&branch_id=${branchId}`
-        : selectedBranch !== 'select'
-          ? `&branch_id=${selectedBranch}`
-          : ''
-    }${userRole().isStudent ? `&class_id=${selectedClass}` : ''}
-    ${
-      userRole().isStudent || userRole().isParent
-        ? `&user_id=${userId}`
-        : userRole().isTeacher
-          ? `&teacher_id=${userId}`
-          : ``
-    }
-    &offset=${(page - 1) * Number(noOfpages)}&child_limit=7&child_offset=${
+    url: `attendance_service/attendance/${userRole().isStudent || userRole().isParent ? 'student' : `report`}/?school_id=${schoolId}${`&course_id=${selectedCourse}`}${branch_id}${
+      userRole().isTeacher ? `&teacher_id=${userId}` : `&user_id=${userId}`
+    }&offset=${(page - 1) * Number(noOfpages)}&child_limit=7&child_offset=${
       (datesPerPage - 1) * Number(noOfpages)
-    }&from_date=${formatFromDate}${toDate ? `&to_date=${formatToDate}` : ''}&class_id=${
-      selectedClass !== 'select' ? selectedClass : ''
-    }`,
-    // enabled: !!(
-    //   (selectedClass !== 'select' && fromDate) ||
-    //   (selectedClass !== 'select' && fromDate) ||
-    //   (userRole().isStudent && fromDate)
-    // ),
+    }&from_date=${formatFromDate}${toDate ? `&to_date=${formatToDate}` : ''}&class_id=${selectedClass}`,
+    enabled: !!(
+      selectedCourse !== 'select' ||
+      selectedClass !== 'select' ||
+      userRole().isStudent
+    ),
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.count);
     },
@@ -504,6 +495,7 @@ export default function () {
     refetchReport();
   }, [selectedBranch, selectedClass, selectedChild, selectedCourse, fromDate]);
 
+  console.log(schoolId);
   return (
     <RouteLayout navBack={true}>
       <div className="flex h-full w-full flex-col">
