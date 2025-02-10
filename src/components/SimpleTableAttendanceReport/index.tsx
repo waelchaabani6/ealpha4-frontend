@@ -128,7 +128,7 @@ export default function StickyHeadTable({
           <Table aria-label=" table">
             <TableHead>
               <TableRow>
-                {columns.map((column) =>
+                {columns?.map((column) =>
                   column.id !== newLocal ? (
                     <TableCell
                       key={column.id}
@@ -142,7 +142,7 @@ export default function StickyHeadTable({
                       {/* eslint-disable-next-line react/jsx-closing-tag-location */}
                     </TableCell>
                   ) : (
-                    column.label.map(
+                    column.label?.map(
                       (
                         ele:
                           | string
@@ -213,10 +213,10 @@ export default function StickyHeadTable({
                     tabIndex={-1}
                     key={ind}
                   >
-                    {columns.map((column) => {
+                    {columns?.map((column) => {
                       const value = row[column.id];
                       if (column.id === newLocal) {
-                        return value.map(
+                        return value?.map(
                           (
                             ele:
                               | string
