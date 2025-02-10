@@ -20,6 +20,7 @@ import { NumberedPagination } from '@component/pagination/CustomPagination';
 
 interface Student {
   id: number;
+  SR_NO: number;
   student_id: number;
   attendance: 'present' | 'absent' | null; // null means no attendance marked yet
   StudentLastName: string;
@@ -108,6 +109,7 @@ const AttendanceTable = ({
   useEffect(() => {
     const bb = tableData?.map((itm: any, index: number) => ({
       id: itm?.id,
+      SR_NO: itm?.SR_NO,
       StudentLastName: itm?.StudentLastName,
       StudentFirstName: itm?.StudentFirstName,
       Class: itm?.Class,
@@ -164,16 +166,18 @@ const AttendanceTable = ({
               <Table stickyHeader={true} aria-label="sticky table">
                 <TableHead>
                   <TableRow>
+                    <TableCell>Sr No.</TableCell>
                     <TableCell>Student First Name</TableCell>
                     <TableCell>Student Last Name</TableCell>
                     <TableCell>Class Name</TableCell>
-                    <TableCell>Attendance</TableCell>
+                    <TableCell>Status</TableCell>
                   </TableRow>
                 </TableHead>
                 <tbody>
                   {students?.length ? (
                     students.map((student) => (
-                      <TableRow key={student.id} className="text-center">
+                      <TableRow key={student.SR_NO} className="text-center">
+                        <TableCell>{student.SR_NO}</TableCell>
                         <TableCell>{student.StudentFirstName}</TableCell>
                         <TableCell>{student.StudentLastName}</TableCell>
                         <TableCell>{student.Class}</TableCell>
