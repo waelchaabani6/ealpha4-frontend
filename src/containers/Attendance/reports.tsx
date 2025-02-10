@@ -216,17 +216,17 @@ export default function () {
 
   const { control, watch } = useForm();
 
-  const [selectedBranch, setSelectedBranch] = useState<number | "select">(
-    "select"
+  const [selectedBranch, setSelectedBranch] = useState<number | 'select'>(
+    'select'
   );
-  const [selectedCourse, setSelectedCourse] = useState<number | "select">(
-    "select"
+  const [selectedCourse, setSelectedCourse] = useState<number | 'select'>(
+    'select'
   );
-  const [selectedClass, setSelectedClass] = useState<number | "select">(
-    "select"
+  const [selectedClass, setSelectedClass] = useState<number | 'select'>(
+    'select'
   );
-  const [selectedChild, setSelectedChild] = useState<number | "select">(
-    "select"
+  const [selectedChild, setSelectedChild] = useState<number | 'select'>(
+    'select'
   );
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
@@ -342,7 +342,11 @@ export default function () {
   //   [selectedClass]
   // );
 
-  const { data: data2, isLoading: isLoading2 } = useGet({
+  const {
+    data: data2,
+    isLoading: isLoading2,
+    refetch: refetchReport,
+  } = useGet({
     baseURL: import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL,
     url: `attendance_service/attendance/${userRole().isStudent || userRole().isParent ? 'student' : `report`}
     /?school_id=${schoolData?.id || branchData?.school_data?.id}
@@ -366,13 +370,9 @@ export default function () {
       selectedClass !== 'select' ? selectedClass : ''
     }`,
     // enabled: !!(
-    //   (selectedClass !== 'select' && fromDate && toDate) ||
-    //   (selectedClass !== 'select' &&
-    //     subjectName &&
-    //     fromDate &&
-    //     toDate &&
-    //     selectedBranch) ||
-    //   (userRole().isStudent && fromDate && toDate)
+    //   (selectedClass !== 'select' && fromDate) ||
+    //   (selectedClass !== 'select' && fromDate) ||
+    //   (userRole().isStudent && fromDate)
     // ),
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.count);
@@ -464,18 +464,17 @@ export default function () {
     ];
   }, [role, headerDates]);
 
-  const fromDateHandler = (val: any) => {
-    setFromDate(val.toDate());
-    if (toDate && val.toDate() >= toDate) {
-      setToDate(val.toDate());
-    }
-  };
-  const branchSelectHandler = (currentBranch) => {
-    console.log("Current Branch Selected:", currentBranch);
-    setSelectedBranch(currentBranch?.value || ""); // Ensure ID is stored
-    setSelectedClass("select"); // Reset class selection
-  };
-
+  // const fromDateHandler = (val: any) => {
+  //   setFromDate(val.toDate());
+  //   if (toDate && val.toDate() >= toDate) {
+  //     setToDate(val.toDate());
+  //   }
+  // };
+  // const branchSelectHandler = (currentBranch) => {
+  //   console.log("Current Branch Selected:", currentBranch);
+  //   setSelectedBranch(currentBranch?.value || ""); // Ensure ID is stored
+  //   setSelectedClass("select"); // Reset class selection
+  // };
 
   const CLASS_ARRAY =
     (usersRole?.name === TEACHER ? TeacherClassesArray : formatSchoolClasses) ||
@@ -499,6 +498,11 @@ export default function () {
       });
     }
   }, [usersRole, user]);
+
+  useEffect(() => {
+    refetchReport();
+    console.log('refetchReport', fromDate);
+  }, [selectedBranch, selectedClass, selectedChild, selectedCourse, fromDate]);
 
   return (
     <RouteLayout navBack={true}>
