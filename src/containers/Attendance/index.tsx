@@ -327,6 +327,7 @@ function Attendance() {
 
   useEffect(() => {
     setTmpTableData([]);
+    seAttendanceHistory([]);
 
     if (selectedDate) {
       refetch();
@@ -453,6 +454,7 @@ function Attendance() {
             paginateHandler={handlePagination}
             totalPages={noOfpages}
             setRefreshCalendar={setRefreshCalendar}
+            attendanceHistory={attendanceHistory}
           />
         </>
       </div>

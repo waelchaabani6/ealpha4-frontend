@@ -228,8 +228,8 @@ export default function () {
   const [selectedChild, setSelectedChild] = useState<number | 'select'>(
     'select'
   );
-  const [fromDate, setFromDate] = useState(null);
-  const [toDate, setToDate] = useState(null);
+  const [fromDate, setFromDate] = useState(new Date());
+  const [toDate, setToDate] = useState('');
 
   const fetchReportData = () => {
     console.log('Fetching report data with:', {

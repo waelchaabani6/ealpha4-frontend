@@ -46,6 +46,7 @@ const AttendanceTable = ({
   setRefreshCalendar,
   paginateHandler,
   totalPages,
+  attendanceHistory,
 }: any) => {
   const [students, setStudents] = useState<Student[]>([]);
 
@@ -140,7 +141,11 @@ const AttendanceTable = ({
     baseURL: AttendanceUrl,
     url: MarkAttendanceEndpointUrl,
     onSuccess: () => {
-      toast('success', 'Attendance Updated Successfully!');
+      if (attendanceHistory && attendanceHistory?.length > 0) {
+        toast('success', 'Attendance Updated Successfully!');
+      } else {
+        toast('success', 'Attendance Created Successfully!');
+      }
       setRefreshCalendar((prev) => !prev);
     },
     onError: (error: any) => {
