@@ -112,6 +112,8 @@ export default function OBE_StudentCompletedAssessmentList() {
     const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
     const targetPagePath = `/${schoolName}/obe-assessments/assigned/completed_assessments`; // Update this to the path of the page you want to redirect to
     const targetPageUrl = `${window.location.origin}${targetPagePath}`; // Constructs the full URL
+    const domain_name = import.meta.env.VITE_OBESASS_domain_name;
+
     // const config = { originPath, obeasses_id, user_ting };
     const message: Message = {
       key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
@@ -124,7 +126,7 @@ export default function OBE_StudentCompletedAssessmentList() {
       user_ting
     };
     const encryptedData = encryptMessage(JSON.stringify(message));
-    window.open(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/teacher-reports/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`, '_blank');
+    window.open(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/teacher-reports/${obeasses_id}?token=${encodeURIComponent(encryptedData)}&domain_name=${domain_name}`, '_blank');
   };
 
   // ----------------------------------------API-------------------------
