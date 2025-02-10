@@ -331,7 +331,7 @@ function Attendance() {
     if (selectedDate) {
       refetch();
     }
-  }, [selectedDate]);
+  }, [selectedDate, selectedClass]);
 
   const classesStudentsEndPointUrl = isAdmin
     ? `schools-service/schools/get-classes/by-class-id?program_id=${
@@ -396,9 +396,9 @@ function Attendance() {
     }
   }, [attendanceD]);
 
-  useEffect(() => {
-    seAttendanceHistory([]);
-  }, [selectedClass]);
+  // useEffect(() => {
+  //   seAttendanceHistory([]);
+  // }, [selectedClass]);
 
   return (
     <RouteLayout navBack={true} overflow={true}>
