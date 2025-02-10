@@ -228,7 +228,7 @@ export default function () {
   const [selectedChild, setSelectedChild] = useState<number | 'select'>(
     'select'
   );
-  const [fromDate, setFromDate] = useState(new Date());
+  const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState('');
 
   const fetchReportData = () => {
@@ -269,10 +269,11 @@ export default function () {
       ),
     },
   ];
-  const formatFromDate = useMemo(
-    () => moment(fromDate).format('yyyy-MM-DD'),
-    [fromDate]
-  );
+  const formatFromDate = useMemo(() => {
+    const date = fromDate || new Date();
+    return moment(date).format('yyyy-MM-DD');
+  }, [fromDate]);
+
   const formatToDate = useMemo(
     () => moment(toDate).format('yyyy-MM-DD'),
     [toDate]
@@ -501,7 +502,6 @@ export default function () {
 
   useEffect(() => {
     refetchReport();
-    console.log('refetchReport', fromDate);
   }, [selectedBranch, selectedClass, selectedChild, selectedCourse, fromDate]);
 
   return (
