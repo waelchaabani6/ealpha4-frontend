@@ -34,6 +34,11 @@ const AddHolidayModal = ({
     setCurrentEditData(null); // Reset edit data on close
   };
 
+  const handleConfirm = () => {
+    setCurrentView("list");
+    setCurrentEditData(null); // Reset edit data on close
+  };
+
   useEffect(() => {
     if (isEdit && editDataOnSelect) {
       setCurrentEditData(editDataOnSelect);
@@ -62,7 +67,7 @@ const AddHolidayModal = ({
           type={holidayResponseStatus ? "success" : "error"}
           message={statusMessage}
           onClose={handleClose}
-          onConfirm={handleClose}
+          onConfirm={handleConfirm}
           isLoader={isCreateLoading || isEditLoading}
         />
       ) : currentView === "create" ? (

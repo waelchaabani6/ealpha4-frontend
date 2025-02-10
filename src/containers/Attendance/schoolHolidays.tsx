@@ -114,9 +114,11 @@ export default function Index() {
   };
 
   // Fetch holidays and set them as calendar events
+  const listbranchHolidays = `schools-service/holiday-management/holidays/list/${schoolId}/${branchId}/`;
+  const listAllHolidays = `schools-service/holiday-management/holidays/list/${schoolId}/`;
   const { refetch: fetchHolidays } = useGet({
     baseURL: "https://school.development.ealpha.net/api/v1/",
-    url: `schools-service/holiday-management/holidays/list/${schoolId}/`,
+    url: branchId ? listbranchHolidays : listAllHolidays,
     onSuccess: (resp: any) => {
       console.log("resp", resp);
     },
@@ -314,6 +316,7 @@ export default function Index() {
       end_date: saveData.endDate,
       holiday_type: saveData.dayType === "full_day" ? "full_day" : "half_day",
       school: schoolId,
+      branchId: branchId || null,
     };
 
     saveHoliday(payload); // Save new holiday
