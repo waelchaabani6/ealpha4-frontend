@@ -30,7 +30,12 @@ function AttendanceReportFilters({
   watch,
 }) {
   const { schoolData, branchData } = useSelector(selectSchoolData);
-  const { userId, role: usersRole, schoolId } = useSelector(selectUser);
+  const {
+    userId,
+    role: usersRole,
+    schoolId,
+    branchId,
+  } = useSelector(selectUser);
 
   const isParent = usersRole?.name === USER_TYPE.PARENTS;
   const isAdmin =
@@ -44,6 +49,12 @@ function AttendanceReportFilters({
   const [courses, setCourses] = useState([]);
   const [classes, setClasses] = useState([]);
   const [childrenData, setChildrenData] = useState([]);
+
+  useEffect(() => {
+    if (isBranchAdmin) {
+      setSelectedBranch(branchId);
+    }
+  }, [branchId]);
 
   useEffect(() => {
     if (isStudent) {
