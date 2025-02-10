@@ -1,12 +1,13 @@
-import Dropdown from "@component/dropdown/Dropdown";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { selectSchoolData } from "@shared/store/schoolSlice";
-import { useGet } from "@shared/api/useApi";
-import DatePicker from "@shared/form/DatePicker";
-import { selectUser } from "@shared/store/userSlice";
-import { USER_TYPE } from "@constants/constants";
-import { sortByName } from "@utility/utility";
+/* eslint-disable linebreak-style */
+import Dropdown from '@component/dropdown/Dropdown';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { selectSchoolData } from '@shared/store/schoolSlice';
+import { useGet } from '@shared/api/useApi';
+import DatePicker from '@component/datepicker';
+import { selectUser } from '@shared/store/userSlice';
+import { USER_TYPE } from '@constants/constants';
+import { currentUserAcademicDate, sortByName } from '@utility/utility';
 
 const AttendanceReportURL = import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL;
 const CourseURL = import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL;
@@ -95,14 +96,14 @@ function AttendanceReportFilters({
   // Fetching Courses
   const coursesEndPointUrl = isAdmin
     ? `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
-        selectedBranch !== "select"
+        selectedBranch !== 'select'
           ? selectedBranch
           : isBranchAdmin
-          ? branchData?.id
-          : ""
+            ? branchData?.id
+            : ''
       }`
     : `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
-        selectedBranch === "select" ? "" : selectedBranch
+        selectedBranch === 'select' ? '' : selectedBranch
       }&user_id=${selectedChild}`;
 
   const { isLoading: isCoursesLoading, refetch: refetchCourses } = useGet({
@@ -122,12 +123,12 @@ function AttendanceReportFilters({
   // Fetching Classes
   const classesEndPointUrl = isAdmin
     ? `schools-service/schools/get-classes?program_id=${
-        selectedCourse !== "select" ? selectedCourse : ""
+        selectedCourse !== 'select' ? selectedCourse : ''
       }&school_id=${schoolId}&class_id=${
-        selectedClass !== "select" ? selectedClass : ""
-      }&branch_id=${selectedBranch !== "select" ? selectedBranch : ""}`
+        selectedClass !== 'select' ? selectedClass : ''
+      }&branch_id=${selectedBranch !== 'select' ? selectedBranch : ''}`
     : `schools-service/schools/get-classes?program_id=${
-        selectedCourse !== "select" ? selectedCourse : ""
+        selectedCourse !== 'select' ? selectedCourse : ''
       }&school_id=${schoolId}&student_id=${selectedChild}`;
 
   const { data: classesResponse, refetch: refetchClasses } = useGet({
@@ -148,7 +149,7 @@ function AttendanceReportFilters({
   }, [selectedBranch]);
 
   useEffect(() => {
-    if (selectedCourse !== "select") refetchClasses();
+    if (selectedCourse !== 'select') refetchClasses();
   }, [selectedCourse]);
 
   useEffect(() => {
@@ -161,11 +162,18 @@ function AttendanceReportFilters({
 
   const courseSelectHandler = (currentCourse: number) => {
     setSelectedCourse(currentCourse);
-    setSelectedClass("select");
+    setSelectedClass('select');
   };
 
   const branchArr: [] =
     branchDataResponse?.data?.response?.results?.sort(sortByName);
+
+  const fromDateHandler = (val: any) => {
+    setFromDate(val.toDate());
+    if (toDate && val.toDate() >= toDate) {
+      setToDate(val.toDate());
+    }
+  };
 
   return (
     <div className="w-full flex flex-wrap gap-4 items-center mt-5 mb-5">
@@ -175,10 +183,10 @@ function AttendanceReportFilters({
           value={selectedChild}
           dataArray={[...childrenData]}
           displayEmpty={true}
-          onChangeHandler={(option) => setSelectedChild(option || "select")}
+          onChangeHandler={(option) => setSelectedChild(option || 'select')}
           loading={childrenLoading}
           sxClass={{
-            width: "250px",
+            width: '250px',
           }}
         />
       )}
@@ -187,7 +195,7 @@ function AttendanceReportFilters({
           title="Select Branch"
           value={selectedBranch}
           dataArray={[
-            { label: "Select", value: "select" },
+            { label: 'Select', value: 'select' },
             ...(branchArr?.map((item: any) => ({
               label: item.name,
               value: item.id,
@@ -195,7 +203,7 @@ function AttendanceReportFilters({
           ]}
           onChangeHandler={branchSelectHandler}
           sxClass={{
-            width: "250px",
+            width: '250px',
           }}
         />
       )}
@@ -203,58 +211,63 @@ function AttendanceReportFilters({
       <Dropdown
         title="Select Course"
         value={selectedCourse}
-        dataArray={[{ label: "Select", value: "select" }, ...courses]}
-        onChangeHandler={(option) => setSelectedCourse(option || "select")}
+        dataArray={[{ label: 'Select', value: 'select' }, ...courses]}
+        onChangeHandler={(option) => setSelectedCourse(option || 'select')}
         sxClass={{
-          width: "250px",
+          width: '250px',
         }}
       />
       {!isParentOrStudent && (
         <Dropdown
           title="Select Class"
           value={selectedClass}
-          dataArray={[{ label: "Select", value: "select" }, ...classes]}
-          onChangeHandler={(option) => setSelectedClass(option || "select")}
-          disabled={selectedCourse === "select"}
+          dataArray={[{ label: 'Select', value: 'select' }, ...classes]}
+          onChangeHandler={(option) => setSelectedClass(option || 'select')}
+          disabled={selectedCourse === 'select'}
           sxClass={{
-            width: "250px",
+            width: '250px',
           }}
         />
       )}
 
-      <div>
+      <div className="pb-[5px]">
         <DatePicker
-          control={control}
-          name="start_date"
-          label="Start Date"
-          sxClass={{
-            backgroundColor: "white",
-            border: "none",
-            borderRadius: "4px",
-            borderColor: "transparent",
-            outline: "none",
-          }}
-          padding={true}
-          disableOld={true}
-          disableFuture={watch("end_date")}
-          required={true}
+          fullWidth={true}
+          sxType={1}
+          value={fromDate ? fromDate.toString() : fromDate}
+          label="Date From"
+          disabled={false}
+          disablePast={false}
+          disableOld={currentUserAcademicDate()?.start || new Date()}
+          disableFuture={
+            new Date() <= currentUserAcademicDate()?.end
+              ? new Date()
+              : currentUserAcademicDate()?.end
+          }
+          defaultStyle={true}
+          handlePickerChange={fromDateHandler}
+          error={null}
+          shouldDisableDate={(dateParam: Date) => false}
         />
       </div>
-      <div>
+      <div className="pb-[5px]">
         <DatePicker
-          control={control}
-          name="end_date"
-          label="End Date"
-          sxClass={{
-            backgroundColor: "white",
-            border: "none",
-            borderRadius: "4px",
-            borderColor: "transparent",
-            outline: "none",
-          }}
-          padding={true}
-          disableOld={true}
-          required={true}
+          fullWidth={true}
+          disabled={!fromDate}
+          sxType={1}
+          value={toDate ? toDate.toString() : null}
+          label="To Date"
+          defaultStyle={true}
+          disableOld={fromDate}
+          disableFuture={
+            new Date() <= currentUserAcademicDate()?.end
+              ? new Date()
+              : currentUserAcademicDate()?.end
+          }
+          disablePast={false}
+          handlePickerChange={(val: any) => setToDate(val.toDate())}
+          error={null}
+          shouldDisableDate={(dateParam: Date) => false}
         />
       </div>
     </div>
