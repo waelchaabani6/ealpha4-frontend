@@ -19,6 +19,7 @@ interface AttendanceData {
   attendance_marked: boolean;
   is_holiday: boolean;
   is_weekend: boolean;
+  holiday_type: string;
 }
 
 interface CalendarDayProps {
@@ -50,9 +51,11 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
     attendance_marked: false,
     is_holiday: false,
     is_weekend: false,
+    holiday_type: '',
   },
 }) => {
-  const { is_holiday, is_weekend, attendance_marked } = attendanceData;
+  const { is_holiday, is_weekend, attendance_marked, holiday_type } =
+    attendanceData;
 
   // Memoizing the handleClick callback to prevent unnecessary re-renders
   const handleClick = useCallback(() => {
@@ -83,7 +86,7 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
   // Memoizing the className string to prevent unnecessary re-renders
   const buttonClassName = useMemo(() => {
     const baseClassName = `MuiButtonBase-root MuiPickersDay-root
-      ${isDisabled || is_holiday ? 'text-gray-300 cursor-not-allowed' : 'hover:cursor-pointer hover:scale-105 hover:text-gray-500'}
+      ${isDisabled || (is_holiday && holiday_type === 'full_day') ? 'text-gray-300 cursor-not-allowed' : 'hover:cursor-pointer hover:scale-105 hover:text-gray-500'}
       ${isToday ? 'border border-gray-800 rounded-full' : ''}
       ${!is_weekend && !attendance_marked && !isSelected && !isDisabled && !is_holiday ? `after:w-[5px] after:h-[5px] after:rounded-full relative top-[3.5px] after:bg-[#1B82EC]` : ''}
       grid place-items-center
@@ -104,12 +107,14 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
       type="button"
       role="gridcell"
       tabIndex={-1}
-      disabled={is_weekend || isDisabled || is_holiday} // Disable if holiday
+      disabled={
+        is_weekend || isDisabled || (is_holiday && holiday_type === 'full_day')
+      }
       className={buttonClassName}
       onClick={handleClick}
     >
       <span
-        className={`block text-center ${is_weekend || isDisabled || is_holiday ? 'text-gray-500' : 'text-black'}`}
+        className={`block text-center ${is_weekend || isDisabled || (is_holiday && holiday_type === 'full_day') ? 'text-gray-500' : 'text-black'}`}
       >
         {day}
       </span>
