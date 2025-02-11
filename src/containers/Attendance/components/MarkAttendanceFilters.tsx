@@ -84,11 +84,6 @@ function MarkAttendanceFilters({
   const [loading, setLoading] = useState(false);
   const [classes, setClasses] = useState<any[]>([]);
   const [listOfStudents, setListOfStudents] = useState<any[]>([]);
-  
-
-  useEffect(() => {
-    console.log({ selectedClassStudents });
-  }, [selectedClassStudents]);
 
   useEffect(() => {
     if (selectedClass === "select" && results.length === 0) {
@@ -212,7 +207,7 @@ function MarkAttendanceFilters({
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
         selectedClass !== "select" ? selectedClass : ""
-      }`;
+      }&branch_id=${branchId || " "}`;
 
   const { isLoading: classStudentsLoading, refetch: refetchClassesStudents } =
     useGet({

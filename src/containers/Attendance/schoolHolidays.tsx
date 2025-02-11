@@ -21,6 +21,7 @@ import PageTitle from "@shared/pageTitle";
 import AddWeekendModal from "./components/add_weekend_modal";
 import { set } from "react-hook-form";
 import HolidayDatesContext from "./context";
+import { USER_TYPE } from "@constants/constants";
 
 const DnDCalendar = withDragAndDrop(Calendar);
 moment.locale("en-GB");
@@ -52,6 +53,7 @@ export default function Index() {
   const [currentView, setCurrentView] = useState("create");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedHolidayId, setSelectedHolidayId] = useState(null);
+  const [selectedEditHolidayId, setSelectedEditHolidayId] = useState(null);
   const [weekendsData, setWeekendsData] = useState([]); // To store weekends list
   const [isWeekendModalOpen, setIsWeekendModalOpen] = useState(false);
   const [isWeekendRequestLoading, setIsWeekendRequestLoading] = useState(false);
@@ -59,6 +61,11 @@ export default function Index() {
   const [weekendsResponseeStatus, setWeekendsResponseStatus] = useState(false);
   const [endDateFromResponse, setEndDateFromResponse] = useState("");
   const { schoolId, branchId } = useSelector(selectUser);
+  const { SCHOOL_ADMIN, BRANCH_ADMIN } = USER_TYPE;
+
+  const usersRole = useSelector((state: any) => state?.user?.role);
+  const isSchoolOrBranchAdmin =
+    usersRole?.name === SCHOOL_ADMIN || usersRole?.name === BRANCH_ADMIN;
   const calculateWeekendDates = (
     days: string[],
     endsAfter: string,
@@ -264,7 +271,9 @@ export default function Index() {
   // Edit existing holiday
   const { isLoading: isUpdatingHoliday, mutate: updateHoliday } = usePut({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/holiday-management/holidays/${currentEditData?.id}/`,
+    url: `schools-service/holiday-management/holidays/${
+      currentEditData?.id || selectedEditHolidayId
+    }/`,
     onSuccess: () => {
       toast("success", "Holiday updated successfully!");
       setHolidayStatus(true);
@@ -335,6 +344,10 @@ export default function Index() {
     updateHoliday(payload); // Update existing holiday
   };
 
+  const handleonEditIconClick = (event: any) => {
+    setSelectedEditHolidayId(event.id);
+  };
+
   const handleDeleteHoliday = (id: number) => {
     setSelectedHolidayId(id);
   };
@@ -392,13 +405,17 @@ export default function Index() {
     };
   }, [selectedTimeFrom, selectedTimeTo]);
 
+  const pageTitle = isSchoolOrBranchAdmin
+    ? "Manage school calendar"
+    : "Manage Weekends and Holidays";
+
   return (
     <HolidayDatesContext.Provider value={contextValue}>
       <RouteLayout navBack={true}>
         {/* Buttons Section */}
         <div className="flex justify-between items-center p-4 mt-5">
           {/* Page Title */}
-          <PageTitle title="Manage Weekends and Holidays" />
+          <PageTitle title={pageTitle} />
 
           <div className="flex items-center space-x-4">
             {/* Edit Weekends Button */}
@@ -500,7 +517,7 @@ export default function Index() {
               ? handleEditHoliday(holidayData) // Handle edit
               : handleSaveHoliday(holidayData); // Handle create
           }}
-          onEdit={(holidayData: any) => handleEditHoliday(holidayData)}
+          onEdit={(holidayData: any) => handleonEditIconClick(holidayData)}
           onDelete={(holidayId: any) => handleDeleteHoliday(holidayId)}
           eventsData={eventsData}
           isCreateLoading={isSavingHoliday}

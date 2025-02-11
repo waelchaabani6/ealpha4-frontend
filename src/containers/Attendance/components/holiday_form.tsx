@@ -56,7 +56,24 @@ const HolidayForm: React.FC<HolidayFormType> = ({
   };
 
   const handleSave = async () => {
+    let isValid = true;
+
+    // Validate Holiday Name
+    if (!resonForHoliday.trim()) {
+      setError("Holiday name is required.");
+      isValid = false;
+    } else if (resonForHoliday.length > 50) {
+      setError("Holiday name cannot exceed 50 characters.");
+      isValid = false;
+    } else {
+      setError(null);
+    }
+
+    // Stop execution if validation fails
+    if (!isValid) return;
+
     setIsRequestLoading(true);
+
     const numberOfDays = moment(timeEnd).diff(moment(timeStart), "days") + 1;
     const holidayData = {
       holidayName: resonForHoliday,
@@ -67,22 +84,14 @@ const HolidayForm: React.FC<HolidayFormType> = ({
       description,
     };
 
-    // Set loading state if provided
-    if (setIsRequestLoading) {
-      setIsRequestLoading(true);
-    }
-
     try {
-      await onSave(holidayData); // Save data via parent handler
-      resetForm(); // Reset the form fields
-      setShowStatus(true); // Show the status view
-      setIsRequestLoading(false); // Reset loading state
+      await onSave(holidayData);
+      resetForm();
+      setShowStatus(true);
     } catch (error) {
       console.error("Error saving holiday:", error);
     } finally {
-      if (setIsRequestLoading) {
-        setIsRequestLoading(false);
-      }
+      setIsRequestLoading(false);
     }
   };
 

@@ -92,6 +92,7 @@ const AddHolidayModal = ({
         <HolidayList
           eventsData={eventsData.filter((event) => event.title !== "Weekend")}
           onEdit={(event) => {
+            onEdit(event);
             setCurrentEditData(event);
             setCurrentView("edit");
           }}
