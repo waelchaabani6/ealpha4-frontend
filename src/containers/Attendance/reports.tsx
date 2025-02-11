@@ -40,6 +40,7 @@ type DateNavigation = {
 type SortByType = 'Present' | 'Absent' | 'All';
 
 function formatData(data: any, page: number, subject: string | undefined) {
+  console.log('here');
   const cData = [] as any;
   const headerDates = [] as any;
   let isNext = {
@@ -53,27 +54,29 @@ function formatData(data: any, page: number, subject: string | undefined) {
     end_date: '',
     flag: false,
   } as DateNavigation;
-  data?.data?.response?.results?.forEach((item: any, index: number) => {
-    if (index === 0) {
-      if (item.attendence_recors.previous) {
-        const prevUrl = new URL(item.attendence_recors.previous);
-        const searchParams = new URLSearchParams(prevUrl.search);
-        isPrev = {
-          start_date: searchParams.get('start_date') || '',
-          end_date: searchParams.get('end_date') || '',
-          flag: true,
-        };
-      }
-      if (item.attendence_recors.next) {
-        const nextUrl = new URL(item.attendence_recors.next);
-        const searchParams = new URLSearchParams(nextUrl.search);
-        isNext = {
-          start_date: searchParams.get('start_date') || '',
-          end_date: searchParams.get('end_date') || '',
-          flag: true,
-        };
-      }
-    }
+  console.log(data, '#data');
+  data?.data?.attendance?.forEach((item: any, index: number) => {
+    console.log('test');
+    // if (index === 0) {
+    //   if (item.attendence_recors.previous) {
+    //     const prevUrl = new URL(item.attendence_recors.previous);
+    //     const searchParams = new URLSearchParams(prevUrl.search);
+    //     isPrev = {
+    //       start_date: searchParams.get('start_date') || '',
+    //       end_date: searchParams.get('end_date') || '',
+    //       flag: true,
+    //     };
+    //   }
+    //   if (item.attendence_recors.next) {
+    //     const nextUrl = new URL(item.attendence_recors.next);
+    //     const searchParams = new URLSearchParams(nextUrl.search);
+    //     isNext = {
+    //       start_date: searchParams.get('start_date') || '',
+    //       end_date: searchParams.get('end_date') || '',
+    //       flag: true,
+    //     };
+    //   }
+    // }
     if (userRole().isStudent) {
       // const ob = item?.attendence_recors?.results;
 
@@ -133,50 +136,50 @@ function formatData(data: any, page: number, subject: string | undefined) {
 
       const tmp = {
         sr_no: (page - 1) * 10 + index + 1,
-        TotalPresent: item.total_present,
-        TotalAbsent: item.total_absent,
-        AttendanceReport: item.attendence_recors.results.map((itm: any) => {
-          const dt = new Date(itm.present_on_date).getDate();
+        TotalPresent: item.total_days_present,
+        TotalAbsent: item.total_days_absent,
+        // AttendanceReport: item.attendence_recors.results.map((itm: any) => {
+        //   const dt = new Date(itm.present_on_date).getDate();
 
-          if (headerDates.indexOf(dt) < 0) {
-            headerDates.push(dt);
-          }
+        //   if (headerDates.indexOf(dt) < 0) {
+        //     headerDates.push(dt);
+        //   }
 
-          return itm.present
-            ? 'Checked'
-            : itm.is_weekend
-              ? 'Weekend'
-              : itm.is_holiday
-                ? 'HoliDay'
-                : itm.present === null
-                  ? 'UnChecked'
-                  : 'Absent';
-        }),
-        subject,
+        //   return itm.present
+        //     ? 'Checked'
+        //     : itm.is_weekend
+        //       ? 'Weekend'
+        //       : itm.is_holiday
+        //         ? 'HoliDay'
+        //         : itm.present === null
+        //           ? 'UnChecked'
+        //           : 'Absent';
+        // }),
+        subject: item.program_name,
       } as any;
       cData.push(tmp);
     } else {
       const tmp = {
         sr_no: (page - 1) * 10 + index + 1,
-        TotalPresent: item.total_present,
-        TotalAbsent: item.total_absent,
-        AttendanceReport: item.attendence_recors.results.map((itm: any) => {
-          const dt = new Date(itm.present_on_date).getDate();
+        TotalPresent: item.total_days_present,
+        TotalAbsent: item.total_days_absent,
+        // AttendanceReport: item.attendence_recors.results.map((itm: any) => {
+        //   const dt = new Date(itm.present_on_date).getDate();
 
-          if (headerDates.indexOf(dt) < 0) {
-            headerDates.push(dt);
-          }
+        //   if (headerDates.indexOf(dt) < 0) {
+        //     headerDates.push(dt);
+        //   }
 
-          return itm.present
-            ? 'Checked'
-            : itm.is_weekend
-              ? 'Weekend'
-              : itm.is_holiday
-                ? 'HoliDay'
-                : itm.present === null
-                  ? 'UnChecked'
-                  : 'Absent';
-        }),
+        //   return itm.present
+        //     ? 'Checked'
+        //     : itm.is_weekend
+        //       ? 'Weekend'
+        //       : itm.is_holiday
+        //         ? 'HoliDay'
+        //         : itm.present === null
+        //           ? 'UnChecked'
+        //           : 'Absent';
+        // }),
         StudentFirstname: item.first_name,
         StudentLastname: item.last_name,
       } as any;
@@ -298,9 +301,9 @@ export default function () {
   });
 
   const subjectName = useMemo(() => {
-    const tmp = courses?.find((item: any) => item.value === selectedSubject);
+    const tmp = courses?.find((item: any) => item.value === selectedCourse);
     return tmp?.label;
-  }, [selectedSubject]);
+  }, [selectedCourse]);
 
   const { data, isLoading } = useGet({
     baseURL: SchoolUrl,
@@ -386,8 +389,11 @@ export default function () {
 
   const { cData, headerDates, isNext, isPrev } = useMemo(
     () => formatData(data2, page, subjectName),
-    [page, fromDate, toDate, data2, selectedSubject]
+    [page, fromDate, toDate, data2, selectedClass, selectedCourse]
   );
+
+  console.log(cData, '#cData');
+
   const rowsPerPageHandler = (val: number | 'all') => {
     setRecordsPerPage(val);
   };
@@ -412,7 +418,7 @@ export default function () {
         },
         {
           id: 'subject',
-          label: 'Subject',
+          label: 'Program',
         },
         {
           id: 'AttendanceReport',
