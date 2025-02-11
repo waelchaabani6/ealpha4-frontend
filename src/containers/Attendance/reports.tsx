@@ -55,8 +55,13 @@ function formatData(data: any, page: number, subject: string | undefined) {
     flag: false,
   } as DateNavigation;
   console.log(data, '#data');
-  data?.data?.attendance?.forEach((item: any, index: number) => {
-    console.log('test');
+
+  const attendanceData =
+    userRole().isStudent || userRole().isParent
+      ? data?.data?.attendance
+      : data?.data?.results?.data?.attendance_records;
+
+  attendanceData?.forEach((item: any, index: number) => {
     // if (index === 0) {
     //   if (item.attendence_recors.previous) {
     //     const prevUrl = new URL(item.attendence_recors.previous);
@@ -78,62 +83,6 @@ function formatData(data: any, page: number, subject: string | undefined) {
     //   }
     // }
     if (userRole().isStudent) {
-      // const ob = item?.attendence_recors?.results;
-
-      // Object.keys(ob)?.forEach((key: string, index2: number) => {
-      //   const tmp = {
-      //     sr_no: (page - 1) * 10 + index2 + 1,
-      //     // TotalPresent: ob[key].present_count,
-      //     TotalPresent: item.total_absent,
-      //     // TotalAbsent: ob[key].absent_count,
-      //     TotalAbsent: item.total_present,
-      //     AttendanceReport: item.attendence_recors.results.map((itm: any) => {
-      //       const dt = new Date(itm.present_on_date).getDate();
-
-      //       if (headerDates.indexOf(dt) < 0) {
-      //         headerDates.push(dt);
-      //       }
-
-      //       return itm.present
-      //         ? 'Checked'
-      //         : itm.is_weekend
-      //           ? 'Weekend'
-      //           : itm.is_holiday
-      //             ? 'HoliDay'
-      //             : itm.present === null
-      //               ? 'UnChecked'
-      //               : 'Absent';
-      //     }),
-      //     // AttendanceReport:
-      //     //   ob[key].records
-      //     //     .sort(
-      //     //       (a: any, b: any) =>
-      //     //         new Date(a.present_on_date).getTime() -
-      //     //         new Date(b.present_on_date).getTime()
-      //     //     )
-      //     //     ?.map((itm: any) => {
-      //     //       const dt = new Date(itm.present_on_date).getDate();
-
-      //     //       if (headerDates.indexOf(dt) < 0) {
-      //     //         headerDates.push(dt);
-      //     //       }
-
-      //     //       return itm.present
-      //     //         ? 'Checked'
-      //     //         : itm.is_weekend
-      //     //           ? 'Weekend'
-      //     //           : itm.is_holiday
-      //     //             ? 'HoliDay'
-      //     //             : itm.present === null
-      //     //               ? 'UnChecked'
-      //     //               : 'Absent';
-      //     //     }) || [],
-      //     // subject: key,
-      //     subject,
-      //   };
-      //   cData.push(tmp);
-      // });
-
       const tmp = {
         sr_no: (page - 1) * 10 + index + 1,
         TotalPresent: item.total_days_present,
@@ -364,11 +313,7 @@ export default function () {
     }&offset=${(page - 1) * Number(noOfpages)}&child_limit=7&child_offset=${
       (datesPerPage - 1) * Number(noOfpages)
     }&from_date=${formatFromDate}${toDate ? `&to_date=${formatToDate}` : ''}&class_id=${selectedClass}`,
-    enabled: !!(
-      selectedCourse !== 'select' ||
-      selectedClass !== 'select' ||
-      userRole().isStudent
-    ),
+    enabled: selectedCourse !== 'select' || selectedClass !== 'select',
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.count);
     },
@@ -498,7 +443,9 @@ export default function () {
   }, [usersRole, user]);
 
   useEffect(() => {
-    refetchReport();
+    if (selectedClass !== 'select' && selectedCourse !== 'select') {
+      refetchReport();
+    }
   }, [selectedBranch, selectedClass, selectedChild, selectedCourse, fromDate]);
 
   console.log(schoolId);
