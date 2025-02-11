@@ -207,7 +207,7 @@ function MarkAttendanceFilters({
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
         selectedClass !== "select" ? selectedClass : ""
-      }`;
+      }&branch_id=${branchId || " "}`;
 
   const { isLoading: classStudentsLoading, refetch: refetchClassesStudents } =
     useGet({
@@ -296,9 +296,23 @@ function MarkAttendanceFilters({
               </span>
             )}
             onResultSelect={(student: Student) => {
-              console.log({ student });
               setSelectedClassStudents([student]);
+              setTableData(() => [
+                {
+                  id: 1,
+                  SR_NO: 1,
+                  StudentFirstName: student.first_name,
+                  StudentLastName: student.last_name,
+                  Class: student.class || "",
+                  student_id: student.student_id,
+                },
+              ]);
               setSelectedClassName(student.class || "");
+
+              const classId = classes.find(
+                (itm) => itm.label === student.class
+              );
+              setSelectedClass(classId?.value);
               handleInputSearch("");
             }}
           />

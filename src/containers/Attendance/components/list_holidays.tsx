@@ -4,7 +4,6 @@ import { ReactComponent as Trash } from "@images/icons/trash.svg";
 import { ReactComponent as Pin } from "@images/icons/green_pin.svg";
 import moment from "moment";
 
-
 type EventTypeData = {
   id: number;
   title: string;
@@ -50,24 +49,22 @@ const HolidayList: React.FC<HolidayListPropsType> = ({
   const calculateDuration = (start: string, end: string) => {
     const startDate = moment(start, "YYYY-MM-DD");
     const endDate = moment(end, "YYYY-MM-DD");
-  
+
     // Calculate the difference in days and add 1 to include the start date
     const duration = endDate.diff(startDate, "days") + 1;
-  
+
     return duration;
   };
-  
-  
 
   return (
     <div className="p-6">
-      <div className="max-h-[480px]">
+      <div className="max-h-[550px]">
         {currentHolidays.map((holiday) => (
           <div
             key={holiday.id}
             className="bg-white shadow-md rounded-lg p-6 mb-4 border border-gray-200"
           >
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div className="flex flex-col md:flex-row justify-between items-center">
               <div className="flex items-center">
                 <div className="h-6 w-1 bg-green-500 mr-2"></div>
                 <p className="text-sm text-gray-500 space-y-1">
@@ -87,20 +84,21 @@ const HolidayList: React.FC<HolidayListPropsType> = ({
                   <span className="font-medium">{holiday.holidayType}</span>
                 </p>
               </div>
-              <div className="flex items-center mt-4 md:mt-0">
+              <div className="flex items-center mt-4 md:mt-0 h-full gap-2">
                 <button
-                  className="text-green-500 hover:text-green-700 transition-colors duration-200 flex items-center mr-3"
-                  title="Edit"
+                  className="text-green-500 hover:text-green-700 transition-colors duration-200 flex items-center justify-center p-2"
+                  title="Delete"
                   onClick={() => onDelete(holiday.id)}
                 >
-                  <Trash />
+                  <Trash className="w-8 h-8" />
                 </button>
+
                 <button
-                  className="text-red-500 hover:text-red-700 transition-colors duration-200 flex items-center"
-                  title="Delete"
+                  className="text-red-500 hover:text-red-700 transition-colors duration-200 flex items-center justify-center p-2"
+                  title="Edit"
                   onClick={() => onEdit(holiday)}
                 >
-                  <Pin />
+                  <Pin className="w-8 h-8" />
                 </button>
               </div>
             </div>

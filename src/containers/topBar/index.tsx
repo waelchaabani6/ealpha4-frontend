@@ -23,6 +23,9 @@ export default function Index() {
     assignment_count = null;
   }
 
+  const isSchoolOrBranchAdmin =
+    role === USER_TYPE.SCHOOL_ADMIN || role === USER_TYPE.BRANCH_ADMIN;
+
   const renderAssessment = () => {
     if (role === USER_TYPE.PARENTS || role === USER_TYPE.STUDENT) {
       return (
@@ -186,7 +189,9 @@ export default function Index() {
           ...(role === USER_TYPE.SCHOOL_ADMIN || role === USER_TYPE.BRANCH_ADMIN
             ? [
                 {
-                  label: "Manage Weekends and Holidays",
+                  label: isSchoolOrBranchAdmin
+                    ? "Manage school calendar"
+                    : "Manage Weekends and Holidays",
                   path: "attandance/holidays",
                 },
               ]
