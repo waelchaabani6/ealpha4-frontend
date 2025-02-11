@@ -181,7 +181,7 @@ export default function () {
     'select'
   );
   const [fromDate, setFromDate] = useState(null);
-  const [toDate, setToDate] = useState('');
+  const [toDate, setToDate] = useState(null);
 
   const fetchReportData = () => {
     console.log('Fetching report data with:', {
@@ -229,10 +229,12 @@ export default function () {
     return null;
   }, [fromDate]);
 
-  const formatToDate = useMemo(
-    () => moment(toDate).format('yyyy-MM-DD'),
-    [toDate]
-  );
+  const formatToDate = useMemo(() => {
+    if (toDate) {
+      return moment(toDate).format('yyyy-MM-DD');
+    }
+    return null;
+  }, [toDate]);
 
   const classId =
     selectedClass !== 'select' ? selectedClass : user?.class_id || '';
@@ -305,6 +307,11 @@ export default function () {
       ? `&branch_id=${selectedBranch}`
       : '&branch_id=';
 
+  console.log(
+    formatFromDate && `&from_date=${formatFromDate} `,
+    toDate,
+    'formatFromDate ????'
+  );
   const {
     data: data2,
     isLoading: isLoading2,
@@ -315,7 +322,7 @@ export default function () {
       userRole().isTeacher ? `&teacher_id=${userId}` : `&user_id=${userId}`
     }&offset=${(page - 1) * Number(noOfpages)}&child_limit=7&child_offset=${
       (datesPerPage - 1) * Number(noOfpages)
-    }${formatFromDate && `&from_date=${formatFromDate}`}${toDate ? `&to_date=${formatToDate}` : ''}${selectedClass !== 'select' && `&class_id=${selectedClass}`}`,
+    }${formatFromDate && `&from_date=${formatFromDate}`}${toDate ? `&to_date=${formatToDate}` : '&to_date='}${selectedClass !== 'select' ? `&class_id=${selectedClass}` : '&class_id='}`,
     enabled: selectedCourse !== 'select' || selectedClass !== 'select',
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.count);
