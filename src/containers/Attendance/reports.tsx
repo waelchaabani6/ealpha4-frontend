@@ -222,8 +222,11 @@ export default function () {
     },
   ];
   const formatFromDate = useMemo(() => {
-    const date = fromDate || new Date();
-    return moment(date).format('yyyy-MM-DD');
+    if (fromDate) {
+      return moment(fromDate).format('yyyy-MM-DD');
+    }
+
+    return null;
   }, [fromDate]);
 
   const formatToDate = useMemo(
@@ -312,7 +315,7 @@ export default function () {
       userRole().isTeacher ? `&teacher_id=${userId}` : `&user_id=${userId}`
     }&offset=${(page - 1) * Number(noOfpages)}&child_limit=7&child_offset=${
       (datesPerPage - 1) * Number(noOfpages)
-    }&from_date=${formatFromDate}${toDate ? `&to_date=${formatToDate}` : ''}&class_id=${selectedClass}`,
+    }${formatFromDate && `&from_date=${formatFromDate}`}${toDate ? `&to_date=${formatToDate}` : ''}${selectedClass !== 'select' && `&class_id=${selectedClass}`}`,
     enabled: selectedCourse !== 'select' || selectedClass !== 'select',
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.count);
