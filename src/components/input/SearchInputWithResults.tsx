@@ -82,7 +82,13 @@ export default React.forwardRef(<T,>(props: Props<T>, ref: any) => {
                 </span>
               )
             )}
-            <Search className="w-[26px]" />
+           <button
+    type="button"
+    onClick={() => props.onChange(value)}
+    className="w-[26px] focus:outline-none"
+  >
+    <Search />
+  </button>
           </div>
         </div>
         {/* Render search results */}

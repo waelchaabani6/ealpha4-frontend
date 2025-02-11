@@ -84,6 +84,11 @@ function MarkAttendanceFilters({
   const [loading, setLoading] = useState(false);
   const [classes, setClasses] = useState<any[]>([]);
   const [listOfStudents, setListOfStudents] = useState<any[]>([]);
+  
+
+  useEffect(() => {
+    console.log({ selectedClassStudents });
+  }, [selectedClassStudents]);
 
   useEffect(() => {
     if (selectedClass === "select" && results.length === 0) {
@@ -296,9 +301,23 @@ function MarkAttendanceFilters({
               </span>
             )}
             onResultSelect={(student: Student) => {
-              console.log({ student });
               setSelectedClassStudents([student]);
+              setTableData(() => [
+                {
+                  id: 1,
+                  SR_NO: 1,
+                  StudentFirstName: student.first_name,
+                  StudentLastName: student.last_name,
+                  Class: student.class || "",
+                  student_id: student.student_id,
+                },
+              ]);
               setSelectedClassName(student.class || "");
+
+              const classId = classes.find(
+                (itm) => itm.label === student.class
+              );
+              setSelectedClass(classId?.value);
               handleInputSearch("");
             }}
           />
