@@ -144,7 +144,7 @@ const AttendanceTable = ({
       if (attendanceHistory && attendanceHistory?.length > 0) {
         toast('success', 'Attendance Updated Successfully!');
       } else {
-        toast('success', 'Attendance Created Successfully!');
+        toast('success', 'Attendance added successfully!');
       }
       setRefreshCalendar((prev) => !prev);
     },
