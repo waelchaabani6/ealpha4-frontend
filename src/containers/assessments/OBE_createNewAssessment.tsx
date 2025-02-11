@@ -157,6 +157,7 @@ export default function OBE_CreateAssessments() {
       const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
       const targetPagePath = `/${schoolName}/obe-assessments/my-assessments`; // Update this to the path of the page you want to redirect to
       const targetPageUrl = `${window.location.origin}${targetPagePath}`; // Constructs the full URL
+      const domain_name = import.meta.env.VITE_OBESASS_domain_name;
 
       const message: any = {
         key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
@@ -168,7 +169,7 @@ export default function OBE_CreateAssessments() {
         redirectionPath: targetPageUrl
       };
       const encryptedData = encryptMessage(JSON.stringify(message));
-      window.location.href = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/create-assessments/?token=${encodeURIComponent(encryptedData)}`;
+      window.location.href = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/create-assessments/?token=${encodeURIComponent(encryptedData)}&domain_name=${domain_name}`;
     }
   }, [dataValues, obeId]);
 

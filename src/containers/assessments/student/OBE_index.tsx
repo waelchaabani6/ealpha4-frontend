@@ -144,8 +144,10 @@ export default function OBE_Index() {
     const obeasses_id = data?.obeasses_id;
     const currentDate = new Date();
     const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
-    const targetPagePath = `/${schoolName}/obe-assessments/my-assessments`; // Update this to the path of the page you want to redirect to
+    const targetPagePath = `/${schoolName}/obe-assessments/completed-assessments`; // Update this to the path of the page you want to redirect to
     const targetPageUrl = `${window.location.origin}${targetPagePath}`; // Constructs the full URL
+    const domain_name = import.meta.env.VITE_OBESASS_domain_name;
+
     const originPath = window.location.href;
     const message: Message = {
       key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
@@ -161,7 +163,7 @@ export default function OBE_Index() {
     const encryptedData = encryptMessage(JSON.stringify(message));
 
     // Change the URL to point to App B running on port 3001
-    window.location.href = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${obeasses_id}?token=${encodeURIComponent(encryptedData)}`;
+    window.location.href = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/player/${obeasses_id}?token=${encodeURIComponent(encryptedData)}&domain_name=${domain_name}`;
   };
 
   function shouldDisableButton(startDateString: any) {
