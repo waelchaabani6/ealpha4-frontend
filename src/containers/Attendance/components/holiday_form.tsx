@@ -33,6 +33,8 @@ const HolidayForm: React.FC<HolidayFormType> = ({
   const [dayType, setDayType] = useState("full_day");
   const [description, setDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [dateError, setDateError] = useState<string | null>(null);
+
 
   const handleHolidayNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -45,7 +47,25 @@ const HolidayForm: React.FC<HolidayFormType> = ({
 
     setResonForHoliday(value.slice(0, 50)); // Ensure max length is 50
   };
+const handleStartDateChange = (val: Date) => {
+  setTimeStart(moment(val).toDate());
 
+  if (moment(val).isAfter(timeEnd)) {
+    setDateError("End date cannot be earlier than the start date.");
+  } else {
+    setDateError(null);
+  }
+};
+
+const handleEndDateChange = (val: Date) => {
+  setTimeEnd(moment(val).toDate());
+
+  if (moment(val).isBefore(timeStart)) {
+    setDateError("End date cannot be earlier than the start date.");
+  } else {
+    setDateError(null);
+  }
+};
   // Function to reset the form
   const resetForm = () => {
     setResonForHoliday("");
@@ -57,8 +77,7 @@ const HolidayForm: React.FC<HolidayFormType> = ({
 
   const handleSave = async () => {
     let isValid = true;
-
-    // Validate Holiday Name
+  
     if (!resonForHoliday.trim()) {
       setError("Holiday name is required.");
       isValid = false;
@@ -68,12 +87,15 @@ const HolidayForm: React.FC<HolidayFormType> = ({
     } else {
       setError(null);
     }
-
-    // Stop execution if validation fails
+  
+    if (moment(timeEnd).isBefore(timeStart)) {
+      setDateError("End date cannot be earlier than the start date.");
+      isValid = false;
+    }
+  
     if (!isValid) return;
-
+  
     setIsRequestLoading(true);
-
     const numberOfDays = moment(timeEnd).diff(moment(timeStart), "days") + 1;
     const holidayData = {
       holidayName: resonForHoliday,
@@ -83,7 +105,7 @@ const HolidayForm: React.FC<HolidayFormType> = ({
       dayType,
       description,
     };
-
+  
     try {
       await onSave(holidayData);
       resetForm();
@@ -120,12 +142,12 @@ const HolidayForm: React.FC<HolidayFormType> = ({
         {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
       </div>
       <div className="flex flex-col mt-[21px]">
-        <div className="font-bold mb-[30px] flex justify-between items-end">
+        <div className="font-bold mb-[10px] flex justify-between items-end">
           <div className="w-[290px]">
             <DatePicker
               value={timeStart}
               label="From Date:"
-              handlePickerChange={(val) => setTimeStart(moment(val).toDate())}
+              handlePickerChange={handleStartDateChange}
               format="DD-MM-YYYY"
               disablePast={false}
               sxType={3}
@@ -136,12 +158,14 @@ const HolidayForm: React.FC<HolidayFormType> = ({
             <DatePicker
               value={timeEnd}
               label="To Date:"
-              handlePickerChange={(val) => setTimeEnd(moment(val).toDate())}
+              handlePickerChange={handleEndDateChange}
               format="DD-MM-YYYY"
               disablePast={false}
               sxType={3}
             />
+            
           </div>
+          
           <div className="w-[200px]">
             <CustomInput
               name="Branch Name"
@@ -153,6 +177,10 @@ const HolidayForm: React.FC<HolidayFormType> = ({
               sx={{ height: "37px" }}
             />
           </div>
+        </div>
+
+        <div className="flex items-center space-x-8 mb-[10px]">
+        {dateError && <p className="text-red-500 text-xs mt-1">{dateError}</p>}
         </div>
 
         <div className="flex items-center space-x-8">
