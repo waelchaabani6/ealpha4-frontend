@@ -1,6 +1,6 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable operator-linebreak */
-/* eslint-disable linebreak-style */
 /* eslint-disable arrow-body-style */
 /* eslint-disable react/no-unstable-nested-components */
 import { Typography } from '@mui/material';
@@ -59,7 +59,13 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
 
   // Memoizing the handleClick callback to prevent unnecessary re-renders
   const handleClick = useCallback(() => {
-    if (day !== null && !is_weekend && !isDisabled && !is_holiday) {
+    if (
+      day !== null &&
+      !is_weekend &&
+      !isDisabled &&
+      // !is_holiday &&
+      !isFullDay
+    ) {
       // Check if it's not a holiday
       onSelectDay(day);
     }
@@ -83,10 +89,13 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
     [currentDate]
   );
 
+  const ishalfDay = holiday_type === 'half_day';
+  const isFullDay = is_holiday && holiday_type !== 'half_day';
+
   // Memoizing the className string to prevent unnecessary re-renders
   const buttonClassName = useMemo(() => {
     const baseClassName = `MuiButtonBase-root MuiPickersDay-root
-      ${isDisabled || (is_holiday && holiday_type === 'full_day') ? 'text-gray-300 cursor-not-allowed' : 'hover:cursor-pointer hover:scale-105 hover:text-gray-500'}
+      ${isDisabled || isFullDay ? 'text-gray-300 cursor-not-allowed' : 'hover:cursor-pointer hover:scale-105 hover:text-gray-500'}
       ${isToday ? 'border border-gray-800 rounded-full' : ''}
       ${!is_weekend && !attendance_marked && !isSelected && !isDisabled && !is_holiday ? `after:w-[5px] after:h-[5px] after:rounded-full relative top-[3.5px] after:bg-[#1B82EC]` : ''}
       grid place-items-center
@@ -107,14 +116,12 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
       type="button"
       role="gridcell"
       tabIndex={-1}
-      disabled={
-        is_weekend || isDisabled || (is_holiday && holiday_type === 'full_day')
-      }
+      // disabled={is_weekend || isDisabled || isFullDay}
       className={buttonClassName}
       onClick={handleClick}
     >
       <span
-        className={`block text-center ${is_weekend || isDisabled || (is_holiday && holiday_type === 'full_day') ? 'text-gray-500' : 'text-black'}`}
+        className={`block text-center ${is_weekend || isDisabled || isFullDay ? 'text-gray-500' : 'text-black'}`}
       >
         {day}
       </span>
