@@ -106,13 +106,13 @@ function MarkAttendanceFilters({
     setTimeout(() => {
       const dataTobSearchIn =
         selectedClass !== "select" ? selectedClassStudents : listOfStudents;
-      console.log({ dataTobSearchIn });
+
       const searchResults = dataTobSearchIn.filter((student) =>
         `${student.first_name} ${student.last_name}`
           .toLowerCase()
           .includes(value.toLowerCase())
       );
-      console.log({ searchResults });
+
       setResults(searchResults);
 
       setLoading(false);
@@ -215,8 +215,17 @@ function MarkAttendanceFilters({
       url: classesStudentsEndPointUrl,
       enabled: false,
       onSuccess: (resp: any) => {
-        const respData = resp?.data?.results;
-        setSelectedClassStudents(respData[0]?.student_profile);
+        const respData = resp?.data?.results?.[0];
+        if (respData) {
+          const formattedStudents = respData.student_profile.map(
+            (student: any) => ({
+              ...student,
+              class: respData.class_name,
+            })
+          );
+
+          setSelectedClassStudents(formattedStudents);
+        }
       },
     });
   useEffect(() => {
@@ -233,7 +242,7 @@ function MarkAttendanceFilters({
     if (selectedClass !== "select") {
       refetchClassesStudents();
     }
-  }, [selectedClass, selectedClassStudents]);
+  }, [selectedClass]);
 
   const branchName = useMemo(
     () =>
@@ -290,29 +299,36 @@ function MarkAttendanceFilters({
             onChange={handleInputSearch}
             loading={loading}
             results={results}
-            renderResultItem={(student: Student) => (
-              <span>
-                {student.first_name} {student.last_name}
-              </span>
-            )}
+            renderResultItem={(student: Student) => {
+              return (
+                <span>
+                  {student.first_name} {student.last_name}
+                </span>
+              );
+            }}
             onResultSelect={(student: Student) => {
-              setSelectedClassStudents([student]);
+              const selectedStudent = listOfStudents.find(
+                (itm) => itm.student_id === student.student_id
+              );
+
+              setSelectedClassStudents([selectedStudent]);
+
               setTableData(() => [
                 {
                   id: 1,
                   SR_NO: 1,
-                  StudentFirstName: student.first_name,
-                  StudentLastName: student.last_name,
-                  Class: student.class || "",
-                  student_id: student.student_id,
+                  StudentFirstName: selectedStudent.first_name,
+                  StudentLastName: selectedStudent.last_name,
+                  Class: selectedStudent.class || "",
+                  student_id: selectedStudent.student_id,
                 },
               ]);
               setSelectedClassName(student.class || "");
 
-              const classId = classes.find(
-                (itm) => itm.label === student.class
-              );
-              setSelectedClass(classId?.value);
+              // const classId = classes.find(
+              //   (itm) => itm.label === student.class
+              // );
+              // setSelectedClass(classId?.value);
               handleInputSearch("");
             }}
           />

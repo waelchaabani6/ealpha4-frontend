@@ -325,7 +325,7 @@ export default function Index() {
       end_date: saveData.endDate,
       holiday_type: saveData.dayType === "full_day" ? "full_day" : "half_day",
       school: schoolId,
-      branchId: branchId || null,
+      branch: branchId || null,
     };
 
     saveHoliday(payload); // Save new holiday

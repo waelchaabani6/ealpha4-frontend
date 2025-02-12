@@ -15,7 +15,6 @@ type Props<T> = {
 export default React.forwardRef(<T,>(props: Props<T>, ref: any) => {
   const [value, setValue] = useState<string>("");
   const [debouncedValue, setDebouncedValue] = useState<string>("");
-
   useDebounce(
     () => {
       setDebouncedValue(value);
@@ -82,13 +81,13 @@ export default React.forwardRef(<T,>(props: Props<T>, ref: any) => {
                 </span>
               )
             )}
-           <button
-    type="button"
-    onClick={() => props.onChange(value)}
-    className="w-[26px] focus:outline-none"
-  >
-    <Search />
-  </button>
+            <button
+              type="button"
+              onClick={() => props.onChange(value)}
+              className="w-[26px] focus:outline-none"
+            >
+              <Search />
+            </button>
           </div>
         </div>
         {/* Render search results */}

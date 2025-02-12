@@ -104,11 +104,10 @@ const HolidayList: React.FC<HolidayListPropsType> = ({
             </div>
 
             <div>
-              <span className="font-bold text-lg">{holiday.title} :</span>
-              <span className="font-medium text-gray-700">
-                {" "}
+              <span className="font-bold text-lg block">{holiday.title} :</span>
+              <span className="font-medium text-gray-700 block break-words whitespace-normal">
                 {holiday.description}
-              </span>{" "}
+              </span>
             </div>
           </div>
         ))}
