@@ -62,10 +62,27 @@ export default function Index() {
   const [endDateFromResponse, setEndDateFromResponse] = useState("");
   const { schoolId, branchId } = useSelector(selectUser);
   const { SCHOOL_ADMIN, BRANCH_ADMIN } = USER_TYPE;
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const usersRole = useSelector((state: any) => state?.user?.role);
   const isSchoolOrBranchAdmin =
     usersRole?.name === SCHOOL_ADMIN || usersRole?.name === BRANCH_ADMIN;
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   const calculateWeekendDates = (
     days: string[],
     endsAfter: string,
@@ -435,7 +452,7 @@ export default function Index() {
               Manage Weekends
             </Button>
           </div>
-          <div className="relative ml-4">
+          <div className="relative ml-4" ref={dropdownRef}>
             <Button
               sx={{
                 backgroundColor: "#FFFFFF",
