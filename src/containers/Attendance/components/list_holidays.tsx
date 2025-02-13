@@ -58,7 +58,7 @@ const HolidayList: React.FC<HolidayListPropsType> = ({
 
   return (
     <div className="p-6">
-      <div className="max-h-[550px]">
+      <div className="max-h-fit">
         {currentHolidays.map((holiday) => (
           <div
             key={holiday.id}
