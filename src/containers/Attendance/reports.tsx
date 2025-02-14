@@ -82,7 +82,7 @@ function formatData(data: any, page: number, subject: string | undefined) {
     //     };
     //   }
     // }
-    if (userRole().isStudent) {
+    if (userRole().isStudent || userRole().isParent) {
       const tmp = {
         sr_no: (page - 1) * 10 + index + 1,
         TotalPresent: item.total_days_present,
@@ -374,7 +374,7 @@ export default function () {
   };
 
   const columns = useMemo(() => {
-    if (role.name === USER_TYPE.STUDENT) {
+    if (role.name === USER_TYPE.STUDENT || role.name === USER_TYPE.PARENTS) {
       return [
         {
           label: "Sr No.",
