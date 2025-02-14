@@ -189,9 +189,7 @@ export default function Index() {
           ...(role === USER_TYPE.SCHOOL_ADMIN || role === USER_TYPE.BRANCH_ADMIN
             ? [
                 {
-                  label: isSchoolOrBranchAdmin
-                    ? "Manage school calendar"
-                    : "Manage Weekends and Holidays",
+                  label: "Manage Weekends and Holidays",
                   path: "attandance/holidays",
                 },
               ]

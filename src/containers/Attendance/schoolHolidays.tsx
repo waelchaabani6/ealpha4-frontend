@@ -422,17 +422,13 @@ export default function Index() {
     };
   }, [selectedTimeFrom, selectedTimeTo]);
 
-  const pageTitle = isSchoolOrBranchAdmin
-    ? "Manage school calendar"
-    : "Manage Weekends and Holidays";
-
   return (
     <HolidayDatesContext.Provider value={contextValue}>
       <RouteLayout navBack={true}>
         {/* Buttons Section */}
         <div className="flex justify-between items-center p-4 mt-5">
           {/* Page Title */}
-          <PageTitle title={pageTitle} />
+          <PageTitle title="Manage school calendar" />
 
           <div className="flex items-center space-x-4">
             {/* Edit Weekends Button */}
