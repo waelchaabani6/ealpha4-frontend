@@ -4,31 +4,31 @@
 /* eslint-disable operator-linebreak */
 /* eslint-disable comma-dangle */
 /* eslint-disable implicit-arrow-linebreak */
-import { useEffect, useMemo, useRef, useState } from 'react';
-import RouteLayout from '@layout/routeLayout';
-import Dropdown from '@component/dropdown/Dropdown';
-import DatePicker from '@component/datepicker';
-import SimpleTableAttendanceReport from '@component/SimpleTableAttendanceReport';
-import { useSelector } from 'react-redux';
-import { selectSchoolData } from '@shared/store/schoolSlice';
-import { useGet, usePost } from '@shared/api/useApi';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
+import { useEffect, useMemo, useRef, useState } from "react";
+import RouteLayout from "@layout/routeLayout";
+import Dropdown from "@component/dropdown/Dropdown";
+import DatePicker from "@component/datepicker";
+import SimpleTableAttendanceReport from "@component/SimpleTableAttendanceReport";
+import { useSelector } from "react-redux";
+import { selectSchoolData } from "@shared/store/schoolSlice";
+import { useGet, usePost } from "@shared/api/useApi";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
 import {
   RESULTS_PER_PAGE,
   TOOLBAR_LABELS,
   USER_TYPE,
-} from '@constants/constants';
-import ReactToPrint from 'react-to-print';
-import PrintIcon from '@mui/icons-material/Print';
+} from "@constants/constants";
+import ReactToPrint from "react-to-print";
+import PrintIcon from "@mui/icons-material/Print";
 import {
   getNoOfPages,
   userRole,
   currentUserAcademicDate,
-} from '@utility/utility';
-import { selectUser } from '@shared/store/userSlice';
-import moment from 'moment';
-import { useForm } from 'react-hook-form';
-import AttendanceReportFilters from './components/AttendanceReportFilters';
+} from "@utility/utility";
+import { selectUser } from "@shared/store/userSlice";
+import moment from "moment";
+import { useForm } from "react-hook-form";
+import AttendanceReportFilters from "./components/AttendanceReportFilters";
 
 const printButton = () => <PrintIcon />;
 
@@ -37,24 +37,24 @@ type DateNavigation = {
   end_date: string;
   flag: boolean;
 };
-type SortByType = 'Present' | 'Absent' | 'All';
+type SortByType = "Present" | "Absent" | "All";
 
 function formatData(data: any, page: number, subject: string | undefined) {
-  console.log('here');
+  console.log("here");
   const cData = [] as any;
   const headerDates = [] as any;
   let isNext = {
-    start_date: '',
-    end_date: '',
+    start_date: "",
+    end_date: "",
     flag: false,
   } as DateNavigation;
 
   let isPrev = {
-    start_date: '',
-    end_date: '',
+    start_date: "",
+    end_date: "",
     flag: false,
   } as DateNavigation;
-  console.log(data, '#data');
+  console.log(data, "#data");
 
   const attendanceData =
     userRole().isStudent || userRole().isParent
@@ -146,12 +146,12 @@ export default function () {
   const componentRef = useRef(null);
   const [page, setPage] = useState(1);
   const [datesPerPage, setDatesPerPage] = useState(1);
-  const [sortBy, setSortBy] = useState<SortByType>('All');
-  const [recordsPerPage, setRecordsPerPage] = useState<number | 'all'>(10);
+  const [sortBy, setSortBy] = useState<SortByType>("All");
+  const [recordsPerPage, setRecordsPerPage] = useState<number | "all">(10);
 
   const [selectedSubject, setSelectedSubject] = useState<
-    number | null | 'select'
-  >('select');
+    number | null | "select"
+  >("select");
 
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
@@ -160,6 +160,7 @@ export default function () {
     branchId,
     user_profile_id: userId,
     class_name: userClassName,
+    user_id,
   } = useSelector(selectUser);
   const [courses, setCourses] = useState<any>([]);
   const { schoolData, branchData } = useSelector(selectSchoolData);
@@ -168,23 +169,23 @@ export default function () {
 
   const { control, watch } = useForm();
 
-  const [selectedBranch, setSelectedBranch] = useState<number | 'select'>(
-    'select'
+  const [selectedBranch, setSelectedBranch] = useState<number | "select">(
+    "select"
   );
-  const [selectedCourse, setSelectedCourse] = useState<number | 'select'>(
-    'select'
+  const [selectedCourse, setSelectedCourse] = useState<number | "select">(
+    "select"
   );
-  const [selectedClass, setSelectedClass] = useState<number | 'select'>(
-    'select'
+  const [selectedClass, setSelectedClass] = useState<number | "select">(
+    "select"
   );
-  const [selectedChild, setSelectedChild] = useState<number | 'select'>(
-    'select'
+  const [selectedChild, setSelectedChild] = useState<number | "select">(
+    "select"
   );
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
 
   const fetchReportData = () => {
-    console.log('Fetching report data with:', {
+    console.log("Fetching report data with:", {
       selectedBranch,
       selectedCourse,
       selectedClass,
@@ -223,7 +224,7 @@ export default function () {
   ];
   const formatFromDate = useMemo(() => {
     if (fromDate) {
-      return moment(fromDate).format('yyyy-MM-DD');
+      return moment(fromDate).format("yyyy-MM-DD");
     }
 
     return null;
@@ -231,13 +232,13 @@ export default function () {
 
   const formatToDate = useMemo(() => {
     if (toDate) {
-      return moment(toDate).format('yyyy-MM-DD');
+      return moment(toDate).format("yyyy-MM-DD");
     }
     return null;
   }, [toDate]);
 
   const classId =
-    selectedClass !== 'select' ? selectedClass : user?.class_id || '';
+    selectedClass !== "select" ? selectedClass : user?.class_id || "";
   const { isLoading: subLoading, refetch: refectSubject } = useGet({
     baseURL: SchoolUrl,
     url: `schools-service/school-classes/subject/get?user_id=${user?.userId}&class_id=${classId}`,
@@ -278,9 +279,9 @@ export default function () {
     url: `schools-service/school-classes/?limit=1000&school_id=${
       schoolData?.id || branchData?.school_data?.id
     } ${
-      branchData || selectedBranch !== 'select'
+      branchData || selectedBranch !== "select"
         ? `&branch_name=${branchName?.name || branchData?.name}`
-        : ''
+        : ""
     }`,
     enabled: !!(schoolData?.id || branchData?.school_data?.id),
   });
@@ -303,14 +304,14 @@ export default function () {
   const schoolId = schoolData?.id || branchData?.school_data?.id;
   const branch_id = branchId
     ? `&branch_id=${branchId}`
-    : selectedBranch !== 'select'
-      ? `&branch_id=${selectedBranch}`
-      : '&branch_id=';
+    : selectedBranch !== "select"
+    ? `&branch_id=${selectedBranch}`
+    : "&branch_id=";
 
   console.log(
     formatFromDate && `&from_date=${formatFromDate} `,
     toDate,
-    'formatFromDate ????'
+    "formatFromDate ????"
   );
   const {
     data: data2,
@@ -318,12 +319,20 @@ export default function () {
     refetch: refetchReport,
   } = useGet({
     baseURL: import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL,
-    url: `attendance_service/attendance/${userRole().isStudent || userRole().isParent ? 'student' : `report`}/?school_id=${schoolId}${`&course_id=${selectedCourse}`}${branch_id}${
-      userRole().isTeacher ? `&teacher_id=${userId}` : `&user_id=${userId}`
+    url: `attendance_service/attendance/${
+      userRole().isStudent || userRole().isParent ? "student" : `report`
+    }/?school_id=${schoolId}${`&course_id=${selectedCourse}`}${branch_id}${
+      userRole().isTeacher
+        ? `&teacher_id=${userId}`
+        : `&user_id=${selectedChild || user_id}`
     }&offset=${(page - 1) * Number(noOfpages)}&child_limit=7&child_offset=${
       (datesPerPage - 1) * Number(noOfpages)
-    }${formatFromDate && `&from_date=${formatFromDate}`}${toDate ? `&to_date=${formatToDate}` : '&to_date='}${selectedClass !== 'select' ? `&class_id=${selectedClass}` : '&class_id='}`,
-    enabled: selectedCourse !== 'select' || selectedClass !== 'select',
+    }${formatFromDate && `&from_date=${formatFromDate}`}${
+      toDate ? `&to_date=${formatToDate}` : "&to_date="
+    }${
+      selectedClass !== "select" ? `&class_id=${selectedClass}` : "&class_id="
+    }`,
+    enabled: selectedCourse !== "select" || selectedClass !== "select",
     onSuccess: (res: any) => {
       setTotalDataCount(res?.data?.response?.count);
     },
@@ -347,9 +356,9 @@ export default function () {
     [page, fromDate, toDate, data2, selectedClass, selectedCourse]
   );
 
-  console.log(cData, '#cData');
+  console.log(cData, "#cData");
 
-  const rowsPerPageHandler = (val: number | 'all') => {
+  const rowsPerPageHandler = (val: number | "all") => {
     setRecordsPerPage(val);
   };
   const handlePagination = (currPage: any) => {
@@ -368,51 +377,51 @@ export default function () {
     if (role.name === USER_TYPE.STUDENT) {
       return [
         {
-          label: 'Sr No.',
-          id: 'sr_no',
+          label: "Sr No.",
+          id: "sr_no",
         },
         {
-          id: 'subject',
-          label: 'Program',
+          id: "subject",
+          label: "Program",
         },
         {
-          id: 'AttendanceReport',
+          id: "AttendanceReport",
           label: headerDates,
         },
         {
-          id: 'TotalPresent',
-          label: 'Total Days Present',
+          id: "TotalPresent",
+          label: "Total Days Present",
         },
         {
-          id: 'TotalAbsent',
-          label: 'Total Days Absent',
+          id: "TotalAbsent",
+          label: "Total Days Absent",
         },
       ];
     }
     return [
       {
-        label: 'Sr No.',
-        id: 'sr_no',
+        label: "Sr No.",
+        id: "sr_no",
       },
       {
-        id: 'StudentFirstname',
-        label: 'Student First name',
+        id: "StudentFirstname",
+        label: "Student First name",
       },
       {
-        id: 'StudentLastname',
-        label: 'Student Last name',
+        id: "StudentLastname",
+        label: "Student Last name",
       },
       {
-        id: 'AttendanceReport',
+        id: "AttendanceReport",
         label: headerDates,
       },
       {
-        id: 'TotalPresent',
-        label: 'Total Present',
+        id: "TotalPresent",
+        label: "Total Present",
       },
       {
-        id: 'TotalAbsent',
-        label: 'Total Absent',
+        id: "TotalAbsent",
+        label: "Total Absent",
       },
     ];
   }, [role, headerDates]);
@@ -453,7 +462,7 @@ export default function () {
   }, [usersRole, user]);
 
   useEffect(() => {
-    if (selectedClass !== 'select' && selectedCourse !== 'select') {
+    if (selectedClass !== "select" && selectedCourse !== "select") {
       refetchReport();
     }
   }, [selectedBranch, selectedClass, selectedChild, selectedCourse, fromDate]);
@@ -471,9 +480,9 @@ export default function () {
                     ? schoolData?.school_name
                     : branchData?.school_data.school_name
                 }`
-              : ''
+              : ""
           }
-          subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ''}
+          subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ""}
           menuArray={ADMIN_TOOLBAR_MENU}
           // handleToolbarAction={handleToolbarAction}
         />
