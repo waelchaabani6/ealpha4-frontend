@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export interface UserState {
   userId: number | null;
@@ -22,6 +22,7 @@ export interface UserState {
   forceLogout: boolean;
   assignment_count?: number;
   assessment_count?: number;
+  user_id?: number;
 }
 
 const initialState: UserState = {
@@ -30,23 +31,24 @@ const initialState: UserState = {
   school_name: null,
   branchId: null,
   user_profile_id: null,
-  first_name: '',
-  last_name: '',
-  profile_picture: '',
-  user_ting: '',
+  first_name: "",
+  last_name: "",
+  profile_picture: "",
+  user_ting: "",
   role: {
     id: null,
-    name: ''
+    name: "",
   },
   loading: false,
-  isLoggedIn: !!localStorage.getItem('token'),
+  isLoggedIn: !!localStorage.getItem("token"),
   forceLogout: false,
   assignment_count: 0,
-  assessment_count: 0
+  assessment_count: 0,
+  user_id: null,
 };
 
 export const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   reducers: {
     setUser: (state, { payload }) => {
@@ -55,6 +57,7 @@ export const userSlice = createSlice({
       state.last_name = payload.last_name;
       state.user_ting = payload.user_ting;
       state.role = payload.role;
+      state.user_id = payload.user_id;
       state.profile_picture = payload.profile_picture;
       if (payload?.schoolId) {
         state.schoolId = payload?.schoolId;
@@ -80,14 +83,17 @@ export const userSlice = createSlice({
       state.profile_picture = payload.profile_picture;
       state.first_name = payload.first_name;
       state.last_name = payload.last_name;
-      const user = localStorage.getItem('user');
+      const user = localStorage.getItem("user");
       if (user) {
-        localStorage.setItem('user', JSON.stringify({
-          ...JSON.parse(user),
-          profile_picture: payload.profile_picture,
-          first_name: payload.first_name,
-          last_name: payload.last_name
-        }));
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...JSON.parse(user),
+            profile_picture: payload.profile_picture,
+            first_name: payload.first_name,
+            last_name: payload.last_name,
+          })
+        );
       }
     },
     setUserLoader: (state, { payload }) => {
@@ -98,10 +104,17 @@ export const userSlice = createSlice({
     },
     setLoggedIn: (state, { payload }) => {
       state.isLoggedIn = payload;
-    }
-  }
+    },
+  },
 });
 
-export const { setLoggedIn, setUser, setUserProfile, resetUser, setUserLoader, forceLogout } = userSlice.actions;
+export const {
+  setLoggedIn,
+  setUser,
+  setUserProfile,
+  resetUser,
+  setUserLoader,
+  forceLogout,
+} = userSlice.actions;
 export const selectUser = (state: any) => state.user;
 export default userSlice;

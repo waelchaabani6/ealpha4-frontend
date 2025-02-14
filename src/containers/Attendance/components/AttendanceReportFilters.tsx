@@ -72,7 +72,7 @@ function AttendanceReportFilters({
       const students = res?.data?.response?.students || [];
       const formattedChildren = students.map((child) => ({
         label: `${child.first_name} ${child.last_name}`,
-        value: child.id,
+        value: child.user_id,
       }));
       setChildrenData(formattedChildren);
     },
