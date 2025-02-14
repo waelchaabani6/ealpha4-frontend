@@ -159,7 +159,13 @@ function MarkAttendanceFilters({
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&class_id=${
         selectedClass !== "select" ? selectedClass : ""
-      }&branch_id=${selectedBranch !== "select" ? selectedBranch : ""}`
+      }&branch_id=${
+        selectedBranch !== "select"
+          ? selectedBranch
+          : isBranchAdmin
+          ? branchId
+          : ""
+      }`
     : `schools-service/schools/get-classes?program_id=${
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
@@ -202,7 +208,13 @@ function MarkAttendanceFilters({
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&class_id=${
         selectedClass !== "select" ? selectedClass : ""
-      }&branch_id=${selectedBranch !== "select" ? selectedBranch : ""}`
+      }&branch_id=${
+        selectedBranch !== "select"
+          ? selectedBranch
+          : isBranchAdmin
+          ? branchId
+          : ""
+      }`
     : `schools-service/schools/get-classes/by-class-id?program_id=${
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
