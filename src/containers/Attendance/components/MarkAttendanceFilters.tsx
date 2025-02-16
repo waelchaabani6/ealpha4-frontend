@@ -29,6 +29,7 @@ type MarkAttendanceFiltersProps = {
   setSelectedBranch: React.Dispatch<React.SetStateAction<number | "select">>;
   selectedBranch: number | "select";
   setCurrentClassName: React.Dispatch<React.SetStateAction<string>>;
+  tableData: any;
   setTableData: React.Dispatch<React.SetStateAction<any>>;
   setCourses: React.Dispatch<React.SetStateAction<any>>;
   courses: any;
@@ -56,6 +57,7 @@ function MarkAttendanceFilters({
   setCourses,
   courses,
   // setTmpTableData,
+  tableData,
   setSelectedDate,
   selectedDate,
   setSelectedClass,
@@ -84,6 +86,7 @@ function MarkAttendanceFilters({
   const [loading, setLoading] = useState(false);
   const [classes, setClasses] = useState<any[]>([]);
   const [listOfStudents, setListOfStudents] = useState<any[]>([]);
+  const [originalTableData, setOriginalTableData] = useState<any[]>([]);
 
   useEffect(() => {
     if (selectedClass === "select" && results.length === 0) {
@@ -112,7 +115,6 @@ function MarkAttendanceFilters({
           .toLowerCase()
           .includes(value.toLowerCase())
       );
-
       setResults(searchResults);
 
       setLoading(false);
@@ -311,14 +313,17 @@ function MarkAttendanceFilters({
             onChange={handleInputSearch}
             loading={loading}
             results={results}
-            renderResultItem={(student: Student) => {
-              return (
-                <span>
-                  {student.first_name} {student.last_name}
-                </span>
-              );
-            }}
+            renderResultItem={(student: Student) => (
+              <span>
+                {student.first_name} {student.last_name}
+              </span>
+            )}
             onResultSelect={(student: Student) => {
+              // Store the original table data before filtering
+              if (!originalTableData.length) {
+                setOriginalTableData(tableData);
+              }
+
               const selectedStudent = listOfStudents.find(
                 (itm) => itm.student_id === student.student_id
               );
@@ -335,13 +340,21 @@ function MarkAttendanceFilters({
                   student_id: selectedStudent.student_id,
                 },
               ]);
-              setSelectedClassName(student.class || "");
 
-              // const classId = classes.find(
-              //   (itm) => itm.label === student.class
-              // );
-              // setSelectedClass(classId?.value);
+              setSelectedClassName(student.class || "");
               handleInputSearch("");
+            }}
+            onClear={() => {
+              setTableData(originalTableData);
+              const formattedStudents = originalTableData.map(
+                (student: any) => ({
+                  ...student,
+                  first_name: student.StudentFirstName,
+                  last_name: student.StudentLastName,
+                })
+              );
+
+              setSelectedClassStudents(formattedStudents);
             }}
           />
         </div>

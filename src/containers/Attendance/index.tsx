@@ -429,6 +429,7 @@ function Attendance() {
         setCourses={setCourses}
         courses={courses}
         // setTmpTableData={setTmpTableData}
+        tableData={tableData}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
         selectedClass={selectedClass}
