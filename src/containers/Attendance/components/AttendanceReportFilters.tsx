@@ -41,10 +41,12 @@ function AttendanceReportFilters({
   const isParent = usersRole?.name === USER_TYPE.PARENTS;
   const isAdmin =
     usersRole?.name === USER_TYPE.SCHOOL_ADMIN ||
-    usersRole?.name === USER_TYPE.BRANCH_ADMIN;
+    usersRole?.name === USER_TYPE.BRANCH_ADMIN ||
+    usersRole?.name === USER_TYPE.TEACHER;
   const isBranchAdmin = usersRole?.name === USER_TYPE.BRANCH_ADMIN;
   const isStudent = usersRole?.name === USER_TYPE.STUDENT;
   const isParentOrStudent = isParent || isStudent;
+  const isTeacher = usersRole?.name === USER_TYPE.TEACHER;
 
   const [branches, setBranches] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -101,8 +103,8 @@ function AttendanceReportFilters({
     ? `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
         selectedBranch !== "select"
           ? selectedBranch
-          : isBranchAdmin
-          ? branchData?.id
+          : isBranchAdmin || isTeacher
+          ? branchId || branchData?.id || ""
           : ""
       }`
     : `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
@@ -129,7 +131,13 @@ function AttendanceReportFilters({
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&class_id=${
         selectedClass !== "select" ? selectedClass : ""
-      }&branch_id=${selectedBranch !== "select" ? selectedBranch : ""}`
+      }&branch_id=${
+        selectedBranch !== "select"
+          ? selectedBranch
+          : isBranchAdmin
+          ? branchId || branchData?.id || ""
+          : ""
+      }`
     : `schools-service/schools/get-classes?program_id=${
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&student_id=${selectedChild}`;
