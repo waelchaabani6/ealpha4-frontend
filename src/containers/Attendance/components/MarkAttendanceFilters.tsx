@@ -348,8 +348,16 @@ function MarkAttendanceFilters({
               handleInputSearch("");
             }}
             onClear={() => {
-              setTableData([]);
-              setSelectedClassStudents([]);
+              setTableData(originalTableData);
+              const formattedStudents = originalTableData.map(
+                (student: any) => ({
+                  ...student,
+                  first_name: student.StudentFirstName,
+                  last_name: student.StudentLastName,
+                })
+              );
+
+              setSelectedClassStudents(formattedStudents);
             }}
           />
         </div>
