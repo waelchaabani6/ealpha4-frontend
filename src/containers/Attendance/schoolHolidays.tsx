@@ -1,26 +1,27 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable arrow-body-style */
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import './customTimetable.css';
-import Button from '@component/button/button';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import 'moment/locale/en-gb';
-import RouteLayout from '@layout/routeLayout';
-import { useDelete, useGet, usePost, usePut } from '@shared/api/useApi';
-import { selectSchoolData } from '@shared/store/schoolSlice';
-import { useSelector } from 'react-redux';
-import { selectUser } from '@shared/store/userSlice';
-import toast from '@shared/toast';
-import PrintIcon from '@mui/icons-material/Print';
-import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
-import { useParams } from 'react-router-dom';
-import AddHolidayModal from './components/add_holiday_modal';
-import PageTitle from '@shared/pageTitle';
-import AddWeekendModal from './components/add_weekend_modal';
-import { set } from 'react-hook-form';
-import HolidayDatesContext from './context';
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import "./customTimetable.css";
+import Button from "@component/button/button";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import "moment/locale/en-gb";
+import RouteLayout from "@layout/routeLayout";
+import { useDelete, useGet, usePost, usePut } from "@shared/api/useApi";
+import { selectSchoolData } from "@shared/store/schoolSlice";
+import { useSelector } from "react-redux";
+import { selectUser } from "@shared/store/userSlice";
+import toast from "@shared/toast";
+import PrintIcon from "@mui/icons-material/Print";
+import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
+import { useParams } from "react-router-dom";
+import AddHolidayModal from "./components/add_holiday_modal";
+import PageTitle from "@shared/pageTitle";
+import AddWeekendModal from "./components/add_weekend_modal";
+import { set } from "react-hook-form";
+import HolidayDatesContext from "./context";
+import { USER_TYPE } from "@constants/constants";
 
 const DnDCalendar = withDragAndDrop(Calendar);
 moment.locale('en-GB');
@@ -52,6 +53,7 @@ export default function Index() {
   const [currentView, setCurrentView] = useState('create');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedHolidayId, setSelectedHolidayId] = useState(null);
+  const [selectedEditHolidayId, setSelectedEditHolidayId] = useState(null);
   const [weekendsData, setWeekendsData] = useState([]); // To store weekends list
   const [isWeekendModalOpen, setIsWeekendModalOpen] = useState(false);
   const [isWeekendRequestLoading, setIsWeekendRequestLoading] = useState(false);
@@ -59,6 +61,28 @@ export default function Index() {
   const [weekendsResponseeStatus, setWeekendsResponseStatus] = useState(false);
   const [endDateFromResponse, setEndDateFromResponse] = useState('');
   const { schoolId, branchId } = useSelector(selectUser);
+  const { SCHOOL_ADMIN, BRANCH_ADMIN } = USER_TYPE;
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  const usersRole = useSelector((state: any) => state?.user?.role);
+  const isSchoolOrBranchAdmin =
+    usersRole?.name === SCHOOL_ADMIN || usersRole?.name === BRANCH_ADMIN;
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   const calculateWeekendDates = (
     days: string[],
     endsAfter: string,
@@ -267,7 +291,9 @@ export default function Index() {
   // Edit existing holiday
   const { isLoading: isUpdatingHoliday, mutate: updateHoliday } = usePut({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: `schools-service/holiday-management/holidays/${currentEditData?.id}/`,
+    url: `schools-service/holiday-management/holidays/${
+      currentEditData?.id || selectedEditHolidayId
+    }/`,
     onSuccess: () => {
       toast('success', 'Holiday updated successfully!');
       setHolidayStatus(true);
@@ -319,7 +345,7 @@ export default function Index() {
       end_date: saveData.endDate,
       holiday_type: saveData.dayType === 'full_day' ? 'full_day' : 'half_day',
       school: schoolId,
-      branchId: branchId || null,
+      branch: branchId || null,
     };
 
     saveHoliday(payload); // Save new holiday
@@ -336,6 +362,10 @@ export default function Index() {
     };
 
     updateHoliday(payload); // Update existing holiday
+  };
+
+  const handleonEditIconClick = (event: any) => {
+    setSelectedEditHolidayId(event.id);
   };
 
   const handleDeleteHoliday = (id: number) => {
@@ -401,7 +431,7 @@ export default function Index() {
         {/* Buttons Section */}
         <div className="flex justify-between items-center p-4 mt-5">
           {/* Page Title */}
-          <PageTitle title="Manage Weekends and Holidays" />
+          <PageTitle title="Manage school calendar" />
 
           <div className="flex items-center space-x-4">
             {/* Edit Weekends Button */}
@@ -421,7 +451,7 @@ export default function Index() {
               Manage Weekends
             </Button>
           </div>
-          <div className="relative ml-4">
+          <div className="relative ml-4" ref={dropdownRef}>
             <Button
               sx={{
                 backgroundColor: '#FFFFFF',
@@ -503,7 +533,7 @@ export default function Index() {
               ? handleEditHoliday(holidayData) // Handle edit
               : handleSaveHoliday(holidayData); // Handle create
           }}
-          onEdit={(holidayData: any) => handleEditHoliday(holidayData)}
+          onEdit={(holidayData: any) => handleonEditIconClick(holidayData)}
           onDelete={(holidayId: any) => handleDeleteHoliday(holidayId)}
           eventsData={eventsData}
           isCreateLoading={isSavingHoliday}

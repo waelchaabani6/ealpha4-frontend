@@ -29,6 +29,7 @@ type MarkAttendanceFiltersProps = {
   setSelectedBranch: React.Dispatch<React.SetStateAction<number | "select">>;
   selectedBranch: number | "select";
   setCurrentClassName: React.Dispatch<React.SetStateAction<string>>;
+  tableData: any;
   setTableData: React.Dispatch<React.SetStateAction<any>>;
   setCourses: React.Dispatch<React.SetStateAction<any>>;
   courses: any;
@@ -56,6 +57,7 @@ function MarkAttendanceFilters({
   setCourses,
   courses,
   // setTmpTableData,
+  tableData,
   setSelectedDate,
   selectedDate,
   setSelectedClass,
@@ -75,8 +77,11 @@ function MarkAttendanceFilters({
   const [results, setResults] = useState<Student[]>([]);
 
   const isAdmin =
-    usersRole?.name === SCHOOL_ADMIN || usersRole?.name === BRANCH_ADMIN;
+    usersRole?.name === SCHOOL_ADMIN ||
+    usersRole?.name === BRANCH_ADMIN ||
+    usersRole?.name === TEACHER;
   const isBranchAdmin = usersRole?.name === BRANCH_ADMIN;
+  const isTeacher = usersRole?.name === TEACHER;
 
   const { schoolId, branchId } = useSelector(selectUser);
   const { schoolData, branchData } = useSelector(selectSchoolData);
@@ -84,6 +89,7 @@ function MarkAttendanceFilters({
   const [loading, setLoading] = useState(false);
   const [classes, setClasses] = useState<any[]>([]);
   const [listOfStudents, setListOfStudents] = useState<any[]>([]);
+  const [originalTableData, setOriginalTableData] = useState<any[]>([]);
 
   useEffect(() => {
     if (selectedClass === "select" && results.length === 0) {
@@ -106,13 +112,12 @@ function MarkAttendanceFilters({
     setTimeout(() => {
       const dataTobSearchIn =
         selectedClass !== "select" ? selectedClassStudents : listOfStudents;
-      console.log({ dataTobSearchIn });
+
       const searchResults = dataTobSearchIn.filter((student) =>
         `${student.first_name} ${student.last_name}`
           .toLowerCase()
           .includes(value.toLowerCase())
       );
-      console.log({ searchResults });
       setResults(searchResults);
 
       setLoading(false);
@@ -132,8 +137,8 @@ function MarkAttendanceFilters({
     ? `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
         selectedBranch !== "select"
           ? selectedBranch
-          : isBranchAdmin
-          ? branchId
+          : isBranchAdmin || isTeacher
+          ? branchId || branchData?.id || ""
           : ""
       }`
     : `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
@@ -159,7 +164,13 @@ function MarkAttendanceFilters({
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&class_id=${
         selectedClass !== "select" ? selectedClass : ""
-      }&branch_id=${selectedBranch !== "select" ? selectedBranch : ""}`
+      }&branch_id=${
+        selectedBranch !== "select"
+          ? selectedBranch
+          : isBranchAdmin || isTeacher
+          ? branchId || branchData?.id || ""
+          : ""
+      }`
     : `schools-service/schools/get-classes?program_id=${
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
@@ -202,12 +213,18 @@ function MarkAttendanceFilters({
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&class_id=${
         selectedClass !== "select" ? selectedClass : ""
-      }&branch_id=${selectedBranch !== "select" ? selectedBranch : ""}`
+      }&branch_id=${
+        selectedBranch !== "select"
+          ? selectedBranch
+          : isBranchAdmin
+          ? branchId
+          : ""
+      }`
     : `schools-service/schools/get-classes/by-class-id?program_id=${
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
         selectedClass !== "select" ? selectedClass : ""
-      }`;
+      }&branch_id=${branchId || " "}`;
 
   const { isLoading: classStudentsLoading, refetch: refetchClassesStudents } =
     useGet({
@@ -215,8 +232,17 @@ function MarkAttendanceFilters({
       url: classesStudentsEndPointUrl,
       enabled: false,
       onSuccess: (resp: any) => {
-        const respData = resp?.data?.results;
-        setSelectedClassStudents(respData[0]?.student_profile);
+        const respData = resp?.data?.results?.[0];
+        if (respData) {
+          const formattedStudents = respData.student_profile.map(
+            (student: any) => ({
+              ...student,
+              class: respData.class_name,
+            })
+          );
+
+          setSelectedClassStudents(formattedStudents);
+        }
       },
     });
   useEffect(() => {
@@ -233,7 +259,7 @@ function MarkAttendanceFilters({
     if (selectedClass !== "select") {
       refetchClassesStudents();
     }
-  }, [selectedClass, selectedClassStudents]);
+  }, [selectedClass]);
 
   const branchName = useMemo(
     () =>
@@ -296,10 +322,42 @@ function MarkAttendanceFilters({
               </span>
             )}
             onResultSelect={(student: Student) => {
-              console.log({ student });
-              setSelectedClassStudents([student]);
+              // Store the original table data before filtering
+              if (!originalTableData.length) {
+                setOriginalTableData(tableData);
+              }
+
+              const selectedStudent = listOfStudents.find(
+                (itm) => itm.student_id === student.student_id
+              );
+
+              setSelectedClassStudents([selectedStudent]);
+
+              setTableData(() => [
+                {
+                  id: 1,
+                  SR_NO: 1,
+                  StudentFirstName: selectedStudent.first_name,
+                  StudentLastName: selectedStudent.last_name,
+                  Class: selectedStudent.class || "",
+                  student_id: selectedStudent.student_id,
+                },
+              ]);
+
               setSelectedClassName(student.class || "");
               handleInputSearch("");
+            }}
+            onClear={() => {
+              setTableData(originalTableData);
+              const formattedStudents = originalTableData.map(
+                (student: any) => ({
+                  ...student,
+                  first_name: student.StudentFirstName,
+                  last_name: student.StudentLastName,
+                })
+              );
+
+              setSelectedClassStudents(formattedStudents);
             }}
           />
         </div>

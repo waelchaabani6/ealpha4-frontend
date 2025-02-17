@@ -4,58 +4,58 @@
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable indent */
 /* eslint-disable comma-dangle */
-import RouteLayout from '@layout/routeLayout';
-import Button from '@component/button/button';
-import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import RouteLayout from "@layout/routeLayout";
+import Button from "@component/button/button";
+import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   TABLE_LABELS,
   TOOLBAR_LABELS,
   RESULTS_PER_PAGE,
   USER_TYPE,
-} from '@constants/constants';
-import Wrapper from '@shared/wrapper/Wrapper';
-import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
-import { useSelector } from 'react-redux';
-import { selectSchoolData } from '@shared/store/schoolSlice';
-import ReactToPrint from 'react-to-print';
-import PrintIcon from '@mui/icons-material/Print';
-import { useGet, usePost } from '@shared/api/useApi';
+} from "@constants/constants";
+import Wrapper from "@shared/wrapper/Wrapper";
+import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
+import { useSelector } from "react-redux";
+import { selectSchoolData } from "@shared/store/schoolSlice";
+import ReactToPrint from "react-to-print";
+import PrintIcon from "@mui/icons-material/Print";
+import { useGet, usePost } from "@shared/api/useApi";
 import {
   currentUserAcademicDate,
   getNoOfPages,
   incrementDateByOne,
   userRole,
-} from '@utility/utility';
-import toast from '@shared/toast';
-import moment from 'moment';
-import { selectUser } from '@shared/store/userSlice';
-import { useNavigate, useParams } from 'react-router-dom';
-import MarkAttendanceFilters from './components/MarkAttendanceFilters';
-import { Student } from './types';
-import StatusComponent from './components/StatusComponent';
-import AttendanceTable from './components/AttendanceTable';
+} from "@utility/utility";
+import toast from "@shared/toast";
+import moment from "moment";
+import { selectUser } from "@shared/store/userSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import MarkAttendanceFilters from "./components/MarkAttendanceFilters";
+import { Student } from "./types";
+import StatusComponent from "./components/StatusComponent";
+import AttendanceTable from "./components/AttendanceTable";
 
 const printButton = () => <PrintIcon />;
 
 const TableColumns = [
   {
     label: TABLE_LABELS?.SR_NO,
-    align: 'center',
+    align: "center",
   },
 
   {
-    label: 'Student First Name',
-    mapper: 'StudentFirstName',
+    label: "Student First Name",
+    mapper: "StudentFirstName",
     isSort: false,
   },
   {
-    label: 'Student Last Name',
-    mapper: 'StudentLastName',
+    label: "Student Last Name",
+    mapper: "StudentLastName",
   },
   {
-    label: 'Class',
-    mapper: 'Class',
+    label: "Class",
+    mapper: "Class",
   },
   // {
   //   label: 'Status',
@@ -64,22 +64,22 @@ const TableColumns = [
   // },
 
   {
-    label: '',
-    mapper: 'Select',
-    component: 'custom-checkbox',
-    selector: 'id',
+    label: "",
+    mapper: "Select",
+    component: "custom-checkbox",
+    selector: "id",
     showInHeader: true,
-    align: 'center',
+    align: "center",
     sx: {
-      display: 'flex',
-      alignItems: 'center',
+      display: "flex",
+      alignItems: "center",
     },
     cellSx: {
-      justifyContent: 'flex-start',
-      position: 'relative',
-      left: '0px',
+      justifyContent: "flex-start",
+      position: "relative",
+      left: "0px",
     },
-    elementClass: 'flex items-center',
+    elementClass: "flex items-center",
   },
 ];
 
@@ -93,20 +93,20 @@ function Attendance() {
   const [tableData, setTableData] = useState<any>([]);
   // const [withredirection, setWithredirection] = useState(false);
   const [page, setPage] = useState(1);
-  const [orderBy, setOrderBy] = useState<any>('created_at');
-  const [order, setOrder] = useState<any>('asc');
+  const [orderBy, setOrderBy] = useState<any>("created_at");
+  const [order, setOrder] = useState<any>("asc");
   const [bulkSelect, setBulkSelect] = useState<any>([]);
   const [refrechCalendar, setRefreshCalendar] = useState<boolean>(false);
   const [selectedBranch, setSelectedBranch] = useState<
-    number | null | 'select'
-  >('select');
-  const [selectedClass, setSelectedClass] = useState<number | null | 'select'>(
-    'select'
+    number | null | "select"
+  >("select");
+  const [selectedClass, setSelectedClass] = useState<number | null | "select">(
+    "select"
   );
-  const [selectedClassName, setSelectedClassName] = useState<string | null>('');
+  const [selectedClassName, setSelectedClassName] = useState<string | null>("");
 
   const { branchId, schoolId } = useSelector(selectUser);
-  const [searchString, setSearchString] = useState('');
+  const [searchString, setSearchString] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const { schoolData, branchData } = useSelector(selectSchoolData);
   const [totalDataCount, setTotalDataCount] = useState(0);
@@ -116,9 +116,9 @@ function Attendance() {
   const [courses, setCourses] = useState<any>([]);
 
   const [searchResults, setSearchResults] = useState<Student[]>([]);
-  const [currentClassName, SetCurrentClassName] = useState<string>('');
+  const [currentClassName, SetCurrentClassName] = useState<string>("");
   const [selectedCourse, setSelectedCourse] = useState<string | number>(
-    'select'
+    "select"
   );
   const [attendanceHistory, seAttendanceHistory] = useState<any>([]);
 
@@ -133,24 +133,24 @@ function Attendance() {
   const { user } = useSelector((state: any) => state);
 
   const formatSelectedDate = useMemo(
-    () => moment(selectedDate).format('yyyy-MM-DD'),
+    () => moment(selectedDate).format("yyyy-MM-DD"),
     [selectedDate]
   );
 
   const generatedUrl = `roster-service/student-attendance-list?limit=${10}&school_id=${
     schoolData?.id || branchData?.school_data?.id
-  }&subject=${currentClassName || ''}&class_name=${currentClassName}${
-    selectedDate ? `&date=${formatSelectedDate}` : ''
+  }&subject=${currentClassName || ""}&class_name=${currentClassName}${
+    selectedDate ? `&date=${formatSelectedDate}` : ""
   }${
     branchData
       ? `&branch_id=${branchData?.id}`
-      : selectedBranch !== 'select'
-        ? `&branch_id=${selectedBranch}`
-        : ''
+      : selectedBranch !== "select"
+      ? `&branch_id=${selectedBranch}`
+      : ""
   }&offset=${(page - 1) * Number(noOfpages)}${
-    searchString ? `&search=${searchString}` : ''
+    searchString ? `&search=${searchString}` : ""
   }`;
-  const cleanedUrl = generatedUrl.trim().replace(/\s+/g, ' ');
+  const cleanedUrl = generatedUrl.trim().replace(/\s+/g, " ");
 
   const {
     data,
@@ -169,13 +169,13 @@ function Attendance() {
     ? `attendance_service/attendance/mark/?course_id=${selectedCourse}&date=${moment(
         selectedDate
       ).format(
-        'YYYY-MM-DD'
+        "YYYY-MM-DD"
       )}&class_id=${selectedClass}&school_id=${schoolId}&branch_id=${
-        isBranchAdmin ? branchId : ''
+        isBranchAdmin ? branchId : ""
       }`
     : `attendance_service/attendance/mark/?course_id=${selectedCourse}&date=${moment(
         selectedDate
-      ).format('YYYY-MM-DD')}&teacher_id=${
+      ).format("YYYY-MM-DD")}&teacher_id=${
         user?.user_profile_id
       }&class_id=${selectedClass}&school_id=${schoolId}`;
 
@@ -215,7 +215,7 @@ function Attendance() {
       SR_NO: index + 1,
       StudentFirstName: itm?.StudentFirstName,
       StudentLastName: itm?.StudentLastName,
-      Class: selectedClassName || '',
+      Class: selectedClassName || "",
       isChecked: itm.isChecked,
       isPresent: itm.isPresent,
       isAbsent: itm?.isAbsent,
@@ -315,9 +315,9 @@ function Attendance() {
     url: `/attendance_service/attendance/history/?course_id=${selectedCourse}&date=${moment(
       selectedDate
     ).format(
-      'YYYY-MM-DD'
+      "YYYY-MM-DD"
     )}&class_id=${selectedClass}&school_id=${schoolId}&branch_id=${
-      isBranchAdmin ? branchId : ''
+      isBranchAdmin ? branchId : ""
     }`,
     enabled: false,
     onSuccess: (res: any) => {
@@ -336,15 +336,15 @@ function Attendance() {
 
   const classesStudentsEndPointUrl = isAdmin
     ? `schools-service/schools/get-classes/by-class-id?program_id=${
-        selectedCourse !== 'select' ? selectedCourse : ''
+        selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&class_id=${
-        selectedClass !== 'select' ? selectedClass : ''
-      }&branch_id=${selectedBranch !== 'select' ? selectedBranch : ''}`
+        selectedClass !== "select" ? selectedClass : ""
+      }&branch_id=${selectedBranch !== "select" ? selectedBranch : ""}`
     : `schools-service/schools/get-classes/by-class-id?program_id=${
-        selectedCourse !== 'select' ? selectedCourse : ''
+        selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
-        selectedClass !== 'select' ? selectedClass : ''
-      }`;
+        selectedClass !== "select" ? selectedClass : ""
+      }&branch_id=${branchId || ""}`;
 
   const { isLoading: classStudentsLoading, refetch: refetchClassesStudents } =
     useGet({
@@ -363,7 +363,7 @@ function Attendance() {
             StudentLastName: itm?.last_name,
             student_id: itm?.student_id,
             status: null,
-            Grade: 'N/A',
+            Grade: "N/A",
             isChecked: false,
             isPresent: false,
           })) || [];
@@ -387,7 +387,7 @@ function Attendance() {
         student_id: itm?.student_id,
         Class: selectedClassName,
         status:
-          itm?.status !== 'present' && itm?.status !== 'absent'
+          itm?.status !== "present" && itm?.status !== "absent"
             ? null
             : itm?.status,
       }));
@@ -412,9 +412,9 @@ function Attendance() {
                   ? schoolData?.school_name
                   : branchData?.school_data.school_name
               }`
-            : ''
+            : ""
         }
-        subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ''}
+        subtitle2={branchData?.name ? `Branch : ${branchData?.name}` : ""}
         menuArray={ADMIN_TOOLBAR_MENU}
         // handleToolbarAction={handleToolbarAction}
       />
@@ -429,6 +429,7 @@ function Attendance() {
         setCourses={setCourses}
         courses={courses}
         // setTmpTableData={setTmpTableData}
+        tableData={tableData}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
         selectedClass={selectedClass}

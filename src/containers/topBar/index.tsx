@@ -23,6 +23,9 @@ export default function Index() {
     assignment_count = null;
   }
 
+  const isSchoolOrBranchAdmin =
+    role === USER_TYPE.SCHOOL_ADMIN || role === USER_TYPE.BRANCH_ADMIN;
+
   const renderAssessment = () => {
     if (role === USER_TYPE.PARENTS || role === USER_TYPE.STUDENT) {
       return (
