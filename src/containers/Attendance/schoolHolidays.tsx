@@ -24,10 +24,10 @@ import HolidayDatesContext from "./context";
 import { USER_TYPE } from "@constants/constants";
 
 const DnDCalendar = withDragAndDrop(Calendar);
-moment.locale("en-GB");
+moment.locale('en-GB');
 const localizer = momentLocalizer(moment);
 
-moment.locale("en-GB", {
+moment.locale('en-GB', {
   week: {
     dow: 1, // Monday is the first day of the week.
   },
@@ -50,7 +50,7 @@ export default function Index() {
   const [currentEditData, setCurrentEditData] = useState<any>(null);
   const [selectedTimeFrom, setSelectedTimeFrom] = useState(new Date());
   const [selectedTimeTo, setSelectedTimeTo] = useState(new Date());
-  const [currentView, setCurrentView] = useState("create");
+  const [currentView, setCurrentView] = useState('create');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedHolidayId, setSelectedHolidayId] = useState(null);
   const [selectedEditHolidayId, setSelectedEditHolidayId] = useState(null);
@@ -59,7 +59,7 @@ export default function Index() {
   const [isWeekendRequestLoading, setIsWeekendRequestLoading] = useState(false);
   const [currentWeekendData, setCurrentWeekendData] = useState(null); // For editing a weekend
   const [weekendsResponseeStatus, setWeekendsResponseStatus] = useState(false);
-  const [endDateFromResponse, setEndDateFromResponse] = useState("");
+  const [endDateFromResponse, setEndDateFromResponse] = useState('');
   const { schoolId, branchId } = useSelector(selectUser);
   const { SCHOOL_ADMIN, BRANCH_ADMIN } = USER_TYPE;
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -103,17 +103,17 @@ export default function Index() {
     let endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); // Default: end of the month
 
     // Handle different end conditions
-    if (endsAfter === "3-month") {
+    if (endsAfter === '3-month') {
       endDate.setMonth(endDate.getMonth() + 2);
-    } else if (endsAfter === "6-month") {
+    } else if (endsAfter === '6-month') {
       endDate.setMonth(endDate.getMonth() + 5);
-    } else if (endsAfter === "current_academic_year") {
+    } else if (endsAfter === 'current_academic_year') {
       if (endDateFromResponse) {
         endDate = new Date(endDateFromResponse);
         endDate.setMonth(8);
         endDate.setDate(30);
       }
-    } else if (endsAfter === "never") {
+    } else if (endsAfter === 'never') {
       endDate = new Date(today.getFullYear() + 10, 11, 31); // Default: 10 years from now
     }
 
@@ -123,13 +123,13 @@ export default function Index() {
       d <= endDate;
       d.setDate(d.getDate() + 1)
     ) {
-      if (days.includes(d.toLocaleDateString("en-GB", { weekday: "long" }))) {
+      if (days.includes(d.toLocaleDateString('en-GB', { weekday: 'long' }))) {
         weekends.push({
           id: `${d.toISOString()}-weekend`,
-          title: "Weekend",
+          title: 'Weekend',
           start: new Date(d),
           end: new Date(d),
-          hexColor: "#FFD9D9", // Color for weekends
+          hexColor: '#FFD9D9', // Color for weekends
         });
       }
     }
@@ -141,26 +141,29 @@ export default function Index() {
   const listbranchHolidays = `schools-service/holiday-management/holidays/list/${schoolId}/${branchId}/`;
   const listAllHolidays = `schools-service/holiday-management/holidays/list/${schoolId}/`;
   const { refetch: fetchHolidays } = useGet({
-    baseURL: "https://school.development.ealpha.net/api/v1/",
+    baseURL: 'https://school.development.ealpha.net/api/v1/',
     url: branchId ? listbranchHolidays : listAllHolidays,
     onSuccess: (resp: any) => {
-      console.log("resp", resp);
+      console.log('resp', resp);
     },
     onError: (error: any) => {
-      console.error("Failed to fetch holidays:", error);
+      console.error('Failed to fetch holidays:', error);
     },
     enabled: true, // Will manually trigger fetch
   });
 
   // Fetch weekends
+  const listbranchWeekends = `schools-service/holiday-management/weekends/list/${schoolId}/${branchId}/`;
+  const listAllWeekends = `schools-service/holiday-management/weekends/list/${schoolId}`;
+
   const { refetch: fetchWeekends } = useGet({
-    baseURL: "https://school.development.ealpha.net/api/v1/",
-    url: `schools-service/holiday-management/weekends/list/${schoolId}/`,
+    baseURL: 'https://school.development.ealpha.net/api/v1/',
+    url: branchId ? listbranchWeekends : listAllWeekends,
     onSuccess: (resp: any) => {
       setWeekendsData(resp?.data?.data || []);
     },
     onError: (error: any) => {
-      console.error("Failed to fetch weekends:", error);
+      console.error('Failed to fetch weekends:', error);
     },
     enabled: true,
   });
@@ -177,7 +180,7 @@ export default function Index() {
         start: new Date(holiday.start_date),
         end: new Date(holiday.end_date),
         holidayType: holiday.holiday_type,
-        hexColor: "#D2F0FF", // Color for holidays
+        hexColor: '#D2F0FF', // Color for holidays
       }));
 
       // Fetch weekends
@@ -197,7 +200,7 @@ export default function Index() {
       // Merge holidays and the first weekend index
       setEventsData([...holidayEvents, ...weekendEvents]);
     } catch (error) {
-      console.error("Failed to fetch events:", error);
+      console.error('Failed to fetch events:', error);
     }
   };
   useEffect(() => {
@@ -206,11 +209,11 @@ export default function Index() {
 
   // Create new weekend
   const { isLoading: isCreatingWeekend, mutate: createWeekend } = usePost({
-    baseURL: "https://school.development.ealpha.net/api/v1/",
-    url: "schools-service/holiday-management/weekends/",
+    baseURL: 'https://school.development.ealpha.net/api/v1/',
+    url: 'schools-service/holiday-management/weekends/',
     onSuccess: () => {
       setWeekendsResponseStatus(true);
-      toast("success", "Weekend created successfully!");
+      toast('success', 'Weekend created successfully!');
       fetchWeekends(); // Refresh weekends list
       fetchEvents(); // Fetch events after creating a weekend
       setIsWeekendRequestLoading(false);
@@ -218,8 +221,8 @@ export default function Index() {
     onError: (error: any) => {
       setWeekendsResponseStatus(false);
       toast(
-        "error",
-        error?.response?.data?.message || "Failed to create weekend"
+        'error',
+        error?.response?.data?.message || 'Failed to create weekend'
       );
       setIsWeekendRequestLoading(false);
     },
@@ -227,13 +230,13 @@ export default function Index() {
 
   // Update existing weekend
   const { isLoading: isUpdatingWeekend, mutate: updateWeekend } = usePut({
-    baseURL: "https://school.development.ealpha.net/api/v1/",
+    baseURL: 'https://school.development.ealpha.net/api/v1/',
     url: `schools-service/holiday-management/weekends/${currentWeekendData?.id}/`,
     onSuccess: (res) => {
       const currentYearendDate = res?.data?.data?.end_date;
       setEndDateFromResponse(currentYearendDate);
       setWeekendsResponseStatus(true);
-      toast("success", "Weekend updated successfully!");
+      toast('success', 'Weekend updated successfully!');
       fetchWeekends(); // Refresh weekends list
       fetchEvents(); // Fetch events after updating a weekend
       setIsWeekendRequestLoading(false);
@@ -241,8 +244,8 @@ export default function Index() {
     onError: (error: any) => {
       setWeekendsResponseStatus(false);
       toast(
-        "error",
-        error?.response?.data?.message || "Failed to update weekend"
+        'error',
+        error?.response?.data?.message || 'Failed to update weekend'
       );
       setIsWeekendRequestLoading(false);
     },
@@ -251,18 +254,18 @@ export default function Index() {
   // Delete existing weekend
 
   const { isLoading: isDeletingWeekend, mutate: deleteWeekend } = usePut({
-    baseURL: "https://school.development.ealpha.net/api/v1/",
+    baseURL: 'https://school.development.ealpha.net/api/v1/',
     url: `schools-service/holiday-management/weekends/delete/${currentWeekendData?.id}/`,
     onSuccess: () => {
       setWeekendsResponseStatus(true); // Set success response status
-      toast("success", "Weekend deleted successfully!");
+      toast('success', 'Weekend deleted successfully!');
       fetchWeekends(); // Refresh weekends list
     },
     onError: (error: any) => {
       setWeekendsResponseStatus(false); // Set error response status
       toast(
-        "error",
-        error?.response?.data?.message || "Failed to delete weekend"
+        'error',
+        error?.response?.data?.message || 'Failed to delete weekend'
       );
     },
   });
@@ -270,16 +273,16 @@ export default function Index() {
   // Save new holiday
   const { isLoading: isSavingHoliday, mutate: saveHoliday } = usePost({
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
-    url: "schools-service/holiday-management/holidays/",
+    url: 'schools-service/holiday-management/holidays/',
     onSuccess: () => {
-      toast("success", "Holiday added successfully!");
+      toast('success', 'Holiday added successfully!');
       setHolidayStatus(true);
       setIsCreateLoading(false);
       fetchHolidays();
       fetchEvents();
     },
     onError: (error: any) => {
-      toast("error", error?.response?.data?.message || "Failed to add holiday");
+      toast('error', error?.response?.data?.message || 'Failed to add holiday');
       setHolidayStatus(false);
       setIsCreateLoading(false);
     },
@@ -292,15 +295,15 @@ export default function Index() {
       currentEditData?.id || selectedEditHolidayId
     }/`,
     onSuccess: () => {
-      toast("success", "Holiday updated successfully!");
+      toast('success', 'Holiday updated successfully!');
       setHolidayStatus(true);
       fetchHolidays(); // Refresh holidays after edit
       fetchEvents();
     },
     onError: (error: any) => {
       toast(
-        "error",
-        error?.response?.data?.message || "Failed to update holiday"
+        'error',
+        error?.response?.data?.message || 'Failed to update holiday'
       );
       setHolidayStatus(false);
       SetDesiderPopup(false);
@@ -312,7 +315,7 @@ export default function Index() {
     baseURL: import.meta.env.VITE_APP_SCHOOL_SERVICE_URL,
     url: `schools-service/holiday-management/holidays/delete/${selectedHolidayId}/`,
     onSuccess: () => {
-      toast("success", "Holiday deleted successfully!");
+      toast('success', 'Holiday deleted successfully!');
       setHolidayStatus(true);
       fetchHolidays(); // Refresh holidays after delete
       SetDesiderPopup(false);
@@ -320,8 +323,8 @@ export default function Index() {
     },
     onError: (error: any) => {
       toast(
-        "error",
-        error?.response?.data?.message || "Failed to delete holiday"
+        'error',
+        error?.response?.data?.message || 'Failed to delete holiday'
       );
       setHolidayStatus(false);
     },
@@ -340,7 +343,7 @@ export default function Index() {
       description: saveData.description,
       start_date: saveData.startDate,
       end_date: saveData.endDate,
-      holiday_type: saveData.dayType === "full_day" ? "full_day" : "half_day",
+      holiday_type: saveData.dayType === 'full_day' ? 'full_day' : 'half_day',
       school: schoolId,
       branch: branchId || null,
     };
@@ -354,7 +357,7 @@ export default function Index() {
       description: editData.description,
       start_date: editData.startDate,
       end_date: editData.endDate,
-      holiday_type: editData.dayType === "full_day" ? "full_day" : "half_day",
+      holiday_type: editData.dayType === 'full_day' ? 'full_day' : 'half_day',
       school: schoolId,
     };
 
@@ -370,12 +373,12 @@ export default function Index() {
   };
 
   const handleEditClick = (event: any) => {
-    if (event.title === "Weekend") {
+    if (event.title === 'Weekend') {
       // Weekend event
       const selectedWeekend = weekendsData.find((weekend: any) =>
         weekend.days.some(
           (day: string) =>
-            event.start.toLocaleDateString("en-GB", { weekday: "long" }) === day
+            event.start.toLocaleDateString('en-GB', { weekday: 'long' }) === day
         )
       );
 
@@ -385,7 +388,7 @@ export default function Index() {
       // Holiday event
       setCurrentEditData(event); // Set the selected holiday data for editing
       SetDesiderPopup(true); // Open holiday modal
-      setCurrentView("edit"); // Set to edit view
+      setCurrentView('edit'); // Set to edit view
     }
   };
 
@@ -395,7 +398,7 @@ export default function Index() {
     setSelectedTimeFrom(start);
     setSelectedTimeTo(start);
     SetDesiderPopup(true); // Open the modal
-    setCurrentView("create"); // Set to create view
+    setCurrentView('create'); // Set to create view
   };
 
   const handleSaveOrUpdateWeekend = (weekendData: any) => {
@@ -434,9 +437,9 @@ export default function Index() {
             {/* Edit Weekends Button */}
             <Button
               sx={{
-                backgroundColor: "#4A9D2D",
-                color: "#FFFFFF",
-                "&:hover": { backgroundColor: "#3A7D24" },
+                backgroundColor: '#4A9D2D',
+                color: '#FFFFFF',
+                '&:hover': { backgroundColor: '#3A7D24' },
               }}
               onClick={() => {
                 setCurrentWeekendData(
@@ -451,10 +454,10 @@ export default function Index() {
           <div className="relative ml-4" ref={dropdownRef}>
             <Button
               sx={{
-                backgroundColor: "#FFFFFF",
-                color: "#4A9D2D",
-                border: "1px solid #4A9D2D",
-                "&:hover": { backgroundColor: "#F5F5F5" },
+                backgroundColor: '#FFFFFF',
+                color: '#4A9D2D',
+                border: '1px solid #4A9D2D',
+                '&:hover': { backgroundColor: '#F5F5F5' },
               }}
               onClick={() => setIsDropdownOpen((prev) => !prev)}
             >
@@ -467,7 +470,7 @@ export default function Index() {
                   <div
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={() => {
-                      setCurrentView("list");
+                      setCurrentView('list');
                       SetDesiderPopup(true);
                       setIsDropdownOpen(false);
                     }}
@@ -477,7 +480,7 @@ export default function Index() {
                   <div
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={() => {
-                      setCurrentView("create");
+                      setCurrentView('create');
                       SetDesiderPopup(true);
                       setIsDropdownOpen(false);
                     }}
@@ -487,7 +490,7 @@ export default function Index() {
                   <div
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={() => {
-                      setCurrentView("list");
+                      setCurrentView('list');
                       SetDesiderPopup(true);
                       setIsDropdownOpen(false);
                     }}
@@ -497,7 +500,7 @@ export default function Index() {
                   <div
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={() => {
-                      setCurrentView("list");
+                      setCurrentView('list');
                       SetDesiderPopup(true);
                       setIsDropdownOpen(false);
                     }}
@@ -526,7 +529,7 @@ export default function Index() {
           SetDesiderPopup={SetDesiderPopup}
           holidayResponseStatus={holidayResponseStatus}
           onSave={(holidayData: any) => {
-            currentView === "edit"
+            currentView === 'edit'
               ? handleEditHoliday(holidayData) // Handle edit
               : handleSaveHoliday(holidayData); // Handle create
           }}
@@ -545,20 +548,20 @@ export default function Index() {
 
         <div className="mt-5 bg-white" ref={componentRef}>
           <DnDCalendar
-            views={["month"]}
+            views={['month']}
             selectable={true}
             localizer={localizer}
             defaultView="month"
             events={eventsData}
             className="studentSchedular"
-            style={{ width: "100%", height: "100vh" }}
+            style={{ width: '100%', height: '100vh' }}
             onSelectSlot={handleSelect}
             onSelectEvent={handleEditClick}
             formats={{
               dayFormat: (date, culture: any) =>
-                localizer.format(date, "ddd D", culture),
+                localizer.format(date, 'ddd D', culture),
               dayRangeHeaderFormat: (date: any, culture: any) =>
-                moment(date.start).format("MMM YYYY"),
+                moment(date.start).format('MMM YYYY'),
             }}
             eventPropGetter={(event: any) => {
               const backgroundColor = event.hexColor;
