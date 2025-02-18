@@ -201,7 +201,7 @@ function AttendanceReportFilters({
           }}
         />
       )}
-      {isAdmin && (
+      {usersRole?.name === USER_TYPE.SCHOOL_ADMIN && (
         <Dropdown
           title="Select Branch"
           value={selectedBranch}

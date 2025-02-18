@@ -363,7 +363,7 @@ function MarkAttendanceFilters({
         </div>
 
         <div className="md:col-span-3 grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
-          {!branchData && !userRole().isTeacher && (
+          {usersRole?.name === USER_TYPE.SCHOOL_ADMIN && (
             <Dropdown
               title="Select Branch"
               value={selectedBranch}
