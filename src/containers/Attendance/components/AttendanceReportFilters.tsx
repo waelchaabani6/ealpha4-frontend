@@ -106,7 +106,7 @@ function AttendanceReportFilters({
           : isBranchAdmin || isTeacher
           ? branchId || branchData?.id || ""
           : ""
-      }&teacher_id=${isTeacher && branchId ? userId : ""}`
+      }&user_id=${isTeacher && branchId ? userId : ""}`
     : `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
         selectedBranch === "select" ? "" : selectedBranch
       }&user_id=${loggedInUserId}`;
@@ -137,7 +137,7 @@ function AttendanceReportFilters({
           : isBranchAdmin
           ? branchId || branchData?.id || ""
           : ""
-      }`
+      }&user_id=${isTeacher && branchId ? userId : ""}`
     : `schools-service/schools/get-classes?program_id=${
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&student_id=${selectedChild}`;
