@@ -140,7 +140,7 @@ function MarkAttendanceFilters({
           : isBranchAdmin || isTeacher
           ? branchId || branchData?.id || ""
           : ""
-      }&user_id=${isTeacher && branchId ? userId : ""}`
+      }&user_id=${isTeacher ? userId : ""}`
     : `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
         selectedBranch === "select" ? "" : selectedBranch
       }&user_id=${isAdmin ? "" : user?.userId}`;
@@ -170,7 +170,7 @@ function MarkAttendanceFilters({
           : isBranchAdmin || isTeacher
           ? branchId || branchData?.id || ""
           : ""
-      }&user_id=${isTeacher && branchId ? userId : ""}`
+      }&user_id=${isTeacher ? userId : ""}`
     : `schools-service/schools/get-classes?program_id=${
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
@@ -219,7 +219,7 @@ function MarkAttendanceFilters({
           : isBranchAdmin
           ? branchId
           : ""
-      }&user_id=${isTeacher && branchId ? userId : ""}`
+      }&user_id=${isTeacher ? userId : ""}`
     : `schools-service/schools/get-classes/by-class-id?program_id=${
         selectedCourse !== "select" ? selectedCourse : ""
       }&school_id=${schoolId}&teacher_id=${user?.user_profile_id}&class_id=${
