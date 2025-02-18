@@ -375,7 +375,7 @@ export default function () {
         },
         {
           id: 'subject',
-          label: 'Program',
+          label: 'Subject',
         },
         {
           id: 'AttendanceReport',
