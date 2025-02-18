@@ -83,7 +83,7 @@ function MarkAttendanceFilters({
   const isBranchAdmin = usersRole?.name === BRANCH_ADMIN;
   const isTeacher = usersRole?.name === TEACHER;
 
-  const { schoolId, branchId } = useSelector(selectUser);
+  const { schoolId, branchId, userId } = useSelector(selectUser);
   const { schoolData, branchData } = useSelector(selectSchoolData);
 
   const [loading, setLoading] = useState(false);
@@ -140,7 +140,7 @@ function MarkAttendanceFilters({
           : isBranchAdmin || isTeacher
           ? branchId || branchData?.id || ""
           : ""
-      }`
+      }&teacher_id=${isTeacher && branchId ? userId : ""}`
     : `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
         selectedBranch === "select" ? "" : selectedBranch
       }&user_id=${isAdmin ? "" : user?.userId}`;

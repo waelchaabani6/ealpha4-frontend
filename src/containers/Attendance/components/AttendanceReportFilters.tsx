@@ -106,7 +106,7 @@ function AttendanceReportFilters({
           : isBranchAdmin || isTeacher
           ? branchId || branchData?.id || ""
           : ""
-      }`
+      }&teacher_id=${isTeacher && branchId ? userId : ""}`
     : `course-code-service/courses/courses-selection/?school_id=${schoolId}&branch_id=${
         selectedBranch === "select" ? "" : selectedBranch
       }&user_id=${loggedInUserId}`;
