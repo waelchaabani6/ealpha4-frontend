@@ -177,7 +177,7 @@ function Attendance() {
         selectedDate
       ).format('YYYY-MM-DD')}&teacher_id=${
         user?.user_profile_id
-      }&class_id=${selectedClass}&school_id=${schoolId}`;
+      }&class_id=${selectedClass}&school_id=${schoolId}&branch_id=${branchId || ''}`;
 
   const ADMIN_TOOLBAR_MENU = [
     // {
