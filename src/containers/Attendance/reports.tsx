@@ -375,7 +375,7 @@ export default function () {
         },
         {
           id: 'subject',
-          label: 'Subject',
+          label: 'Course',
         },
         {
           id: 'AttendanceReport',
@@ -464,7 +464,7 @@ export default function () {
     <RouteLayout navBack={true}>
       <div className="flex h-full w-full flex-col">
         <HeaderMenus
-          title="Attendance"
+          title={`Attendance ${userRole().isTeacher || userRole().isSchoolAdmin || userRole().isBranchAdmin ? 'Reports' : ''}`}
           subtitle={
             userRole().isSuperAdmin
               ? `School : ${
