@@ -137,7 +137,7 @@ function AttendanceReportFilters({
       }&branch_id=${
         selectedBranch !== 'select'
           ? selectedBranch
-          : isBranchAdmin
+          : isBranchAdmin || isTeacher
             ? branchId || branchData?.id || ''
             : ''
       }&user_id=${isTeacher ? userId : ''}`
