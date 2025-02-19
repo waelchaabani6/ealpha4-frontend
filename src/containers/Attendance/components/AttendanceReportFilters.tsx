@@ -78,6 +78,7 @@ function AttendanceReportFilters({
         label: `${child.first_name} ${child.last_name}`,
         value: child.user_id,
       }));
+      
       setChildrenData(formattedChildren);
     },
   });
@@ -194,8 +195,7 @@ function AttendanceReportFilters({
         <Dropdown
           title="Select Child"
           value={selectedChild}
-          dataArray={[...childrenData]}
-          displayEmpty={true}
+          dataArray={[{ label: 'Select', value: 'select' },...childrenData]}
           onChangeHandler={(option) => setSelectedChild(option || 'select')}
           loading={childrenLoading}
           sxClass={{
