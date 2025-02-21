@@ -329,7 +329,7 @@ export default function () {
     }`,
     enabled: selectedCourse !== 'select' || selectedClass !== 'select',
     onSuccess: (res: any) => {
-      setTotalDataCount(res?.data?.response?.count);
+      setTotalDataCount(res?.data?.count);
     },
   });
 

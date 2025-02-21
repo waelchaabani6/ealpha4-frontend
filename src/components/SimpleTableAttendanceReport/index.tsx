@@ -121,9 +121,10 @@ export default function StickyHeadTable({
         );
     }
   };
+
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex-1 overflow-auto">
+    <div className="h-full flex flex-col pb-10">
+      <div className="flex-1 overflow-auto mb-11">
         {isLoading && <LinearProgress color="success" />}
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table aria-label=" table">
@@ -288,15 +289,16 @@ export default function StickyHeadTable({
             />
             <p className="text-xs pt-2">Entries</p>
           </div>
-          {totalPages && totalPages > 1 ? (
-            <NumberedPagination
-              totalPages={totalPages}
-              paginateHandler={paginateHandler}
-              currentPage={currentPage}
-            />
-          ) : null}
         </div>
       )}
+
+      {totalPages && totalPages > 1 ? (
+        <NumberedPagination
+          totalPages={totalPages}
+          paginateHandler={paginateHandler}
+          currentPage={currentPage}
+        />
+      ) : null}
     </div>
   );
 }
