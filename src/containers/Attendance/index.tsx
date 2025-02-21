@@ -179,6 +179,7 @@ function Attendance() {
         user?.user_profile_id
       }&class_id=${selectedClass}&school_id=${schoolId}&branch_id=${branchId || ''}`;
 
+  console.log(branchId);
   const ADMIN_TOOLBAR_MENU = [
     // {
     //   title: TOOLBAR_LABELS.ADD,
@@ -317,7 +318,7 @@ function Attendance() {
     ).format(
       'YYYY-MM-DD'
     )}&class_id=${selectedClass}&school_id=${schoolId}&branch_id=${
-      isBranchAdmin ? branchId : ''
+      branchId || ''
     }`,
     enabled: false,
     onSuccess: (res: any) => {
