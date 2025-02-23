@@ -76,6 +76,11 @@ function AttendanceReportFilters({
     setSelectedClass("select");
   }, [selectedCourse]);
 
+  useEffect(() => {
+    setSelectedClass("select");
+    setSelectedCourse("select");
+  }, [selectedBranch]);
+
   // Fetching Children for Parent Role
   const { isLoading: childrenLoading, refetch: childrenFetch } = useGet({
     baseURL: import.meta.env.VITE_APP_USER_SERVICE_URL,
