@@ -79,6 +79,8 @@ function AttendanceReportFilters({
   useEffect(() => {
     setSelectedClass("select");
     setSelectedCourse("select");
+    setFromDate(null);
+    setToDate(null);
   }, [selectedBranch]);
 
   // Fetching Children for Parent Role
