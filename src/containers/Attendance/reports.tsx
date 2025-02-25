@@ -164,6 +164,8 @@ export default function () {
   } = useSelector(selectUser);
   const [courses, setCourses] = useState<any>([]);
   const { schoolData, branchData } = useSelector(selectSchoolData);
+
+  const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
   const noOfpages = getNoOfPages(totalDataCount, RESULTS_PER_PAGE?.[0]);
   const SchoolUrl = import.meta.env.VITE_APP_SCHOOL_SERVICE_URL;
 
@@ -320,7 +322,7 @@ export default function () {
       userRole().isTeacher
         ? `&teacher_id=${userId}`
         : `&user_id=${selectedChild || user_id}`
-    }&offset=${(page - 1) * Number(noOfpages)}&child_limit=7&child_offset=${
+    }&limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&page=${page}&child_limit=7&child_offset=${
       (datesPerPage - 1) * Number(noOfpages)
     }${formatFromDate && `&from_date=${formatFromDate}`}${
       toDate ? `&to_date=${formatToDate}` : '&to_date='
