@@ -1,13 +1,11 @@
-/* eslint-disable indent */
 /* eslint-disable linebreak-style */
+/* eslint-disable indent */
 /* eslint-disable react/jsx-curly-newline */
 /* eslint-disable operator-linebreak */
 /* eslint-disable comma-dangle */
 /* eslint-disable implicit-arrow-linebreak */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import RouteLayout from '@layout/routeLayout';
-import Dropdown from '@component/dropdown/Dropdown';
-import DatePicker from '@component/datepicker';
 import SimpleTableAttendanceReport from '@component/SimpleTableAttendanceReport';
 import { useSelector } from 'react-redux';
 import { selectSchoolData } from '@shared/store/schoolSlice';
@@ -20,11 +18,7 @@ import {
 } from '@constants/constants';
 import ReactToPrint from 'react-to-print';
 import PrintIcon from '@mui/icons-material/Print';
-import {
-  getNoOfPages,
-  userRole,
-  currentUserAcademicDate,
-} from '@utility/utility';
+import { getNoOfPages, userRole } from '@utility/utility';
 import { selectUser } from '@shared/store/userSlice';
 import moment from 'moment';
 import { useForm } from 'react-hook-form';
@@ -149,10 +143,6 @@ export default function () {
   const [sortBy, setSortBy] = useState<SortByType>('All');
   const [recordsPerPage, setRecordsPerPage] = useState<number | 'all'>(10);
 
-  const [selectedSubject, setSelectedSubject] = useState<
-    number | null | 'select'
-  >('select');
-
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [TeacherClassesArray, setTeacherClassesArray] = useState<any>([]);
   const {
@@ -165,7 +155,9 @@ export default function () {
   const [courses, setCourses] = useState<any>([]);
   const { schoolData, branchData } = useSelector(selectSchoolData);
 
-  const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
+  const [rowsPerPage, setRowsPerPage] = useState(
+    RESULTS_PER_PAGE?.[0] as number | 'All'
+  );
   const noOfpages = getNoOfPages(totalDataCount, RESULTS_PER_PAGE?.[0]);
   const SchoolUrl = import.meta.env.VITE_APP_SCHOOL_SERVICE_URL;
 
@@ -294,15 +286,6 @@ export default function () {
       value: item.id,
     })) || [];
 
-  // const className = useMemo(
-  //   () =>
-  //     (usersRole?.name === TEACHER
-  //       ? TeacherClassesArray
-  //       : formatSchoolClasses
-  //     )?.find((itm: any) => itm.value === selectedClass)?.label,
-  //   [selectedClass]
-  // );
-
   const schoolId = schoolData?.id || branchData?.school_data?.id;
   const branch_id = branchId
     ? `&branch_id=${branchId}`
@@ -423,18 +406,6 @@ export default function () {
     ];
   }, [role, headerDates]);
 
-  // const fromDateHandler = (val: any) => {
-  //   setFromDate(val.toDate());
-  //   if (toDate && val.toDate() >= toDate) {
-  //     setToDate(val.toDate());
-  //   }
-  // };
-  // const branchSelectHandler = (currentBranch) => {
-  //   console.log("Current Branch Selected:", currentBranch);
-  //   setSelectedBranch(currentBranch?.value || ""); // Ensure ID is stored
-  //   setSelectedClass("select"); // Reset class selection
-  // };
-
   const CLASS_ARRAY =
     (usersRole?.name === TEACHER ? TeacherClassesArray : formatSchoolClasses) ||
     [];
@@ -502,6 +473,7 @@ export default function () {
           setPage={setPage}
           rowsPerPage={rowsPerPage}
           setRowsPerPage={setRowsPerPage}
+          refetchReport={refetchReport}
         />
 
         <div className=" wrapperBorder overflow-hidden" ref={componentRef}>
