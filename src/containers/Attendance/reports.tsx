@@ -322,7 +322,9 @@ export default function () {
       userRole().isTeacher
         ? `&teacher_id=${userId}`
         : `&user_id=${selectedChild || user_id}`
-    }&limit=${rowsPerPage}&offset=${(page - 1) * Number(rowsPerPage)}&page=${page}&child_limit=7&child_offset=${
+    }&limit=${
+      rowsPerPage === 'All' ? 'All' : rowsPerPage
+    }&offset=${rowsPerPage === 'All' ? 0 : (page - 1) * rowsPerPage}&page=${page}&child_limit=7&child_offset=${
       (datesPerPage - 1) * Number(noOfpages)
     }${formatFromDate && `&from_date=${formatFromDate}`}${
       toDate ? `&to_date=${formatToDate}` : '&to_date='
@@ -481,103 +483,6 @@ export default function () {
           // handleToolbarAction={handleToolbarAction}
         />
 
-        {/* <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6 my-2">
-          {((userRole().isSuperAdmin && !branchData) ||
-            (userRole().isSchoolAdmin && !branchData) ||
-            (userRole().isTeacher && !branchData)) && (
-            <Dropdown
-              title="Select Branch"
-              value={selectedBranch}
-              loading={isLoading}
-              dataArray={[
-                { label: "Select", value: "select" },
-                ...(data?.data?.response?.results?.map((item: any) => ({
-                  label: item.name,
-                  value: item.id,
-                })) || []),
-              ]}
-              onChangeHandler={branchSelectHandler}
-              sxClass={{ width: "100%" }}
-            />
-          )}
-          {!userRole().isStudent && (
-            <Dropdown
-              title="Select Class"
-              value={selectedClass}
-              loading={isLoading1}
-              dataArray={[{ label: "Select", value: "select" }, ...CLASS_ARRAY]}
-              onChangeHandler={(currentClass: number) =>
-                setSelectedClass(currentClass)
-              }
-              sxClass={{ width: "100%" }}
-            />
-          )}
-          <Dropdown
-            title="Select Subject"
-            value={selectedSubject}
-            loading={subjectLoading1 || subLoading}
-            dataArray={[
-              { label: "Select", value: "select" },
-              ...(courses?.map((item: any) => ({
-                label: item.label,
-                value: item?.value,
-              })) || []),
-            ]}
-            onChangeHandler={(currentSubject: number) =>
-              setSelectedSubject(currentSubject)
-            }
-            sxClass={{ width: "100%" }}
-          />
-          <div className="pb-[5px]">
-            <DatePicker
-              fullWidth={true}
-              sxType={1}
-              value={fromDate ? fromDate.toString() : fromDate}
-              label="Date From"
-              disabled={false}
-              disablePast={false}
-              disableOld={currentUserAcademicDate()?.start || new Date()}
-              disableFuture={
-                new Date() <= currentUserAcademicDate()?.end
-                  ? new Date()
-                  : currentUserAcademicDate()?.end
-              }
-              defaultStyle={true}
-              handlePickerChange={fromDateHandler}
-              error={null}
-              shouldDisableDate={(dateParam: Date) => false}
-            />
-          </div>
-          <div className="pb-[5px]">
-            <DatePicker
-              fullWidth={true}
-              disabled={!fromDate}
-              sxType={1}
-              value={toDate ? toDate.toString() : null}
-              label="To Date"
-              defaultStyle={true}
-              disableOld={fromDate}
-              disableFuture={
-                new Date() <= currentUserAcademicDate()?.end
-                  ? new Date()
-                  : currentUserAcademicDate()?.end
-              }
-              disablePast={false}
-              handlePickerChange={(val: any) => setToDate(val.toDate())}
-              error={null}
-              shouldDisableDate={(dateParam: Date) => false}
-            />
-          </div>
-          {!userRole().isStudent && (
-            <Dropdown
-              title="Sort By"
-              value={sortBy}
-              dataArray={["All", "Absent", "Present"]}
-              onChangeHandler={(val: SortByType) => setSortBy(val)}
-              sxClass={{ width: "100%" }}
-            />
-          )}
-        </div> */}
         <AttendanceReportFilters
           selectedBranch={selectedBranch}
           setSelectedBranch={setSelectedBranch}
@@ -594,6 +499,9 @@ export default function () {
           watch={watch}
           selectedChild={selectedChild}
           setSelectedChild={setSelectedChild}
+          setPage={setPage}
+          rowsPerPage={rowsPerPage}
+          setRowsPerPage={setRowsPerPage}
         />
 
         <div className=" wrapperBorder overflow-hidden" ref={componentRef}>
