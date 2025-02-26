@@ -11,6 +11,7 @@ import DatePicker from '@component/datepicker';
 import { selectUser } from '@shared/store/userSlice';
 import { RESULTS_PER_PAGE, USER_TYPE } from '@constants/constants';
 import { currentUserAcademicDate, sortByName } from '@utility/utility';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 // const AttendanceReportURL = import.meta.env.VITE_APP_ATTENDANCE_SERVICE_URL;
 const CourseURL = import.meta.env.VITE_APP_COURSE_CODE_SERVICE_URL;
@@ -35,6 +36,7 @@ function AttendanceReportFilters({
   setPage,
   rowsPerPage,
   setRowsPerPage,
+  refetchReport,
 }) {
   const { schoolData, branchData } = useSelector(selectSchoolData);
   const {
@@ -209,6 +211,12 @@ function AttendanceReportFilters({
     setRowsPerPage(e);
   };
 
+  const reset = () => {
+    setToDate('');
+    setFromDate('');
+    refetchReport();
+  };
+
   return (
     <div className="w-full flex flex-wrap gap-4 items-center mt-5 mb-5">
       {isParent && (
@@ -315,6 +323,19 @@ function AttendanceReportFilters({
         onChangeHandler={handlePerPage}
         sxClass={{ width: '206px', marginRight: '5px' }}
       />
+
+      {fromDate || toDate ? (
+        // eslint-disable-next-line jsx-a11y/control-has-associated-label
+        <span
+          className="relative self-end mb-2 cursor-pointer"
+          tabIndex={0}
+          title="Clear dates"
+          onClick={reset}
+          role="button"
+        >
+          <RestartAltIcon />
+        </span>
+      ) : null}
     </div>
   );
 }

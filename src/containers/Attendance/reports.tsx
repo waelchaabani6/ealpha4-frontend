@@ -502,6 +502,7 @@ export default function () {
           setPage={setPage}
           rowsPerPage={rowsPerPage}
           setRowsPerPage={setRowsPerPage}
+          refetchReport={refetchReport}
         />
 
         <div className=" wrapperBorder overflow-hidden" ref={componentRef}>
