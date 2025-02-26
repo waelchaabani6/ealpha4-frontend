@@ -74,7 +74,6 @@ function AttendanceReportFilters({
 
   useEffect(() => {
     setSelectedClass("select");
-    console.log("selectedClass", selectedClass);
   }, [selectedCourse]);
 
   useEffect(() => {
@@ -271,12 +270,12 @@ function AttendanceReportFilters({
           label="From Date"
           disabled={false}
           disablePast={false}
-          disableOld={currentUserAcademicDate()?.start || new Date()}
-          disableFuture={
-            new Date() <= currentUserAcademicDate()?.end
-              ? new Date()
-              : currentUserAcademicDate()?.end
-          }
+          // disableOld={currentUserAcademicDate()?.start || new Date()}
+          // disableFuture={
+          //   new Date() <= currentUserAcademicDate()?.end
+          //     ? new Date()
+          //     : currentUserAcademicDate()?.end
+          // }
           defaultStyle={true}
           handlePickerChange={fromDateHandler}
           error={null}
