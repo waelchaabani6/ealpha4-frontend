@@ -194,6 +194,7 @@ function AttendanceReportFilters({
 
   const branchSelectHandler = (currentBranch: number) => {
     setSelectedBranch(currentBranch);
+    reset();
   };
 
   const branchArr: [] =
@@ -256,6 +257,7 @@ function AttendanceReportFilters({
         onChangeHandler={(option) => {
           setSelectedCourse(option || 'select');
           setSelectedClass('select');
+          reset();
         }}
         sxClass={{
           width: '250px',
@@ -266,7 +268,10 @@ function AttendanceReportFilters({
           title="Select Class"
           value={selectedClass}
           dataArray={[{ label: 'Select', value: 'select' }, ...classes]}
-          onChangeHandler={(option) => setSelectedClass(option || 'select')}
+          onChangeHandler={(option) => {
+            setSelectedClass(option || 'select');
+            // reset();
+          }}
           disabled={selectedCourse === 'select'}
           sxClass={{
             width: '250px',
