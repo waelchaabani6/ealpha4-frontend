@@ -74,6 +74,7 @@ function AttendanceReportFilters({
 
   useEffect(() => {
     setSelectedClass("select");
+    console.log("selectedClass", selectedClass);
   }, [selectedCourse]);
 
   useEffect(() => {
@@ -241,7 +242,10 @@ function AttendanceReportFilters({
         title="Select Course"
         value={selectedCourse}
         dataArray={[{ label: "Select", value: "select" }, ...courses]}
-        onChangeHandler={(option) => setSelectedCourse(option || "select")}
+        onChangeHandler={(option) => {
+          setSelectedCourse(option || "select");
+          setSelectedClass("select");
+        }}
         sxClass={{
           width: "250px",
         }}
