@@ -307,7 +307,7 @@ export default function () {
         : `&user_id=${selectedChild || user_id}`
     }&limit=${
       rowsPerPage === 'All' ? 'All' : rowsPerPage
-    }&offset=${rowsPerPage === 'All' ? 0 : (page - 1) * rowsPerPage}&page=${page}&child_limit=7&child_offset=${
+    }&offset=${rowsPerPage === 'All' ? 0 : (page - 1) * rowsPerPage}&page=${page}&page_size=${rowsPerPage}&child_limit=7&child_offset=${
       (datesPerPage - 1) * Number(noOfpages)
     }${formatFromDate && `&from_date=${formatFromDate}`}${
       toDate ? `&to_date=${formatToDate}` : '&to_date='
