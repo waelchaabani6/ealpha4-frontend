@@ -33,7 +33,12 @@ type DateNavigation = {
 };
 type SortByType = 'Present' | 'Absent' | 'All';
 
-function formatData(data: any, page: number, subject: string | undefined) {
+function formatData(
+  data: any,
+  page: number,
+  subject: string | undefined,
+  rowsPerPage: number | 'All'
+) {
   const cData = [] as any;
   const headerDates = [] as any;
   let isNext = {
@@ -76,7 +81,10 @@ function formatData(data: any, page: number, subject: string | undefined) {
     // }
     if (userRole().isStudent || userRole().isParent) {
       const tmp = {
-        sr_no: (page - 1) * 10 + index + 1,
+        sr_no:
+          typeof rowsPerPage === 'number'
+            ? rowsPerPage * (page - 1) + (index + 1)
+            : page + index,
         TotalPresent: item.total_days_present,
         TotalAbsent: item.total_days_absent,
         // AttendanceReport: item.attendence_recors.results.map((itm: any) => {
@@ -101,7 +109,10 @@ function formatData(data: any, page: number, subject: string | undefined) {
       cData.push(tmp);
     } else {
       const tmp = {
-        sr_no: (page - 1) * 10 + index + 1,
+        sr_no:
+          typeof rowsPerPage === 'number'
+            ? rowsPerPage * (page - 1) + (index + 1)
+            : page + index,
         TotalPresent: item.total_days_present,
         TotalAbsent: item.total_days_absent,
         // AttendanceReport: item.attendence_recors.results.map((itm: any) => {
@@ -332,7 +343,7 @@ export default function () {
     });
 
   const { cData, headerDates, isNext, isPrev } = useMemo(
-    () => formatData(data2, page, subjectName),
+    () => formatData(data2, page, subjectName, rowsPerPage),
     [page, fromDate, toDate, data2, selectedClass, selectedCourse]
   );
 
