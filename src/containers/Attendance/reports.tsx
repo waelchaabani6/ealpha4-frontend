@@ -34,7 +34,6 @@ type DateNavigation = {
 type SortByType = 'Present' | 'Absent' | 'All';
 
 function formatData(data: any, page: number, subject: string | undefined) {
-  console.log('here');
   const cData = [] as any;
   const headerDates = [] as any;
   let isNext = {
@@ -48,7 +47,6 @@ function formatData(data: any, page: number, subject: string | undefined) {
     end_date: '',
     flag: false,
   } as DateNavigation;
-  console.log(data, '#data');
 
   const attendanceData =
     userRole().isStudent || userRole().isParent
@@ -158,7 +156,7 @@ export default function () {
   const [rowsPerPage, setRowsPerPage] = useState(
     RESULTS_PER_PAGE?.[0] as number | 'All'
   );
-  const noOfpages = getNoOfPages(totalDataCount, RESULTS_PER_PAGE?.[0]);
+  const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const SchoolUrl = import.meta.env.VITE_APP_SCHOOL_SERVICE_URL;
 
   const { control, watch } = useForm();
