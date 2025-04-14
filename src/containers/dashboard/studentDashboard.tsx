@@ -173,9 +173,9 @@ export default function StudentDashboard() {
               onSelect={(val: Date) => setCalendarDate(val)}
               events={markEvents || []}
             />
-            <div className="w-full flex items-center justify-end pb-2 pr-4">
+            {/* <div className="w-full flex items-center justify-end pb-2 pr-4">
               <Button onClick={() => setopenPopup(true)}>Add Events</Button>
-            </div>
+            </div> */}
           </div>
           <div className="bg-white flex flex-col gap-y-4 p-2 mr-2 mt-4">
             <div
