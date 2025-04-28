@@ -1,32 +1,32 @@
-import AdvanceTable from "@component/AdvancedTable/AdvanceTable";
-import { CustomInput } from "@component/input";
-import DebounceInput from "@component/input/DebounceInput";
-import { ReactComponent as Share } from "@images/pageHeaderIcons/share.svg";
-import EmailIcon from "@mui/icons-material/Email";
-import PrintIcon from "@mui/icons-material/Print";
-import { useGet } from "@shared/api/useApi";
-import Loader from "@shared/loader";
-import { HeaderMenus } from "@shared/pageHeaderMenu/HeaderMenus";
-import toast from "@shared/toast";
-import { getNoOfPages } from "@utility/utility";
-import { useEffect, useRef, useState } from "react";
-import { CSVLink } from "react-csv";
+import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
+import { CustomInput } from '@component/input';
+import DebounceInput from '@component/input/DebounceInput';
+import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
+import EmailIcon from '@mui/icons-material/Email';
+import PrintIcon from '@mui/icons-material/Print';
+import { useGet } from '@shared/api/useApi';
+import Loader from '@shared/loader';
+import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
+import toast from '@shared/toast';
+import { getNoOfPages } from '@utility/utility';
+import { useEffect, useRef, useState } from 'react';
+import { CSVLink } from 'react-csv';
 import {
   useLocation,
   useNavigate,
   useParams,
   useSearchParams,
-} from "react-router-dom";
-import ReactToPrint from "react-to-print";
-import { useSelector } from "react-redux";
-import CustomPagination from "../../components/pagination/CustomPagination";
+} from 'react-router-dom';
+import ReactToPrint from 'react-to-print';
+import { useSelector } from 'react-redux';
+import CustomPagination from '../../components/pagination/CustomPagination';
 import {
   RESULTS_PER_PAGE,
   TABLE_LABELS,
   TOOLBAR_LABELS,
-} from "../../constants/constants";
-import Wrapper from "../../shared/wrapper/Wrapper";
-import RouteLayout from "../layout/routeLayout";
+} from '../../constants/constants';
+import Wrapper from '../../shared/wrapper/Wrapper';
+import RouteLayout from '../layout/routeLayout';
 
 const printButton = () => <PrintIcon />;
 
@@ -36,8 +36,8 @@ export default function StudentCompletedAssessmentList() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { aid } = useParams();
   const { user } = useSelector((state: any) => state);
-  let formattedClassNames = searchParams.get("class");
-  formattedClassNames = formattedClassNames.replace(/\s*\|\s*/g, ",");
+  let formattedClassNames = searchParams.get('class');
+  formattedClassNames = formattedClassNames.replace(/\s*\|\s*/g, ',');
 
   const headers = [
     TABLE_LABELS?.STUDENT_NAME,
@@ -52,40 +52,40 @@ export default function StudentCompletedAssessmentList() {
   const TableColumns = [
     {
       label: TABLE_LABELS?.SR_NO,
-      align: "center",
+      align: 'center',
     },
     {
       label: TABLE_LABELS?.STUDENT_NAME,
-      mapper: "student_name",
-      filter_by: "first_name",
+      mapper: 'student_name',
+      filter_by: 'first_name',
       isSort: true,
     },
     {
       label: TABLE_LABELS?.START_DATE,
       isSort: false,
-      mapper: "start_date",
+      mapper: 'start_date',
     },
     {
       label: TABLE_LABELS?.DUE_DATE,
       isSort: false,
-      mapper: "submission_date",
+      mapper: 'submission_date',
     },
     {
       label: TABLE_LABELS?.SCORE,
       isSort: true,
-      filter_by: "score",
-      mapper: "percentage",
+      filter_by: 'score',
+      mapper: 'percentage',
     },
   ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);
   const [page, setPage] = useState(1);
   const [totalDataCount, setTotalDataCount] = useState(0);
-  const [searchString, setSearchString] = useState("");
-  const [order, setOrder] = useState<any>("desc");
-  const [orderBy, setOrderBy] = useState<any>("");
-  const [fromDate, setFromDate] = useState<any>(searchParams.get("start_date"));
-  const [toDate, setToDate] = useState<any>(searchParams.get("end_date"));
+  const [searchString, setSearchString] = useState('');
+  const [order, setOrder] = useState<any>('desc');
+  const [orderBy, setOrderBy] = useState<any>('');
+  const [fromDate, setFromDate] = useState<any>(searchParams.get('start_date'));
+  const [toDate, setToDate] = useState<any>(searchParams.get('end_date'));
 
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const componentRef = useRef(null);
@@ -127,15 +127,15 @@ export default function StudentCompletedAssessmentList() {
       obeasses_id,
     };
     fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(config),
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error('Network response was not ok');
         }
         return response.json();
       })
@@ -145,7 +145,7 @@ export default function StudentCompletedAssessmentList() {
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
-  const ordering = orderBy ? (order === "asc" ? orderBy : `-${orderBy}`) : "";
+  const ordering = orderBy ? (order === 'asc' ? orderBy : `-${orderBy}`) : '';
   const { isFetching: assignmentLoading, refetch: fetchAssignedAssignments } =
     useGet({
       baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
@@ -155,7 +155,7 @@ export default function StudentCompletedAssessmentList() {
         const respData = accData?.results;
         setTotalDataCount(accData.count);
         const schoolNameInURL = decodeURIComponent(
-          location.pathname.split("/")[1]
+          location.pathname.split('/')[1]
         );
         const body: any = [];
         const newTableData = respData?.map((item: any) => {
@@ -193,12 +193,12 @@ export default function StudentCompletedAssessmentList() {
     refetch: fetchEmailApi,
   } = useGet({
     baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/assign-assessment-student-details-email/pdf-download/?assessment_id=${aid}&class_name=${searchParams.get("class")}`,
+    url: `assessments-service/assign-assessment-student-details-email/pdf-download/?assessment_id=${aid}&class_name=${searchParams.get('class')}`,
     onSuccess: (response: any) => {
-      toast("success", "Email sent successfully");
+      toast('success', 'Email sent successfully');
     },
     onError: ({ response }: any) => {
-      toast("error", response?.data?.message || "Error");
+      toast('error', response?.data?.message || 'Error');
     },
     enabled: false,
   });
@@ -241,7 +241,7 @@ export default function StudentCompletedAssessmentList() {
   return (
     <RouteLayout navBack={true}>
       <HeaderMenus
-        title={`${searchParams.get("assessment") || "Test"}`}
+        title={`${searchParams.get('assessment') || 'Test'}`}
         menuArray={ADMIN_TOOLBAR_MENU}
         handleToolbarAction={handleToolbarAction}
       />
@@ -256,7 +256,7 @@ export default function StudentCompletedAssessmentList() {
               label="From date"
               name="add_question"
               size="small"
-              sx={{ backgroundColor: "var(--white)" }}
+              sx={{ backgroundColor: 'var(--white)' }}
               disabled={true}
             />
           </div>
@@ -266,17 +266,17 @@ export default function StudentCompletedAssessmentList() {
               label="To date"
               name="add_question"
               size="small"
-              sx={{ backgroundColor: "var(--white)" }}
+              sx={{ backgroundColor: 'var(--white)' }}
               disabled={true}
             />
           </div>
           <div className="max-w-[150px]">
             <CustomInput
-              value={searchParams.get("class")}
+              value={searchParams.get('class')}
               label="Class"
               name="add_question"
               size="small"
-              sx={{ backgroundColor: "var(--white)" }}
+              sx={{ backgroundColor: 'var(--white)' }}
               disabled={true}
             />
           </div>

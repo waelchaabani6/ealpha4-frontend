@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable comma-dangle */
 import { TOOLBAR_LABELS } from '@constants/constants';
 import RouteLayout from '@layout/routeLayout';
@@ -58,8 +59,8 @@ export default function StudentQuickReportLearnosity() {
           },
         };
         (window as any)?.LearnosityReports?.init(
-          resp?.learnosity_obj,
-          callbacks
+          resp?.learnosity_obj
+          // callbacks
         );
       }, 1000);
     },
@@ -92,7 +93,6 @@ export default function StudentQuickReportLearnosity() {
 
   return (
     <RouteLayout navBack={true}>
-   
       <HeaderMenus
         title={`${searchParams.get('assessment') || 'Test'}`}
         menuArray={ADMIN_TOOLBAR_MENU}
@@ -102,12 +102,16 @@ export default function StudentQuickReportLearnosity() {
         <>
           <div className="wrapperBorder mt-3" ref={componentRef}>
             <div className="p-[13px]">
-              <PageTitle title={`Quick View Report - ${searchParams.get('assessment') || 'Test'}`} />
+              <PageTitle
+                title={`Quick View Report - ${searchParams.get('assessment') || 'Test'}`}
+              />
             </div>
             <Wrapper>
               <>
                 <span className="learnosity-report" id="lastscore-list-item" />
                 <span className="learnosity-report" id="response-analysis" />
+                <span className="learnosity-report" id="report-demo" />
+                <span className="learnosity-report" id="report-demo-2" />
               </>
             </Wrapper>
           </div>
@@ -117,7 +121,6 @@ export default function StudentQuickReportLearnosity() {
           {error ? <h2>{`${error}`}</h2> : 'Loading...'}
         </div>
       )}
-     
     </RouteLayout>
   );
 }
