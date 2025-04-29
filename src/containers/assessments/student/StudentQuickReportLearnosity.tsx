@@ -18,14 +18,12 @@ const printButton = () => <PrintIcon />;
 
 export default function StudentQuickReportLearnosity() {
   const userData = useSelector((state: any) => state?.user);
-  // const userRole = useSelector((state: any) => state?.user?.role);
   const location = useLocation();
   const { obeasses_id } = location.state || {};
   const { aid, schoolName } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageData, setpageData] = useState<any>({});
   const [error, setError] = useState<any>('');
-  // const [iframeUrl, setIframeUrl] = useState('');
 
   const status = useScript(`https://reports.learnosity.com/?v2023.1.LTS`, {
     removeOnUnmount: false,
@@ -55,12 +53,12 @@ export default function StudentQuickReportLearnosity() {
       setTimeout(() => {
         const callbacks = {
           errorListener(e: any) {
-            setError(e.msg || '');
+            console.log('errorListener', e);
           },
         };
         (window as any)?.LearnosityReports?.init(
-          resp?.learnosity_obj
-          // callbacks
+          resp?.learnosity_obj,
+          callbacks
         );
       }, 1000);
     },
@@ -75,17 +73,6 @@ export default function StudentQuickReportLearnosity() {
       fetchLearnosityObj();
     }
   }, [status, aid, userData]);
-
-  // useEffect(() => {
-  //   // Function to generate a unique query parameter
-  //   const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
-
-  //   // URL of the iframe source
-  //   const baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/student-reports/${obeasses_id}`;
-
-  //   // Set the iframe URL with the cache buster parameter
-  //   setIframeUrl(baseUrl + generateCacheBuster());
-  // }, [obeasses_id]);
 
   if (LearnosityObjLoad) {
     return <Loader />;
@@ -110,8 +97,6 @@ export default function StudentQuickReportLearnosity() {
               <>
                 <span className="learnosity-report" id="lastscore-list-item" />
                 <span className="learnosity-report" id="response-analysis" />
-                <span className="learnosity-report" id="report-demo" />
-                <span className="learnosity-report" id="report-demo-2" />
               </>
             </Wrapper>
           </div>
