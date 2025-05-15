@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable comma-dangle */
 import { TOOLBAR_LABELS } from '@constants/constants';
 import RouteLayout from '@layout/routeLayout';
@@ -17,14 +18,12 @@ const printButton = () => <PrintIcon />;
 
 export default function StudentQuickReportLearnosity() {
   const userData = useSelector((state: any) => state?.user);
-  // const userRole = useSelector((state: any) => state?.user?.role);
   const location = useLocation();
   const { obeasses_id } = location.state || {};
   const { aid, schoolName } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageData, setpageData] = useState<any>({});
   const [error, setError] = useState<any>('');
-  // const [iframeUrl, setIframeUrl] = useState('');
 
   const status = useScript(`https://reports.learnosity.com/?v2023.1.LTS`, {
     removeOnUnmount: false,
@@ -54,7 +53,7 @@ export default function StudentQuickReportLearnosity() {
       setTimeout(() => {
         const callbacks = {
           errorListener(e: any) {
-            setError(e.msg || '');
+            console.log('errorListener', e);
           },
         };
         (window as any)?.LearnosityReports?.init(
@@ -75,24 +74,12 @@ export default function StudentQuickReportLearnosity() {
     }
   }, [status, aid, userData]);
 
-  // useEffect(() => {
-  //   // Function to generate a unique query parameter
-  //   const generateCacheBuster = () => `?cache_buster=${new Date().getTime()}`;
-
-  //   // URL of the iframe source
-  //   const baseUrl = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/student-reports/${obeasses_id}`;
-
-  //   // Set the iframe URL with the cache buster parameter
-  //   setIframeUrl(baseUrl + generateCacheBuster());
-  // }, [obeasses_id]);
-
   if (LearnosityObjLoad) {
     return <Loader />;
   }
 
   return (
     <RouteLayout navBack={true}>
-   
       <HeaderMenus
         title={`${searchParams.get('assessment') || 'Test'}`}
         menuArray={ADMIN_TOOLBAR_MENU}
@@ -102,7 +89,9 @@ export default function StudentQuickReportLearnosity() {
         <>
           <div className="wrapperBorder mt-3" ref={componentRef}>
             <div className="p-[13px]">
-              <PageTitle title={`Quick View Report - ${searchParams.get('assessment') || 'Test'}`} />
+              <PageTitle
+                title={`Quick View Report - ${searchParams.get('assessment') || 'Test'}`}
+              />
             </div>
             <Wrapper>
               <>
@@ -117,7 +106,6 @@ export default function StudentQuickReportLearnosity() {
           {error ? <h2>{`${error}`}</h2> : 'Loading...'}
         </div>
       )}
-     
     </RouteLayout>
   );
 }
