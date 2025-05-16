@@ -234,11 +234,6 @@ export default function OBE_CompletedAssessments() {
     setToDate('');
     setFromDate('');
   };
-  const { isLoading: loadSync, refetch: sync } = useGet({
-    baseURL: import.meta.env.VITE_APP_OBE_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/update-assessment-status/?user_ting=b9b0907a-d4dc-41bf-b26b-e90280058503}&domain_name=${window?.location?.hostname}&obeasses_id=9c0a25ce-0c84-40b9-a532-57a21a891208&assessment_id=4941`,
-    enabled: false
-  });
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
@@ -358,9 +353,6 @@ export default function OBE_CompletedAssessments() {
   }, [rowsPerPage, page, orderBy, order, searchString, toDate, fromDate]);
 
   useEffect(() => {
-    console.log('effectRan')
-    sync();
-    console.log('effectENds')
     if (location?.state?.page) {
       setPage(location?.state?.page);
     }
