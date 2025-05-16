@@ -42,6 +42,8 @@ interface Message {
   duration: number;
   obeId: string;
   role: string;
+  start_date: string;
+  end_date: string;
   redirectionPath: string;
 }
 export default function OBE_Index() {
@@ -158,6 +160,8 @@ export default function OBE_Index() {
       role: user?.role?.name,
       redirectionPath: targetPageUrl,
       obeId: data?.assessment_id,
+      start_date: data?.start_date,
+      end_date: data?.submission_date,
       duration
     };
     const encryptedData = encryptMessage(JSON.stringify(message));

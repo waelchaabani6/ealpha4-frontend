@@ -32,9 +32,21 @@ import {
 } from '../../constants/constants';
 import CustomPagination from '../../components/pagination/CustomPagination';
 import Wrapper from '../../shared/wrapper/Wrapper';
+import encryptMessage from '@utility/encrypt';
 
 const printButton = () => <PrintIcon />;
+interface Message {
+  key: string;
+  user_name: string;
+  user_id: string;
+  obeasses_id: string | null;
+  date_time: Date;
+  role: String;
+  redirectionPath: String;
+  user_ting: string;
+  report_details?: {teacher?:String, start_date?:String, end_date?:String};
 
+}
 const ALL: Array<any> = [
   {
     label: 'Select',
@@ -177,7 +189,28 @@ export default function OBE_CompletedAssessments() {
     if (handlername === 'delete') {
       deleteHandler(data);
     } else if (handlername === 'view') {
-      window.location.replace(`preview_myassessment_question/${data?.assessment_id}`);
+      const obeasses_id = data?.obeasses_id;
+         const currentDate = new Date();
+            const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
+            const targetPagePath = `/${schoolName}/obe-assessments/assigned`; // Update this to the path of the page you want to redirect to
+            const targetPageUrl = `${window.location.origin}${targetPagePath}`; // Constructs the full URL
+            const domain_name = import.meta.env.VITE_OBESASS_domain_name;
+            const reportDetails = {teacher:`${user?.first_name} ${user?.last_name}`,start_date:data?.start_date,end_date:data?.submission_date};
+            const message: Message = {
+              key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
+              user_name: `${user?.first_name} ${user?.last_name}`,
+              user_id: user?.user_ting,
+              obeasses_id: obeasses_id || null,
+              date_time: currentDate,
+              role: user?.role?.name,
+              redirectionPath: targetPageUrl,
+              user_ting: user?.user_ting,
+              report_details: reportDetails
+            };
+            const encryptedData = encryptMessage(JSON.stringify(message));
+            window.open(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/reports/${obeasses_id}?token=${encodeURIComponent(encryptedData)}&domain_name=${domain_name}`, '_blank');
+          
+      // window.location.replace(`preview_myassessment_question/${data?.assessment_id}`);
     }
   };
 
@@ -201,11 +234,6 @@ export default function OBE_CompletedAssessments() {
     setToDate('');
     setFromDate('');
   };
-  const { isLoading: loadSync, refetch: sync } = useGet({
-    baseURL: import.meta.env.VITE_APP_OBE_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/update-assessment-status/?user_ting=b9b0907a-d4dc-41bf-b26b-e90280058503}&domain_name=${window?.location?.hostname}&obeasses_id=9c0a25ce-0c84-40b9-a532-57a21a891208&assessment_id=4941`,
-    enabled: false
-  });
 
   // ----------------------------------------API-------------------------
   // Get Assessment List
@@ -220,6 +248,27 @@ export default function OBE_CompletedAssessments() {
       const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
       const body: any = [];
       const newTableData = respData?.map((item: any) => {
+          const obeasses_id = item?.obeasses_id;
+             const currentDate = new Date();
+                const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
+                const targetPagePath = `/${schoolName}/obe-assessments/assigned`; // Update this to the path of the page you want to redirect to
+                const targetPageUrl = `${window.location.origin}${targetPagePath}`; // Constructs the full URL
+                const domain_name = import.meta.env.VITE_OBESASS_domain_name;
+                const reportDetails = {teacher:`${user?.first_name} ${user?.last_name}`,start_date:item?.start_date,end_date:item?.submission_date};
+                const message: Message = {
+                  key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
+                  user_name: `${user?.first_name} ${user?.last_name}`,
+                  user_id: user?.user_ting,
+                  obeasses_id: obeasses_id || null,
+                  date_time: currentDate,
+                  role: user?.role?.name,
+                  redirectionPath: targetPageUrl,
+                  user_ting: user?.user_ting,
+                  report_details: reportDetails
+                };
+                const encryptedData = encryptMessage(JSON.stringify(message));
+                // window.open(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/reports/${obeasses_id}?token=${encodeURIComponent(encryptedData)}&domain_name=${domain_name}`, '_blank');
+
         body.push([
           item?.assessment_name,
           item?.subject_name,
@@ -230,10 +279,10 @@ export default function OBE_CompletedAssessments() {
         ]);
         // const link = `/${schoolNameInURL}/assessments/assigned/assessment-report/${item?.assessment_id}?assessment=${item?.assessment_name}`;
         const joinedClasses = Array.isArray(item.class_name) ? (item.class_name)?.filter((j: any) => j).join(', ') : item.class_name;
-        const link2 = `/${schoolNameInURL}/obe-assessments/assigned/completed_assessments/completed_assessment_student_list/${item?.assessment_id}?assessment=${item?.assessment_name}&class=${joinedClasses}&start_date=${item.start_date}&end_date=${item.submission_date}`;
+        const link2 = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/reports/${obeasses_id}?token=${encodeURIComponent(encryptedData)}&domain_name=${domain_name}`;
         const temp = {
           ...item,
-          assessment_name: <Link state={{ page, path: `/${schoolName}/obe-assessments/assigned/completed_assessments` }} to={link2}><span className="text-accent underline cursor-pointer text-xs font-medium">{item.assessment_name}</span></Link>,
+          assessment_name: <a href={link2} target="_blank"><span className="text-accent underline cursor-pointer text-xs font-medium">{item.assessment_name}</span></a>,
           class_or_student: <span role="presentation" className="text-accent underline cursor-pointer text-xs font-medium" onClick={() => handleDataPopup(item)}>{`${joinedClasses}(${item?.student_count})`}</span>,
           is_printed: (item?.is_printed) ? 'Printed' : 'Online'
         };
@@ -304,9 +353,6 @@ export default function OBE_CompletedAssessments() {
   }, [rowsPerPage, page, orderBy, order, searchString, toDate, fromDate]);
 
   useEffect(() => {
-    console.log('effectRan')
-    sync();
-    console.log('effectENds')
     if (location?.state?.page) {
       setPage(location?.state?.page);
     }

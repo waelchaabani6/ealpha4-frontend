@@ -27,9 +27,7 @@ import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import Dropdown from '@component/dropdown/Dropdown';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import CryptoJS from 'crypto-js';
 import encryptMessage from '@utility/encrypt';
-import {useQuery} from "react-query";
 
 const printButton = () => <PrintIcon />;
 interface Message {
@@ -133,7 +131,6 @@ export default function OBE_CompletedAssessments() {
   const [toDate, setToDate] = useState<any>('');
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const completedAssignRef = useRef(null);
-  const [isLoading, setIsLoading] = useState(false);
   const userData = useSelector((state: any) => state?.user) as UserData;
   const searchParams = new URLSearchParams(location.search);
   const assessmentId = searchParams.get('assessment_id');
@@ -144,11 +141,6 @@ export default function OBE_CompletedAssessments() {
   const noOfpages = getNoOfPages(totalDataCount, rowsPerPage);
   const componentRef = useRef(null);
 
-  useEffect(() => {
-    if (location.search) {
-      sync();
-    }
-  }, [location.search]);
 
   const handleDialog = () => {
     setDialogOpen(false);
@@ -196,42 +188,12 @@ export default function OBE_CompletedAssessments() {
     setFromDate('');
   };
 
-  const setConfig = (user_ting: any) => {
-    setIsLoading(true);
-    const config = {
-      apiKey: `${import.meta.env.VITE_APP_SDK}`,
-      user: `${user?.first_name} ${user?.last_name}`,
-      user_ting,
-      role: user?.role?.name
-    };
-    fetch(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/api/config`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(config)
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setIsLoading(false);
-      })
-      .catch((e) => {
-        setIsLoading(false); // Ensure to handle loading state correctly in case of an error
-      });
-  };
-
   /*  const handleButtonClick = (data: any) => {
     navigate(`/${schoolName}/assessments/assigned/assessment-report/${data?.assessment_id}?assessment=${data?.assessment_name}`, { state: { page, obeasses_id: data?.obeasses_id, path: `/${schoolName}/assessments/completed-assessments` } });
   }; */
   const handleButtonClick = (data: any) => {
     const obeasses_id = data?.obeasses_id;
     const user_ting = data?.user_ting;
-    setConfig(user_ting);
     const currentDate = new Date();
     const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
     const targetPagePath = `/${schoolName}/obe-assessments/assigned/completed_assessments`; // Update this to the path of the page you want to redirect to
@@ -294,10 +256,14 @@ export default function OBE_CompletedAssessments() {
       toast('error', response?.data?.message || response?.statusText || 'Error');
     }
   });
-  const { isLoading: loadSync, refetch: sync } = useGet({
+
+  const {
+    isLoading: loadSync,
+    refetch: fetchUpdateStatus,
+  } = useGet({
     baseURL: import.meta.env.VITE_APP_OBE_ASSESSMENT_SERVICE_URL,
-    url: `assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${window?.location?.hostname}&obeasses_id=${obeassesId}&assessment_id=${assessmentId}`,
-    enabled: false
+    url: `assessments-service/update-assessment-status/?user_ting=${userData?.user_ting}&domain_name=${import.meta.env.VITE_OBESASS_domain_name}&obeasses_id=${obeassesId}&assessment_id=${assessmentId}`,
+    enabled: false, // prevent auto call
   });
 
   // Toolbar Email
@@ -343,8 +309,20 @@ export default function OBE_CompletedAssessments() {
   ];
 
   useEffect(() => {
-    fetchAssignedAssignments();
-  }, [rowsPerPage, page, orderBy, order, searchString, toDate, fromDate]);
+    const updateAndFetchData = async () => {
+      if (obeassesId && assessmentId) {
+        try {
+          await fetchUpdateStatus(); // update status first
+        } catch (e) {
+          console.error("Failed to update assessment status", e);
+          // optionally show toast or handle error
+        }
+      }
+      fetchAssignedAssignments(); // fetch DataTable after update
+    };
+  
+    updateAndFetchData();
+  }, [rowsPerPage, page, orderBy, order, searchString, toDate, fromDate, obeassesId, assessmentId]);
 
   useEffect(() => {
     if (location?.state?.page) {
