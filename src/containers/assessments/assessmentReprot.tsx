@@ -7,7 +7,7 @@ import PageTitle from '@shared/pageTitle';
 import useScript from '@utility/Hooks/UseScript';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useParams, useSearchParams, useLocation } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import { TOOLBAR_LABELS } from '../../constants/constants';
 import Wrapper from '../../shared/wrapper/Wrapper';
@@ -36,7 +36,6 @@ export default function AssessmentReprot() {
   const [incompleteStudentArray, setincompleteStudentArray] = useState([]);
   const [error, setError] = useState('');
   const [pageData, setpageData] = useState<any>({});
-  const location = useLocation();
 
   const componentRef = useRef(null);
 
@@ -63,7 +62,7 @@ export default function AssessmentReprot() {
       setincompleteStudentArray(resp?.incomplete_assessment_student);
       const callbacks = {
         errorListener(e: any) {
-          setError(e.msg || '');
+          console.log('errorListener', e);
         },
       };
       setTimeout(() => {
