@@ -323,7 +323,7 @@ export default function AssignedAssessments() {
 
           const obeasses_id = item?.obeasses_id;
           // const link = `/${schoolName}/assessments/preview_myassessment_question/${item?.assessment_id}`;
-          const link = `/${schoolName}/assessments/assigned/assessment-report/${item?.assessment_id}?assessment=${item?.assessmentName}`;
+          const link = `/${schoolName}/assessments/assigned/assessment-report/${item?.assessment_id}?assessment=${item?.assessment_name}`;
 
           const temp = {
             ...item,
