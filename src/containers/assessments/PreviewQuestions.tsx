@@ -15,7 +15,7 @@ export default function PreviewQuestions() {
   const [pageData, setPageData] = useState<any>({});
   const [error, setError] = useState<any>('');
   const location = useLocation();
-  const status = useScript(`https://items.learnosity.com/?v2023.1.LTS/`, {
+  const status = useScript(`https://items.learnosity.com/?v2025.1.LTS/`, {
     removeOnUnmount: false,
   });
 

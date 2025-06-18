@@ -19,7 +19,7 @@ export default function PreviewMyAssessmentQuestionsLearnosity() {
   const [error, setError] = useState<any>('');
 
   // const [iframeUrl, setIframeUrl] = useState('');
-  const status = useScript(`https://items.learnosity.com/?v2023.1.LTS/`, {
+  const status = useScript(`https://items.learnosity.com/?v2025.1.LTS/`, {
     removeOnUnmount: false,
   });
 

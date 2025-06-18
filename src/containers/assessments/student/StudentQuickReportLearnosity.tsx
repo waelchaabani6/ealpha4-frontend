@@ -25,7 +25,7 @@ export default function StudentQuickReportLearnosity() {
   const [pageData, setpageData] = useState<any>({});
   const [error, setError] = useState<any>('');
 
-  const status = useScript(`https://reports.learnosity.com/?v2023.1.LTS`, {
+  const status = useScript(`https://reports.learnosity.com/?v2025.1.LTS`, {
     removeOnUnmount: false,
   });
   const componentRef = useRef(null);

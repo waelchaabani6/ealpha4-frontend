@@ -52,7 +52,7 @@ export default function CreateQuestionsLearnosity() {
   // const [iframeUrl, setIframeUrl] = useState('');
   // const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  const status = useScript(`https://authorapi.learnosity.com/?v2023.1.LTS`, {
+  const status = useScript(`https://authorapi.learnosity.com/?v2025.1.LTS`, {
     removeOnUnmount: false,
   });
 

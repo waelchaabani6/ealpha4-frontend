@@ -46,7 +46,7 @@ export default function DisplayAssessment() {
   const user = useSelector((state: any) => state?.user);
   const userRole = useSelector((state: any) => state?.user?.role);
 
-  // const status = useScript(`https://items.learnosity.com/?v2023.1.LTS`, {
+  // const status = useScript(`https://items.learnosity.com/?v2025.1.LTS`, {
   //   removeOnUnmount: false
   // });
 

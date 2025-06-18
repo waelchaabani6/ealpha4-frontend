@@ -25,7 +25,7 @@ export default function StudentQuickReport() {
   const [error, setError] = useState<any>('');
   const [iframeUrl, setIframeUrl] = useState('');
 
-  const status = useScript(`https://reports.learnosity.com/?v2023.1.LTS`, {
+  const status = useScript(`https://reports.learnosity.com/?v2025.1.LTS`, {
     removeOnUnmount: false,
   });
   const componentRef = useRef(null);

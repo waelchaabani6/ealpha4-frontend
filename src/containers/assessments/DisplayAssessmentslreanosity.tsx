@@ -52,7 +52,7 @@ export default function DisplayAssessmentLearnosity() {
 
   // console.log('api res =', apiRes)
 
-  const status = useScript(`https://items.learnosity.com/?v2023.1.LTS`, {
+  const status = useScript(`https://items.learnosity.com/?v2025.1.LTS`, {
     removeOnUnmount: false,
   });
 

@@ -19,7 +19,7 @@ export default function AssessmentReprot() {
   const userData = useSelector((state: any) => state?.user);
   const { aid } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const status = useScript(`https://reports.learnosity.com/?v2023.1.LTS`, {
+  const status = useScript(`https://reports.learnosity.com/?v2025.1.LTS`, {
     removeOnUnmount: false,
   });
   const notCompletedStudentColumns = [
