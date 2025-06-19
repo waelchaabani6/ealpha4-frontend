@@ -77,26 +77,67 @@ export default function DisplayAssessmentLearnosity() {
     useGet({
       baseURL: import.meta.env.VITE_APP_ASSESSMENT_SERVICE_URL,
       url: `assessments-service/assign_assessment/${aid}/?user_ting=${userData?.user_ting}&redirect_url=${schoolNameInURL}&domain_name=${window?.location?.hostname}`,
+      // onSuccess: (res: any) => {
+      //   const resp = res?.data?.response;
+      //   setPageData(resp);
+      //   const callbacks = {
+      //     errorListener(e: any) {
+      //       setError(e.msg || '');
+      //     },
+      //   };
+      //   const obj = (window as any)?.LearnosityItems?.init(
+      //     resp?.learnosity_obj,
+      //     callbacks
+      //   );
+      //   obj?.on('test:submit:success', function () {
+      //     setApiRes(res?.data?.response);
+      //     getAssessStatus(res?.data?.response.data?.assessment_ting);
+      //   });
+      //   obj?.on('test:finished:submit', () => {
+      //     setApiRes(res?.data?.response);
+      //   });
+      // },
       onSuccess: (res: any) => {
         const resp = res?.data?.response;
-        setPageData(resp);
+        const learnosityObj = resp?.learnosity_obj;
+        const assessmentData = resp?.data;
+      
+        if (learnosityObj?.request?.request) {
+          learnosityObj.request.request.container = 'learnosity_assess';
+        }
+              
         const callbacks = {
           errorListener(e: any) {
-            setError(e.msg || '');
+            // setError(e.msg || '');
+            console.log(e.msg)
           },
         };
+      
         const obj = (window as any)?.LearnosityItems?.init(
-          resp?.learnosity_obj,
+          {
+            security: learnosityObj?.request?.security,
+            request: learnosityObj?.request?.request,
+          },
           callbacks
         );
-        obj?.on('test:submit:success', function () {
-          setApiRes(res?.data?.response);
-          getAssessStatus(res?.data?.response.data?.assessment_ting);
-        });
-        obj?.on('test:finished:submit', () => {
-          setApiRes(res?.data?.response);
-        });
+        
+      
+        setPageData({ data: assessmentData });
+
+        if (obj && typeof obj?.on === 'function') {
+          obj?.on('test:submit:success', function () {
+            setApiRes(resp);
+            getAssessStatus(resp?.data?.assessment_ting);
+          });
+      
+          obj?.on('test:finished:submit', () => {
+            setApiRes(resp);
+          });
+        } else {
+          console.warn('LearnosityItems.init() did not return an object with .on()', obj);
+        }
       },
+      
       onError: () => {},
       enabled: false,
     });
