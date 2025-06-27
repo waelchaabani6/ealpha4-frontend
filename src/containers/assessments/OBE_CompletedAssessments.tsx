@@ -1,14 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import  { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import DatePicker from '@component/datepicker';
 import AdvanceTable from '@component/AdvancedTable/AdvanceTable';
 import PrintIcon from '@mui/icons-material/Print';
-import EmailIcon from '@mui/icons-material/Email';
 import { CSVLink } from 'react-csv';
 import ReactToPrint from 'react-to-print';
 import CustomizedDialogs from '@component/dialog/CustomDialog';
 import { ReactComponent as Share } from '@images/pageHeaderIcons/share.svg';
-import AutoComplete from '@component/autoComplete/autoComplete';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
 import PageTitle from '@shared/pageTitle';
 import DebounceInput from '@component/input/DebounceInput';
@@ -19,7 +17,6 @@ import toast from '@shared/toast';
 import DeletePopup from '@shared/DeletePopup';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
-import Loader from '@shared/loader';
 import Dropdown from '@component/dropdown/Dropdown';
 import { selectSchoolData } from '@shared/store/schoolSlice';
 import RouteLayout from '../layout/routeLayout';
@@ -137,8 +134,17 @@ export default function OBE_CompletedAssessments() {
     {
       label: TABLE_LABELS?.SCORE_AVG,
       isSort: true,
-      mapper: 'score'
-    }
+      mapper: 'score',
+      sx:{ width: '12%'},
+    },
+    {
+          label: TABLE_LABELS?.ACTION,
+          sx:{ width: '10%'},
+          align: 'center',
+          bodyAlign: 'center',
+          component: COMPONENTS?.view,
+          showInHeader: false
+        },
   ];
 
   const [rowsPerPage, setRowsPerPage] = useState(RESULTS_PER_PAGE?.[0]);

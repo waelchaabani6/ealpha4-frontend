@@ -72,16 +72,22 @@ export default function OBE_MyAssessments() {
     {
       label: TABLE_LABELS?.ACTION,
       colspan: 2,
-      align: 'center',
-      bodyAlign: 'right',
+      align: "center",
+      bodyAlign: "right",
       component: COMPONENTS?.view,
-      showInHeader: false
+      showInHeader: false,
+      sx:{width:'5%'}
     },
     {
-      bodyAlign: 'left',
+      bodyAlign: "center",
+      component: COMPONENTS?.edit,
+      showInHeader: false,
+    },
+    {
+      bodyAlign: "left",
       component: COMPONENTS?.delete,
-      showInHeader: false
-    }
+      showInHeader: false,
+    },
   ];
   const [tableData, setTableData] = useState<any>([]);
   const [adminDeleteDialog, setAdminDeleteDialog] = useState(false);
@@ -111,28 +117,31 @@ export default function OBE_MyAssessments() {
     if (data) {
       assessId = data?.obeasses_id;
     }
+    const currentDate = new Date();
+    const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
+    const targetPagePath = `/${schoolName}/obe-assessments/my-assessments`; // Update this to the path of the page you want to redirect to
+    const targetPageUrl = `${window.location.origin}${targetPagePath}`; // Constructs the full URL
+    const domain_name = import.meta.env.VITE_OBESASS_domain_name;
 
+    const message: Message = {
+      key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
+      user_name: `${user?.first_name} ${user?.last_name}`,
+      user_id: user?.user_ting,
+      assessment_id: assessId || null,
+      date_time: currentDate,
+      role: user?.role?.name,
+      redirectionPath: targetPageUrl
+    };
+    const encryptedData = encryptMessage(JSON.stringify(message));
     if (handlername === 'delete') {
       deleteHandler(data);
     } else if (handlername === 'view') {
-      // navigate(`/${schoolName}/assessments/preview_myassessment_question/${data?.id}`, { state: { page, obeasses_id, path: `/${schoolName}/assessments/my-assessments` } });
-      const currentDate = new Date();
-      const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
-      const targetPagePath = `/${schoolName}/obe-assessments/my-assessments`; // Update this to the path of the page you want to redirect to
-      const targetPageUrl = `${window.location.origin}${targetPagePath}`; // Constructs the full URL
-      const domain_name = import.meta.env.VITE_OBESASS_domain_name;
 
-      const message: Message = {
-        key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
-        user_name: `${user?.first_name} ${user?.last_name}`,
-        user_id: user?.user_ting,
-        assessment_id: assessId || null,
-        date_time: currentDate,
-        role: user?.role?.name,
-        redirectionPath: targetPageUrl
-      };
-      const encryptedData = encryptMessage(JSON.stringify(message));
       window.open(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${assessId}?token=${encodeURIComponent(encryptedData)}&domain_name=${domain_name}`, '_blank');
+    }
+    else if (handlername === "edit") {
+      window.open(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/create-assessments/?token=${encodeURIComponent(encryptedData)}&domain_name=${domain_name}`, '_blank');
+
     }
   };
 
