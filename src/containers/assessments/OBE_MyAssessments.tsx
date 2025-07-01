@@ -140,6 +140,10 @@ export default function OBE_MyAssessments() {
       window.open(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/views/${assessId}?token=${encodeURIComponent(encryptedData)}&domain_name=${domain_name}`, '_blank');
     }
     else if (handlername === "edit") {
+      if (data?.is_assigned === true) {
+        alert("This question is already assigned. You can't edit it.");
+        return;
+      }
       window.open(`${import.meta.env.VITE_APP_IFRAME_APP_SDK}/create-assessments/?token=${encodeURIComponent(encryptedData)}&domain_name=${domain_name}`, '_blank');
 
     }
