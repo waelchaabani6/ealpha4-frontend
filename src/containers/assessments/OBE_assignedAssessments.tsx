@@ -8,6 +8,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import PrintIcon from '@mui/icons-material/Print';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DeletePopup from '@shared/DeletePopup';
+import InfoPopup from '@shared/InfoPopup';
 import { useDelete, useGet, usePost } from '@shared/api/useApi';
 import Loader from '@shared/loader';
 import { HeaderMenus } from '@shared/pageHeaderMenu/HeaderMenus';
@@ -61,6 +62,7 @@ export default function OBE_AssignedAssessments() {
   const { schoolName } = useParams();
   const userData = useSelector((state: any) => state?.user);
   const navigate = useNavigate();
+  const [infoPopup, setInfoPopup] = useState(false);
 
   const CompletedTableColumns = [
     {
@@ -107,7 +109,7 @@ export default function OBE_AssignedAssessments() {
     TABLE_LABELS?.END_DATE,
     TABLE_LABELS?.TYPE
   ];
-
+ 
   const [csvData, setCsvData] = useState<[]>([]);
   const [tableData, setTableData] = useState<any>([]);
   const [adminDeleteDialog, setAdminDeleteDialog] = useState(false);
@@ -242,6 +244,9 @@ export default function OBE_AssignedAssessments() {
     setAdminDeleteDialog(false);
     mutateDelete(playloadData);
   };
+  const handleInfoPopup = () => {
+    setInfoPopup(true);
+  };
   const handleDataPopup = (data: any) => {
     setDialogOpen(true);
     setpopupData(data);
@@ -262,7 +267,7 @@ export default function OBE_AssignedAssessments() {
       const accData = res?.data?.response;
       const respData = accData?.results;
       setTotalDataCount(accData.count);
-      const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
+      // const schoolNameInURL = decodeURIComponent(location.pathname.split('/')[1]);
       const body: any = [];
       const newTableData = respData?.map((item: any) => {
         body.push([
@@ -274,13 +279,56 @@ export default function OBE_AssignedAssessments() {
           (item?.is_printed) ? 'Printed' : 'Online'
         ]);
         const obeasses_id = item?.obeasses_id;
-        const link = `/${schoolName}/obe-assessments/preview_myassessment_question/${item?.assessment_id}`;
+        const currentDate = new Date();
+           const schoolName = decodeURIComponent(location.pathname.split('/')[1]);
+           const targetPagePath = `/${schoolName}/obe-assessments/assigned`; // Update this to the path of the page you want to redirect to
+           const targetPageUrl = `${window.location.origin}${targetPagePath}`; // Constructs the full URL
+           const domain_name = import.meta.env.VITE_OBESASS_domain_name;
+           const reportDetails = {teacher:`${user?.first_name} ${user?.last_name}`,start_date:item?.start_date,end_date:item?.submission_date};
+           const completed_students = item?.completed;
+           const message: any = {
+             key: import.meta.env.VITE_OBESASS_API_ENC_KEY as string,
+             user_name: `${user?.first_name} ${user?.last_name}`,
+             user_id: user?.user_ting,
+             obeasses_id: obeasses_id || null,
+             date_time: currentDate,
+             role: user?.role?.name,
+             redirectionPath: targetPageUrl,
+             user_ting: user?.user_ting,
+             report_details: reportDetails,
+             students:completed_students
+           };
+           const encryptedData = encryptMessage(JSON.stringify(message));
+body.push([
+item?.assessment_name,
+item?.subject_name,
+`${item.class_name}(${item?.student_count})`,
+item?.start_date,
+item?.submission_date,
+item?.is_printed ? 'Printed' : 'Online',
+]);
+        // const link = `/${schoolName}/obe-assessments/preview_myassessment_question/${item?.assessment_id}`;
+        const link2 = `${import.meta.env.VITE_APP_IFRAME_APP_SDK}/reports/${obeasses_id}?token=${encodeURIComponent(encryptedData)}&domain_name=${domain_name}`;
+        let assessmentAction = <a href={link2} target="_blank"><span className="text-accent underline cursor-pointer text-xs font-medium">{item.assessment_name}</span></a>;
+        if (item?.completed.length == 0)
+        {
+           assessmentAction = <a onClick={handleInfoPopup}><span className="text-accent underline cursor-pointer text-xs font-medium">{item.assessment_name}</span></a>;
+        }
         const joinedClasses = Array.isArray(item.class_name) ? (item.class_name)?.filter((j: any) => j).join(', ') : item.class_name;
         const temp = {
           ...item,
-          assessment_name: <Link state={{ page, obeasses_id, path: `/${schoolName}/obe-assessments/assigned` }} to={link}><span className="text-accent underline cursor-pointer text-xs font-medium">{item.assessment_name}</span></Link>,
-          class_or_student: <span role="presentation" className="text-accent underline cursor-pointer text-xs font-medium" onClick={() => handleDataPopup(item)}>{`${joinedClasses}(${item?.student_count})`}</span>,
-          is_printed: (item?.is_printed) ? 'Printed' : 'Online'
+          assessment_name: assessmentAction,
+
+          class_or_student: (
+            <span
+              role="presentation"
+              className="text-accent underline cursor-pointer text-xs font-medium"
+              onClick={() => handleDataPopup(item)}
+            >
+              {`${joinedClasses}(${item?.student_count})`}
+            </span>
+          ),
+          is_printed: item?.is_printed ? 'Printed' : 'Online',
         };
         return temp;
       });
@@ -537,6 +585,13 @@ export default function OBE_AssignedAssessments() {
         open={adminDeleteDialog}
         setOpen={setAdminDeleteDialog}
         handleDelete={handleAdminDelete}
+      />
+       {/* no student answer popup */}
+       <InfoPopup
+        title="Assessment Report"
+        description="This assessment is not submitted from any student yet"
+        open={infoPopup}
+        setOpen={setInfoPopup}
       />
     </RouteLayout>
   );
