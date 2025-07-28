@@ -199,8 +199,13 @@ export default function OBE_CreateAssessments() {
   CLASS_ARRAY.sort(sortData);
   const onSubmit = async (values: any) => {
     // const getCourse = courseArray.find((i: any) => Number(i?.value) === Number(values?.select_course));
-    const getGrade = CLASS_ARRAY.find((i: any) => Number(i?.value) === Number(values?.select_grade));
-    const res = await getConfigAssessments(values?.assignment_name, '', getGrade?.value);
+    const getCourse = courseArray.find(
+      (i: any) => Number(i?.value) === Number(values?.select_course)
+  );
+  const getGrade = CLASS_ARRAY.find(
+      (i: any) => Number(i?.value) === Number(values?.select_grade)
+  );
+  const res = await getConfigAssessments(values?.assignment_name, getCourse?.value, getGrade?.value);
 
     const obeasses_id = await res?.data?.item?.id;
     // console.log(await res?.data?.item?.id, 'sadasdasdas')
@@ -209,6 +214,8 @@ export default function OBE_CreateAssessments() {
       assessment_name: values?.assignment_name,
       // courses: getCourse?.value,
       // courses_name: getCourse?.label,
+      courses: getCourse?.value,
+      courses_name: getCourse?.label,
       grade: getGrade?.value,
       grade_name: getGrade?.label,
       school_id: schoolData?.id || branchData?.school_data?.id || '',
