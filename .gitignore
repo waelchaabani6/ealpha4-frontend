@@ -18,3 +18,5 @@ dist
 *.sln
 .idea/
 .env
+.env.*
+!.env.example
