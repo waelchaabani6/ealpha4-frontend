@@ -4,13 +4,17 @@
     "es2021": true,
     "jest": true
   },
-  "extends": ["airbnb"],
+  "extends": [
+    "airbnb",
+    "airbnb-typescript",
+    "plugin:prettier/recommended"
+  ],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.jsx"],
       "extends": ["plugin:@typescript-eslint/recommended"],
       "parser": "@typescript-eslint/parser",
-      "plugins": ["@typescript-eslint"],
+      "plugins": ["@typescript-eslint", "react", "react-hooks", "prettier"],
       "rules": {
         "react/prop-types": 0,
         "@typescript-eslint/no-explicit-any": 0,
@@ -29,7 +33,12 @@
       "generators": true
     }
   },
-  "plugins": ["react"],
+  "plugins": ["react", "react-hooks", "prettier"],
+  "settings": {
+    "import/resolver": {
+      "typescript": {} // Add TypeScript resolver
+    }
+  },
   "rules": {
     "no-console": 2,
     "react/react-in-jsx-scope": 0,
